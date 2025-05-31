@@ -727,6 +727,22 @@ function _Visu() constructor {
       "asset": texture_shroom_bazyl_yellow,
       "file": "",
     },
+    "texture_bkg_spaace_1": {
+      "asset": texture_bkg_spaace_1,
+      "file": "",
+    },
+    "texture_bkg_spaace_2": {
+      "asset": texture_bkg_spaace_2,
+      "file": "",
+    },
+    "texture_abstract_1": {
+      "asset": texture_abstract_1,
+      "file": "",
+    },
+    "texture_abstract_2": {
+      "asset": texture_abstract_2,
+      "file": "",
+    },
   } 
 
   ///@return {Struct}

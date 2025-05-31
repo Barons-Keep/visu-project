@@ -101,12 +101,12 @@ float noise_2d(vec2 p, float distortion) {
   );
 }
 
-float fbm(vec2 p, int octaves, float distortion) {
+float fbm(vec2 p, float distortion) {
   float sum = 0.0;
   float max_amp = 0.0;
   float amplitude = 1.0;
 
-  for (int i = 0; i < octaves; ++i) {
+  for (int i = 0; i < FBM_OCTAVES; ++i) {
     sum += amplitude * noise_2d(p, distortion);
     max_amp += amplitude;
     amplitude *= 0.5;
@@ -126,7 +126,7 @@ float lightning_path(vec2 uv, float seed, float jumpiness, float distortion, flo
 
   uv.x -=u_time * 0.2;
 
-  float displacement = fbm(uv * vec2(curve_freq, curve_freq * 0.66) - vec2(0.0, seed), FBM_OCTAVES, distortion);
+  float displacement = fbm(uv * vec2(curve_freq, curve_freq * 0.66) - vec2(0.0, seed), distortion);
   displacement = (displacement * (scale * 2.0) - scale) * 0.5;
 
   return abs(uv.y - displacement);
