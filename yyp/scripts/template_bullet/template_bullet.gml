@@ -85,15 +85,8 @@ function template_bullet(json = null) {
           factor: 0.1,
           increase: 0.0
         })),
-        passthrough: function(value) {
-          if (!Core.isType(value, NumberTransformer)) {
-            return this.value
-          }
-
-          value.value = clamp(value.value, -360.0, 360.0)
-          value.target = clamp(value.target, -360.0, 360.0)
-          return value
-        },
+        passthrough: UIUtil.passthrough.getClampedNumberTransformer(),
+        data: new Vector2(-360.0, 360.0),
       },
       "bullet_change-angle-offset": {
         type: Boolean,

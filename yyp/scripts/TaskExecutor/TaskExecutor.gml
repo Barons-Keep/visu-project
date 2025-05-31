@@ -117,7 +117,7 @@ function TaskExecutor(_context, config = {}) constructor {
   }
 
   ///@return {TaskExecutor}
-  static free = function() {
+  free = function() {
     static freeFullfill = function(task, iterator, executor) {
       try {
         TaskUtil.fullfill(task, iterator, executor)

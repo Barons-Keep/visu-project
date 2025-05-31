@@ -154,7 +154,7 @@ function EventPump(_context, _dispatchers, config = {}) constructor {
   }
 
   ///@return {EventPump}
-  static free = function() {
+  free = function() {
     static freeExecute = function(event, iterator, eventPump) {
       try {
         eventPump.execute(event)

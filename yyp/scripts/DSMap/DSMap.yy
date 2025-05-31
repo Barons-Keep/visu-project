@@ -1,0 +1,13 @@
+{
+  "$GMScript":"v1",
+  "%Name":"DSMap",
+  "isCompatibility":false,
+  "isDnD":false,
+  "name":"DSMap",
+  "parent":{
+    "name":"collection",
+    "path":"folders/io.alkapivo.core/src/collection.yy",
+  },
+  "resourceType":"GMScript",
+  "resourceVersion":"2.0",
+}

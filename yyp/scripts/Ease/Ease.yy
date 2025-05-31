@@ -1,0 +1,13 @@
+{
+  "$GMScript":"v1",
+  "%Name":"Ease",
+  "isCompatibility":false,
+  "isDnD":false,
+  "name":"Ease",
+  "parent":{
+    "name":"util",
+    "path":"folders/io.alkapivo.core/src/util.yy",
+  },
+  "resourceType":"GMScript",
+  "resourceVersion":"2.0",
+}

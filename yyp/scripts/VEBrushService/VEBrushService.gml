@@ -93,6 +93,7 @@ function VEBrushService() constructor {
       type: Assert.isEnum(brush.type, VEBrushType),
       color: Assert.isType(brush.store.getValue("brush-color"), Color).toHex(),
       texture: Assert.isType(brush.store.getValue("brush-texture"), String),
+      hidden: Assert.isType(brush.store.getValue("brush-hidden"), Boolean),
     }
 
     var properties = brush.store.container
@@ -100,6 +101,7 @@ function VEBrushService() constructor {
         return item.name != "brush-name" 
           && item.name != "brush-color" 
           && item.name != "brush-texture" 
+          && item.name != "brush-hidden" 
       })
       .toStruct(function(item) { 
         return item.stringify()

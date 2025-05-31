@@ -4,7 +4,7 @@
   "bboxMode":0,
   "bbox_bottom":511,
   "bbox_left":0,
-  "bbox_right":513,
+  "bbox_right":757,
   "bbox_top":0,
   "collisionKind":1,
   "collisionTolerance":0,
@@ -12,18 +12,18 @@
   "edgeFiltering":false,
   "For3D":false,
   "frames":[
-    {"$GMSpriteFrame":"","%Name":"acf12efa-099e-4bcb-b7db-e58778275a8d","name":"acf12efa-099e-4bcb-b7db-e58778275a8d","resourceType":"GMSpriteFrame","resourceVersion":"2.0",},
+    {"$GMSpriteFrame":"","%Name":"0fc06b02-7e28-4ff6-ac68-b9d6fb656b90","name":"0fc06b02-7e28-4ff6-ac68-b9d6fb656b90","resourceType":"GMSpriteFrame","resourceVersion":"2.0",},
   ],
   "gridX":0,
   "gridY":0,
   "height":512,
   "HTile":false,
   "layers":[
-    {"$GMImageLayer":"","%Name":"99de156a-874d-4fc9-ae11-70a9eec48f53","blendMode":0,"displayName":"default","isLocked":false,"name":"99de156a-874d-4fc9-ae11-70a9eec48f53","opacity":100.0,"resourceType":"GMImageLayer","resourceVersion":"2.0","visible":true,},
+    {"$GMImageLayer":"","%Name":"1124a855-874b-40d6-8622-90597816ee4b","blendMode":0,"displayName":"default","isLocked":false,"name":"1124a855-874b-40d6-8622-90597816ee4b","opacity":100.0,"resourceType":"GMImageLayer","resourceVersion":"2.0","visible":true,},
   ],
   "name":"texture_visu_shroom_spawner",
   "nineSlice":null,
-  "origin":4,
+  "origin":9,
   "parent":{
     "name":"editor",
     "path":"folders/io.alkapivo.visu/resource/texture/editor.yy",
@@ -69,13 +69,13 @@
     "tracks":[
       {"$GMSpriteFramesTrack":"","builtinName":0,"events":[],"inheritsTrackColour":true,"interpolation":1,"isCreationTrack":false,"keyframes":{"$KeyframeStore<SpriteFrameKeyframe>":"","Keyframes":[
             {"$Keyframe<SpriteFrameKeyframe>":"","Channels":{
-                "0":{"$SpriteFrameKeyframe":"","Id":{"name":"acf12efa-099e-4bcb-b7db-e58778275a8d","path":"sprites/texture_visu_shroom_spawner/texture_visu_shroom_spawner.yy",},"resourceType":"SpriteFrameKeyframe","resourceVersion":"2.0",},
-              },"Disabled":false,"id":"6441fa81-25d6-4353-9f3e-2b1d3caec804","IsCreationKey":false,"Key":0.0,"Length":1.0,"resourceType":"Keyframe<SpriteFrameKeyframe>","resourceVersion":"2.0","Stretch":false,},
+                "0":{"$SpriteFrameKeyframe":"","Id":{"name":"0fc06b02-7e28-4ff6-ac68-b9d6fb656b90","path":"sprites/texture_visu_shroom_spawner/texture_visu_shroom_spawner.yy",},"resourceType":"SpriteFrameKeyframe","resourceVersion":"2.0",},
+              },"Disabled":false,"id":"5c34ec1e-a02c-4a30-8bef-83731085292b","IsCreationKey":false,"Key":0.0,"Length":1.0,"resourceType":"Keyframe<SpriteFrameKeyframe>","resourceVersion":"2.0","Stretch":false,},
           ],"resourceType":"KeyframeStore<SpriteFrameKeyframe>","resourceVersion":"2.0",},"modifiers":[],"name":"frames","resourceType":"GMSpriteFramesTrack","resourceVersion":"2.0","spriteId":null,"trackColour":0,"tracks":[],"traits":0,},
     ],
     "visibleRange":null,
     "volume":1.0,
-    "xorigin":257,
+    "xorigin":256,
     "yorigin":256,
   },
   "swatchColours":null,
@@ -86,5 +86,5 @@
   },
   "type":0,
   "VTile":false,
-  "width":514,
+  "width":768,
 }

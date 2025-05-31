@@ -284,6 +284,45 @@ function VisuEditorController() constructor {
   ///@private
   ///@type {Boolean}
   requestOpenUI = false
+  
+  ///@private
+  ///@type {DebugTimer}
+  updateDebugTimer = new DebugTimer("VEupdateDebugTimer")
+
+  ///@private
+  ///@type {Struct}
+  updateTimerCooldowns = {
+    brush: 0,
+    timeline: 0,
+    accordion: 0,
+    getBrush: function() {
+      if (this.brush <= 0) {
+        return true
+      } else {
+        this.brush--
+        //Core.print("Skip this.brush", this.brush)
+        return this.brush <= 0
+      }
+    },
+    getTimeline: function() {
+      if (this.timeline <= 0) {
+        return true
+      } else {
+        this.timeline--
+        //Core.print("Skip this.timeline", this.timeline)
+        return this.timeline <= 0
+      }
+    },
+    getAccordion: function() {
+      if (this.accordion <= 0) {
+        return true
+      } else {
+        this.accordion--
+        //Core.print("Skip this.accordion", this.accordion)
+        return this.accordion <= 0
+      }
+    },
+  }
 
   ///@private
   ///@return {Task}
@@ -466,9 +505,10 @@ function VisuEditorController() constructor {
     return new UILayout({
       name: "visu-editor",
       width: function() { return GuiWidth() },
-      height: function() { return GuiHeight() },
+      height: function() { return GuiHeight() - this._y },
+      _y: 0,
       x: function() { return 0 },
-      y: function() { return 0 },
+      y: function() { return 0 + this._y },
       nodes: {
         "title-bar": {
           name: "visu-editor.title-bar",
@@ -500,9 +540,9 @@ function VisuEditorController() constructor {
         "preview-full": {
           name: "visu-editor.preview-full",
           width: function() { return GuiWidth() },
-          height: function() { return GuiHeight() },
-          x: function() { return 0 },
-          y: function() { return 0 }
+          height: function() { return GuiHeight() - this.context._y },
+          x: function() { return this.context.x() },
+          y: function() { return this.context.y() },
         },
         "preview": { },
         "track-control": {
@@ -511,8 +551,12 @@ function VisuEditorController() constructor {
           width: function() { return Struct.get(this.context.nodes, "preview").width() },
           height: function() { return round(90 * this.percentageHeight) },
           x: function() { return this.context.nodes.preview.x() },
-          y: function() { return this.context.nodes.preview.bottom()
-            - this.height() },
+          y: function() {
+            return min(
+              this.context.nodes.preview.bottom() - this.height(),
+              Struct.get(this.context.nodes, "status-bar").y()
+            )
+          },
         },
         "brush-toolbar": {
           name: "visu-editor.brush-toolbar",
@@ -538,13 +582,13 @@ function VisuEditorController() constructor {
           height: function() { 
             return floor(clamp(this.percentageHeight * this.context.height(), this.minHeight, this.maxHeight))
           },
-          y: function() { return this.context.height() - this.height()
+          y: function() { return this.context.y() + this.context.height() - this.height()
             - Struct.get(this.context.nodes, "status-bar").height() },
         },
         "status-bar": {
           name: "visu-editor.status-bar",
           height: function() { return 28 },
-          y: function() { return this.context.height() - this.height() },
+          y: function() { return this.context.y() + this.context.height() - this.height() },
         },
       },
     })
@@ -568,6 +612,7 @@ function VisuEditorController() constructor {
       container.finishUpdateTimer()
     }
 
+    this.layout._y = Visu.settings.getValue("visu.debug", false) ? 20 : 0
     var lerpFactor = 0.2
     var renderBrush = this.store.getValue("render-brush")
     var brushNode = Struct.get(this.layout.nodes, "brush-toolbar")
@@ -578,6 +623,13 @@ function VisuEditorController() constructor {
     brushNode.maxWidth = floor(renderBrush
       ? lerp(brushNode.maxWidth, round(GuiWidth() * 0.37), lerpFactor)
       : lerp(brushNode.maxWidth, 0, lerpFactor))
+
+    if (brushNodePreviousMaxWidth != brushNode.maxWidth) {
+      this.updateTimerCooldowns.brush = this.updateTimerCooldowns.brush > 0
+        ? this.updateTimerCooldowns.brush 
+        : GAME_FPS / 10.0
+    }
+
     this.brushToolbar.containers.forEach(function(container, key, acc) {
       container.enable = acc.enable
       if (!acc.updateTimer) {
@@ -587,8 +639,7 @@ function VisuEditorController() constructor {
       container.finishUpdateTimer()
     }, {
       enable: brushNode.maxWidth > 24,
-      updateTimer: brushNodePreviousMaxWidth != brushNode.maxWidth
-          && choose(false, false, false, false, true),
+      updateTimer: this.updateTimerCooldowns.getBrush(),
     })
 
     var renderTimeline = this.store.getValue("render-timeline")
@@ -598,14 +649,21 @@ function VisuEditorController() constructor {
       ? lerp(timelineNode.minHeight, 96, lerpFactor)
       : lerp(timelineNode.minHeight, 0, lerpFactor))
     timelineNode.maxHeight = floor(renderTimeline
-      ? lerp(timelineNode.maxHeight, round(GuiHeight() * 0.58), lerpFactor)
+      ? lerp(timelineNode.maxHeight, round((GuiHeight() - this.layout._y) * 0.58), lerpFactor)
       : lerp(timelineNode.maxHeight, 0, lerpFactor))
+      
+    if (timelineNodePreviousMaxHeight != timelineNode.maxHeight
+        || brushNodePreviousMaxWidth != brushNode.maxWidth) {
+      this.updateTimerCooldowns.timeline = this.updateTimerCooldowns.timeline > 0
+        ? this.updateTimerCooldowns.timeline
+        : GAME_FPS / 10.0
+    }
+
     var timelineAcc = {
       enable: timelineNode.maxHeight > 24,
-      updateTimer: timelineNodePreviousMaxHeight != timelineNode.maxHeight
-          || brushNodePreviousMaxWidth != brushNode.maxWidth
-          && choose(false, false, false, false, true),
+      updateTimer: this.updateTimerCooldowns.getTimeline(),
     }
+  
     switch (this.timeline.channelsMode) {
       case "list":
         this.timeline.containers.forEach(function(container, key, acc) {
@@ -644,11 +702,17 @@ function VisuEditorController() constructor {
     accordionNode.maxWidth = floor(renderEvent
       ? lerp(accordionNode.maxWidth, round(GuiWidth() * 0.37), lerpFactor)
       : lerp(accordionNode.maxWidth, 0, lerpFactor))
+    
+    if (timelineNodePreviousMaxHeight != timelineNode.maxHeight
+        || accordionNodePreviousMaxWidth != accordionNode.maxWidth) {
+      this.updateTimerCooldowns.accordion = this.updateTimerCooldowns.accordion > 0 
+        ? this.updateTimerCooldowns.accordion
+        : GAME_FPS / 10.0
+    }
+
     var accordionAcc = {
       enable: accordionNode.maxWidth > 24,
-      updateTimer: timelineNodePreviousMaxHeight != timelineNode.maxHeight
-          || accordionNodePreviousMaxWidth != accordionNode.maxWidth
-          && choose(false, false, false, false, true),
+      updateTimer: this.updateTimerCooldowns.getAccordion(),
     }
 
     this.accordion.containers.forEach(updateAccordion, accordionAcc)
@@ -657,9 +721,13 @@ function VisuEditorController() constructor {
 
     var renderTrackControl = this.store.getValue("render-trackControl")
     var trackControlNode = Struct.get(this.layout.nodes, "track-control")
-    trackControlNode.percentageHeight = renderTrackControl
-      ? lerp(trackControlNode.percentageHeight, 1.0, lerpFactor * 2.0)
-      : lerp(trackControlNode.percentageHeight, 0.0, lerpFactor * 2.0)
+    trackControlNode.percentageHeight = clamp(renderTrackControl
+      ? lerp(trackControlNode.percentageHeight, 1.0, lerpFactor * 1.0)
+      : lerp(trackControlNode.percentageHeight, 0.0, lerpFactor * 1.0), 0, 1.0)
+    if (!renderTrackControl && trackControlNode.percentageHeight < 0.1) {
+      trackControlNode.percentageHeight = 0.0
+    }
+
     this.trackControl.containers.forEach(function(container, key, enable) {
       container.enable = enable
     }, trackControlNode.percentageHeight > 0)
@@ -771,11 +839,13 @@ function VisuEditorController() constructor {
 
   ///@return {VisuEditorController}
   update = function() {
+    this.updateDebugTimer.start()
     this.updateDispatcher()
     this.updateExecutor()
     this.updateUIService()
     this.services.forEach(this.updateService, this)
     this.updateLayout()
+    this.updateDebugTimer.finish()
     return this
   }
 

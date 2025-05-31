@@ -14,14 +14,29 @@ function UIItem(_name, config = {}) constructor {
   ///@type {any}
   type = Struct.get(config, "type")
 
+  var _hidden = Struct.get(config, "hidden")
+  ///@type {Struct}
+  hidden = {
+    value: Struct.getDefault(_hidden, "value", false),
+    key: Struct.getDefault(_hidden, "key", null),
+    keys: Struct.getDefault(_hidden, "keys", null),
+    negate: Struct.getDefault(_hidden, "negate", false),
+  }
+
+  var _enable = Struct.get(config, "enable")
+  ///@type {Struct}
+  enable  = {
+    value: Struct.getDefault(_enable, "value", true),
+    key: Struct.getDefault(_enable, "key", null),
+    keys: Struct.getDefault(_enable, "keys", null),
+    negate: Struct.getDefault(_enable, "negate", false),
+  }
+
   ///@type {Rectangle}
   area = new Rectangle(Struct.get(config, "area"))
 
   ///@type {Margin}
   margin = new Margin(Struct.get(config, "margin"))
-
-  ///@type {?Struct}
-  enable = Struct.getIfType(config, "enable", Struct)
 
   ///@type {Boolean}
   isHoverOver = false
@@ -35,16 +50,14 @@ function UIItem(_name, config = {}) constructor {
     : null
 
   ///@type {Boolean}
-  storeSubscribed = Core.isType(Struct.get(config, "storeSubscribed"), Boolean) 
-    ? config.storeSubscribed 
-    : false
+  storeSubscribed = Struct.getIfType(config, "storeSubscribed", Boolean, false) 
 
   ///@type {?Struct}
   component = Struct.getIfType(config, "component", Struct)
 
   ///@type {?GMColor}
   backgroundColor = Optional.is(Struct.getIfType(config, "backgroundColor", String))
-    ? Assert.isType(ColorUtil.parse(config.backgroundColor).toGMColor(), GMColor)
+    ? ColorUtil.parse(config.backgroundColor).toGMColor()
     : null
 
   ///@type {Number}
@@ -60,24 +73,24 @@ function UIItem(_name, config = {}) constructor {
 
   ///@param {Event} event
   ///@return {Boolean}
-  support = method(this, Assert.isType(Struct.getDefault(config, "support", function(event, key, name) {
-    return Core.isType(Struct.get(this, $"on{event.name}"), Callable)
-  }, this.name), Callable))
+  support = method(this, Struct.getIfType(config, "support", Callable, function(event, key, name) {
+    return !this.hidden.value && Core.isType(Struct.get(this, $"on{event.name}"), Callable)
+  }))
 
   ///@param {Event} event
   ///@return {?Callable}
-  fetchEventPump = method(this, Assert.isType(Struct.getDefault(config, "fetchEventPump", function(event) {
+  fetchEventPump = method(this, Struct.getIfType(config, "fetchEventPump", Callable, function(event) {
     return this.support(event) ? Struct.get(this, $"on{event.name}") : null
-  }), Callable))
+  }))
 
   ///@param {any} event
   ///@return {Boolean}
-  collide = method(this, Assert.isType(Struct.getDefault(config, "collide", function(event) {
-    return this.area.collide(
+  collide = method(this, Struct.getIfType(config, "collide", Callable, function(event) {
+    return !this.hidden.value && this.area.collide(
       Struct.get(event.data, "x") - this.context.area.getX() - this.context.offset.x, 
       Struct.get(event.data, "y") - this.context.area.getY() - this.context.offset.y
     )
-  }), Callable))
+  }))
 
   updateArea = Struct.contains(config, "updateArea")
     ? method(this, Assert.isType(Struct.get(config, "updateArea"), Callable))
@@ -102,26 +115,150 @@ function UIItem(_name, config = {}) constructor {
       }
     }
 
+  updateHidden = function() {
+    if (!Core.isType(Struct.get(this.context, "state"), Map)) {
+      return
+    }
+
+    var store = this.context.state.get("store")
+    if (!Optional.is(store)) {
+      return
+    }
+
+    if (Core.isType(this.hidden.keys, GMArray)) {
+      var isValid = true
+      var size = GMArray.size(this.hidden.keys)
+      for (var index = 0; index < size; index++) {
+        var entry = this.hidden.keys[index]
+        var item = store.get(entry.key)
+        if (!Optional.is(item)) {
+          continue
+        }
+
+        var value = Struct.getDefault(entry, "negate", false) ? !item.get() : item.get()
+        if (value) {
+          isValid = false
+          break
+        }
+      }
+
+      if (this.hidden.value == !isValid) {
+        return
+      }
+
+      this.hidden.value = !isValid
+      this.context.areaWatchdog.signal(2)
+      this.context.clampUpdateTimer(0.9000)
+    } else {
+      if (!Optional.is(this.hidden.key)) {
+        return
+      }
+
+      var item = store.get(this.hidden.key)
+      if (!Optional.is(item)) {
+        return
+      }
+
+      var value = this.hidden.negate ? !item.get() : item.get()
+      if (value == this.hidden.value) {
+        return
+      }
+  
+      this.hidden.value = value
+      this.context.areaWatchdog.signal(2)
+      this.context.clampUpdateTimer(0.9000)
+    }
+  }
+
+  updateStore = function() {
+    if (Optional.is(this.store)) {
+      this.store.subscribe()
+    }
+
+    if (!Core.isType(Struct.get(this.context, "state"), Map)) {
+      return
+    }
+
+    var store = this.context.state.get("store")
+    if (!Optional.is(store)) {
+      return
+    }
+
+    if (Core.isType(this.hidden.keys, GMArray)) {
+      for (var index = 0; index < GMArray.size(this.hidden.keys); index++) {
+        var entry = this.hidden.keys[index]
+        var item = store.get(entry.key)
+        if (Optional.is(item)) {
+          item.addSubscriber({
+            name: $"{this.name}",
+            overrideSubscriber: true,
+            callback: this.updateHidden,
+            data: this
+          })
+        }
+      }
+    } else if (Core.isType(this.hidden.key, String)) {
+      var item = store.get(this.hidden.key)
+      if (Optional.is(item)) {
+        item.addSubscriber({
+          name: $"{this.name}",
+          overrideSubscriber: true,
+          callback: this.updateHidden,
+          data: this,
+        })
+      }
+    }
+
+    if (this.updateEnable != null && Core.isType(this.enable.keys, GMArray)) {
+      for (var index = 0; index < GMArray.size(this.enable.keys); index++) {
+        var entry = this.enable.keys[index]
+        var item = store.get(entry.key)
+        if (Optional.is(item)) {
+          item.addSubscriber({
+            name: $"{this.name}",
+            overrideSubscriber: true,
+            callback: this.updateEnable,
+            data: this,
+          })
+        }
+      }
+    } else if (this.updateEnable != null && Core.isType(this.enable.key, String)) {
+      var item = store.get(this.enable.key)
+      if (Optional.is(item)) {
+        item.addSubscriber({
+          name: $"{this.name}",
+          overrideSubscriber: true,
+          callback: this.updateEnable,
+          data: this,
+        })
+      }
+    }
+  }
+
   ///@param {Boolean} [_updateArea]
   ///@return {UIItem}
   update = Struct.contains(config, "update")
     ? Assert.isType(method(this, config.update), Callable)
-    : function(_updateArea = true) {
-      if (_updateArea && Optional.is(this.updateArea)) {
-        this.updateArea()
-      }
+    : function(_updateArea = false) {
+      if (_updateArea) {
+        this.updateHidden()
 
-      if (Optional.is(this.updateEnable)) {
-        this.updateEnable()
+        if (Optional.is(this.updateArea)) {
+          this.updateArea()
+        }
+  
+        if (Optional.is(this.updateEnable)) {
+          this.updateEnable()
+        }
       }
 
       if (Optional.is(this.updateCustom)) {
         this.updateCustom()
       }
 
-      if (!storeSubscribed && Optional.is(this.store)) {
-        this.store.subscribe()
+      if (!storeSubscribed) {
         this.storeSubscribed = true
+        this.updateStore()
       }
 
       if (this.isHoverOver) {
@@ -131,12 +268,12 @@ function UIItem(_name, config = {}) constructor {
       return this
     }
 
-  free = method(this, Assert.isType(Struct.getDefault(config, "free", function() {
+  free = method(this, Struct.getIfType(config, "free", Callable, function() {
     if (Optional.is(this.store)) {
       this.store.unsubscribe()
       this.storeSubscribed = false
     }
-  }), Callable))
+  }))
 
   ///@type {?Callable}
   preRender = Struct.contains(config, "preRender")
@@ -149,7 +286,7 @@ function UIItem(_name, config = {}) constructor {
     : null
   
   ///@return {UIItem}
-  render = method(this, Assert.isType(Struct.getDefault(config, "render", function() {
+  render = method(this, Struct.getIfType(config, "render", Callable, function() {
     if (Optional.is(this.preRender)) {
       this.preRender()
     }
@@ -158,7 +295,7 @@ function UIItem(_name, config = {}) constructor {
       this.postRender()
     }
     return this
-  }), Callable))
+  }))
 
   ///@description append mouse events
   Struct.forEach(config, function(value, key, button) {
@@ -237,8 +374,12 @@ function _UIItemUtils() constructor {
           return
         }
 
-        Struct.set(this.enable, "value", Struct.get(this.enable, "negate") 
-          ? !item.get() : item.get())
+        var value = Struct.getDefault(this.enable, "negate", false) ? !item.get() : item.get()
+        if (Struct.get(this.enable, "value") != value) {
+          Struct.set(this.enable, "value", value)
+          this.context.areaWatchdog.signal(2)
+          this.context.clampUpdateTimer(0.9000)
+        }
       }
     },
     "updateEnableKeys": function() {
@@ -258,22 +399,27 @@ function _UIItemUtils() constructor {
           return
         }
 
-        Struct.set(this.enable, "value", false)
-        for (var index = 0; index < GMArray.size(keys); index++) {
+        var isValid = true
+        var size = GMArray.size(keys)
+        for (var index = 0; index < size; index++) {
           var entry = keys[index]
           var item = store.get(entry.key)
-          if (!Core.isType(item, StoreItem)) {
-            return
+          if (!Optional.is(item)) {
+            continue
           }
 
-          var result = Struct.get(this.enable, "negate") 
-            ? item.get() : !item.get()
-          if (result) {
-            return
+          var value = Struct.getDefault(entry, "negate", false) ? !item.get() : item.get()
+          if (!value) {
+            isValid = false
+            break
           }
         }
 
-        Struct.set(this.enable, "value", true)
+        if (Struct.get(this.enable, "value") != isValid) {
+          Struct.set(this.enable, "value", isValid)
+          this.context.areaWatchdog.signal(2)
+          this.context.clampUpdateTimer(0.9000)
+        }
       }
     },
   })

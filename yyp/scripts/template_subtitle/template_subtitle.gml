@@ -39,6 +39,22 @@ function template_subtitle(json = null) {
           },
         },
       },
+      {
+        name: "subtitle_lines_text-area-line-h",
+        template: VEComponents.get("line-h"),
+        layout: VELayouts.get("line-h"),
+        config: {
+          layout: {
+            type: UILayoutType.VERTICAL,
+            margin: { top: 0, bottom: 0 },
+            height: function() { return 0 },
+          },
+          image: { 
+            //hidden: { key: "en-shr_hide-inherit" },
+            backgroundAlpha: 0.0,
+          },
+        },
+      },
     ]),
   }
 

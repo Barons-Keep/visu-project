@@ -37,6 +37,9 @@ function VisuEditorIO() constructor {
     controlTrack: KeyboardKeyType.SPACE,
     controlTrackBackward: 188, // + ctrl
     controlTrackForward: 190, // + ctrl
+
+    removeTimelineSelectedEvents: KeyboardKeyType.BACKSPACE,
+    removeTimelineSelectedEvents2: KeyboardKeyType.DELETE,
     
     renderLeftPane: KeyboardKeyType.F2,
     renderBottomPane: KeyboardKeyType.F3,
@@ -463,7 +466,7 @@ function VisuEditorIO() constructor {
                   transformer: new ColorTransformer({
                     value: VETheme.color.accentLight,
                     target: item.isHoverOver ? item.colorHoverOver : item.colorHoverOut,
-                    factor: 0.016,
+                    duration: 1.0,
                   })
                 })
                 .whenUpdate(function(executor) {
@@ -527,7 +530,7 @@ function VisuEditorIO() constructor {
                   transformer: new ColorTransformer({
                     value: VETheme.color.accentLight,
                     target: item.isHoverOver ? item.colorHoverOver : item.colorHoverOut,
-                    factor: 0.016,
+                    duration: 1.0,
                   })
                 })
                 .whenUpdate(function(executor) {
@@ -571,6 +574,21 @@ function VisuEditorIO() constructor {
         transactionService.redo()
       } else {
         transactionService.undo()
+      }
+    }
+
+    if (this.keyboard.keys.removeTimelineSelectedEvents.released
+        || this.keyboard.keys.removeTimelineSelectedEvents2.released) {
+
+      var selectedEvents = editor.store.getValue("selected-events")
+        .map(function(selectedEvent, key) { return selectedEvent })
+      var events = editor.timeline.containers.get("ve-timeline-events")
+      if (Optional.is(events)) {
+        selectedEvents.forEach(function(event, iterator, events) {
+          events.removeEvent(event.channel, event.name)
+        }, events)
+        events.finishUpdateTimer()
+        events.deselect()
       }
     }
 

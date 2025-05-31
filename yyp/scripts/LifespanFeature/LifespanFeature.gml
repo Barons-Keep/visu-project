@@ -1,8 +1,24 @@
 ///@package io.alkapivo.visu.service.grid.feature
 
+///@param {Struct} json 
+function LifespanFeature(json): GridItemFeature(json) constructor {
+
+  ///@override
+  ///@type {String}
+  type = "LifespanFeature"
+
+  ///@override
+  ///@param {GridItem} item
+  ///@param {VisuController} controller
+  static update = function(item, controller) {
+    //Core.print("@deprecated: LifespanFeature")
+  }
+}
+
+
 ///@param {Struct} json
 ///@return {GridItemFeature}
-function LifespanFeature(json) {
+function _LifespanFeature(json) {
   var data = Struct.map(Assert.isType(Struct
     .getDefault(json, "data", {}), Struct), GMArray
     .resolveRandom)

@@ -2,6 +2,227 @@
 
 ///@param {Struct} json
 ///@return {GridItemGameMode}
+function PlayerBulletHellGameMode(json) {
+  return new GridItemGameMode(Struct.append(json, {
+
+    ///@type {Callable}
+    type: PlayerBulletHellGameMode,
+
+    ///@type {GridItemMovement}
+    x: new GridItemMovement(Struct.getIfType(json, "x", Struct, {}), true),
+    
+    ///@type {GridItemMovement}
+    y: new GridItemMovement(Struct.getIfType(json, "y", Struct, {}), true),
+
+    ///@type {Boolean}
+    focus: Struct.getIfType(json, "focus", Boolean, false),
+
+    ///@type {Struct}
+    focusCooldown: {
+      time: 0.0,
+      duration: Struct.getIfType(json, "focusCooldown", Number, FRAME_MS * 10),
+      finished: false,
+      increment: function() {
+        this.finished = false
+        this.time += DeltaTime.apply()
+        if (this.time >= this.duration) {
+          this.finished = true
+          this.time = this.duration
+        }
+
+        return this
+      },
+      decrement: function() {
+        this.finished = false
+        this.time -= DeltaTime.apply()
+        if (this.time <= 0.0) {
+          this.time = 0.0
+        }
+
+        return this
+      },
+    },
+    
+
+    ///@type {Array<Struct>}
+    guns: new Array(Struct, Core.isType(Struct.get(json, "guns"), GMArray)
+      ? GMArray.map(json.guns, function(gun) {
+        return {
+          cooldown: new Timer(FRAME_MS * Struct.getIfType(gun, "cooldown", Number, 8.0), { 
+            loop: Infinity,
+            time: Struct.getIfType(gun, "time", Number, 0.0),
+          }),
+          bullet: Struct.getIfType(gun, "bullet", String, "bullet-default"),
+          angle: Struct.getIfType(gun, "angle", Number, 90.0),
+          speed: Struct.getIfType(gun, "speed", Number, 10.0),
+          offsetX: Struct.getIfType(gun, "offsetX", Number, 0.0),
+          offsetY: Struct.getIfType(gun, "offsetY", Number, 0.0),
+          minForce: Struct.getIfType(gun, "minForce", Number, 0.0),
+          maxForce: Struct.getIfType(gun, "maxForce", Number, null),
+          focus: Struct.getIfType(gun, "focus", Boolean, null),
+        }
+      })
+      : []
+    ),
+
+    ///@override
+    ///@param {GridItem} player
+    ///@param {VisuController} controller
+    ///@return {GridItemGameMode}
+    onStart: function(player, controller) {
+      this.x.speed = 0
+      this.y.speed = 0
+      this.guns.forEach(function(gun) {
+        gun.cooldown.reset()
+      })
+      player.speed = 0
+      player.angle = 90
+      player.sprite.setAngle(player.angle)
+
+      return this
+    },
+
+    ///@override
+    ///@param {GridItem} player
+    ///@param {VisuController} controller
+    ///@return {GridItemGameMode}
+    update: function(player, controller) {
+      static calcSpeed = function(config, player, keyA, keyB, keyFocus) {
+        var spdMax = config.speedMax
+        if (keyFocus) {
+          var factor = DeltaTime.apply(abs(config.speedMax - config.speedMaxFocus) / 15.0)
+          spdMax = clamp(abs(config.speed) - factor, config.speedMaxFocus, config.speedMax)
+        }
+
+        var spd = 0.0
+        if (keyA || keyB) {
+          var dir = keyA ? -1.0 : 1.0
+          config.speed += dir * DeltaTime.apply(config.acceleration) * 0.5
+          spd = DeltaTime.apply(config.speed)
+          config.speed += dir * DeltaTime.apply(config.acceleration) * 0.5
+        } else if (abs(config.speed) - (DeltaTime.apply(config.friction) * 0.5) >= 0) {
+          var dir = sign(config.speed)
+          config.speed -= dir * DeltaTime.apply(config.friction) * 0.5
+          spd = DeltaTime.apply(config.speed)
+          config.speed -= dir * DeltaTime.apply(config.friction) * 0.5
+          if (sign(config.speed) != dir) {
+            config.speed = 0.0
+          }
+        } else {
+          config.speed = 0.0
+        }
+        config.speed = sign(config.speed) * clamp(abs(config.speed), 0.0, spdMax)
+        return spd
+
+        //var speedMax = config.speedMax
+        //if (keyFocus) {
+        //  var factor = abs(config.speedMax - config.speedMaxFocus) / 15.0
+        //  speedMax = clamp(abs(config.speed) - DeltaTime.apply(factor), 
+        //    config.speedMaxFocus, config.speedMax)
+        //}
+        //speedMax = DeltaTime.apply(speedMax)
+        //config.speed = keyA || keyB
+        //  ? (config.speed + (keyA ? -1 : 1) 
+        //    * DeltaTime.apply(config.acceleration))
+        //  : (abs(config.speed) - DeltaTime.apply(config.friction) >= 0
+        //    ? config.speed - sign(config.speed) 
+        //      * DeltaTime.apply(config.friction) : 0)
+        //config.speed = sign(config.speed) * clamp(abs(config.speed), 0, speedMax)
+        //return config.speed
+      }
+
+      static updateKeyActionOnEnabled = function(gun, index, acc) {
+        var forceLevel = acc.player.stats.forceLevel.get()
+        if (!gun.cooldown.update().finished
+          || (forceLevel < gun.minForce)
+          || (gun.maxForce != null && forceLevel > gun.maxForce)
+          || (gun.focus != null && gun.focus != acc.focus)) {
+          return
+        }
+
+        acc.controller.bulletService.spawnBullet(
+          gun.bullet, 
+          acc.player.x + (gun.offsetX / GRID_SERVICE_PIXEL_WIDTH), 
+          acc.player.y + (gun.offsetY / GRID_SERVICE_PIXEL_HEIGHT),
+          gun.angle,
+          gun.speed,
+          Player
+        )
+
+        //acc.controller.bulletService.send(new Event("spawn-bullet", {
+        //  x: acc.player.x + (gun.offsetX / GRID_SERVICE_PIXEL_WIDTH),
+        //  y: acc.player.y + (gun.offsetY / GRID_SERVICE_PIXEL_HEIGHT),
+        //  producer: Player,
+        //  angle: gun.angle,
+        //  speed: gun.speed,
+        //  template: gun.bullet,
+        //}))
+
+        acc.controller.sfxService.play("player-shoot")
+      }
+
+      static updateKeyActionOnDisabled = function(gun) {
+        if (!gun.cooldown.finished && gun.cooldown.update().finished) {
+          gun.cooldown.reset()
+        }
+      }
+
+      static updateGMTFContextFocused = function(key) {
+        key.on = false
+        key.pressed = false
+        key.released = false
+      }
+      
+      var keys = player.keyboard.keys
+      this.focus = keys.focus.on
+        ? this.focusCooldown.increment().finished
+        : this.focusCooldown.decrement().finished
+
+      if (GMTFContext.isFocused()) {
+        Struct.forEach(keys, updateGMTFContextFocused)
+      }
+
+      if (keys.action.on) {
+        this.guns.forEach(updateKeyActionOnEnabled, {
+          controller: controller,
+          player: player,
+          focus: this.focus,
+        })
+      } else {
+        this.guns.forEach(updateKeyActionOnDisabled)
+      }
+
+      if (keys.bomb.pressed) {
+        player.stats.dispatchBomb()
+      }
+
+      if (Optional.is(player.signals.shroomCollision) 
+        || Optional.is(player.signals.bulletCollision)) {
+        this.x.speed = 0.0
+        this.y.speed = 0.0
+        player.stats.dispatchDeath()
+      }
+
+      player.x = clamp(
+        player.x + calcSpeed(this.x, player, keys.left.on, keys.right.on, keys.focus.on),
+        0.0,
+        controller.gridService.width
+      )
+
+      player.y = clamp(
+        player.y + calcSpeed(this.y, player, keys.up.on, keys.down.on, keys.focus.on), 
+        0.0, 
+        controller.gridService.height
+      )
+
+      return this
+    },
+  }))
+}
+
+
+///@param {Struct} json
+///@return {GridItemGameMode}
 function PlayerRacingGameMode(json) {
   return new GridItemGameMode(Struct.append(json, {
 
@@ -110,195 +331,6 @@ function PlayerRacingGameMode(json) {
         gridService.view.y + gridService.view.height + gridService.targetLocked.margin.bottom
       )
       */
-
-      return this
-    },
-  }))
-}
-
-
-///@param {Struct} json
-///@return {GridItemGameMode}
-function PlayerBulletHellGameMode(json) {
-  return new GridItemGameMode(Struct.append(json, {
-
-    ///@type {Callable}
-    type: PlayerBulletHellGameMode,
-
-    ///@type {GridItemMovement}
-    x: new GridItemMovement(Struct.getDefault(json, "x", { }), true),
-    
-    ///@type {GridItemMovement}
-    y: new GridItemMovement(Struct.getDefault(json, "y", { }), true),
-
-    ///@type {Array<Struct>}
-    guns: new Array(Struct, Core.isType(Struct.get(json, "guns"), GMArray)
-      ? GMArray.map(json.guns, function(gun) {
-        return {
-          cooldown: new Timer(FRAME_MS * Struct
-            .getDefault(gun, "cooldown",  8), { loop: Infinity }),
-          bullet: Assert.isType(Struct
-            .getDefault(gun, "bullet", "bullet-default"), String),
-          angle: Assert.isType(Struct
-            .getDefault(gun, "angle", 90.0), Number),
-          speed: Assert.isType(Struct
-            .getDefault(gun, "speed", 10.0), Number),
-          offsetX: Assert.isType(Struct
-            .getDefault(gun, "offsetX", 0.0), Number),
-          offsetY: Assert.isType(Struct
-            .getDefault(gun, "offsetY", 0.0), Number),
-          minForce: Assert.isType(Struct
-            .getDefault(gun, "minForce", 0.0), Number),
-          maxForce: Core.isType(Struct.get(gun, "maxForce"), Number) 
-            ? gun.maxForce : null,
-        }
-      })
-      : []
-    ),
-
-    ///@override
-    ///@param {GridItem} player
-    ///@param {VisuController} controller
-    ///@return {GridItemGameMode}
-    onStart: function(player, controller) {
-      this.x.speed = 0
-      this.y.speed = 0
-      this.guns.forEach(function(gun) {
-        gun.cooldown.reset()
-      })
-      player.speed = 0
-      player.angle = 90
-      player.sprite.setAngle(player.angle)
-
-      return this
-    },
-
-    ///@override
-    ///@param {GridItem} player
-    ///@param {VisuController} controller
-    ///@return {GridItemGameMode}
-    update: function(player, controller) {
-      static calcSpeed = function(config, player, keyA, keyB, keyFocus) {
-        var spdMax = config.speedMax
-        if (keyFocus) {
-          var factor = DeltaTime.apply(abs(config.speedMax - config.speedMaxFocus) / 15.0)
-          spdMax = clamp(abs(config.speed) - factor, config.speedMaxFocus, config.speedMax)
-        }
-
-        var spd = 0.0
-        if (keyA || keyB) {
-          var dir = keyA ? -1.0 : 1.0
-          config.speed += dir * DeltaTime.apply(config.acceleration) * 0.5
-          spd = DeltaTime.apply(config.speed)
-          config.speed += dir * DeltaTime.apply(config.acceleration) * 0.5
-        } else if (abs(config.speed) - (DeltaTime.apply(config.friction) * 0.5) >= 0) {
-          var dir = sign(config.speed)
-          config.speed -= dir * DeltaTime.apply(config.friction) * 0.5
-          spd = DeltaTime.apply(config.speed)
-          config.speed -= dir * DeltaTime.apply(config.friction) * 0.5
-          if (sign(config.speed) != dir) {
-            config.speed = 0.0
-          }
-        } else {
-          config.speed = 0.0
-        }
-        config.speed = sign(config.speed) * clamp(abs(config.speed), 0.0, spdMax)
-        return spd
-
-        //var speedMax = config.speedMax
-        //if (keyFocus) {
-        //  var factor = abs(config.speedMax - config.speedMaxFocus) / 15.0
-        //  speedMax = clamp(abs(config.speed) - DeltaTime.apply(factor), 
-        //    config.speedMaxFocus, config.speedMax)
-        //}
-        //speedMax = DeltaTime.apply(speedMax)
-        //config.speed = keyA || keyB
-        //  ? (config.speed + (keyA ? -1 : 1) 
-        //    * DeltaTime.apply(config.acceleration))
-        //  : (abs(config.speed) - DeltaTime.apply(config.friction) >= 0
-        //    ? config.speed - sign(config.speed) 
-        //      * DeltaTime.apply(config.friction) : 0)
-        //config.speed = sign(config.speed) * clamp(abs(config.speed), 0, speedMax)
-        //return config.speed
-      }
-      
-      var keys = player.keyboard.keys
-      if (GMTFContext.isFocused()) {
-        Struct.forEach(keys, function(key) {
-          key.on = false
-          key.pressed = false
-          key.released = false
-        })
-      }
-
-      if (keys.action.on) {
-        this.guns.forEach(function(gun, index, acc) {
-          if (!gun.cooldown.finished) {
-            gun.cooldown.update()
-            return
-          }
-
-          var forceLevel = acc.player.stats.forceLevel.get()
-          if (forceLevel < gun.minForce 
-            || (gun.maxForce != null && forceLevel > gun.maxForce)) {
-            return
-          }
-
-          gun.cooldown.update()
-
-          acc.controller.bulletService.spawnBullet(
-            gun.bullet, 
-            acc.player.x + (gun.offsetX / GRID_SERVICE_PIXEL_WIDTH), 
-            acc.player.y + (gun.offsetY / GRID_SERVICE_PIXEL_HEIGHT),
-            gun.angle,
-            gun.speed,
-            Player
-          )
-
-          //acc.controller.bulletService.send(new Event("spawn-bullet", {
-          //  x: acc.player.x + (gun.offsetX / GRID_SERVICE_PIXEL_WIDTH),
-          //  y: acc.player.y + (gun.offsetY / GRID_SERVICE_PIXEL_HEIGHT),
-          //  producer: Player,
-          //  angle: gun.angle,
-          //  speed: gun.speed,
-          //  template: gun.bullet,
-          //}))
-
-          acc.controller.sfxService.play("player-shoot")
-        }, {
-          controller: controller,
-          player: player,
-        })
-      } else {
-        this.guns.forEach(function(gun) {
-          if (!gun.cooldown.finished) {
-            gun.cooldown.update()
-          }
-        })
-      }
-
-      if (keys.bomb.pressed) {
-        player.stats.dispatchBomb()
-      }
-
-      if (Optional.is(player.signals.shroomCollision) 
-        || Optional.is(player.signals.bulletCollision)) {
-        this.x.speed = 0.0
-        this.y.speed = 0.0
-        player.stats.dispatchDeath()
-      }
-
-      player.x = clamp(
-        player.x + calcSpeed(this.x, player, keys.left.on, keys.right.on, keys.focus.on),
-        0.0,
-        controller.gridService.width
-      )
-
-      player.y = clamp(
-        player.y + calcSpeed(this.y, player, keys.up.on, keys.down.on, keys.focus.on), 
-        0.0, 
-        controller.gridService.height
-      )
 
       return this
     },

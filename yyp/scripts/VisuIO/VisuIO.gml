@@ -48,6 +48,7 @@ function VisuIO() constructor {
       var fullscreen = controller.displayService.getFullscreen()
       Logger.debug("VisuIO", String.join("Set fullscreen to", fullscreen ? "'false'" : "'true'", "."))
       controller.displayService.setFullscreen(!fullscreen)
+      Visu.settings.setValue("visu.fullscreen", !fullscreen).save()
     }
 
     return this
@@ -64,7 +65,11 @@ function VisuIO() constructor {
       switch (state) {
         case "idle":
           if (menu.containers.size() > 0) {
-            menu.send(new Event("back"))
+            if (controller.visuRenderer.blur.target != 0.0) {
+              menu.send(new Event("back"))
+            } else {
+              menu.send(menu.factoryOpenMainMenuEvent())
+            }
           } else {
             menu.send(menu.factoryOpenMainMenuEvent())
           }

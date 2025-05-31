@@ -2,15 +2,14 @@
 
 ///@param {Type} [_type]
 ///@param {?GMArray} [items]
-///@param {?Struct} [config]
-function Stack(_type = any, items = null, config = { validate: false }) constructor {
+function Stack(_type = any, items = null) constructor {
 
   ///@type {Type}
   type = _type
 
   ///@private
   ///@type {Array}
-  container = items != null ? new Array(this.type, items, config) : new Array(this.type)
+  container = items != null ? new Array(this.type, items) : new Array(this.type)
 
   ///@param {any} item
   ///@throws {InvalidClassException}

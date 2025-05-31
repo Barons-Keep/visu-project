@@ -1,73 +1,5 @@
 ///@package io.alkapivo.visu
 
-///@param {Struct} [config]
-function TestKeypress(config = {}) constructor {
-
-  ///@type {String}
-  key = Assert.isType(Struct.get(config, "key"), String)
-
-  ///@type {Boolean}
-  enable = false
-
-  ///@type {Array<Number>}
-  durations = new Array(Number, Struct.get(config, "durations"))
-
-  ///@type {Number}
-  luck = clamp(Assert.isType(Struct.get(config, "luck"), Number), 0.0, 1.0)
-
-  ///@type {Timer}
-  timer = new Timer(this.durations.getRandom())
-
-  ///@return {TestKeypress}
-  update = function() {
-    if (!this.timer.finished && this.timer.update().finished) {
-      this.enable = this.luck >= random(1.0)
-      this.timer.reset().setDuration(this.durations.getRandom())
-    }
-
-    return this
-  }
-
-  ///@param {Keyboard}
-  ///@return {TestKeypress}
-  updateKeyboard = function(keyboard) {
-    var key = keyboard.getKey(this.key)
-    if (!Optional.is(key)) {
-      return this
-    }
-
-    if (this.enable) {
-      if (key.pressed && key.on) {
-        key.pressed = false
-      }
-
-      if (key.released) {
-        key.released = false
-      }
-
-      if (!key.on) {
-        key.on = true
-        key.pressed = true
-      }
-    } else {
-      if (key.pressed) {
-        key.pressed = false
-      } 
-
-      if (key.released) {
-        key.released = false
-      }
-
-      if (key.on) {
-        key.on = false
-        key.released = true
-      }
-    }
-
-    return this
-  }
-}
-
 
 ///@param {Struct} [json]
 ///@return {Task}
@@ -76,9 +8,9 @@ function TestEvent_VisuController_load(json = {}) {
     .setTimeout(Struct.getDefault(json, "timeout", 10.0))
     .setPromise(new Promise())
     .setState({
-      path: Struct.getDefault(json, "path", "C:/Users/Alkapivo/projects/io.alkapivo/gm_modules/visu-track/resource/datafiles/track/Perturbator/Sentient/manifest.visu"),
-      trackName: Struct.getDefault(json, "trackName", "Perturbator - Sentient"),
-      cooldown: new Timer(Struct.getDefault(json, "cooldown", 2.0)),
+      path: Assert.isType(Struct.get(json, "path"), String, "path must be type of String"),
+      trackName: Assert.isType(Struct.get(json, "trackName"), String, "trackName must be type of String"),
+      cooldown: new Timer(Struct.getIfType(json, "cooldown", Number, 2.0)),
       stage: "cooldownBefore",
       stages: {
         cooldownBefore: function(task) {
@@ -226,6 +158,7 @@ function TestEvent_VisuController_playback(json = {}) {
                 }),
               })
               Struct.set(player.keyboard, "keypressMap", keypressMap)
+              Struct.set(player.keyboard, "_update", player.keyboard.update)
               player.keyboard.update = method(player.keyboard, function() {
                 this.keypressMap.forEach(function(keypress, name, keyboard) {
                   keypress.update().updateKeyboard(keyboard)

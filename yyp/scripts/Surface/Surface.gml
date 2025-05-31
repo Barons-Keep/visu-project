@@ -60,11 +60,13 @@ function Surface(config = null) constructor {
     }
 
     if (!Core.isType(this.asset, GMSurface)) {
+      surface_depth_disable(true)
       this.asset = surface_create(this.width, this.height, this.format)
       this.updated = true
     }
 
     if (surface_get_format(this.asset) != this.format) {
+      surface_depth_disable(true)
       this.asset = surface_create(this.width, this.height, this.format)
       this.updated = true
     }
@@ -78,16 +80,24 @@ function Surface(config = null) constructor {
     return this
   }
 
+  ///@param {Callable} callback
+  ///@param {any} [data]
+  ///@param {Boolean} [gpuSetSurface]
   ///@return {Surface}
-  static renderOn = function(callback, data) {
+  static renderOn = function(callback, data = null, gpuSetSurface = true) {
     if (!Core.isType(this.asset, GMSurface)) {
       Logger.error("Surface", "renderOn fatal error")
-      return
+      return this
     }
 
-    GPU.set.surface(this)
-    callback(data)
-    GPU.reset.surface()
+    if (gpuSetSurface) {
+      GPU.set.surface(this)
+      callback(data)
+      GPU.reset.surface()
+    } else {
+      callback(data)
+    }
+
     return this
   }
 

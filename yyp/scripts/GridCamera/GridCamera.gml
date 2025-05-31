@@ -1,10 +1,10 @@
 ///@package io.alkapivo.visu.renderer
 
 ///@type {Number}
-#macro BREATH_TIMER_FACTOR_1 10.0
+#macro BREATH_TIMER_FACTOR_1 6.88
 
 ///@type {Number}
-#macro BREATH_TIMER_FACTOR_2 -7.5
+#macro BREATH_TIMER_FACTOR_2 -2.33
 
 
 ///@param {?Struct} [config]
@@ -26,10 +26,10 @@ function GridCamera(config = null) constructor {
 	pitch = Struct.getIfType(config, "pitch", Number, -32.5)
 
   ///@type {Timer}
-  breathTimer1 = new Timer(TAU, { amount: 0.0064, loop: Infinity })
+  breathTimer1 = new Timer(TAU, { amount: 0.006, loop: Infinity })
 
   ///@type {Timer}
-  breathTimer2 = new Timer(TAU, { amount: 0.0016, loop: Infinity })
+  breathTimer2 = new Timer(TAU, { amount: 0.004, loop: Infinity })
 
   ///@type {?GMMatrix}
   viewMatrix = null

@@ -1,0 +1,149 @@
+{
+  "version": "1",
+  "model": "io.alkapivo.visu.TestSuite",
+  "data":{
+    "name": "Test PlayerService",
+    "stopAfterFailure": false,
+    "tests": [
+      {
+        "handler": "TestEvent_PlayerService_player_shoot",
+        "description": "Test player shooting functionality",
+        "data": {
+          "timeout": 10.0,
+          "unfocusTimer": 2.0,
+          "unfocusBulletCount": 4,
+          "focusTimer": 2.0,
+          "focusBulletCount": 5,
+          "player": {
+            "icon":{
+              "name":"texture_ve_icon_effect_shader",
+              "blend":"#3564C5"
+            },
+            "en-pl_use-mask":true,
+            "en-pl_use-stats":true,
+            "en-pl_texture":{
+              "angle":0.0,
+              "frame":0.046923670000000001,
+              "alpha":1.0,
+              "animate":1.0,
+              "blend":"#FFFFFF",
+              "scaleX":2.0,
+              "scaleY":2.0,
+              "speed":7.0,
+              "name":"texture_baron",
+              "randomFrame":false
+            },
+            "en-pl_mask":{
+              "x":56.0,
+              "y":56.0,
+              "width":60.0,
+              "height":60.0
+            },
+            "en-pl_reset-pos":true,
+            "en-pl_stats":{
+              "force":{
+                "value":0.0
+              },
+              "bomb":{
+                "value":5.0
+              },
+              "life":{
+                "value":4.0
+              },
+              "point":{
+                "value":0.0
+              }
+            },
+            "en-pl_use-bullethell":true,
+            "en-pl_bullethell":{
+              "x":{
+                "acceleration":2.0,
+                "friction":20.0,
+                "speedMax":1.6
+              },
+              "y":{
+                "acceleration":2.0,
+                "friction":20.0,
+                "speedMax":1.6
+              },
+              "guns":[
+                {
+                  "cooldown":60.0,
+                  "angle":90.0,
+                  "bullet":"bullet-default",
+                  "speed":24.0,
+                  "offsetX":-112.0,
+                  "offsetY":-96.0,
+                  "focus": null,
+                },
+                {
+                  "cooldown":60.0,
+                  "angle":90.0,
+                  "bullet":"bullet-default",
+                  "speed":24.0,
+                  "offsetX":112.0,
+                  "offsetY":-96.0,
+                  "focus": false,
+                },
+                {
+                  "cooldown":60.0,
+                  "angle":96.0,
+                  "bullet":"bullet-default",
+                  "minForce":1.0,
+                  "speed":24.0,
+                  "offsetX":-112.0,
+                  "offsetY":96.0,
+                  "focus": true,
+                },
+                {
+                  "cooldown":60.0,
+                  "angle":84.0,
+                  "bullet":"bullet-default",
+                  "minForce":1.0,
+                  "speed":24.0,
+                  "offsetX":112.0,
+                  "offsetY":96.0,
+                  "focus": true,
+                }
+              ]
+            },
+            "en-pl_use-platformer":true,
+            "en-pl_platformer":{
+              "x":{
+                "acceleration":1.9199999999999999,
+                "friction":9.3000000000000007,
+                "speedMax":2.5
+              },
+              "jump":{
+                "size":4.0
+              },
+              "y":{
+                "acceleration":1.9199999999999999,
+                "friction":0.0,
+                "speedMax":25.0
+              }
+            },
+            "en-pl_use-racing":true,
+            "en-pl_racing":{
+              "nitro":{
+                "acceleration":0.5,
+                "friction":1.0,
+                "speedMax":1.0
+              },
+              "throttle":{
+                "acceleration":0.20000000000000001,
+                "friction":0.5,
+                "speedMax":1.5
+              },
+              "wheel":{
+                "acceleration":0.29999999999999999,
+                "friction":0.059999999999999998,
+                "speedMax":3.0
+              }
+            }
+          }
+        }
+      }
+    ]
+  }
+}

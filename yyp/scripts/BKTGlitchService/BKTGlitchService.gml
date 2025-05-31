@@ -124,7 +124,7 @@ function BKTGlitchService() constructor {
 
   ///@type {EventPump}
   dispatcher = new EventPump(this, new Map(String, Callable, {
-    "spawn": function(event) {
+    "spawn-glitch": function(event) {
       this.factor = Struct.getIfType(event.data, "factor", Number, this.factor)
       this.rng = Struct.getIfType(event.data, "rng", Boolean, this.rng)
     },
@@ -138,6 +138,9 @@ function BKTGlitchService() constructor {
         __bktgtlich_setup_property(item.field, property.defValue, name, item.setter, property.minValue, property.maxValue)
       }
     },
+    "clear-glitch": function(event) {
+      bktglitch_config_zero()
+    }
   }))
 
   ///@param {Event} event
@@ -157,7 +160,7 @@ function BKTGlitchService() constructor {
     this.rng = false
 
     //if (keyboard_check_pressed(vk_enter)) {
-    //  this.send(new Event("spawn").setData({ factor: 0.001 }))
+    //  this.send(new Event("spawn-glitch").setData({ factor: 0.001 }))
     //}
     return this
   }

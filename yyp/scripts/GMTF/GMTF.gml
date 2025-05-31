@@ -87,8 +87,10 @@ function _GMTFContext(config = {}) constructor {
 						}
 		
 						// vertical offset
-						var itemY = uiTextField.area.getY()
-						var itemHeight = uiTextField.area.getHeight()
+						var itemY = uiTextField.area.getY() + this.current.cursor1.cy
+						var itemHeight = mouse_check_button(mb_any)
+              ? uiTextField.area.getHeight() - this.current.cursor1.cy 
+              : this.current.style.lh
 						var offsetY = abs(uiTextField.context.offset.y)
 						var areaHeight = uiTextField.context.area.getHeight()
 						var itemBottom = itemY + itemHeight
@@ -190,10 +192,10 @@ function GMTF(style_struct = null) constructor {
 
   GMTF_DECIMAL = Struct.getIfType(style_struct, "GMTF_DECIMAL", Number, 8)
 
-	lines = ds_list_create() ///@todo memory leak?
-	chars = ds_list_create() ///@todo memory leak?
-	lines[| 0] = [ 0, 0, 0, "" ] ///@todo class & factory
-	chars[| 0] = [ this.symbolEnd, 0 ] ///@todo class & factory
+	lines = new Array()
+	chars = new Array()
+	lines.add([ 0, 0, 0, "" ])
+	chars.add([ this.symbolEnd, 0 ])
 	
 	///@todo all of these should be put in map or struct?
 	mx = 0
@@ -206,8 +208,8 @@ function GMTF(style_struct = null) constructor {
 	pad_w = 0
 	pad_h = 0
 	
-	cursor1 = { pos: 0, rel_pos: 0, line: lines[| 0], cx: 0, cy: 0, cxs: 0 } ///@todo rename, class & factory
-	cursor2 = { pos: 0, rel_pos: 0, line: lines[| 0], cx: 0, cy: 0, cxs: 0 } ///@todo rename, class & factory
+	cursor1 = { pos: 0, rel_pos: 0, line: lines.get(0), cx: 0, cy: 0, cxs: 0 } ///@todo rename, class & factory
+	cursor2 = { pos: 0, rel_pos: 0, line: lines.get(0), cx: 0, cy: 0, cxs: 0 } ///@todo rename, class & factory
 	
 	has_focus = false
 	gamespd = 60
@@ -259,12 +261,12 @@ function GMTF(style_struct = null) constructor {
 	unfocus = function() {
 		GMTFContext.set(null)
 		cursor1.pos = 0
-		cursor1.line =  lines[| 0]
+		cursor1.line = lines.get(0)
 		cursor1.cx = 0
 		cursor1.cy = 0
 		cursor1.cxs = 0
 		cursor2.pos = 0
-		cursor2.line =  lines[| 0]
+		cursor2.line = lines.get(0)
 		cursor2.cx = 0
 		cursor2.cy = 0
 		cursor2.cxs = 0
@@ -331,9 +333,10 @@ function GMTF(style_struct = null) constructor {
 		draw_set_font(style.font)
 		
 		if (update_chars) {
-			var s = ds_list_size(chars)
+			var s = chars.size()
 			for (var i = 0; i < s; i++) {
-				var ch = chars[| i][0]
+        var _c = chars.get(i)
+				var ch = _c[0]
 				if (ch != this.symbolEnter && ch != this.symbolEnd && ch != this.symbolNewLine) {
 					if (style.letter_case == 1) {
 						ch = string_lower(ch)
@@ -341,8 +344,8 @@ function GMTF(style_struct = null) constructor {
 						ch = string_upper(ch)
 					}
 
-					chars[| i][0] = ch
-					chars[| i][1] = max(string_width(ch), style.min_chw)
+					_c[0] = ch
+					_c[1] = max(string_width(ch), style.min_chw)
 				}
 			}
 		}
@@ -352,9 +355,10 @@ function GMTF(style_struct = null) constructor {
 				this.setText(style.text)
 			} else {
 				while (!this.fitLines()) {
-					ds_list_delete(chars, --cursor1.pos)
-					if (chars[| cursor1.pos - 1][0] == this.symbolNewLine) {
-						ds_list_delete(chars, --cursor1.pos)
+					chars.remove(--cursor1.pos)
+          var __c = chars.get(cursor1.pos - 1)
+					if (__c[0] == this.symbolNewLine) {
+            chars.remove(--cursor1.pos)
 					}
 				}
 				this.updateCursor(cursor1, true)
@@ -396,11 +400,11 @@ function GMTF(style_struct = null) constructor {
 		var chw = 0
 		var fit_ok = true
 		
-		ds_list_clear(lines)
+		lines.clear()
 		var line = [ li, pos, pos, "" ]
-		lines[| li] = line
-		for (var i = 0; i < ds_list_size(chars); i++) {
-			char = chars[| i]
+		lines.set(li, line)
+		for (var i = 0; i < chars.size(); i++) {
+			char = chars.get(i)
 			ch = char[0]
 			chw = char[1]
 			wid += chw
@@ -411,7 +415,7 @@ function GMTF(style_struct = null) constructor {
 
 			var enter = ch == this.symbolEnter
 			if (nl) {
-				ds_list_insert(chars, i++, [ this.symbolNewLine, 0 ])
+				chars.add([ this.symbolNewLine, 0 ], i++)
 				line[2] = pos++
 				if (pos > cposfrom1 && pos <= cursor1.pos) {
 					cursor1.pos++
@@ -423,7 +427,7 @@ function GMTF(style_struct = null) constructor {
 
 				//line[3] += symbolNewLine;
 			} else if (ch == this.symbolNewLine) {
-				ds_list_delete(chars, i--)
+				chars.remove(i--)
 				line[2]++
 				continue
 			}
@@ -435,8 +439,8 @@ function GMTF(style_struct = null) constructor {
 
 			if (nl || enter) {
 				fit_ok = (++li < tf_lnum)
-				lines[| li] = [ li, pos, pos, "" ]
-				line = lines[| li]
+				lines.set(li, [ li, pos, pos, "" ])
+				line = lines.get(li)
 				wid = chw
 			}
 
@@ -449,9 +453,20 @@ function GMTF(style_struct = null) constructor {
 		}
 		
 		if (ch != this.symbolEnd) {
-			ds_list_add(chars, [ this.symbolEnd, 0 ])
+			chars.add([ this.symbolEnd, 0 ])
 		} 
 		
+    if (this.style.v_grow) {
+      var _h = this.style.lh
+        * this.lines.size()
+        + this.style.padding.top 
+        + this.style.padding.bottom
+      if (_h != this.style.h) {
+        this.style.h = _h
+        this.updateStyle()
+      }
+    }
+
 		return fit_ok
 	}
 
@@ -481,15 +496,15 @@ function GMTF(style_struct = null) constructor {
 			chw = ((ch == this.symbolEnter || ch == this.symbolEnd || ch == this.symbolNewLine)
 				? 0 
 				: max(string_width(ch), style.min_chw))
-			ds_list_insert(chars, cursor1.pos++, [ ch, chw ])
+			chars.add([ ch, chw ], cursor1.pos++)
 		}
 		
 		while (!this.fitLines(cposfrom) 
-			|| ds_list_size(chars) > style.char_limit) {
+			|| chars.size() > style.char_limit) {
 			
 			if (this.style.v_grow) {
 				this.style.h = this.style.lh
-          * ds_list_size(this.lines)
+          * this.lines.size()
 					+ this.style.padding.top 
 					+ this.style.padding.bottom
 				this.updateStyle()
@@ -497,9 +512,10 @@ function GMTF(style_struct = null) constructor {
 				break
 			}
 
-			ds_list_delete(chars, --cursor1.pos)
-			if (chars[| cursor1.pos-1][0] == this.symbolNewLine) {
-				ds_list_delete(chars, --cursor1.pos)
+			chars.remove(--cursor1.pos)
+      var _c = chars.get(cursor1.pos - 1)
+			if (_c[0] == this.symbolNewLine) {
+				chars.remove(--cursor1.pos)
 			} 
 
 			cposfrom = cursor1.pos
@@ -509,18 +525,8 @@ function GMTF(style_struct = null) constructor {
 		draw_set_font(prevfont)
 	}
 	
-	shortenList = function(list, to) {
-		var temp_list = ds_list_create() ///@todo memory leak?
-		for (var i = 0; i < to; i++) {
-			temp_list[| i] = ds_list_find_value(list, i)
-		}
-
-		ds_list_clear(list)
-		ds_list_copy(list, temp_list)
-	}
-	
 	updateCursor = function(curs, save_cx = false, copy_to = undefined) {
-		curs.pos = clamp(curs.pos, 0, ds_list_size(chars) - 1)
+		curs.pos = clamp(curs.pos, 0, chars.size() - 1)
 		curs.info = this.getLine(curs.pos) // [line, rel_pos]
 		curs.line = curs.info[0]
 		curs.rel_pos = curs.info[1]
@@ -542,7 +548,8 @@ function GMTF(style_struct = null) constructor {
 	getRangeWidth = function(from, to) {
 		var wid = 0
 		for (var i = from; i < to; i++) {
-			wid += chars[| i][1]
+      var ch = chars.get(i)
+			wid += ch[1]
 		}
 		return wid
 	}
@@ -559,28 +566,29 @@ function GMTF(style_struct = null) constructor {
 				break
 			}
 
-			wid += chars[| i][1]
+      var _c = chars.get(i)
+			wid += _c[1]
 		}
 
 		return pos + (abs(target_x - wid) < closest ? 1 : 0)
 	}
 	
 	getLine = function(pos) {
-		var s = ds_list_size(lines)
+		var s = lines.size()
 		for (var i = 0; i < s; i++) {
-			var line = lines[| i]
+			var line = lines.get(i)
 			var from = line[1]
 			var to = line[2]
 			if (clamp(pos, from, to) == pos) {
 				return [ line, pos - from ]
 			}
 		}
-		return [ lines[| 0], 0 ]
+		return [ lines.get(0), 0 ]
 	}
 	
 	cursorToMouse = function(curs, mousex = mx, mousey = my) {
-		var iterator = clamp((mousey - pad_aty) div style.lh, 0, ds_list_size(lines) - 1)
-		var line = lines[| iterator]
+		var iterator = clamp((mousey - pad_aty) div style.lh, 0, lines.size() - 1)
+		var line = lines.get(iterator)
 		curs.pos = line[1] + this.getNearestRelPosByX(curs, max(0, mousex - pad_atx), line)
 		last_right = curs.pos == line[1] ? -1 : 1
 		updateCursor(curs, true)
@@ -592,12 +600,12 @@ function GMTF(style_struct = null) constructor {
 		}
 		if (r != 0) {
 			if (!ctrl) {
-				curs.pos = clamp(curs.pos + r, 0, ds_list_size(chars))
+				curs.pos = clamp(curs.pos + r, 0, chars.size())
 			} else {
 				var prevpos = curs.pos
 				this.expandSelection(r, style.stoppers, curs)
 				if (curs.pos == prevpos) {
-					curs.pos = clamp(curs.pos + r, 0, ds_list_size(chars))
+					curs.pos = clamp(curs.pos + r, 0, chars.size())
 				}
 			}
 			this.updateCursor(curs, true)
@@ -605,8 +613,8 @@ function GMTF(style_struct = null) constructor {
 		
 		if (d != 0) {
 			var nextl = curs.line[0] + d
-			if (nextl == clamp(nextl, 0, ds_list_size(lines) - 1)) {
-				var line = lines[| nextl]
+			if (nextl == clamp(nextl, 0, lines.size() - 1)) {
+				var line = lines.get(nextl)
 				curs.pos = line[1] + this.getNearestRelPosByX(curs, curs.cxs, line)
 				this.updateCursor(curs)
 			}
@@ -618,31 +626,36 @@ function GMTF(style_struct = null) constructor {
 	}
 	
 	expandSelection = function(right, stoppers = style.stoppers, curs = undefined) {
+    var _c = null
 		if (curs == undefined) {
 			if (right) {
-				var s = ds_list_size(chars) - 1
+				var s = chars.size() - 1
 				while (cursor1.pos++ < s) {
-					if (string_pos(chars[| cursor1.pos][0], style.stoppers)) {
+          _c = chars.get(cursor1.pos)
+					if (string_pos(_c[0], style.stoppers)) {
 						break
 					} 
 				}
 			} else {
 				while (cursor2.pos-- > 0) {
-					if (string_pos(chars[| cursor2.pos][0], style.stoppers)) {
+          _c = chars.get(cursor2.pos)
+					if (string_pos(_c[0], style.stoppers)) {
 						break
 					}
 				}
 			}
 		} else if (right) {
-			var s = ds_list_size(chars) - 1;
+			var s = chars.size() - 1;
 			while (curs.pos++ < s) {
-				if (string_pos(chars[| curs.pos][0], style.stoppers)) {
+        _c = chars.get(curs.pos)
+				if (string_pos(_c[0], style.stoppers)) {
 					break
 				}
 			}
 		} else {
 			while (curs.pos-- > 0) {
-				if (string_pos(chars[| curs.pos][0], style.stoppers)) {
+        _c = chars.get(curs.pos)
+				if (string_pos(_c[0], style.stoppers)) {
 					break
 				}
 			}
@@ -650,6 +663,7 @@ function GMTF(style_struct = null) constructor {
 	}
 	
 	renderSelection = function() {
+    var alpha = draw_get_alpha()
 		draw_set_color(style.c_selection.c)
 		draw_set_alpha(style.c_selection.a)
 		if (cursor1.line[0] == cursor2.line[0]) {
@@ -679,7 +693,7 @@ function GMTF(style_struct = null) constructor {
 			)
 
 			for (var i = upper.line[0] + 1; i < lower.line[0]; i++) {
-				var line = lines[| i]
+				var line = lines.get(i)
 				draw_rectangle(
 					pad_atx,
 					pad_aty + (i * style.lh),
@@ -690,7 +704,7 @@ function GMTF(style_struct = null) constructor {
 			}
 		}
 
-		draw_set_alpha(1.0)
+		draw_set_alpha(alpha)
 	}
 
 	remove = function(backspace = true, ctrl = false) {
@@ -698,18 +712,18 @@ function GMTF(style_struct = null) constructor {
 		if (backspace || cursor1.pos != cursor2.pos) {
 			if (cursor1.pos < cursor2.pos) {
 				repeat (len) {
-					ds_list_delete(chars, --cursor2.pos)
+					chars.remove(--cursor2.pos)
 				}
 				cursor1.pos = cursor2.pos
 			} else {
 				repeat (len) {
-					ds_list_delete(chars, --cursor1.pos)
+					chars.remove(--cursor1.pos)
 				}
 			}
 		} else {
 			repeat (len) {
-				if (cursor1.pos + 1 < ds_list_size(chars)) {
-					ds_list_delete(chars, cursor1.pos)
+				if (cursor1.pos + 1 < chars.size()) {
+					chars.remove(cursor1.pos)
 				} 
 			}
 		}
@@ -727,8 +741,8 @@ function GMTF(style_struct = null) constructor {
   ///@return {GMTF}
 	setText = function(txt) {
     try {
-      ds_list_clear(chars)
-  		chars[| 0] = [ this.symbolEnd, 0 ]
+      chars.clear()
+      chars.set(0, [ this.symbolEnd, 0 ])
   		cursor1.pos = 0
   		cursor2.pos = 0
       if (Core.isType(txt, Number)) {
@@ -758,10 +772,11 @@ function GMTF(style_struct = null) constructor {
 	///@return {String}
 	getText = function(keep_enters = false) {
 		var pos = 0
-		var to = ds_list_size(chars)
+		var to = chars.size()
 		var str = @""
 		while (pos < to - 1) {
-			str += chars[| pos++][0]
+      var _c = chars.get(pos++)
+			str += _c[0]
 		}
 		
 		str = string_replace_all(str, this.symbolEnd, "")
@@ -778,7 +793,8 @@ function GMTF(style_struct = null) constructor {
 		var to = max(cursor1.pos, cursor2.pos)
 		var str = keep_enters ? @"" : ""
 		while (pos < to) {
-			str += chars[| pos++][0]
+      var _c = chars.get(pos++)
+			str += _c[0]
 		}
 				
 		str = string_replace_all(str, this.symbolEnd, "")
@@ -811,6 +827,28 @@ function GMTF(style_struct = null) constructor {
 		if (!textField.previous_tf.enabled) {
 			return textField.previous_tf.findEnabledPrevious(textField.previous_tf)
 		} else {
+      var tf = textField.previous_tf
+      if (Optional.is(tf.uiItem) 
+          && Optional.is(tf.uiItem.store) 
+          && tf.uiItem.hidden.value
+          && Optional.is(tf.uiItem.store.getStore())) {         
+        var store = tf.uiItem.store.getStore()
+        if (Core.isType(tf.uiItem.hidden.keys, GMArray)) {
+          for (var index = 0; index < GMArray.size(tf.uiItem.hidden.keys); index++) {
+            var entry = tf.uiItem.hidden.keys[index]
+            store.get(entry.key).set(Struct.getIfType(entry, "negate", Boolean, false))
+          }
+          uiItem.hidden.value = false
+        } else if (Core.isType(tf.uiItem.hidden.key, String)) {
+          store.get(tf.uiItem.hidden.key).set(Struct.getIfType(tf.uiItem.hidden, "negate", Boolean, false))
+          uiItem.hidden.value = false
+        }
+
+        if (Optional.is(tf.uiItem.context)) {
+          tf.uiItem.context.areaWatchdog.signal(2)
+          tf.uiItem.context.clampUpdateTimer(0.9000)
+        }
+      }
 			return textField.previous_tf
 		}
 	}
@@ -825,6 +863,28 @@ function GMTF(style_struct = null) constructor {
 		if (!textField.next_tf.enabled) {
 			return textField.next_tf.findEnabledNext(textField.next_tf)
 		} else {
+      var tf = textField.next_tf
+      if (Optional.is(tf.uiItem) 
+          && Optional.is(tf.uiItem.store) 
+          && tf.uiItem.hidden.value
+          && Optional.is(tf.uiItem.store.getStore())) {          
+        var store = tf.uiItem.store.getStore()
+        if (Core.isType(tf.uiItem.hidden.keys, GMArray)) {
+          for (var index = 0; index < GMArray.size(tf.uiItem.hidden.keys); index++) {
+            var entry = tf.uiItem.hidden.keys[index]
+            store.get(entry.key).set(Struct.getIfType(entry, "negate", Boolean, false))
+          }
+          uiItem.hidden.value = false
+        } else if (Core.isType(tf.uiItem.hidden.key, String)) {
+          store.get(tf.uiItem.hidden.key).set(Struct.getIfType(tf.uiItem.hidden, "negate", Boolean, false))
+          uiItem.hidden.value = false
+        }
+
+        if (Optional.is(tf.uiItem.context)) {
+          tf.uiItem.context.areaWatchdog.signal(2)
+          tf.uiItem.context.clampUpdateTimer(0.9000)
+        }
+      }
 			return textField.next_tf
 		}
 	}
@@ -958,31 +1018,47 @@ function GMTF(style_struct = null) constructor {
 	
 		if (keyboard_check(vk_anykey)) {
 			if (keyboard_check_pressed(KeyboardKeyType.PAGE_UP)) {
+        if (GMTFContext.get() == this) {
+          GMTFContext.uiWasScrolled = false
+        }
+
 				this.cursor1.pos = 0
-				this.cursor1.line = this.lines[| 0]
-				this.cursor2.pos = 0
-				this.cursor2.line = this.lines[| 0]
+				this.cursor1.line = this.lines.get(0)
 				this.updateCursor(this.cursor1)
-				this.updateCursor(this.cursor2)
+        if (!keyboard_check(vk_shift)) {
+          this.cursor2.pos = 0
+          this.cursor2.line = this.lines.get(0)
+          this.updateCursor(this.cursor2)
+        }
 			}
 
 			if (keyboard_check_pressed(KeyboardKeyType.PAGE_DOWN)) {
-				this.cursor1.pos = ds_list_size(this.chars) - 1
-				this.cursor1.line = this.lines[| ds_list_size(this.lines) - 1]
-				this.cursor2.pos = ds_list_size(this.chars) - 1
-				this.cursor2.line = this.lines[| ds_list_size(this.lines) - 1]
+        if (GMTFContext.get() == this) {
+          GMTFContext.uiWasScrolled = false
+        }
+
+				this.cursor1.pos = this.chars.size() - 1
+				this.cursor1.line = this.lines.get(this.lines.size() - 1)
 				this.updateCursor(this.cursor1)
-				this.updateCursor(this.cursor2)
+        if (!keyboard_check(vk_shift)) {
+          this.cursor2.pos = this.chars.size() - 1
+          this.cursor2.line = this.lines.get(this.lines.size() - 1)
+          this.updateCursor(this.cursor2)
+        } 
 			}
 
 			if (keyboard_check_pressed(KeyboardKeyType.HOME)) {
 				this.moveCursor(this.cursor1, -1 * this.cursor1.rel_pos, 0, false)
-				this.moveCursor(this.cursor2, -1 * this.cursor2.rel_pos, 0, false)
+        if (!keyboard_check(vk_shift)) {
+          this.moveCursor(this.cursor2, -1 * this.cursor2.rel_pos, 0, false)
+        }
 			}
 
 			if (keyboard_check_pressed(KeyboardKeyType.END)) {
 				this.moveCursor(this.cursor1, String.size(this.cursor1.line[3]) - this.cursor1.rel_pos, 0, false)
-				this.moveCursor(this.cursor2, String.size(this.cursor2.line[3]) - this.cursor2.rel_pos, 0, false)
+        if (!keyboard_check(vk_shift)) {
+				  this.moveCursor(this.cursor2, String.size(this.cursor2.line[3]) - this.cursor2.rel_pos, 0, false)
+        }
 			}
 
 			if (keyboard_check(vk_control)) {
@@ -1005,7 +1081,7 @@ function GMTF(style_struct = null) constructor {
 				} else if (keyboard_check_pressed(ord("A"))) {
 					keyboard_string = ""
 					cursor2.pos = 0
-					cursor1.pos = ds_list_size(chars)
+					cursor1.pos = chars.size()
 					this.updateCursor(cursor1, true)
 					this.updateCursor(cursor2)
 				} else if (keyboard_check_pressed(vk_backspace)) {
@@ -1122,18 +1198,19 @@ function GMTF(style_struct = null) constructor {
 		var s = null
 		if (style.min_chw == 0) {
 			draw_set_halign(0)
-			s = ds_list_size(lines)
+			s = lines.size()
 			for (var i = 0; i < s; i++) {
-				draw_text(pad_atx, pad_aty + i * style.lh + style.lh, lines[| i][3])
+        var line = lines.get(i)
+				draw_text(pad_atx, pad_aty + i * style.lh + style.lh, line[3])
 			}
 		} else {
 			draw_set_halign(1)
 			var wid = 0
-			s = ds_list_size(lines)
+			s = lines.size()
 			for (var i = 0; i < s; i++) {
-				var line = lines[| i]
+				var line = lines.get(i)
 				for (var pos = line[1]; pos < line[2]; pos++) {
-					var char = chars[| pos]
+					var char = chars.get(pos)
 					var chw = char[1]
 					draw_text(pad_atx + wid + (chw div 2), pad_aty + i * style.lh + style.lh, char[0])
 					wid += chw

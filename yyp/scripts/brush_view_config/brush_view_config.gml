@@ -113,6 +113,30 @@ function brush_view_config(json = null) {
         type: Boolean,
         value: Struct.get(json, "vw-cfg_render-video-after"),
       },
+      "vw-cfg_hide-render": {
+        type: Boolean,
+        value: Struct.get(json, "vw-cfg_hide-render"),
+      },
+      "vw-cfg_hide-cls": {
+        type: Boolean,
+        value: Struct.get(json, "vw-cfg_hide-cls"),
+      },
+      "vw-cfg_hide-video": {
+        type: Boolean,
+        value: Struct.get(json, "vw-cfg_hide-video"),
+      },
+      "vw-cfg_hide-video-blend": {
+        type: Boolean,
+        value: Struct.get(json, "vw-cfg_hide-video-blend"),
+      },
+      "vw-cfg_hide-video-col": {
+        type: Boolean,
+        value: Struct.get(json, "vw-cfg_hide-video-col"),
+      },
+      "vw-cfg_hide-video-alpha": {
+        type: Boolean,
+        value: Struct.get(json, "vw-cfg_hide-video-alpha"),
+      },
     }),
     components: new Array(Struct, [
       {

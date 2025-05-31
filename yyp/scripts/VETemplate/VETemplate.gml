@@ -40,7 +40,11 @@ function VETemplate(json) constructor {
       "template-name": {
         type: String,
         value: json.name,
-      }
+      },
+      "template-hide": {
+        type: Boolean,
+        value: Struct.parse.boolean(json, "hide"),
+      },
     }
 
     if (type == VETemplateType.SHADER) {
@@ -74,6 +78,12 @@ function VETemplate(json) constructor {
       config: { 
         layout: { type: UILayoutType.VERTICAL },
         label: { text: $"{VETemplateTypeNames.get(json.type)}" },
+        //label: { text: "Properties" },
+        checkbox: {
+          spriteOn: { name: "visu_texture_checkbox_show" },
+          spriteOff: { name: "visu_texture_checkbox_hide" },
+          store: { key: "template-hide" },
+        },
       },
     },
     {
@@ -85,10 +95,14 @@ function VETemplate(json) constructor {
           type: UILayoutType.VERTICAL,
           margin: { top: 2 },
         },
-        label: { text: "Name" },
+        label: {
+          text: "Name",
+          hidden: { key: "template-hide" },
+        },
         field: { 
           read_only: json.type == VETemplateType.TEXTURE,
-          store: { key: "template-name" }
+          store: { key: "template-name" },
+          hidden: { key: "template-hide" },
         },
       },
     },
@@ -96,7 +110,10 @@ function VETemplate(json) constructor {
       name: "template_start-line-h",
       template: VEComponents.get("line-h"),
       layout: VELayouts.get("line-h"),
-      config: { layout: { type: UILayoutType.VERTICAL } },
+      config: {
+        layout: { type: UILayoutType.VERTICAL },
+        image: { hidden: { key: "template-hide" } },
+      },
     },
   ])
 
@@ -119,6 +136,7 @@ function VETemplate(json) constructor {
         return item.name != "template-name" 
           && item.name != "template-shader-asset" 
           && item.name != "template-inherit" 
+          && item.name != "template-hide"
       })
       .toStruct(function(item) { 
         return item.serialize()
@@ -137,17 +155,14 @@ function VETemplate(json) constructor {
     var json = {
       name: Assert.isType(this.store.getValue("template-name"), String),
       sprite: sprite.serialize(),
+      inherit: JSON.parse(this.store.getValue("shroom_inherit")).getContainer(),
       gameModes: {
-        bulletHell: {
-          features: JSON.parse(this.store.getValue("shroom_game-mode_bullet-hell_features")).getContainer()
-        },
-        platformer: {
-          features: JSON.parse(this.store.getValue("shroom_game-mode_platformer_features")).getContainer()
-        },
-        racing: {
-          features: JSON.parse(this.store.getValue("shroom_game-mode_racing_features")).getContainer()
-        },
-      }
+        bulletHell: { features: JSON.parse(this.store.getValue("shroom_game-mode_bullet-hell_features")).getContainer() },
+        //platformer: { features: JSON.parse(this.store.getValue("shroom_game-mode_platformer_features")).getContainer() },
+        //racing: { features: JSON.parse(this.store.getValue("shroom_game-mode_racing_features")).getContainer() },
+        platformer: { features: [ ] },
+        racing: { features: [ ] },
+      },
     }
 
     if (this.store.getValue("shroom_use-lifespan")) {

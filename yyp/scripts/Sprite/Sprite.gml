@@ -16,31 +16,36 @@ function Sprite(_texture, config = {}) constructor {
   texture = _texture
 
   ///@type {Number}
-  frame = Struct.getDefault(config, "frame", 0)
+  frame = Struct.getIfType(config, "frame", Number, 0)
 
   ///@type {Number}
   speed = Struct.getIfType(config, "speed", Number, texture.speed)
 
   ///@type {Number}
-  scaleX = Struct.getDefault(config, "scaleX", 1.0)
+  scaleX = Struct.getIfType(config, "scaleX", Number, 1.0)
 
   ///@type {Number}
-  scaleY = Struct.getDefault(config, "scaleY", 1.0)
+  scaleY = Struct.getIfType(config, "scaleY", Number, 1.0)
 
   ///@type {Number}
-  alpha = Struct.getDefault(config, "alpha", 1.0)
+  alpha = Struct.getIfType(config, "alpha", Number, 1.0)
 
   ///@type {Number}
-  angle = Struct.getDefault(config, "angle", 0.0)
+  angle = Struct.getIfType(config, "angle", Number, 0.0)
 
   ///@type {GMColor}
-  blend = Struct.getDefault(config, "blend", c_white)
+  blend = Struct.get(config, "blend")
+  this.blend = Core.isType(this.blend, String)
+    ? ColorUtil.parse(this.blend).toGMColor()
+    : (Core.isType(this.blend, GMColor)
+      ? this.blend
+      : c_white)
 
   ///@type {Boolean}
-  animate = Struct.getDefault(config, "animate", this.texture.frames > 1)
+  animate = Struct.getIfType(config, "animate", Boolean, this.texture.frames > 1)
 
   ///@type {Boolean}
-  randomFrame = Struct.getDefault(config, "randomFrame", false)
+  randomFrame = Struct.getIfType(config, "randomFrame", Boolean, false)
 
   ///@return {String}
   static getName = function() {
@@ -346,16 +351,43 @@ function _SpriteUtil() constructor {
   ///@param {Struct} _json
   ///@param {?Struct} [defaultJson]
   ///@return {?Sprite}
-  static parse = function(_json, defaultJson = null) {
+  static parse = function(json, defaultJson = null) {
     gml_pragma("forceinline")
     var sprite = null
     try {
-      if (!Optional.is(Struct.getIfType(_json, "name", String))
+      if (Struct.getIfType(json, "name", String) == null
+          && defaultJson != null) {
+        return SpriteUtil.parse(defaultJson)
+      }
+
+      var texture = TextureUtil.parse(json.name, json)
+      Assert.isTrue(texture != null, "Texture is null")
+
+      sprite = new Sprite(texture, json)
+    } catch (exception) {
+      Logger.error("SpriteUtil", $"'parse-sprite' fatal error: {exception.message}")
+      sprite = null
+      if (Core.isType(defaultJson, Struct)) {
+        Logger.error("SpriteUtil", $"'parse-sprite' use defaultJson: {JSON.stringify(defaultJson)}")
+        sprite = SpriteUtil.parse(defaultJson)
+      }
+    }
+    return sprite
+  }
+
+  ///@param {Struct} _json
+  ///@param {?Struct} [defaultJson]
+  ///@return {?Sprite}
+  static _parse = function(json, defaultJson = null) {
+    gml_pragma("forceinline")
+    var sprite = null
+    try {
+      if (!Optional.is(Struct.getIfType(json, "name", String))
           && Core.isType(defaultJson, Struct)) {
         return SpriteUtil.parse(defaultJson)
       }
 
-      var json = JSON.clone(_json)
+      //var json = JSON.clone(_json)
       var texture = Assert.isType(TextureUtil.parse(json.name, json), Texture)
       Struct.set(json, "frame", clamp(
         (Struct.get(json, "randomFrame") == true

@@ -147,5 +147,170 @@ global.__VisuLayouts = new Map(String, Callable, {
       }
     }
   },
+
+  ///@param {?Struct} [config]
+  ///@return {Struct}
+  "spin-select": function(config = null) {
+      ///@return {Callable}
+      static factoryNodeHeight = function() {
+        return function() {
+          return Struct.getDefault(this, "heightValue", 28)
+        }
+      }
+      
+    var hidden = Struct.getDefault(config, "hidden", false),
+    return {
+      name: "spin-select",
+      margin: Struct.getDefault(config, "margin", { top: 2 }),
+      hidden: hidden,
+      height: Struct.getDefault(config, "height", factoryNodeHeight()),
+      nodes: {
+        label: {
+          name: "spin-select.label",
+          margin: { top: 2, bottom: 2, left: 5 },
+          hidden: hidden,
+          width: function() { return 72 - this.__margin.left - this.__margin.right },
+        },
+        previous: {
+          name: "spin-select.previous",
+          margin: { top: 0, bottom: 0, right: 0, left: 6 },
+          hidden: hidden,
+          x: function() { return this.context.nodes.label.right() + this.__margin.left },
+          y: function() { return this.context.y() + round((this.context.height() - this.height()) / 2.0) },
+          width: function() { return 14 },
+          height: factoryNodeHeight(),
+        },
+        preview: {
+          name: "spin-select.preview",
+          hidden: hidden,
+          propagateHidden: true,
+          x: function() {
+            var labelRight = this.context.nodes.label.right()
+            return labelRight + (this.context.width() - labelRight - this.width()) / 2.0
+          },
+          width: function() { return this.context.width() - this.context.nodes.label.right() },
+        },
+        next: {
+          name: "spin-select.next",
+          margin: { top: 0, bottom: 0, right: 6, left: 0 },
+          hidden: hidden,
+          x: function() {
+            var margin = this.context.__margin
+            return this.context.x() + margin.left + this.context.width() + margin.right - this.width() - this.__margin.right
+          },
+          y: function() { return this.context.y() + round((this.context.height() - this.height()) / 2.0) },
+          width: function() { return 14 },
+          height: factoryNodeHeight(),
+        },
+      }
+    }
+  },
+
+  ///@param {?Struct} [config]
+  ///@return {Struct}
+  "header": function(config = null) {
+    var hidden = Struct.getDefault(config, "hidden", false)
+    return {
+      name: "header",
+      margin: Struct.getDefault(config, "margin", { top: 2 }),
+      hidden: hidden,
+      nodes: {
+        checkbox: {
+          name: "header.checkbox",
+          width: function() { return 24 },
+          margin: { left: 5, right: 2 },
+        },
+        label: {
+          name: "header.label",
+          propagateHidden: true,
+          x: function() { return this.context.nodes.checkbox.right() },
+          width: function() {
+            var checkbox = this.context.nodes.checkbox
+            var input = this.context.nodes.input
+            return this.context.width() 
+              - checkbox.width()
+              - checkbox.__margin.right
+              - input.width() 
+              - input.__margin.right 
+              - input.__margin.left
+          },
+        },
+        input: {
+          name: "property.input",
+          margin: { left: 0, right: 7 },
+          x: function() { return this.context.nodes.label.right() + this.__margin.left },
+          width: function() { return 42 },
+        },
+      }
+    }
+  },
+
+  ///@param {?Struct} [config]
+  ///@return {Struct}
+  "number-property": function(config = null) {
+    ///@return {Callable}
+    static factoryNodeHeight = function() {
+      return function() {
+        return Struct.getDefault(this, "heightValue", 28)
+      }
+    }
+
+    ///@param {Number} [index]
+    ///@return {Callable}
+    static factoryNodeY = function() {
+      return function() {
+        var context = this.context
+        var index = Struct.getDefault(this, "index", 0)
+        return context.y() + context.__margin.top + context.nodes.header.height() + (this.height() * index)
+      }
+    }
+
+    var hidden = Struct.getDefault(config, "hidden", false),
+    return {
+      name: "number-property",
+      type: Struct.getDefault(config, "type", UILayoutType.VERTICAL),
+      hidden: hidden,
+      margin: Struct.get(config, "margin"),
+      height: function() {
+        var nodes = this.nodes
+        return nodes.header.height() + (nodes.ease.index * nodes.ease.height())
+      },
+      nodes: {
+        header: {
+          name: "number-property.header",
+          hidden: hidden,
+          height: Struct.getIfType(Struct.get(config, "header"), "height", Callable, factoryNodeHeight()),
+        },
+        value: {
+          name: "number-property.value",
+          hidden: hidden,
+          propagateHidden: true,
+          y: factoryNodeY(),
+          height: factoryNodeHeight(),
+        },
+        target: {
+          name: "number-property.target",
+          hidden: hidden,
+          index: 1,
+          y: factoryNodeY(),
+          height: factoryNodeHeight(),
+        },
+        duration: {
+          name: "number-property.duration",
+          hidden: hidden,
+          index: 2,
+          y: factoryNodeY(),
+          height: factoryNodeHeight(),
+        },
+        ease: {
+          name: "number-property.ease",
+          hidden: hidden,
+          index: 3,
+          y: factoryNodeY(),
+          height: factoryNodeHeight(),
+        },
+      }
+    }
+  },
 })
 #macro VisuLayouts global.__VisuLayouts

@@ -326,12 +326,12 @@ function template_particle(json = null) {
           },
         },
       },
-      {
-        name: "particle_shape-line-h",
-        template: VEComponents.get("line-h"),
-        layout: VELayouts.get("line-h"),
-        config: { layout: { type: UILayoutType.VERTICAL } },
-      },
+      //{
+      //  name: "particle_shape-line-h",
+      //  template: VEComponents.get("line-h"),
+      //  layout: VELayouts.get("line-h"),
+      //  config: { layout: { type: UILayoutType.VERTICAL } },
+      //},
       {
         name: "particle_color-start",
         template: VEComponents.get("color-picker"),

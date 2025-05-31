@@ -51,17 +51,17 @@ function VEAccordion(_editor, config = null) constructor {
         nodes: {
           "view_template-toolbar": {
             name: "ve-accordion.view_template-toolbar",
-            margin: { top: 0, bottom: 0, right: 0, left: 0 },
-            y: function() { return this.context.y() + this.margin.top },
+            margin: { top: 1, bottom: 0, right: 0, left: 0 },
+            y: function() { return this.context.y() + this.__margin.top },
             width: function() { return this.context.width() 
               - this.context.nodes.resize.width()
-              - this.margin.left
-              - this.margin.right },
+              - this.__margin.left
+              - this.__margin.right },
             height: function() { 
               if (!Struct.get(this.context.store, "render-template-toolbar")) {
                 return 0
               }
-              var height = this.context.height() - this.margin.top - this.margin.bottom
+              var height = this.context.height() - this.__margin.top - this.__margin.bottom
               if (Struct.get(this.context.store,  "render-event-inspector")) {
                 height = round(height * (1.0 - Struct.get(this.context.store, "events-percentage")))
               }
@@ -74,19 +74,19 @@ function VEAccordion(_editor, config = null) constructor {
             margin: { top: 0, bottom: 0, right: 0, left: 0 },
             y: function() {
               return Struct.get(this.context.store, "render-template-toolbar")
-                ? (Struct.get(this.context.nodes, "view_template-toolbar").bottom() + this.margin.top)
-                : (this.context.y() + this.margin.top)
+                ? (Struct.get(this.context.nodes, "view_template-toolbar").bottom() + this.__margin.top)
+                : (this.context.y() + this.__margin.top)
             },
             width: function() { return this.context.width() 
               - this.context.nodes.resize.width()
-              - this.margin.left
-              - this.margin.right },
+              - this.__margin.left
+              - this.__margin.right },
             height: function() { 
               if (!Struct.get(this.context.store, "render-event-inspector")) {
                 return 0
               }
 
-              var height = this.context.height() - this.margin.top - this.margin.bottom
+              var height = this.context.height() - this.__margin.top - this.__margin.bottom
               if (Struct.get(this.context.store, "render-template-toolbar")) {
                 height = round(height * Struct.get(this.context.store, "events-percentage"))
               }

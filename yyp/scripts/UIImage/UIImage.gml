@@ -70,13 +70,13 @@ function UIImage(name, json = null) {
           var _x = this.context.area.getX() 
             + this.area.getX()
             + (this.area.getWidth() / 2.0)
-            - ((image.getWidth() * image.getScaleX()) / 2.0)
-            + (originX * image.getScaleX())
+            - ((this.image.getWidth() * this.image.getScaleX()) / 2.0)
+            + (originX * this.image.getScaleX())
           var _y = this.context.area.getY() 
             + this.area.getY()
             + (this.area.getHeight() / 2.0)
-            - ((image.getHeight() * image.getScaleY()) / 2.0)
-            + (originY * image.getScaleY())
+            - ((this.image.getHeight() * this.image.getScaleY()) / 2.0)
+            + (originY * this.image.getScaleY())
           this.image.setScaleX(scaleX).setScaleY(scaleY)
 
           draw_circle_colour(_x, _y, 6, c_red, c_yellow, false);

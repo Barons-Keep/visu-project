@@ -1,0 +1,12 @@
+{
+  "$GMShader":"",
+  "%Name":"shader_dissolve",
+  "name":"shader_dissolve",
+  "parent":{
+    "name":"ext",
+    "path":"folders/io.alkapivo.core/resource/shader/ext.yy",
+  },
+  "resourceType":"GMShader",
+  "resourceVersion":"2.0",
+  "type":1,
+}

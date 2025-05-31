@@ -26,35 +26,35 @@ function VETitleBar(_editor) constructor {
           },
           file: {
             name: "title-bar.file",
-            x: function() { return this.context.x() + this.margin.left },
+            x: function() { return this.context.x() + this.__margin.left },
             y: function() { return 0 },
             width: function() { return 48 },
           },
           edit: {
             name: "title-bar.edit",
             x: function() { return this.context.nodes.file.right()
-              + this.margin.left },
+              + this.__margin.left },
             y: function() { return 0 },
             width: function() { return 48 },
           },
           open: {
             name: "title-bar.open",
             x: function() { return this.context.nodes.edit.right()
-              + this.margin.left },
+              + this.__margin.left },
             y: function() { return 0 },
             width: function() { return 48 },
           },
           save: {
             name: "title-bar.save",
             x: function() { return this.context.nodes.open.right()
-              + this.margin.left },
+              + this.__margin.left },
             y: function() { return 0 },
             width: function() { return 48 },
           },
           help: {
             name: "title-bar.help",
             x: function() { return this.context.nodes.save.right()
-              + this.margin.left },
+              + this.__margin.left },
             y: function() { return 0 },
             width: function() { return 48 },
           },
@@ -67,41 +67,41 @@ function VETitleBar(_editor) constructor {
           trackControl: {
             name: "title-bar.trackControl",
             x: function() { return this.context.nodes.event.left() 
-              - this.width() - this.margin.right },
+              - this.width() - this.__margin.right },
             y: function() { return 0 },
             width: function() { return this.context.height() },
           },
           event: {
             name: "title-bar.event",
             x: function() { return this.context.nodes.timeline.left() 
-              - this.width() - this.margin.right },
+              - this.width() - this.__margin.right },
             y: function() { return 0 },
             width: function() { return this.context.height() },
           },
           timeline: {
             name: "title-bar.timeline",
             x: function() { return this.context.nodes.brush.left() 
-              - this.width() - this.margin.right },
+              - this.width() - this.__margin.right },
             y: function() { return 0 },
             width: function() { return this.context.height() },
           },
           brush: {
             name: "title-bar.brush",
             x: function() { return this.context.nodes.sceneConfigPreview.left() 
-              - this.width() - this.margin.right },
+              - this.width() - this.__margin.right },
             y: function() { return 0 },
             width: function() { return this.context.height() },
           },
           sceneConfigPreview: {
             x: function() { return this.context.nodes.fullscreen.left() 
-              - this.width() - this.margin.right },
+              - this.width() - this.__margin.right },
             y: function() { return 0 },
             width: function() { return this.context.height() },
           },
           fullscreen: {
             name: "title-bar.fullscreen",
             x: function() { return this.context.x() + this.context.width()
-               - this.width() - this.margin.right },
+               - this.width() - this.__margin.right },
             y: function() { return 0 },
             width: function() { return this.context.height() },
           }
@@ -144,7 +144,7 @@ function VETitleBar(_editor) constructor {
                 transformer: new ColorTransformer({
                   value: item.backgroundColorSelected,
                   target: item.backgroundColorOut,
-                  factor: 0.026,
+                  duration: 0.66,
                 })
               })
               .whenUpdate(function(executor) {
@@ -195,7 +195,7 @@ function VETitleBar(_editor) constructor {
               transformer: new ColorTransformer({
                 value: item.backgroundColorSelected,
                 target: item.backgroundColorOut,
-                factor: 0.026,
+                duration: 0.66,
               })
             })
             .whenUpdate(function(executor) {

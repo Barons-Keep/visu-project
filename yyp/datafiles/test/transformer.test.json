@@ -1,0 +1,199 @@
+{
+  "version": "1",
+  "model": "io.alkapivo.visu.TestSuite",
+  "data":{
+    "name": "Test Transformer",
+    "stopAfterFailure": false,
+    "tests": [
+      {
+        "handler": "TestEvent_NumberTransformer_Ease",
+        "description": "TestEvent NumberTransformer Ease",
+        "data": {
+          "timeout": 90.0,
+          "transformers": [
+            {
+              "value": 0.0,
+              "target": 1.0,
+              "duration": 2.0,
+              "ease": "IN_SINE"
+            },
+            {
+              "value": 0.0,
+              "target": 1.0,
+              "duration": 2.0,
+              "ease": "OUT_SINE"
+            },
+            {
+              "value": 0.0,
+              "target": 1.0,
+              "duration": 2.0,
+              "ease": "IN_OUT_SINE"
+            },
+            {
+              "value": 0.0,
+              "target": 1.0,
+              "duration": 2.0,
+              "ease": "IN_QUAD"
+            },
+            {
+              "value": 0.0,
+              "target": 1.0,
+              "duration": 2.0,
+              "ease": "OUT_QUAD"
+            },
+            {
+              "value": 0.0,
+              "target": 1.0,
+              "duration": 2.0,
+              "ease": "IN_OUT_QUAD"
+            },
+            {
+              "value": 0.0,
+              "target": 1.0,
+              "duration": 2.0,
+              "ease": "IN_CUBIC"
+            },
+            {
+              "value": 0.0,
+              "target": 1.0,
+              "duration": 2.0,
+              "ease": "OUT_CUBIC"
+            },
+            {
+              "value": 0.0,
+              "target": 1.0,
+              "duration": 2.0,
+              "ease": "IN_OUT_CUBIC"
+            },
+            {
+              "value": 0.0,
+              "target": 1.0,
+              "duration": 2.0,
+              "ease": "IN_QUART"
+            },
+            {
+              "value": 0.0,
+              "target": 1.0,
+              "duration": 2.0,
+              "ease": "OUT_QUART"
+            },
+            {
+              "value": 0.0,
+              "target": 1.0,
+              "duration": 2.0,
+              "ease": "IN_OUT_QUART"
+            },
+            {
+              "value": 0.0,
+              "target": 1.0,
+              "duration": 2.0,
+              "ease": "IN_QUINT"
+            },
+            {
+              "value": 0.0,
+              "target": 1.0,
+              "duration": 2.0,
+              "ease": "OUT_QUINT"
+            },
+            {
+              "value": 0.0,
+              "target": 1.0,
+              "duration": 2.0,
+              "ease": "IN_OUT_QUINT"
+            },
+            {
+              "value": 0.0,
+              "target": 1.0,
+              "duration": 2.0,
+              "ease": "IN_EXPO"
+            },
+            {
+              "value": 0.0,
+              "target": 1.0,
+              "duration": 2.0,
+              "ease": "OUT_EXPO"
+            },
+            {
+              "value": 0.0,
+              "target": 1.0,
+              "duration": 2.0,
+              "ease": "IN_OUT_EXPO"
+            },
+            {
+              "value": 0.0,
+              "target": 1.0,
+              "duration": 2.0,
+              "ease": "IN_CIRC"
+            },
+            {
+              "value": 0.0,
+              "target": 1.0,
+              "duration": 2.0,
+              "ease": "OUT_CIRC"
+            },
+            {
+              "value": 0.0,
+              "target": 1.0,
+              "duration": 2.0,
+              "ease": "IN_OUT_CIRC"
+            },
+            {
+              "value": 0.0,
+              "target": 1.0,
+              "duration": 2.0,
+              "ease": "IN_BACK"
+            },
+            {
+              "value": 0.0,
+              "target": 1.0,
+              "duration": 2.0,
+              "ease": "OUT_BACK"
+            },
+            {
+              "value": 0.0,
+              "target": 1.0,
+              "duration": 2.0,
+              "ease": "IN_OUT_BACK"
+            },
+            {
+              "value": 0.0,
+              "target": 1.0,
+              "duration": 2.0,
+              "ease": "IN_ELASTIC"
+            },
+            {
+              "value": 0.0,
+              "target": 1.0,
+              "duration": 2.0,
+              "ease": "OUT_ELASTIC"
+            },
+            {
+              "value": 0.0,
+              "target": 1.0,
+              "duration": 2.0,
+              "ease": "IN_OUT_ELASTIC"
+            },
+            {
+              "value": 0.0,
+              "target": 1.0,
+              "duration": 2.0,
+              "ease": "IN_BOUNCE"
+            },
+            {
+              "value": 0.0,
+              "target": 1.0,
+              "duration": 2.0,
+              "ease": "OUT_BOUNCE"
+            },
+            {
+              "value": 0.0,
+              "target": 1.0,
+              "duration": 2.0,
+              "ease": "IN_OUT_BOUNCE"
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

@@ -17,6 +17,16 @@ global.__grid_track_event = {
     parse: function(data) {
       return {
         "icon": Struct.parse.sprite(data, "icon"),
+        "gr-area_hide-h": Struct.parse.boolean(data, "gr-area_hide-h", TRACK_EVENT_DEFAULT_HIDDEN_VALUE),
+        "gr-area_hide-h-length": Struct.parse.boolean(data, "gr-area_hide-h-length", TRACK_EVENT_DEFAULT_HIDDEN_VALUE),
+        "gr-area_hide-h-size": Struct.parse.boolean(data, "gr-area_hide-h-size", TRACK_EVENT_DEFAULT_HIDDEN_VALUE),
+        "gr-area_hide-h-alpha": Struct.parse.boolean(data, "gr-area_hide-h-alpha", TRACK_EVENT_DEFAULT_HIDDEN_VALUE),
+        "gr-area_hide-h-col": Struct.parse.boolean(data, "gr-area_hide-h-col", TRACK_EVENT_DEFAULT_HIDDEN_VALUE),
+        "gr-area_hide-v": Struct.parse.boolean(data, "gr-area_hide-v", TRACK_EVENT_DEFAULT_HIDDEN_VALUE),
+        "gr-area_hide-v-length": Struct.parse.boolean(data, "gr-area_hide-v-length", TRACK_EVENT_DEFAULT_HIDDEN_VALUE),
+        "gr-area_hide-v-size": Struct.parse.boolean(data, "gr-area_hide-v-size", TRACK_EVENT_DEFAULT_HIDDEN_VALUE),
+        "gr-area_hide-v-alpha": Struct.parse.boolean(data, "gr-area_hide-v-alpha", TRACK_EVENT_DEFAULT_HIDDEN_VALUE),
+        "gr-area_hide-v-col": Struct.parse.boolean(data, "gr-area_hide-v-col", TRACK_EVENT_DEFAULT_HIDDEN_VALUE),
         "gr-area_use-h": Struct.parse.boolean(data, "gr-area_use-h"),
         "gr-area_h": Struct.parse.numberTransformer(data, "gr-area_h", {
           clampValue: { from: 0.0, to: 100.0 },
@@ -55,8 +65,13 @@ global.__grid_track_event = {
         "gr-area_change-v-size": Struct.parse.boolean(data, "gr-area_change-v-size"),
       }
     },
-    run: function(data) {
-      var gridService = Beans.get(BeanVisuController).gridService
+    run: function(data, channel) {
+      var controller = Beans.get(BeanVisuController)
+      if (!controller.isChannelDifficultyValid(channel)) {
+        return
+      }
+
+      var gridService = controller.gridService
       var properties = gridService.properties
       var pump = gridService.dispatcher
       var executor = gridService.executor
@@ -130,6 +145,17 @@ global.__grid_track_event = {
     parse: function(data) {
       return {
         "icon": Struct.parse.sprite(data, "icon"),
+        "gr-c_hide": Struct.parse.boolean(data, "gr-c_hide", TRACK_EVENT_DEFAULT_HIDDEN_VALUE),
+        "gr-c_hide-main": Struct.parse.boolean(data, "gr-c_hide-main", TRACK_EVENT_DEFAULT_HIDDEN_VALUE),
+        "gr-c_hide-main-amount": Struct.parse.boolean(data, "gr-c_hide-main-amount", TRACK_EVENT_DEFAULT_HIDDEN_VALUE),
+        "gr-c_hide-main-col": Struct.parse.boolean(data, "gr-c_hide-main-col", TRACK_EVENT_DEFAULT_HIDDEN_VALUE),
+        "gr-c_hide-main-alpha": Struct.parse.boolean(data, "gr-c_hide-main-alpha", TRACK_EVENT_DEFAULT_HIDDEN_VALUE),
+        "gr-c_hide-main-size": Struct.parse.boolean(data, "gr-c_hide-main-size", TRACK_EVENT_DEFAULT_HIDDEN_VALUE),
+        "gr-c_hide-side": Struct.parse.boolean(data, "gr-c_hide-side", TRACK_EVENT_DEFAULT_HIDDEN_VALUE),
+        "gr-c_hide-side-amount": Struct.parse.boolean(data, "gr-c_hide-side-amount", TRACK_EVENT_DEFAULT_HIDDEN_VALUE),
+        "gr-c_hide-side-col": Struct.parse.boolean(data, "gr-c_hide-side-col", TRACK_EVENT_DEFAULT_HIDDEN_VALUE),
+        "gr-c_hide-side-alpha": Struct.parse.boolean(data, "gr-c_hide-side-alpha", TRACK_EVENT_DEFAULT_HIDDEN_VALUE),
+        "gr-c_hide-side-size": Struct.parse.boolean(data, "gr-c_hide-side-size", TRACK_EVENT_DEFAULT_HIDDEN_VALUE),
         "gr-c_use-mode": Struct.parse.boolean(data, "gr-c_use-mode"),
         "gr-c_mode": Struct.parse.enumerableKey(data, "gr-c_mode", GridMode, GridMode.DUAL),
         "gr-c_use-amount": Struct.parse.boolean(data, "gr-c_use-amount"),
@@ -164,8 +190,13 @@ global.__grid_track_event = {
         "gr-c_change-side-size": Struct.parse.boolean(data, "gr-c_change-side-size"),
       }
     },
-    run: function(data) {
-      var gridService = Beans.get(BeanVisuController).gridService
+    run: function(data, channel) {
+      var controller = Beans.get(BeanVisuController)
+      if (!controller.isChannelDifficultyValid(channel)) {
+        return
+      }
+
+      var gridService = controller.gridService
       var properties = gridService.properties
       var pump = gridService.dispatcher
       var executor = gridService.executor
@@ -238,6 +269,17 @@ global.__grid_track_event = {
     parse: function(data) {
       return {
         "icon": Struct.parse.sprite(data, "icon"),
+        "gr-r_hide": Struct.parse.boolean(data, "gr-r_hide", TRACK_EVENT_DEFAULT_HIDDEN_VALUE),
+        "gr-r_hide-main": Struct.parse.boolean(data, "gr-r_hide-main", TRACK_EVENT_DEFAULT_HIDDEN_VALUE),
+        "gr-r_hide-main-amount": Struct.parse.boolean(data, "gr-r_hide-main-amount", TRACK_EVENT_DEFAULT_HIDDEN_VALUE),
+        "gr-r_hide-main-col": Struct.parse.boolean(data, "gr-r_hide-main-col", TRACK_EVENT_DEFAULT_HIDDEN_VALUE),
+        "gr-r_hide-main-alpha": Struct.parse.boolean(data, "gr-r_hide-main-alpha", TRACK_EVENT_DEFAULT_HIDDEN_VALUE),
+        "gr-r_hide-main-size": Struct.parse.boolean(data, "gr-r_hide-main-size", TRACK_EVENT_DEFAULT_HIDDEN_VALUE),
+        "gr-r_hide-side": Struct.parse.boolean(data, "gr-r_hide-side", TRACK_EVENT_DEFAULT_HIDDEN_VALUE),
+        "gr-r_hide-side-amount": Struct.parse.boolean(data, "gr-r_hide-side-amount", TRACK_EVENT_DEFAULT_HIDDEN_VALUE),
+        "gr-r_hide-side-col": Struct.parse.boolean(data, "gr-r_hide-side-col", TRACK_EVENT_DEFAULT_HIDDEN_VALUE),
+        "gr-r_hide-side-alpha": Struct.parse.boolean(data, "gr-r_hide-side-alpha", TRACK_EVENT_DEFAULT_HIDDEN_VALUE),
+        "gr-r_hide-side-size": Struct.parse.boolean(data, "gr-r_hide-side-size", TRACK_EVENT_DEFAULT_HIDDEN_VALUE),
         "gr-r_use-mode": Struct.parse.boolean(data, "gr-r_use-mode"),
         "gr-r_mode": Struct.parse.enumerableKey(data, "gr-r_mode", GridMode, GridMode.DUAL),
         "gr-r_use-amount": Struct.parse.boolean(data, "gr-r_use-amount"),
@@ -246,6 +288,7 @@ global.__grid_track_event = {
           clampTarget: { from: 0.0, to: 999.9 },
         }),
         "gr-r_change-amount": Struct.parse.boolean(data, "gr-r_change-amount"),
+        "gr-r_hide-amount": Struct.parse.boolean(data, "gr-r_hide-amount"),
         "gr-r_use-main-col": Struct.parse.boolean(data, "gr-r_use-main-col"),
         "gr-r_main-col": Struct.parse.color(data, "gr-r_main-col"),
         "gr-r_main-col-spd": Struct.parse.number(data, "gr-r_main-col-spd", 1.0, 0.0, 999.9),
@@ -273,7 +316,12 @@ global.__grid_track_event = {
       }
     },
     run: function(data, channel) {
-      var gridService = Beans.get(BeanVisuController).gridService
+      var controller = Beans.get(BeanVisuController)
+      if (!controller.isChannelDifficultyValid(channel)) {
+        return
+      }
+
+      var gridService = controller.gridService
       var properties = gridService.properties
       var pump = gridService.dispatcher
       var executor = gridService.executor
@@ -346,6 +394,18 @@ global.__grid_track_event = {
     parse: function(data) {
       return {
         "icon": Struct.parse.sprite(data, "icon"),
+        "gr-cfg_hide-grid": Struct.parse.boolean(data, "gr-cfg_hide-grid", TRACK_EVENT_DEFAULT_HIDDEN_VALUE),
+        "gr-cfg_hide-grid-blend": Struct.parse.boolean(data, "gr-cfg_hide-grid-blend", TRACK_EVENT_DEFAULT_HIDDEN_VALUE),
+        "gr-cfg_hide-grid-spd": Struct.parse.boolean(data, "gr-cfg_hide-grid-spd", TRACK_EVENT_DEFAULT_HIDDEN_VALUE),
+        "gr-cfg_hide-grid-z": Struct.parse.boolean(data, "gr-cfg_hide-grid-z", TRACK_EVENT_DEFAULT_HIDDEN_VALUE),
+        "gr-cfg_hide-focus-grid": Struct.parse.boolean(data, "gr-cfg_hide-focus-grid", TRACK_EVENT_DEFAULT_HIDDEN_VALUE),
+        "gr-cfg_hide-focus-grid-blend": Struct.parse.boolean(data, "gr-cfg_hide-focus-grid-blend", TRACK_EVENT_DEFAULT_HIDDEN_VALUE),
+        "gr-cfg_hide-focus-grid-col": Struct.parse.boolean(data, "gr-cfg_hide-focus-grid-col", TRACK_EVENT_DEFAULT_HIDDEN_VALUE),
+        "gr-cfg_hide-focus-grid-treshold": Struct.parse.boolean(data, "gr-cfg_hide-focus-grid-treshold", TRACK_EVENT_DEFAULT_HIDDEN_VALUE),
+        "gr-cfg_hide-focus-grid-alpha": Struct.parse.boolean(data, "gr-cfg_hide-focus-grid-alpha", TRACK_EVENT_DEFAULT_HIDDEN_VALUE),
+        "gr-cfg_hide-cls": Struct.parse.boolean(data, "gr-cfg_hide-cls", TRACK_EVENT_DEFAULT_HIDDEN_VALUE),
+        "gr-cfg_hide-cls-col": Struct.parse.boolean(data, "gr-cfg_hide-cls-col", TRACK_EVENT_DEFAULT_HIDDEN_VALUE),
+        "gr-cfg_hide-cls-alpha": Struct.parse.boolean(data, "gr-cfg_hide-cls-alpha", TRACK_EVENT_DEFAULT_HIDDEN_VALUE),
         "gr-cfg_use-render": Struct.parse.boolean(data, "gr-cfg_use-render"),
         "gr-cfg_render": Struct.parse.boolean(data, "gr-cfg_render"),
         "gr-cfg_use-spd": Struct.parse.boolean(data, "gr-cfg_use-spd"),
@@ -394,8 +454,13 @@ global.__grid_track_event = {
         "gr-cfg_focus-grid-blend-col-spd": Struct.parse.number(data, "gr-cfg_focus-grid-blend-col-spd", 1.0, 0.0, 999.9),
       }
     },
-    run: function(data) {
-      var gridService = Beans.get(BeanVisuController).gridService
+    run: function(data, channel) {
+      var controller = Beans.get(BeanVisuController)
+      if (!controller.isChannelDifficultyValid(channel)) {
+        return
+      }
+
+      var gridService = controller.gridService
       var properties = gridService.properties
       var pump = gridService.dispatcher
       var executor = gridService.executor

@@ -121,14 +121,14 @@ global.__VISU_GRID_CONDITIONS = {
 function GridItemCondition(json) constructor {
 
   ///@type {String}
-  type = Assert.isType(json.type, String)
+  type = Assert.isType(json.type, String, "type must be type of String")
 
   ///@type {any}
-  data = Struct.getDefault(json, "data", null)
+  data = Struct.get(json, "data")
 
   ///@param {GridItem} item
   ///@param {VisuController} controller
   ///@return {Boolean}
   check = method(this, Assert.isType(Callable.run(Struct
-    .get(VISU_GRID_CONDITIONS, this.type)), Callable))
+    .get(VISU_GRID_CONDITIONS, this.type)), Callable, "check must be type of Callable"))
 }

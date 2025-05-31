@@ -48,6 +48,10 @@ function VEEvent(_context, json = null) constructor {
       },
       data: new Array(String, BRUSH_TEXTURES),
     },
+    "event-hidden": {
+      type: Boolean,
+      value: Struct.getIfType(json, "event-hidden", Boolean, false)
+    }
   })
 
   ///@type {Array<Struct>}
@@ -59,6 +63,11 @@ function VEEvent(_context, json = null) constructor {
       config: { 
         layout: { type: UILayoutType.VERTICAL },
         label: { text: $"{Struct.get(VEBrushTypeNames, json.type)}" },
+        checkbox: { 
+          spriteOn: { name: "visu_texture_checkbox_show" },
+          spriteOff: { name: "visu_texture_checkbox_hide" },
+          store: { key: "event-hidden" },
+        },
       },
     },
     {
@@ -66,9 +75,18 @@ function VEEvent(_context, json = null) constructor {
       template: VEComponents.get("text-field"),
       layout: VELayouts.get("text-field"),
       config: { 
-        layout: { type: UILayoutType.VERTICAL },
-        label: { text: "Timestamp" },
-        field: { store: { key: "event-timestamp" } },
+        layout: { 
+          type: UILayoutType.VERTICAL,
+          margin: { top: 4, bottom: 4 },
+        },
+        label: {
+          text: "Timestamp",
+          hidden: { key: "event-hidden" },
+        },
+        field: {
+          store: { key: "event-timestamp" },
+          hidden: { key: "event-hidden" },
+        },
       },
     },
     {
@@ -80,8 +98,14 @@ function VEEvent(_context, json = null) constructor {
           type: UILayoutType.VERTICAL,
           margin: { bottom: 4 },
         },
-        label: { text: "Channel" },
-        field: { store: { key: "event-channel" } },
+        label: {
+          text: "Channel",
+          hidden: { key: "event-hidden" }
+        },
+        field: {
+          store: { key: "event-channel" },
+          hidden: { key: "event-hidden" }
+        },
       },
     },
     {
@@ -94,10 +118,17 @@ function VEEvent(_context, json = null) constructor {
           height: function() { return 32 },
           margin: { top: 4, bottom: 4 },
         },
-        label: { text: "Icon" },
-        previous: { store: { key: "event-texture" } },
+        label: {
+          text: "Icon",
+          hidden: { key: "event-hidden" },
+        },
+        previous: {
+          store: { key: "event-texture" },
+          hidden: { key: "event-hidden" },
+        },
         preview: Struct.appendRecursive({ 
           store: { key: "event-texture" },
+          hidden: { key: "event-hidden" },
           imageBlendStoreKey: "event-color",
           updateCustom: function() {
             var key = Struct.get(this, "imageBlendStoreKey")
@@ -155,6 +186,8 @@ function VEEvent(_context, json = null) constructor {
             var beginX = round(this.context.area.getX() + this.area.getX() + (this.area.getWidth() / 2.0) - (width / 2.0))
             var beginY = this.context.area.getY() + this.area.getY(),
             var color = ColorUtil.parse(VETheme.color.primaryLight).toGMColor()
+            var color2 = ColorUtil.parse("#d1a1ff").toGMColor()
+            var enableFactor = Struct.get(this.enable, "value") == true ? 1.0 : 0.5
             for (var idx = from; idx <= to; idx += 1.0) {
               if (idx == 0.0) {
                 GPU.render.rectangle(
@@ -169,7 +202,18 @@ function VEEvent(_context, json = null) constructor {
                   color,
                   0.75
                 )
-                
+                GPU.render.rectangle(
+                  beginX - 2,
+                  beginY - 2,
+                  beginX + width + 1,
+                  beginY + width + 1,
+                  true,
+                  color,
+                  color,
+                  color,
+                  color,
+                  0.50
+                )
                 continue
               }
 
@@ -177,11 +221,8 @@ function VEEvent(_context, json = null) constructor {
                 continue
               }
 
-              var textureName = (index + idx < 0.0) || (index + idx >= data.size())
-                ? (idx < 0.0 
-                  ? data.get(data.size() + idx) 
-                  : data.get(idx))
-                : data.get(index + idx)
+              var wrappedIndex = (((index + idx) mod data.size()) + data.size()) mod data.size()
+              var textureName = data.get(wrappedIndex)
               
               if (!Optional.is(textureName)) {
                 continue
@@ -196,7 +237,7 @@ function VEEvent(_context, json = null) constructor {
               texture.render(
                 beginX + (idx * (width + margin)) + (texture.offsetX * scale),
                 beginY + (texture.offsetY * scale),
-                0.0, scale, scale, 0.33
+                0.0, scale, scale, 1.6*enableFactor, 0.0, color2
               )
             }
           },
@@ -241,11 +282,8 @@ function VEEvent(_context, json = null) constructor {
                 continue
               }
 
-              var textureName = (index + idx < 0.0) || (index + idx >= data.size())
-                ? (idx < 0.0 
-                  ? data.get(data.size() + idx) 
-                  : data.get(idx))
-                : data.get(index + idx)
+              var wrappedIndex = (((index + idx) mod data.size()) + data.size()) mod data.size()
+              var textureName = data.get(wrappedIndex)
               
               if (!Optional.is(textureName)) {
                 continue
@@ -260,7 +298,10 @@ function VEEvent(_context, json = null) constructor {
             }
           },
         }, Struct.get(VEStyles.get("spin-select-image"), "preview"), false),
-        next: { store: { key: "event-texture" } },
+        next: {
+          store: { key: "event-texture" },
+          hidden: { key: "event-hidden" },
+        },
       }
     },
     {
@@ -273,23 +314,59 @@ function VEEvent(_context, json = null) constructor {
           hex: { margin: { top: 4 } },
         },
         red: {
-          label: { text: "Red" },
-          field: { store: { key: "event-color" } },
-          slider: { store: { key: "event-color" } },
+          label: {
+            text: "Red",
+            hidden: { key: "event-hidden" },
+          },
+          field: {
+            store: { key: "event-color" },
+            hidden: { key: "event-hidden" },
+          },
+          slider: {
+            store: { key: "event-color" },
+            hidden: { key: "event-hidden" },
+          },
         },
         green: {
-          label: { text: "Green" },
-          field: { store: { key: "event-color" } },
-          slider: { store: { key: "event-color" } },
+          label: {
+            text: "Green",
+            hidden: { key: "event-hidden" },
+          },
+          field: {
+            store: { key: "event-color" },
+            hidden: { key: "event-hidden" },
+          },
+          slider: {
+            store: { key: "event-color" },
+            hidden: { key: "event-hidden" },
+          },
         },
         blue: {
-          label: { text: "Blue" },
-          field: { store: { key: "event-color" } },
-          slider: { store: { key: "event-color" } },
+          label: {
+            text: "Blue",
+            hidden: { key: "event-hidden" },
+          },
+          field: {
+            store: { key: "event-color" },
+            hidden: { key: "event-hidden" },
+          },
+          slider: {
+            store: { key: "event-color" },
+            hidden: { key: "event-hidden" },
+          },
         },
         hex: { 
-          label: { text: "Hex" },
-          field: { store: { key: "event-color" } },
+          label: {
+            text: "Hex",
+            hidden: { key: "event-hidden" },
+          },
+          field: {
+            store: { key: "event-color" },
+            hidden: { key: "event-hidden" },
+          },
+          button: {
+            hidden: { key: "event-hidden" },
+          },
         },
       },
     },
@@ -319,7 +396,8 @@ function VEEvent(_context, json = null) constructor {
             icon: {
               name: Assert.isType(event.store.getValue("event-texture"), String),
               blend: Assert.isType(event.store.getValue("event-color").toHex(), String),
-            }
+            },
+            hidden: Assert.isType(event.store.getValue("event-hidden"), Boolean),
           },
           event.serializeData(event.store.container
             .filter(function(item) {
@@ -327,6 +405,7 @@ function VEEvent(_context, json = null) constructor {
                   && item.name != "event-channel"
                   && item.name != "event-color"
                   && item.name != "event-texture"
+                  && item.name != "event-hidden"
             })
             .toStruct(function(item) { 
               return item.serialize()

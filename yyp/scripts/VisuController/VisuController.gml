@@ -1,5 +1,16 @@
 ///@package io.alkapivo.visu
 
+///@enum
+function _Difficulty(): Enum() constructor {
+  EASY = "EASY"
+  NORMAL = "NORMAL"
+  HARD = "HARD"
+  LUNATIC = "LUNATIC"
+}
+global.__Difficulty = new _Difficulty()
+#macro Difficulty global.__Difficulty
+
+
 ///@param {Struct} json
 function VisuSave(json) constructor {
   
@@ -12,11 +23,24 @@ function VisuSave(json) constructor {
 ///@param {String} layerName
 function VisuController(layerName) constructor {
 
+  ///@private
+  ///@return {Struct}
+  static parseSceneIntent = function() {
+    return {
+      initialState: Struct.getIfType(
+        Struct.get(Scene.getIntent(), BeanVisuController),
+        "initialState", Struct, { name: "splashscreen" }),
+    }
+  }
+
   ///@type {GMLayer}
   layerId = Assert.isType(Scene.getLayer(layerName), GMLayer)
 
   ///@type {Gamemode}
   gameMode = GameMode.BULLETHELL
+
+  ///@type {Difficulty}
+  difficulty = Difficulty.NORMAL
 
   ///@type {?VisuTrack}
   track = null
@@ -27,8 +51,104 @@ function VisuController(layerName) constructor {
   ///@type {FSM}
   fsm = new FSM(this, {
     displayName: BeanVisuController,
-    initialState: { name: "idle" },
+    initialState: parseSceneIntent().initialState,
     states: {
+      "splashscreen": {
+        actions: {
+          onStart: function(fsm, fsmState, data) {
+            var controller = Beans.get(BeanVisuController)
+            if (Optional.is(controller.ostSound)) {
+              controller.ostSound.stop()
+              controller.ostSound = null
+            }
+
+            var task = TaskUtil.factory.splashscreen({
+              fadeIn: 0.75,
+              duration: 2.5,
+              fadeOut: 0.75,
+              showSkipTimer: 1.0,
+              skipTimer: 0.5,
+              logo: Assert.isType(SpriteUtil.parse({ name: "texture_barons_keep" }), Sprite, 
+                "logo must be type of Sprite"),
+              label: new UILabel({
+                text: "Press any key to skip",
+                color: "#ffffff",
+                font: "font_inter_24_bold",
+                align: { v: VAlign.CENTER, h: HAlign.CENTER },
+                useScale: true,
+                alpha: 0.0,
+              }),
+              render: function(task, layout) {
+                var controller = Beans.get(BeanVisuController)
+                var displayService = controller.displayService
+                var width = layout.width()
+                var height = layout.height()
+
+                if (shader_is_compiled(shader_dissolve)) {
+                  var u_time = shader_get_uniform(shader_dissolve, "u_time")
+
+                  var time = (task.state.fadeIn.duration * task.state.fadeIn.getProgress())
+                    + (task.state.duration.duration * task.state.duration.getProgress())
+                    + (task.state.fadeOut.duration * task.state.fadeOut.getProgress())
+                  shader_set(shader_dissolve)
+                  shader_set_uniform_f(u_time, 6.0 + time)
+                  task.state.logo
+                    .scaleToFit(max(displayService.minWidth, ((time * 50.0) + width) / 1.33), max(displayService.minHeight, ((time * 50.0) + height) / 1.33))
+                    .setAlpha(task.state.alpha)
+                    .render(width / 2.0, height / 2.0)
+                  shader_reset()
+                } else {
+                  task.state.logo
+                    .scaleToFit(max(displayService.minWidth, width / 1.33), max(displayService.minHeight, height / 1.33))
+                    .setAlpha(task.state.alpha)
+                    .render(width / 2.0, height / 2.0)
+                }
+
+                task.state.label
+                  .setAlpha(task.state.skipAlpha)
+                  .render(width / 2.0, height * 0.9, width * 0.9, height * 0.2)
+
+                return this
+              },
+            })
+
+            Beans.get(BeanVisuController).visuRenderer.executor.add(task)
+          },
+          onFinish: function(fsm, fsmState, data) {
+            var controller = Beans.get(BeanVisuController)
+            if (Optional.is(controller.ostSound)) {
+              controller.ostSound.stop()
+              controller.ostSound = null
+            }
+          },
+        },
+        update: function(fsm) {
+          try {
+            var controller = Beans.get(BeanVisuController)
+            if (Optional.is(controller.ostSound)) {
+              controller.ostSound.stop()
+              controller.ostSound = null
+            }
+
+            var task = controller.visuRenderer.executor.tasks
+              .find(TaskUtil.filterByName, "splashscreen")
+            if (!Optional.is(task)) {
+              fsm.dispatcher.send(new Event("transition", { name: "idle" }))
+            }
+          } catch (exception) {
+            var message = $"'fsm::update' (state: 'splashscreen') fatal error: {exception.message}"
+            Logger.error(BeanVisuController, message)
+            Core.printStackTrace()
+            fsm.dispatcher.send(new Event("transition", { name: "idle" }))
+            Beans.get(BeanVisuController).send(new Event("spawn-popup", { message: message }))
+          }
+        },
+        transitions: {
+          "splashscreen": null,
+          "idle": null,
+          "quit": null,
+        },
+      },
       "idle": {
         actions: {
           onStart: function(fsm, fsmState, data) {
@@ -45,9 +165,9 @@ function VisuController(layerName) constructor {
               fsm.context.send(data)
             }
 
-            fsmState.state.set("bkgTimer", new Timer(4.0 + random(12.0), { loop: Infinity }))
-            fsmState.state.set("bkgColorTimer", new Timer(4.0 + random(12.0), { loop: Infinity }))
-            fsmState.state.set("glitchTimer", new Timer(4.0 + random(12.0), { loop: Infinity }))
+            fsmState.state.set("bkgTimer", new Timer(6.0 + random(10.0), { loop: Infinity }))
+            fsmState.state.set("bkgColorTimer", new Timer(6.0 + random(10.0), { loop: Infinity }))
+            fsmState.state.set("glitchTimer", new Timer(6.0 + random(10.0), { loop: Infinity }))
           },
           onFinish: function(fsm, fsmState, data) {
             var controller = Beans.get(BeanVisuController)
@@ -71,7 +191,7 @@ function VisuController(layerName) constructor {
           } else {
             var ostVolume = Visu.settings.getValue("visu.audio.ost-volume")
             if (!controller.ostSound.isLoaded()) {
-              controller.ostSound.play(0.0).rewind(random(60.0)).setVolume(ostVolume, 2.0)
+              controller.ostSound.play(0.0).rewind(random(90.0)).setVolume(ostVolume, 2.0)
             } else if (controller.ostSound.isPaused()) {
               controller.ostSound.resume().setVolume(ostVolume, 2.0)
             } else if (controller.ostSound.isPlaying()
@@ -82,29 +202,31 @@ function VisuController(layerName) constructor {
   
           var bkgTimer = this.state.get("bkgTimer")
           if (bkgTimer.update().finished) {
-            bkgTimer.setDuration(4.0 + random(12.0))
-            gridService.init()
+            bkgTimer.setDuration(6.0 + random(10.0))
+            gridService.init(bkgTimer.duration * (0.75 + random(0.75)))
           }
 
           var bkgColorTimer = this.state.get("bkgColorTimer")
           if (bkgColorTimer.update().finished) {
-            bkgColorTimer.setDuration(4.0 + random(12.0))
+            bkgColorTimer.setDuration(6.0 + random(10.0))
             var properties = gridService.properties
             var pump = controller.dispatcher
             var executor = controller.executor
             var color = ColorUtil.parse(GMArray.getRandom([
               "#000000",
               "#160e24",
-              "#6e0d27",
-              "#c21772",
-              "#5d2985", 
+              "#000000",
+              "#300642",
+              "#000000",
+              "#161d21",
+              "#000000",
+              "#463b5c",
+              "#000000",
               "#c4146c",
+              "#000000",
               "#1d6296",
-              "#4550e6",
-              "#d62ce6",
-              "#1082c9",
-              "#1c070a",
-              "#160b24"
+              "#000000",
+              "#4550e6"
             ]))
             Visu.resolveColorTransformerTrackEvent(
               {
@@ -124,12 +246,13 @@ function VisuController(layerName) constructor {
 
           var glitchTimer = this.state.get("glitchTimer")
           if (glitchTimer.update().finished) {
-            glitchTimer.setDuration(4.0 + random(12.0))
-            controller.visuRenderer.hudRenderer.sendGlitchEvent()
+            glitchTimer.setDuration(6.0 + random(10.0))
+            var factor = 0.08 + random(1.0) * 0.08
             effect_track_event.brush_effect_glitch.run({
               "ef-glt_use-config": false,
               "ef-glt_use-fade-out": true,
-              "ef-glt_fade-out": 0.02 + random(1.0) * 0.08,
+              "ef-glt_fade-out": factor,
+              "ef-glt_glitch": choose(GlitchType.GRID, GlitchType.GRID, GlitchType.BACKGROUND),
             })
           }
 
@@ -179,7 +302,7 @@ function VisuController(layerName) constructor {
             var controller = Beans.get(BeanVisuController)
             controller.menu.send(new Event("close"))
             controller.loader.fsm.dispatcher.send(new Event("transition", {
-              name: "parse-manifest",
+              name: "clear-state",
               data: data.manifest,
             }))
             fsmState.state.set("autoplay", Struct.getDefault(data, "autoplay", false))
@@ -530,6 +653,18 @@ function VisuController(layerName) constructor {
     },
   })
 
+  ///@private
+  ///@type {DebugTimer}
+  updateDebugTimer = new DebugTimer("updateDebugTimer")
+
+  ///@private
+  ///@type {DebugTimer}
+  renderTimer = new DebugTimer("renderTimer")
+  
+  ///@private
+  ///@type {DebugTimer}
+  renderGUITimer = new DebugTimer("renderGUITimer")
+
   ///@type {UIService}
   uiService = new UIService(this)
 
@@ -631,6 +766,12 @@ function VisuController(layerName) constructor {
   ///@return {VisuController}
   watchdog = function() {
     try {
+      this.difficulty = Visu.settings.getValue("visu.difficulty")
+      if (!Core.isEnumKey(this.difficulty, Difficulty)) {
+        this.difficulty = Difficulty.NORMAL
+        Visu.settings.setValue("visu.difficulty", this.difficulty).save()
+      }
+
       if (this.trackService.isTrackLoaded()) {
         var ost = this.trackService.track.audio
         var ostVolume = Visu.settings.getValue("visu.audio.ost-volume")
@@ -792,6 +933,13 @@ function VisuController(layerName) constructor {
       struct: Assert.isType(Struct.get(controller, name), Struct),
     }
   }, this))
+
+  ///@param {TrackChannel}
+  ///@return {Boolean}
+  isChannelDifficultyValid = function(channel) {
+    var difficulties = Struct.get(Struct.get(channel, "settings"), "difficulty")
+    return !Optional.is(difficulties) || Struct.get(difficulties, this.difficulty) != false
+  }
 
   ///@private
   ///@return {VisuController}
@@ -974,6 +1122,10 @@ function VisuController(layerName) constructor {
       }
     }
 
+    if (cursor_sprite == -1 && is_debug_overlay_open() && this.displayService.getCursor() == Cursor.NONE) {
+      displayService.setCursor(Cursor.DEFAULT)
+    }
+
     if (cursor_sprite != -1 && this.displayService.getCursor() != Cursor.NONE) {
       cursor_sprite = -1
     }
@@ -996,26 +1148,39 @@ function VisuController(layerName) constructor {
 
   ///@return {VisuController}
   update = function() {
-    this.updateUIService()
-    this.services.forEach(this.updateService, this)
-    this.updateCursor()
-    var editor = Beans.get(BeanVisuEditorController)
+    this.updateDebugTimer.start()
     var state = this.fsm.getStateName()
+    if (state != "splashscreen") {
+      this.updateUIService()
+    }
+    
+    this.services.forEach(this.updateService, this)
+    
+    this.updateCursor()
+
+    var editor = Beans.get(BeanVisuEditorController)
     if ((this.menu.containers.size() == 0) 
-      && (state != "game-over")
-      && (state != "paused" 
-      || (Optional.is(editor) && editor.updateServices))) {
+        && (state != "splashscreen")
+        && (state != "game-over")
+        && (state != "paused" 
+        || (Optional.is(editor) && editor.updateServices))) {
       this.gameplayServices.forEach(this.updateService, this)
     }
+
     this.visuRenderer.update()
+
     this.watchdog()
+
+    updateDebugTimer.finish()
     return this
   }
 
   ///@return {VisuController}
   render = function() {
+    this.renderTimer.start()
     GPU.set.colorWrite(true, true, true, true)
     if (!this.renderEnabled) {
+      this.renderTimer.finish()
       return this
     }
 
@@ -1031,13 +1196,16 @@ function VisuController(layerName) constructor {
       GPU.reset.surface()
       GPU.reset.blendMode()
     }
-    
+
+    this.renderTimer.finish()
     return this
   }
 
   ///@return {VisuController}
   renderGUI = function() {
+    this.renderGUITimer.start()
     if (!this.renderGUIEnabled) {
+      this.renderGUITimer.finish()
       return this
     }
 
@@ -1053,6 +1221,7 @@ function VisuController(layerName) constructor {
       GPU.reset.blendMode()
     }
 
+    this.renderGUITimer.finish()
     return this
   }
 
@@ -1063,7 +1232,7 @@ function VisuController(layerName) constructor {
     VideoUtil.runGC()
     if (Core.getProperty("visu.manifest.load-on-start", false)) {
       var task = new Task("load-manifest")
-        .setTimeout(3.0)
+        .setTimeout(60.0)
         .setState({
           cooldown: new Timer(1.8),
           event: new Event("load", {
@@ -1072,24 +1241,30 @@ function VisuController(layerName) constructor {
           }),
         })
         .whenUpdate(function() {
-          if (this.state.cooldown.update().finished) {
+          var controller = Beans.get(BeanVisuController)
+          var stateName = controller.fsm.getStateName()
+          if (stateName != "splashscreen"
+              && this.state.cooldown.update().finished) {
             Beans.get(BeanVisuController).send(this.state.event)
             this.fullfill()
           }
         })
       
       this.executor.add(task)
-    } else {
+    } else if (Core.getProperty("visu.menu.open-on-start", false)) {
       var event = this.menu.factoryOpenMainMenuEvent()
       var task = new Task("load-manifest")
-        .setTimeout(3.0)
+        .setTimeout(60.0)
         .setState({
-          cooldown: new Timer(1.5),
+          cooldown: new Timer(2.0),
           event: event,
         })
         .whenUpdate(function() {
-          if (this.state.cooldown.update().finished) {
-            Beans.get(BeanVisuController).menu.send(this.state.event)
+          var controller = Beans.get(BeanVisuController)
+          var stateName = controller.fsm.getStateName()
+          if (stateName != "splashscreen"
+              && this.state.cooldown.update().finished) {
+            controller.menu.send(this.state.event)
             this.fullfill()
           }
         })

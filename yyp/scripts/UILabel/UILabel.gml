@@ -46,6 +46,13 @@ function UILabel(json) constructor {
   ///@type {Boolean}
   useScaleWithOffset = Struct.getIfType(json, "useScaleWithOffset", Boolean, false)
 
+  ///@param {Number} alpha
+  ///@return {UILabel}
+  setAlpha = function(alpha) {
+    this.alpha = alpha
+    return this
+  }
+
   ///@param {Number} x
   ///@param {Number} y
   ///@param {Number} [maxWidth]

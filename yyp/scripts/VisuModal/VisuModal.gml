@@ -24,46 +24,46 @@ function VisuModal(_config = null) constructor {
         nodes: {
           message: {
             name: "visu-modal.message",
-            x: function() { return this.margin.left },
-            y: function() { return this.margin.top },
-            height: function() { return 50 - this.margin.top - this.margin.bottom },
+            x: function() { return this.__margin.left },
+            y: function() { return this.__margin.top },
+            height: function() { return 50 - this.__margin.top - this.__margin.bottom },
             margin: { top: 8, left: 8, right: 8, bottom: 8 },
           },
           accept: {
             name: "visu-modal.accept",
-            x: function() { return this.margin.left },
+            x: function() { return this.__margin.left },
             y: function() { return this.context.nodes.message.height()
-              + this.context.nodes.message.margin.top
-              + this.context.nodes.message.margin.bottom
-              + this.margin.top },
+              + this.context.nodes.message.__margin.top
+              + this.context.nodes.message.__margin.bottom
+              + this.__margin.top },
             width: function() { return (this.context.width() / 2)
-              - this.margin.left
-              - this.margin.right },
+              - this.__margin.left
+              - this.__margin.right },
             height: function() { return this.context.height() 
               - this.context.nodes.message.height() 
-              - this.context.nodes.message.margin.top
-              - this.context.nodes.message.margin.bottom 
-              - this.margin.top
-              - this.margin.bottom },
+              - this.context.nodes.message.__margin.top
+              - this.context.nodes.message.__margin.bottom 
+              - this.__margin.top
+              - this.__margin.bottom },
             margin: { top: 8, left: 8, right: 8, bottom: 8 },
           },
           deny: {
             name: "visu-modal.deny",
             x: function() { return (this.context.width() / 2) 
-              + this.margin.left },
+              + this.__margin.left },
             y: function() { return this.context.nodes.message.height()
-              + this.context.nodes.message.margin.top
-              + this.context.nodes.message.margin.bottom
-              + this.margin.top },
+              + this.context.nodes.message.__margin.top
+              + this.context.nodes.message.__margin.bottom
+              + this.__margin.top },
             width: function() { return (this.context.width() / 2)
-              - this.margin.left
-              - this.margin.right },
+              - this.__margin.left
+              - this.__margin.right },
             height: function() { return this.context.height() 
               - this.context.nodes.message.height() 
-              - this.context.nodes.message.margin.top
-              - this.context.nodes.message.margin.bottom 
-              - this.margin.top
-              - this.margin.bottom },
+              - this.context.nodes.message.__margin.top
+              - this.context.nodes.message.__margin.bottom 
+              - this.__margin.top
+              - this.__margin.bottom },
             margin: { top: 8, left: 8, right: 8, bottom: 8 },
           }
         }

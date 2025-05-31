@@ -39,11 +39,14 @@ function LayerRenderer(config = null) {
       var name = argument[index]
       var callback = null
       switch (name) {
-        case "textures": callback = this.renderTextures
+        case "textures":
+          callback = this.renderTextures
           break
-        case "colors": callback = this.renderColors
+        case "colors":
+          callback = this.renderColors
           break
-        case "video": callback = this.renderVideo
+        case "video":
+          callback = this.renderVideo
           break
         default: Logger.warn("LayerRenderer", $"No render handler for: {name}")
           break

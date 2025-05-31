@@ -6,6 +6,10 @@ function brush_effect_particle(json) {
   return {
     name: "brush_effect_particle",
     store: new Map(String, Struct, {
+      "ef-part_hide": {
+        type: Boolean,
+        value: Struct.get(json, "ef-part_hide"),
+      },
       "ef-part_preview": {
         type: Boolean,
         value: Struct.get(json, "ef-part_preview"),
@@ -18,6 +22,10 @@ function brush_effect_particle(json) {
           callback: Beans.get(BeanVisuController).particleTemplateExists,
           defaultValue: "particle-default",
         },
+      },
+      "ef-part_hide-area": {
+        type: Boolean,
+        value: Struct.get(json, "ef-part_hide-area"),
       },
       "ef-part_area": {
         type: Rectangle,
@@ -63,138 +71,55 @@ function brush_effect_particle(json) {
     }),
     components: new Array(Struct, [
       {
+        name: "ef-part_properties",
+        template: VEComponents.get("property"),
+        layout: VELayouts.get("property"),
+        config: { 
+          layout: { type: UILayoutType.VERTICAL },
+          label: { 
+            text: "Properties",
+          },
+          checkbox: {
+            spriteOn: { name: "visu_texture_checkbox_show" },
+            spriteOff: { name: "visu_texture_checkbox_hide" },
+            store: { key: "ef-part_hide" },
+          },
+        },
+      },
+      {
         name: "ef-part_template",  
         template: VEComponents.get("text-field"),
         layout: VELayouts.get("text-field"),
         config: { 
           layout: { type: UILayoutType.VERTICAL },
-          label: { text: "Template" },
-          field: { store: { key: "ef-part_template" } },
+          label: {
+            text: "Template",
+            hidden: { key: "ef-part_hide" },
+          },
+          field: {
+            store: { key: "ef-part_template" },
+            hidden: { key: "ef-part_hide" },
+          },
         },
       },
       {
         name: "ef-part_template-line-h",
         template: VEComponents.get("line-h"),
         layout: VELayouts.get("line-h"),
-        config: { layout: { type: UILayoutType.VERTICAL } },
-      },
-      {
-        name: "ef-part_shape",
-        template: VEComponents.get("spin-select"),
-        layout: VELayouts.get("spin-select"),
-        config: { 
+        config: {
           layout: { type: UILayoutType.VERTICAL },
-          label: { text: "Shape" },
-          previous: { store: { key: "ef-part_shape" } },
-          preview: Struct.appendRecursive({ 
-            store: { key: "ef-part_shape" },
-          }, Struct.get(VEStyles.get("spin-select-label"), "preview"), false),
-          next: { store: { key: "ef-part_shape" } },
+          image: { hidden: { key: "ef-part_hide" } },
         },
       },
       {
-        name: "ef-part_distribution",
-        template: VEComponents.get("spin-select"),
-        layout: VELayouts.get("spin-select"),
-        config: { 
-          layout: { type: UILayoutType.VERTICAL },
-          label: { text: "Dist." },
-          previous: { store: { key: "ef-part_distribution" } },
-          preview: Struct.appendRecursive({ 
-            store: { key: "ef-part_distribution" },
-          }, Struct.get(VEStyles.get("spin-select-label"), "preview"), false),
-          next: { store: { key: "ef-part_distribution" } },
-        },
-      },
-      {
-        name: "ef-part_distribution-line-h",
-        template: VEComponents.get("line-h"),
-        layout: VELayouts.get("line-h"),
-        config: { layout: { type: UILayoutType.VERTICAL } },
-      },
-      {
-        name: "ef-part_amount",  
-        template: VEComponents.get("numeric-input"),
-        layout: VELayouts.get("div"),
-        config: { 
-          layout: { type: UILayoutType.VERTICAL },
-          label: { text: "Amount" },
-          field: {
-            store: { key: "ef-part_amount" },
-            GMTF_DECIMAL: 0,
-          },
-          decrease: { store: { key: "ef-part_amount" } },
-          increase: { store: { key: "ef-part_amount" } },
-          stick: {
-            store: { key: "ef-part_amount" },
-            factor: 1,
-            step: 10,
-          },
-          checkbox: { },
-        },
-      },
-      {
-        name: "ef-part_duration",  
-        template: VEComponents.get("numeric-input"),
-        layout: VELayouts.get("div"),
-        config: { 
-          layout: { type: UILayoutType.VERTICAL },
-          label: { text: "Duration" },
-          field: { store: { key: "ef-part_duration" } },
-          decrease: {
-            store: { key: "ef-part_duration" },
-            factor: -0.01,
-          },
-          increase: {
-            store: { key: "ef-part_duration" },
-            factor: 0.01,
-          },
-          stick: {
-            store: { key: "ef-part_duration" },
-            factor: 0.01,
-          },
-          checkbox: { },
-        },
-      },
-      {
-        name: "ef-part_interval",  
-        template: VEComponents.get("numeric-input"),
-        layout: VELayouts.get("div"),
-        config: { 
-          layout: { type: UILayoutType.VERTICAL },
-          label: { text: "Interval" },
-          field: { store: { key: "ef-part_interval" } },
-          decrease: {
-            store: { key: "ef-part_interval" },
-            factor: -0.001,
-          },
-          increase: {
-            store: { key: "ef-part_interval" },
-            factor: 0.001,
-          },
-          stick: {
-            store: { key: "ef-part_interval" },
-            factor: 0.001,
-          },
-          checkbox: { },
-        },
-      },
-      {
-        name: "ef-part_area-line-h",
-        template: VEComponents.get("line-h"),
-        layout: VELayouts.get("line-h"),
-        config: { layout: { type: UILayoutType.VERTICAL } },
-      },
-      {
-        name: "ef-part_preview",
+        name: "ef-part_area-title",
         template: VEComponents.get("property"),
         layout: VELayouts.get("property"),
         config: { 
           layout: { type: UILayoutType.VERTICAL },
           label: { 
-            text: "Render emitter area",
-            enable: { key: "ef-part_preview" },
-            backgroundColor: VETheme.color.accentShadow,
+            text: "Emitter",
+            //backgroundColor: VETheme.color.accentShadow,
             updateCustom: function() {
               this.preRender()
               if (Core.isType(this.context.updateTimer, Timer)) {
@@ -292,14 +217,210 @@ function brush_effect_particle(json) {
             },
           },
           checkbox: { 
+            spriteOn: { name: "visu_texture_checkbox_show" },
+            spriteOff: { name: "visu_texture_checkbox_hide" },
+            store: { key: "ef-part_hide-area" },
+            //backgroundColor: VETheme.color.accentShadow,
+          },
+          input: {
+            //spriteOn: { name: "visu_texture_checkbox_switch_on" },
+            //spriteOff: { name: "visu_texture_checkbox_switch_off" },
+            //store: { key: "ef-part_preview" },
+            //backgroundColor: VETheme.color.accentShadow,
+          }
+        },
+      },
+      {
+        name: "ef-part_amount",  
+        template: VEComponents.get("numeric-input"),
+        layout: VELayouts.get("div"),
+        config: { 
+          layout: { type: UILayoutType.VERTICAL },
+          label: {
+            text: "Amount",
+            hidden: { key: "ef-part_hide-area" },
+          },
+          field: {
+            store: { key: "ef-part_amount" },
+            hidden: { key: "ef-part_hide-area" },
+            GMTF_DECIMAL: 0,
+          },
+          decrease: {
+            store: { key: "ef-part_amount" },
+            hidden: { key: "ef-part_hide-area" },
+          },
+          increase: {
+            store: { key: "ef-part_amount" },
+            hidden: { key: "ef-part_hide-area" },
+          },
+          stick: {
+            store: { key: "ef-part_amount" },
+            hidden: { key: "ef-part_hide-area" },
+            factor: 1,
+            step: 10,
+          },
+          checkbox: { hidden: { key: "ef-part_hide-area" } },
+        },
+      },
+      {
+        name: "ef-part_duration",  
+        template: VEComponents.get("numeric-input"),
+        layout: VELayouts.get("div"),
+        config: { 
+          layout: { type: UILayoutType.VERTICAL },
+          label: {
+            text: "Duration",
+            hidden: { key: "ef-part_hide-area" },
+          },
+          field: {
+            store: { key: "ef-part_duration" },
+            hidden: { key: "ef-part_hide-area" },
+          },
+          decrease: {
+            store: { key: "ef-part_duration" },
+            hidden: { key: "ef-part_hide-area" },
+            factor: -0.01,
+          },
+          increase: {
+            store: { key: "ef-part_duration" },
+            hidden: { key: "ef-part_hide-area" },
+            factor: 0.01,
+          },
+          stick: {
+            store: { key: "ef-part_duration" },
+            hidden: { key: "ef-part_hide-area" },
+            factor: 0.01,
+          },
+          checkbox: { hidden: { key: "ef-part_hide-area" } },
+        },
+      },
+      {
+        name: "ef-part_interval",  
+        template: VEComponents.get("numeric-input"),
+        layout: VELayouts.get("div"),
+        config: { 
+          layout: { type: UILayoutType.VERTICAL },
+          label: {
+            text: "Interval",
+            hidden: { key: "ef-part_hide-area" },
+          },
+          field: {
+            store: { key: "ef-part_interval" },
+            hidden: { key: "ef-part_hide-area" },
+          },
+          decrease: {
+            store: { key: "ef-part_interval" },
+            hidden: { key: "ef-part_hide-area" },
+            factor: -0.001,
+          },
+          increase: {
+            store: { key: "ef-part_interval" },
+            hidden: { key: "ef-part_hide-area" },
+            factor: 0.001,
+          },
+          stick: {
+            store: { key: "ef-part_interval" },
+            hidden: { key: "ef-part_hide-area" },
+            factor: 0.001,
+          },
+          checkbox: { hidden: { key: "ef-part_hide-area" } },
+        },
+      },
+      {
+        name: "ef-part_interval-line-h",
+        template: VEComponents.get("line-h"),
+        layout: VELayouts.get("line-h"),
+        config: {
+          layout: { type: UILayoutType.VERTICAL },
+          image: { hidden: { key: "ef-part_hide-area" } },
+        },
+      },
+      {
+        name: "ef-part_shape",
+        template: VEComponents.get("spin-select"),
+        layout: VELayouts.get("spin-select"),
+        config: { 
+          layout: {
+            type: UILayoutType.VERTICAL,
+            margin: { top: 2, bottom: 2 },
+          },
+          label: {
+            text: "Shape",
+            hidden: { key: "ef-part_hide-area" },
+          },
+          previous: {
+            store: { key: "ef-part_shape" },
+            hidden: { key: "ef-part_hide-area" },
+          },
+          preview: Struct.appendRecursive({ 
+            store: { key: "ef-part_shape" },
+            hidden: { key: "ef-part_hide-area" },
+          }, Struct.get(VEStyles.get("spin-select-label"), "preview"), false),
+          next: {
+            store: { key: "ef-part_shape" },
+            hidden: { key: "ef-part_hide-area" },
+          },
+        },
+      },
+      {
+        name: "ef-part_distribution",
+        template: VEComponents.get("spin-select"),
+        layout: VELayouts.get("spin-select"),
+        config: { 
+          layout: {
+            type: UILayoutType.VERTICAL,
+            margin: { top: 2, bottom: 2 },
+          },
+          label: {
+            text: "Distribution",
+            hidden: { key: "ef-part_hide-area" },
+          },
+          previous: {
+            store: { key: "ef-part_distribution" },
+            hidden: { key: "ef-part_hide-area" },
+          },
+          preview: Struct.appendRecursive({ 
+            store: { key: "ef-part_distribution" },
+            hidden: { key: "ef-part_hide-area" },
+          }, Struct.get(VEStyles.get("spin-select-label"), "preview"), false),
+          next: {
+            store: { key: "ef-part_distribution" },
+            hidden: { key: "ef-part_hide-area" },
+          },
+        },
+      },
+      {
+        name: "ef-part_distribution-line-h",
+        template: VEComponents.get("line-h"),
+        layout: VELayouts.get("line-h"),
+        config: {
+          layout: { type: UILayoutType.VERTICAL },
+          image: { hidden: { key: "ef-part_hide-area" } },
+        },
+      },
+      {
+        name: "ef-part_preview",
+        template: VEComponents.get("property"),
+        layout: VELayouts.get("property"),
+        config: { 
+          layout: { type: UILayoutType.VERTICAL },
+          label: { 
+            text: "Show emitter",
+            enable: { key: "ef-part_preview" },
+            hidden: { key: "ef-part_hide" },
+            backgroundColor: VETheme.color.side,
+          },
+          checkbox: { 
             spriteOn: { name: "visu_texture_checkbox_on" },
             spriteOff: { name: "visu_texture_checkbox_off" },
             store: { key: "ef-part_preview" },
-            backgroundColor: VETheme.color.accentShadow,
+            hidden: { key: "ef-part_hide" },
+            backgroundColor: VETheme.color.side,
           },
           input: {
-            backgroundColor: VETheme.color.accentShadow,
-          }
+            hidden: { key: "ef-part_hide" },
+            backgroundColor: VETheme.color.side,
+          },
         },
       },
       {
@@ -312,74 +433,110 @@ function brush_effect_particle(json) {
             margin: { top: 4 },
           },
           x: {
-            label: { text: "X" },
-            field: { store: { key: "ef-part_area" } },
+            label: {
+              text: "X",
+              hidden: { key: "ef-part_hide-area" },
+            },
+            field: {
+              store: { key: "ef-part_area" },
+              hidden: { key: "ef-part_hide-area" },
+            },
             slider: {
               snapValue: 0.01 / 10.0,
               minValue: -5.0,
               maxValue: 5.0,
-              store: { key: "ef-part_area" }
+              store: { key: "ef-part_area" },
+              hidden: { key: "ef-part_hide-area" },
             },
             decrease: {
               store: { key: "ef-part_area" },
+              hidden: { key: "ef-part_hide-area" },
               factor: -0.01,
             },
             increase: {
               store: { key: "ef-part_area" },
+              hidden: { key: "ef-part_hide-area" },
               factor: 0.01,
             },
           },
           y: {
-            label: { text: "Y" },
-            field: { store: { key: "ef-part_area" } },
+            label: {
+              text: "Y",
+              hidden: { key: "ef-part_hide-area" },
+            },
+            field: {
+              store: { key: "ef-part_area" },
+              hidden: { key: "ef-part_hide-area" },
+            },
             slider: {
               snapValue: 0.01 / 10.0,
               minValue: -5.0,
               maxValue: 5.0,
-              store: { key: "ef-part_area" }
+              store: { key: "ef-part_area" },
+              hidden: { key: "ef-part_hide-area" },
             },
             decrease: {
               store: { key: "ef-part_area" },
+              hidden: { key: "ef-part_hide-area" },
               factor: -0.01,
             },
             increase: {
               store: { key: "ef-part_area" },
+              hidden: { key: "ef-part_hide-area" },
               factor: 0.01,
             },
           },
           z: {
-            label: { text: "Width" },
-            field: { store: { key: "ef-part_area" } },
+            label: {
+              text: "Width",
+              hidden: { key: "ef-part_hide-area" },
+            },
+            field: {
+              store: { key: "ef-part_area" },
+              hidden: { key: "ef-part_hide-area" },
+            },
             slider: {
               snapValue: 0.01 / 10.0,
               minValue: 0.0,
               maxValue: 10.0,
-              store: { key: "ef-part_area" }
+              store: { key: "ef-part_area" },
+              hidden: { key: "ef-part_hide-area" },
             },
             decrease: {
               store: { key: "ef-part_area" },
+              hidden: { key: "ef-part_hide-area" },
               factor: -0.01,
             },
             increase: {
               store: { key: "ef-part_area" },
+              hidden: { key: "ef-part_hide-area" },
               factor: 0.01,
             },
           },
           a: {
-            label: { text: "Height" },
-            field: { store: { key: "ef-part_area" } },
+            label: {
+              text: "Height",
+              hidden: { key: "ef-part_hide-area" },
+            },
+            field: {
+              store: { key: "ef-part_area" },
+              hidden: { key: "ef-part_hide-area" },
+            },
             slider: {
               snapValue: 0.01 / 10.0,
               minValue: 0.0,
               maxValue: 10.0,
               store: { key: "ef-part_area" },
+              hidden: { key: "ef-part_hide-area" },
             },
             decrease: {
               store: { key: "ef-part_area" },
+              hidden: { key: "ef-part_hide-area" },
               factor: -0.01,
             },
             increase: {
               store: { key: "ef-part_area" },
+              hidden: { key: "ef-part_hide-area" },
               factor: 0.01,
             },
           },

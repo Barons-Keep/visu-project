@@ -15,11 +15,7 @@ function Array(_type = any, _container = null) constructor {
   
   ///@private
   ///@type {GMArray}
-  container = _container != null ? _container : []
-  ///@description Cannot use Assert.isType due to initialization order
-  if (typeof(this.container) != "array") {
-    throw new InvalidAssertException($"Invalid 'Array.container' type: '{typeof(this.container)}'")
-  }
+  container = typeof(_container) == "array" ? _container : []
 
   ///@private
   ///@type {?Stack<Number>}
@@ -163,17 +159,18 @@ function Array(_type = any, _container = null) constructor {
   }
   
   ///@override
-  ///@param {Callable} callback
+  ///@param {?Callable} [callback]
   ///@param {any} [acc]
   ///@param {?Type} [type]
   ///@return {Array}
-  static map = function(callback, acc = null, type = any) {
+  static map = function(callback = null, acc = null, type = any) {
     gml_pragma("forceinline")
     var mapped = new Array(type)
+    var _callback = callback == null ? Lambda.passthrough : callback
     var size = this.size()
     for (var index = 0; index < size; index++) {
       var item = this.container[index]
-      var result = callback(item, index, acc)
+      var result = _callback(item, index, acc)
       if (result == BREAK_LOOP) {
         break
       }
@@ -614,17 +611,18 @@ function _GMArray() constructor {
     return filtered
   }
   
-  ///@override
-  ///@param {Callable} callback
+  ///@param {GMArray} arr
+  ///@param {?Callable} [callback]
   ///@param {any} [acc]
   ///@return {GMArray}
-  static map = function(arr, callback, acc = null) {
+  static map = function(arr, callback = null, acc = null) {
     gml_pragma("forceinline")
     var mapped = []
+    var _callback = callback == null ? Lambda.passthrough : callback
     var size = this.size(arr)
     for (var index = 0; index < size; index++) {
       var item = arr[index]
-      var result = callback(item, index, acc)
+      var result = _callback(item, index, acc)
       if (result == BREAK_LOOP) {
         break
       }
@@ -739,6 +737,25 @@ function _GMArray() constructor {
   static resolveRandom = function(value) {
     gml_pragma("forceinline")
     return Core.isType(value, GMArray) ? GMArray.getRandom(value) : value
+  }
+
+  ///@param {GMArray} array
+  ///@param {?Callable} [callback]
+  ///@param {any} [acc]
+  ///@return {GMArray}
+  static clone = function(array, callback = null, acc = null) {
+    var size = array_length(array)
+    var cloned = array_create(size)
+
+    if (Optional.is(callback)) {
+      for (var index = 0; index < size; index++) {
+        cloned[index] = callback(array[index], index, acc)
+      }
+    } else {
+      array_copy(cloned, 0, array, 0, size);
+    }
+    
+    return cloned
   }
 }
 global.__GMArray = new _GMArray()

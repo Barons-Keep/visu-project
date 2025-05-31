@@ -30,15 +30,15 @@ function VEEventInspector(_editor) constructor {
     return new UILayout({ 
       name: "event-inspector",
       staticHeight: new BindIntent(function() { 
-        return this.nodes.title.height() + this.nodes.title.margin.top
+        return this.nodes.title.height() + this.nodes.title.__margin.top
             + this.nodes.control.height() 
-            + this.nodes.view.margin.top 
-            + this.nodes.view.margin.bottom
+            + this.nodes.view.__margin.top 
+            + this.nodes.view.__margin.bottom
       }),
       nodes: {
         "title": {
           name: "event-inspector.title",
-          y: function() { return this.context.y() + this.margin.top },
+          y: function() { return this.context.y() + this.__margin.top },
           height: function() { return 16 },
           margin: { left: 1, right: 1, top: 0 },
         },
@@ -46,14 +46,14 @@ function VEEventInspector(_editor) constructor {
           name: "event-inspector.view",
           margin: { top: 1, bottom: 0, left: 10, right: 1, },
           height: function() { return this.context.height() - this.context.staticHeight()
-            - this.margin.top - this.margin.bottom },
-          y: function() { return this.margin.top + this.context.nodes.title.bottom() },
+            - this.__margin.top - this.__margin.bottom },
+          y: function() { return this.__margin.top + this.context.nodes.title.bottom() },
         },
         "control": {
           name: "event-inspector.control",
           height: function() { return 40 },
           margin: { left: 0, right: 1, },
-          y: function() { return this.context.nodes.view.bottom() + this.context.nodes.view.margin.bottom },
+          y: function() { return this.context.nodes.view.bottom() + this.context.nodes.view.__margin.bottom },
         }
       }
     }, parent)
@@ -87,7 +87,7 @@ function VEEventInspector(_editor) constructor {
             align: { v: VAlign.CENTER, h: HAlign.LEFT },
             offset: { x: 4 },
             margin: { top: 1 },
-            backgroundColor: VETheme.color.sideDark,
+            backgroundColor: VETheme.color.accentDark,
             clipboard: {
               name: "label_ve-event-inspector-title",
               drag: function() {
@@ -124,7 +124,7 @@ function VEEventInspector(_editor) constructor {
                 var height = accordionNode.height()
                 var eventInspectorMinHeight = editor.accordion.eventInspector.layout.nodes.title.height()
                   + editor.accordion.eventInspector.layout.nodes.control.height()
-                  + 16.0 + 32.0 + 28.0
+                  //+ 16.0 + 32.0 + 28.0
                 var templateToolbarMinHeight = Struct.get(editor.accordion.templateToolbar.layout.nodes, "type").height()
                   + Struct.get(editor.accordion.templateToolbar.layout.nodes, "add").height()
                   + Struct.get(editor.accordion.templateToolbar.layout.nodes, "title").height()
@@ -159,8 +159,9 @@ function VEEventInspector(_editor) constructor {
               var height = accordionNode.height()
               var eventInspectorMinHeight = editor.accordion.eventInspector.layout.nodes.title.height()
                 + editor.accordion.eventInspector.layout.nodes.control.height()
-                + 16.0 + 32.0 + 28.0
-              var templateToolbarMinHeight = Struct.get(editor.accordion.templateToolbar.layout.nodes, "type").height()
+                //+ 16.0 + 32.0 + 28.0
+              var templateToolbarMinHeight = Struct.get(editor.accordion.templateToolbar.layout.nodes, "bar").height()
+                + Struct.get(editor.accordion.templateToolbar.layout.nodes, "type").height()
                 + Struct.get(editor.accordion.templateToolbar.layout.nodes, "add").height()
                 + Struct.get(editor.accordion.templateToolbar.layout.nodes, "title").height()
                 + Struct.get(editor.accordion.templateToolbar.layout.nodes, "inspector-bar").height()
@@ -181,6 +182,17 @@ function VEEventInspector(_editor) constructor {
             }),
             onMousePressedLeft: function(event) {
               Beans.get(BeanVisuEditorIO).mouse.setClipboard(this.clipboard)
+            },
+            onMousePressedRight: function(event) {
+              var editor = Beans.get(BeanVisuEditorController)
+              var accordion = editor.accordion
+              Struct.set(accordion.layout.store, "events-percentage", Struct.get(this, "__expandPercentageHeight") == true ? 0.0 : 1.0)
+              Struct.set(this, "__percentage", null)
+              Struct.set(this, "__expandPercentageHeight", !(Struct.get(this, "__expandPercentageHeight") == true))
+              this.updateCustom()
+              accordion.containers.forEach(accordion.resetUpdateTimer)
+              accordion.templateToolbar.containers.forEach(accordion.resetUpdateTimer)
+              accordion.eventInspector.containers.forEach(accordion.resetUpdateTimer)
             },
             onMouseHoverOver: function(event) {
               if (!mouse_check_button(mb_left)) {
@@ -258,7 +270,9 @@ function VEEventInspector(_editor) constructor {
           if (!Optional.is(this.state.get("selectedEvent"))) {
             this.state.get("empty-label").render(
               this.area.getX() + (this.area.getWidth() / 2),
-              this.area.getY() + (this.area.getHeight() / 2)
+              this.area.getY() + (this.area.getHeight() / 2),
+              this.area.getWidth(),
+              this.area.getHeight()
             )
           }
         },
@@ -414,7 +428,6 @@ function VEEventInspector(_editor) constructor {
                 label: { text: "Preview" },
                 layout: {
                   height: function() { return 40 },
-                  margin: { top: 0 },
                 },
                 callback: function() { 
                   var eventInspector = this.context.eventInspector
@@ -442,7 +455,7 @@ function VEEventInspector(_editor) constructor {
                       transformer: new ColorTransformer({
                         value: VETheme.color.accentLight,
                         target: item.isHoverOver ? item.colorHoverOver : item.colorHoverOut,
-                        factor: 0.016,
+                        duration: 1.0,
                       })
                     })
                     .whenUpdate(function(executor) {
@@ -512,7 +525,6 @@ function VEEventInspector(_editor) constructor {
                 label: { text: "To brush" },
                 layout: {
                   height: function() { return 40 },
-                  margin: { top: 0 },
                 },
                 callback: function() { 
                   var eventInspector = this.context.eventInspector
@@ -543,13 +555,23 @@ function VEEventInspector(_editor) constructor {
                     store.get("category").set(category)
                   }
                   
-                  if (store.getValue("type") != template.type) {
-                    var currentTemplate = store.getValue("template")
-                    if (Optional.is(currentTemplate)) {
-                      var templatesCache = brushToolbar.templatesCache
-                      templatesCache.set(store.getValue("type"), currentTemplate.toStruct())
-                    }
-                    store.get("type").set(template.type)
+                  //if (store.getValue("type") != template.type) {
+                  //  var currentTemplate = store.getValue("template")
+                  //  if (Optional.is(currentTemplate)) {
+                  //    var templatesCache = brushToolbar.templatesCache
+                  //    templatesCache.set(store.getValue("type"), currentTemplate.toStruct())
+                  //  }
+                  //  store.get("type").set(template.type)
+                  //}
+
+                  var brush = brushToolbar.containers
+                    .get("ve-brush-toolbar_inspector-view").state
+                    .get("brush")
+
+                  var templatesCache = brushToolbar.templatesCache
+                  if (Optional.is(brush)) {
+                    var _template = brush.toTemplate()
+                    templatesCache.set(_template.type, _template.toStruct())
                   }
                   
                   store.get("template").set(template)
@@ -569,7 +591,7 @@ function VEEventInspector(_editor) constructor {
                       transformer: new ColorTransformer({
                         value: VETheme.color.accentLight,
                         target: item.isHoverOver ? item.colorHoverOver : item.colorHoverOut,
-                        factor: 0.016,
+                        duration: 1.0,
                       })
                     })
                     .whenUpdate(function(executor) {

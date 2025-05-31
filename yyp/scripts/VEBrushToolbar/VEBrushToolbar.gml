@@ -4,6 +4,20 @@
 #macro BRUSH_TOOLBAR_ENTRY_STEP 1
 
 
+function VEBrushGetTemplateName(templates, prefix, attempt) {
+  var result = templates.find(function(template, index, name) {
+    return template.name == name
+  }, $"{prefix} {attempt}")
+  
+  if (attempt >= 999999) {
+    throw new Exception("Attempt 999999")
+  }
+
+  return Optional.is(result)
+    ? VEBrushGetTemplateName(templates, prefix, attempt + 1)
+    : $"{prefix} {attempt}"
+}
+
 ///@param {Struct} config
 ///@return {Struct}
 function factoryVEBrushToolbarTypeItem(config, index) {
@@ -17,19 +31,25 @@ function factoryVEBrushToolbarTypeItem(config, index) {
         var brushToolbar = this.context.brushToolbar
         var templatesCache = brushToolbar.templatesCache
         var store = brushToolbar.store
-        var template = store.getValue("template")
-        if (Optional.is(template)) {
+        //var template = store.getValue("template")
+
+        var brush = brushToolbar.containers
+          .get("ve-brush-toolbar_inspector-view").state
+          .get("brush")
+
+        if (Optional.is(brush)) {
+          var template = brush.toTemplate()
           templatesCache.set(template.type, template.toStruct())
         }
 
-        if (store.getValue("type") != this.brushType) {
+        //if (store.getValue("type") != this.brushType) {
           store.get("type").set(this.brushType)
           var templateCached = templatesCache.get(this.brushType)
           if (Optional.is(templateCached)) {
-            template = new VEBrushTemplate(templateCached)
+            var template = new VEBrushTemplate(templateCached)
             store.get("template").set(template)
           }
-        }
+        //}
       },
       updateCustom: function() {
         this.backgroundColor = this.brushType == this.context.brushToolbar.store.getValue("type")
@@ -248,6 +268,36 @@ global.__VisuBrushContainers = new Map(String, Callable, {
       },
     }
   },
+  "bar": function(name, brushToolbar, layout) {
+    return {
+      name: name,
+      state: new Map(String, any, {
+        "background-color": ColorUtil.fromHex(VETheme.color.accentShadow).toGMColor(),
+        "background-alpha": 1.0,
+      }),
+      updateTimer: new Timer(FRAME_MS * 2, { loop: Infinity, shuffle: true }),
+      brushToolbar: brushToolbar,
+      layout: layout,
+      updateArea: Callable.run(UIUtil.updateAreaTemplates.get("applyLayout")),
+      render: Callable.run(UIUtil.renderTemplates.get("renderDefault")),
+      items: {
+        "label_bar-title": Struct.appendRecursiveUnique(
+          {
+            type: UIText,
+            text: "Brush toolbar",
+            update: Callable.run(UIUtil.updateAreaTemplates.get("applyMargin")),
+            font: "font_inter_8_bold",
+            color: VETheme.color.textShadow,
+            align: { v: VAlign.CENTER, h: HAlign.LEFT },
+            offset: { x: 4 },
+            backgroundColor: VETheme.color.accentDark,
+          },
+          VEStyles.get("bar-title"),
+          false
+        ),
+      }
+    }
+  },
   "type": function(name, brushToolbar, layout) {
     return {
       name: name,
@@ -419,19 +469,65 @@ global.__VisuBrushContainers = new Map(String, Callable, {
             text: "Brushes",
             font: "font_inter_8_bold",
             offset: { x: 4 },
-            margin: { right: 96, top: 1 },
+            margin: { right: 32 * 5, top: 1 },
             update: Callable.run(UIUtil.updateAreaTemplates.get("applyMargin")),
           },
           VEStyles.get("bar-title"),
           false
         ),
+        "button_brush-control-new": Struct.appendRecursiveUnique(
+          {
+            type: UIButton,
+            group: { index: 4, size: 5, width: 40 },
+            label: { 
+              font: "font_inter_8_regular",
+              text: "New",
+            },
+            margin: { top: 1 },
+            updateArea: Callable.run(UIUtil.updateAreaTemplates.get("groupByXWidth")),
+            callback: function(event) {
+              var controller = Beans.get(BeanVisuController)
+              var brushToolbar = this.context.brushToolbar
+              var type = brushToolbar.store.getValue("type")
+              var templates = controller.brushService.fetchTemplates(type)
+              var name = "new brush template"
+              if (Optional.is(templates)) {
+                name = VEBrushGetTemplateName(templates, name, 1)
+              }
+
+              var template = new VEBrushTemplate({
+                "name": name,
+                "type": type,
+                "color":"#FFFFFF",
+                "texture":"texture_baron",
+              })
+              controller.brushService.saveTemplate(template)
+
+              var view = brushToolbar.containers.get("ve-brush-toolbar_brush-view")
+              if (Optional.is(view)) {
+                view.collection.add(brushToolbar.parseBrushTemplate(template), 0)
+              } else {
+                brushToolbar.store.get("type").set(type)
+                brushToolbar.store.get("template").set(template)
+              }
+            },
+            onMouseHoverOver: function(event) {
+              this.backgroundColor = ColorUtil.fromHex(this.colorHoverOver).toGMColor()
+            },
+            onMouseHoverOut: function(event) {
+              this.backgroundColor = ColorUtil.fromHex(this.colorHoverOut).toGMColor()
+            },
+          },
+          VEStyles.get("bar-button"),
+          false
+        ),
         "button_brush-control-load": Struct.appendRecursiveUnique(
           {
             type: UIButton,
-            group: { index: 1, size: 2, width: 48 },
+            group: { index: 3, size: 5, width: 40 },
             label: { 
               font: "font_inter_8_regular",
-              text: "Import",
+              text: "Load",
             },
             margin: { top: 1 },
             updateArea: Callable.run(UIUtil.updateAreaTemplates.get("groupByXWidth")),
@@ -485,14 +581,41 @@ global.__VisuBrushContainers = new Map(String, Callable, {
         "button_brush-control-save": Struct.appendRecursiveUnique(
           {
             type: UIButton,
-            group: { index: 0, size: 2, width: 48 },
+            group: { index: 2, size: 5, width: 40 },
             label: { 
               font: "font_inter_8_regular",
-              text: "Export",
+              text: "Save",
             },
             margin: { top: 1 },
             updateArea: Callable.run(UIUtil.updateAreaTemplates.get("groupByXWidth")),
             callback: function(event) {
+              var view = this.context.brushToolbar.containers.get("ve-brush-toolbar_brush-view")
+              if (!Optional.is(view)) {
+                return
+              }
+
+              var keys = new Map(String, Boolean)
+              view.collection.components.filter(function(component, iterator, keys) {
+                if (component.getSelected()) {
+                  keys.add(true, component.name)
+                }
+              }, keys)
+
+              if (keys.size() == 0) {
+                return
+              }
+
+              var type = this.context.brushToolbar.store.getValue("type")
+              var templates = Beans.get(BeanVisuController).brushService
+                .fetchTemplates(type)
+                .filter(function(template, index, keys) {
+                  return keys.get(template.name)
+                }, keys)
+
+              if (templates.size() == 0) {
+                return
+              }
+
               var path = FileUtil.getPathToSaveWithDialog({ 
                 description: "JSON file",
                 filename: "brush", 
@@ -503,13 +626,9 @@ global.__VisuBrushContainers = new Map(String, Callable, {
                 return
               }
 
-              var type = this.context.brushToolbar.store.getValue("type")
-              var templates = Beans.get(BeanVisuController).brushService.fetchTemplates(type)
               var data = JSON.stringify({
                 "model": "Collection<io.alkapivo.visu.editor.api.VEBrushTemplate>",
-                "data": Assert.isType(Beans.get(BeanVisuController).brushService
-                  .fetchTemplates(type)
-                  .getContainer(), GMArray),
+                "data": templates.getContainer(),
               }, { pretty: true })
 
               Beans.get(BeanFileService).send(new Event("save-file-sync")
@@ -517,6 +636,86 @@ global.__VisuBrushContainers = new Map(String, Callable, {
                   path: path,
                   data: data
                 })))
+            },
+            onMouseHoverOver: function(event) {
+              this.backgroundColor = ColorUtil.fromHex(this.colorHoverOver).toGMColor()
+            },
+            onMouseHoverOut: function(event) {
+              this.backgroundColor = ColorUtil.fromHex(this.colorHoverOut).toGMColor()
+            },
+          },
+          VEStyles.get("bar-button"),
+          false
+        ),
+        "button_brush-control-remove": Struct.appendRecursiveUnique(
+          {
+            type: UIButton,
+            group: { index: 1, size: 5, width: 40 },
+            label: { 
+              font: "font_inter_8_regular",
+              text: "Del.",
+            },
+            margin: { top: 1 },
+            updateArea: Callable.run(UIUtil.updateAreaTemplates.get("groupByXWidth")),
+            callback: function(event) {
+              var view = this.context.brushToolbar.containers.get("ve-brush-toolbar_brush-view")
+              if (!Optional.is(view)) {
+                return
+              }
+
+              var brushService = Beans.get(BeanVisuController).brushService
+              var acc = {
+                brushService: brushService,
+                gc: new Array(Number),
+              }
+
+              view.collection.components.forEach(function(component, key, acc) {
+                if (component.getSelected()) {
+                  acc.brushService.removeTemplate(component.getBrushTemplate())
+                  acc.gc.add(component.index)
+                }
+              }, acc)
+
+              acc.gc
+                .sort(function(a, b) { return a > b } )
+                .forEach(function(index, gcIndex, collection) { collection.remove(index) }, view.collection)
+            },
+            onMouseHoverOver: function(event) {
+              this.backgroundColor = ColorUtil.fromHex(this.colorHoverOver).toGMColor()
+            },
+            onMouseHoverOut: function(event) {
+              this.backgroundColor = ColorUtil.fromHex(this.colorHoverOut).toGMColor()
+            },
+          },
+          VEStyles.get("bar-button"),
+          false
+        ),
+        "button_brush-control-all": Struct.appendRecursiveUnique(
+          {
+            type: UIButton,
+            group: { index: 0, size: 5, width: 40 },
+            label: { 
+              font: "font_inter_8_regular",
+              text: "Sel.",
+            },
+            margin: { top: 1 },
+            updateArea: Callable.run(UIUtil.updateAreaTemplates.get("groupByXWidth")),
+            callback: function(event) {
+              var view = this.context.brushToolbar.containers.get("ve-brush-toolbar_brush-view")
+              if (!Optional.is(view)) {
+                return
+              }
+
+              var sum = { value: 0 }
+              view.collection.components.forEach(function(component, iterator, sum) {
+                if (component.getSelected()) {
+                  sum.value++
+                }
+              }, sum)
+
+              view.collection.components.forEach(function(component, iterator, selected) {
+                component.setSelected(selected)
+              }, view.collection.size() != sum.value)
             },
             onMouseHoverOver: function(event) {
               this.backgroundColor = ColorUtil.fromHex(this.colorHoverOver).toGMColor()
@@ -539,7 +738,7 @@ global.__VisuBrushContainers = new Map(String, Callable, {
         "type": null,
         "background-color": ColorUtil.fromHex(VETheme.color.side).toGMColor(),
         "empty-label": new UILabel({
-          text: "Click to\nadd template",
+          text: "Click to\nadd brush",
           font: "font_inter_10_regular",
           color: VETheme.color.textShadow,
           align: { v: VAlign.CENTER, h: HAlign.CENTER },
@@ -550,6 +749,9 @@ global.__VisuBrushContainers = new Map(String, Callable, {
       brushToolbar: brushToolbar,
       layout: layout,
       scrollbarY: { align: HAlign.RIGHT },
+      fetchViewHeight: function() {
+        return 32 * this.collection.size()
+      },
       updateArea: Callable.run(UIUtil.updateAreaTemplates.get("scrollableY")),
       renderItem: Callable.run(UIUtil.renderTemplates.get("renderItemDefaultScrollable")),
       renderDefaultScrollable: new BindIntent(Callable.run(UIUtil.renderTemplates.get("renderDefaultScrollable"))),
@@ -567,7 +769,9 @@ global.__VisuBrushContainers = new Map(String, Callable, {
           || this.collection.size() == 0) {
           this.state.get("empty-label").render(
             this.area.getX() + (this.area.getWidth() / 2),
-            this.area.getY() + (this.area.getHeight() / 2)
+            this.area.getY() + (this.area.getHeight() / 2),
+            this.area.getWidth(),
+            this.area.getHeight()
           )
         }
 
@@ -795,10 +999,16 @@ global.__VisuBrushContainers = new Map(String, Callable, {
             margin: { top: 1 },
             clipboard: {
               name: "resize_brush_inspector",
+              mouseY: null,
+              percentageHeight: null,
               drag: function() {
+                this.mouseY = MouseUtil.getMouseY()
+                this.percentageHeight = null
                 Beans.get(BeanVisuController).displayService.setCursor(Cursor.RESIZE_VERTICAL)
               },
               drop: function() {
+                this.mouseY = null
+                this.percentageHeight = null
                 Beans.get(BeanVisuController).displayService.setCursor(Cursor.DEFAULT)
               }
             },
@@ -810,6 +1020,14 @@ global.__VisuBrushContainers = new Map(String, Callable, {
               var mouse = editorIO.mouse
               if (mouse.hasMoved() && mouse.getClipboard() == this.clipboard) {
                 this.updateLayout(MouseUtil.getMouseY())
+              //if (mouse.hasMoved() && mouse.getClipboard() == this.clipboard && Optional.is(this.clipboard.mouseY)) {
+              //  var mouseY = MouseUtil.getMouseY()
+              //  var mouseDiff = mouseY - this.clipboard.mouseY
+              //  if (!Optional.is(this.clipboard.percentageHeight)) {
+              //    var inspectorNode = Struct.get(this.context.layout.context.nodes, "inspector-view")
+              //    this.clipboard.percentageHeight = inspectorNode.percentageHeight
+              //  }
+              //  this.updateLayout(mouseDiff, this.clipboard.percentageHeight)
                 this.context.brushToolbar.containers.forEach(UIUtil.clampUpdateTimerToCooldown, this.context.updateTimerCooldown)
                  
                 if (!mouse_check_button(mb_left)) {
@@ -824,13 +1042,16 @@ global.__VisuBrushContainers = new Map(String, Callable, {
                   var uiService = Beans.get(BeanVisuEditorController).uiService
                   var titleBar = uiService.find("ve-title-bar")
                   var statusBar = uiService.find("ve-status-bar")
+                  var barNode = Struct.get(this.context.layout.context.nodes, "bar")
                   var brushNode = Struct.get(this.context.layout.context.nodes, "brush-view")
                   var toolNode = Struct.get(this.context.layout.context.nodes, "inspector-tool")
                   var inspectorNode = Struct.get(this.context.layout.context.nodes, "inspector-view")
                   var typeNode = Struct.get(this.context.layout.context.nodes, "type")
                   var controlNode = Struct.get(this.context.layout.context.nodes, "control")
-                  var top = titleBar.layout.height() + typeNode.height() + typeNode.margin.top + typeNode.margin.bottom
-                  var bottom = GuiHeight() - statusBar.layout.height() - (controlNode.height() + controlNode.margin.top + controlNode.margin.bottom) - (toolNode.height() + toolNode.margin.top + toolNode.margin.bottom)
+                  var top = titleBar.layout.height()
+                    + barNode.height() + barNode.__margin.top + barNode.__margin.bottom
+                    + typeNode.height() + typeNode.__margin.top + typeNode.__margin.bottom
+                  var bottom = GuiHeight() - statusBar.layout.height() - (controlNode.height() + controlNode.__margin.top + controlNode.__margin.bottom) - (toolNode.height() + toolNode.__margin.top + toolNode.__margin.bottom)
                   var length = bottom - top
                   var before = inspectorNode.percentageHeight
                   inspectorNode.percentageHeight = clamp(inspectorNode.percentageHeight, 4.0 / length, 1.0 - (48.0 / length))
@@ -842,22 +1063,32 @@ global.__VisuBrushContainers = new Map(String, Callable, {
               }
             },
             updateLayout: new BindIntent(function(_position) {
+            //updateLayout: new BindIntent(function(_position, _percentageHeight) {
               var editor = Beans.get(BeanVisuEditorController)
               var uiService = Beans.get(BeanVisuEditorController).uiService
               var titleBar = uiService.find("ve-title-bar")
               var statusBar = uiService.find("ve-status-bar")
+              var barNode = Struct.get(this.context.layout.context.nodes, "bar")
               var brushNode = Struct.get(this.context.layout.context.nodes, "brush-view")
               var inspectorNode = Struct.get(this.context.layout.context.nodes, "inspector-view")
               var toolNode = Struct.get(this.context.layout.context.nodes, "inspector-tool")
               var typeNode = Struct.get(this.context.layout.context.nodes, "type")
               var controlNode = Struct.get(this.context.layout.context.nodes, "control")
-              var top = titleBar.layout.height() + typeNode.height() + typeNode.margin.top + typeNode.margin.bottom
-              var bottom = GuiHeight() - statusBar.layout.height() - (controlNode.height() + controlNode.margin.top + controlNode.margin.bottom) - (toolNode.height() + toolNode.margin.top + toolNode.margin.bottom)
+              var top = titleBar.layout.height()
+                + barNode.height() + barNode.__margin.top + barNode.__margin.bottom
+                + typeNode.height() + typeNode.__margin.top + typeNode.__margin.bottom
+              var bottom = GuiHeight() - statusBar.layout.height() - (controlNode.height() + controlNode.__margin.top + controlNode.__margin.bottom) - (toolNode.height() + toolNode.__margin.top + toolNode.__margin.bottom)
               var length = bottom - top
               var position = clamp(_position - top, 4.0, length - 4.0)
               var before = inspectorNode.percentageHeight
               inspectorNode.percentageHeight = clamp((length - position) / length, 8.0 / length, 1.0 - (48.0 / length))
+              //var position = _position;//clamp(_position - top, 4.0, length - 4.0)
+              //inspectorNode.percentageHeight = _percentageHeight
+              //brushNode.percentageHeight = 1.0 - _percentageHeight
+              //var before = round(inspectorNode.percentageHeight * length)
+              //inspectorNode.percentageHeight = clamp((before - position) / length, 0.0, 1.0) 
               brushNode.percentageHeight = 1.0 - inspectorNode.percentageHeight
+              //if (before != round(inspectorNode.percentageHeight * length)) {
               if (before != inspectorNode.percentageHeight) {
                 editor.brushToolbar.containers.forEach(editor.accordion.resetUpdateTimer)
               }
@@ -896,8 +1127,8 @@ global.__VisuBrushContainers = new Map(String, Callable, {
             width: function() { return this.context.height() },
             x: function() { return this.context.x()
               + (this.collection.getIndex() * this.width())
-              + (this.collection.getIndex() * this.margin.right)
-              + ((this.collection.getIndex() + 1) * this.margin.left) },
+              + (this.collection.getIndex() * this.__margin.right)
+              + ((this.collection.getIndex() + 1) * this.__margin.left) },
           }
         },
         config: {
@@ -1400,7 +1631,7 @@ global.__VisuBrushContainers = new Map(String, Callable, {
                     transformer: new ColorTransformer({
                       value: VETheme.color.accentLight,
                       target: item.isHoverOver ? item.colorHoverOver : item.colorHoverOut,
-                      factor: 0.016,
+                      duration: 1.0,
                     })
                   })
                   .whenUpdate(function(executor) {
@@ -1544,7 +1775,7 @@ global.__VisuBrushContainers = new Map(String, Callable, {
                     transformer: new ColorTransformer({
                       value: VETheme.color.accept,
                       target: item.isHoverOver ? item.colorHoverOver : item.colorHoverOut,
-                      factor: 0.016,
+                      duration: 1.0,
                     })
                   })
                   .whenUpdate(function(executor) {
@@ -1718,12 +1949,13 @@ function VEBrushToolbar(_editor) constructor {
       {
         name: "brush-toolbar",
         staticHeight: new BindIntent(function() {
+          var bar = Struct.get(this.nodes, "bar")
           var type = Struct.get(this.nodes, "type")
           var brushBar = Struct.get(this.nodes, "brush-bar")
           var inspectorBar = Struct.get(this.nodes, "inspector-bar")
           var inspectorTool = Struct.get(this.nodes, "inspector-tool")
           var control = Struct.get(this.nodes, "control")
-          return type.height() + brushBar.height() + inspectorBar.height() + control.height() + inspectorTool.height()
+          return bar.height() + type.height() + brushBar.height() + inspectorBar.height() + control.height() + inspectorTool.height()
         }),
         nodes: {
           "accordion": {
@@ -1735,9 +1967,18 @@ function VEBrushToolbar(_editor) constructor {
             width: function() { return 20 },
             height: function() { return 420 },
           },
+          "bar": {
+            name: "brush-toolbar.bar",
+            x: function() { return this.context.x()
+              + this.context.nodes.resize.width() },
+            width: function() { return this.context.width() 
+              - this.context.nodes.resize.width() },
+            height: function() { return 16 },
+          },
           "type": {
             name: "brush-toolbar.type",
             height: function() { return 40 },
+            y: function() { return this.context.nodes.bar.bottom() },
             x: function() { return this.context.x()
               + this.context.nodes.resize.width() },
             width: function() { return this.context.width() 
@@ -1758,16 +1999,16 @@ function VEBrushToolbar(_editor) constructor {
             margin: { top: 1, bottom: 1, left: 0, right: 10 },
             x: function() { return this.context.x()
               + this.context.nodes.resize.width()
-              + this.margin.left },
+              + this.__margin.left },
             width: function() { return this.context.width() 
               - this.context.nodes.resize.width()
-              - this.margin.left 
-              - this.margin.right },
-            y: function() { return this.margin.top
+              - this.__margin.left 
+              - this.__margin.right },
+            y: function() { return this.__margin.top
                + Struct.get(this.context.nodes, "brush-bar").bottom() },
             height: function() { return ceil((this.context.height() 
                - this.context.staticHeight()) * this.percentageHeight) 
-               - this.margin.top - this.margin.bottom },
+               - this.__margin.top - this.__margin.bottom },
           },
           "inspector-bar": {
             name: "brush-toolbar.inspector-bar",
@@ -1823,16 +2064,16 @@ function VEBrushToolbar(_editor) constructor {
             margin: { top: 1, bottom: 1, left: 0, right: 10 },
             x: function() { return this.context.x()
               + this.context.nodes.resize.width()
-              + this.margin.left },
+              + this.__margin.left },
             width: function() { return this.context.width() 
               - this.context.nodes.resize.width()
-              - this.margin.left 
-              - this.margin.right },
-            y: function() { return this.margin.top
+              - this.__margin.left 
+              - this.__margin.right },
+            y: function() { return this.__margin.top
               + Struct.get(this.context.nodes, "inspector-tool").bottom() },
             height: function() { return ceil((this.context.height() 
               - this.context.staticHeight()) * this.percentageHeight) 
-              - this.margin.top - this.margin.bottom - 1},
+              - this.__margin.top - this.__margin.bottom - 1},
           },
           "control": {
             name: "brush-toolbar.category",
@@ -1916,9 +2157,9 @@ function VEBrushToolbar(_editor) constructor {
           text: template.name,
           onMouseReleasedLeft: function() {
             var template = this.context.brushToolbar.store.get("template")
-            if (!Core.isType(template.get(), VEBrushTemplate)
-                || template.get().name != this.brushTemplate.name
-                || template.get().type != this.brushTemplate.type) {
+            //if (!Core.isType(template.get(), VEBrushTemplate)
+            //    || template.get().name != this.brushTemplate.name
+            //    || template.get().type != this.brushTemplate.type) {
 
               var templates = Beans.get(BeanVisuController).brushService
                 .fetchTemplates(this.brushTemplate.type)
@@ -1927,7 +2168,7 @@ function VEBrushToolbar(_editor) constructor {
               }
 
               var foundTemplate = templates.find(function(template, index, name) {
-                return template.name = name
+                return template.name == name
               }, this.brushTemplate.name)
               if (!Core.isType(foundTemplate, VEBrushTemplate)) {
                 return
@@ -1939,52 +2180,37 @@ function VEBrushToolbar(_editor) constructor {
               if (Optional.is(inspector)) {
                 inspector.finishUpdateTimer()
               }
-            }
+            //}
           },
           brushTemplate: template,
         },
-        remove: { 
-          sprite: {
-            name: "texture_ve_icon_trash",
-          },
-          callback: function() {
-            Beans.get(BeanVisuController).brushService.removeTemplate(this.brushTemplate)
-            this.context.collection.remove(this.component.index)
-          },
+        select: { 
+          sprite: { name: "visu_texture_checkbox_off" },
+          spriteOn: { name: "visu_texture_checkbox_on" },
+          spriteOff: { name: "visu_texture_checkbox_off" },
+          selected: false,
           brushTemplate: template,
-        },
-        settings: { 
-          sprite: {
-            name: "texture_ve_icon_settings",
-          },
           callback: function() {
-            var template = this.context.brushToolbar.store.get("template")
-            if (!Core.isType(template.get(), VEBrushTemplate)
-                || template.get().name != this.brushTemplate.name
-                || template.get().type != this.brushTemplate.type) {
-
-              var templates = Beans.get(BeanVisuController).brushService
-                .fetchTemplates(this.brushTemplate.type)
-              if (!Core.isType(templates, Array)) {
-                return
-              }
-
-              var foundTemplate = templates.find(function(template, index, name) {
-                return template.name = name
-              }, this.brushTemplate.name)
-              if (!Core.isType(foundTemplate, VEBrushTemplate)) {
-                return
-              }
-
-              template.set(foundTemplate)
-
-              var inspector = this.context.brushToolbar.containers.get("ve-brush-toolbar_inspector-view")
-              if (Optional.is(inspector)) {
-                inspector.finishUpdateTimer()
-              }
-            }
+            this.component.setSelected(!this.component.getSelected())
           },
-          brushTemplate: template,
+          onComponentInit: function(component) {
+            var setSelected = method(this, function(selected) {
+              this.selected = selected
+              this.sprite = SpriteUtil.parse(selected ? this.spriteOn : this.spriteOff)
+            })
+
+            var getSelected = method(this, function() {
+              return this.selected
+            })
+
+            var getBrushTemplate = method(this, function() {
+              return this.brushTemplate
+            })
+
+            Struct.set(component, "setSelected", setSelected)
+            Struct.set(component, "getSelected", getSelected)
+            Struct.set(component, "getBrushTemplate", getBrushTemplate)
+          },
         },
       },
     })

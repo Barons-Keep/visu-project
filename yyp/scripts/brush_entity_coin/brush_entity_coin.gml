@@ -65,23 +65,82 @@ function brush_entity_coin(json) {
         passthrough: UIUtil.passthrough.getClampedStringNumber(),
         data: new Vector2(0.0, SHROOM_SPAWN_ROW_AMOUNT),
       },
+      "en-coin_hide": {
+        type: Boolean,
+        value: Struct.get(json, "en-coin_hide"),
+      },
+      "en-coin_hide-spawn": {
+        type: Boolean,
+        value: Struct.get(json, "en-coin_hide-spawn"),
+      },
     }),
     components: new Array(Struct, [
+      {
+        name: "en-coin_hide",
+        template: VEComponents.get("property"),
+        layout: VELayouts.get("property"),
+        config: { 
+          layout: { type: UILayoutType.VERTICAL },
+          label: { 
+            text: "Properties",
+            //backgroundColor: VETheme.color.accentShadow,
+          },
+          checkbox: { 
+            spriteOn: { name: "visu_texture_checkbox_show" },
+            spriteOff: { name: "visu_texture_checkbox_hide" },
+            store: { key: "en-coin_hide" },
+            //backgroundColor: VETheme.color.accentShadow,
+          },
+          input: {
+            //backgroundColor: VETheme.color.accentShadow,
+          },
+        },
+      },
       {
         name: "en-coin_template",  
         template: VEComponents.get("text-field"),
         layout: VELayouts.get("text-field"),
         config: { 
           layout: { type: UILayoutType.VERTICAL },
-          label: { text: "Coin" },
-          field: { store: { key: "en-coin_template" } },
+          label: {
+            text: "Template",
+            hidden: { key: "en-coin_hide" },
+          },
+          field: {
+            store: { key: "en-coin_template" },
+            hidden: { key: "en-coin_hide" },
+          },
         },
       },
       {
         name: "en-coin_template-line-h",
         template: VEComponents.get("line-h"),
         layout: VELayouts.get("line-h"),
-        config: { layout: { type: UILayoutType.VERTICAL } },
+        config: {
+          layout: { type: UILayoutType.VERTICAL },
+          image: { hidden: { key: "en-coin_hide" } },
+        },
+      },
+      {
+        name: "en-coin_hide-spawn",
+        template: VEComponents.get("property"),
+        layout: VELayouts.get("property"),
+        config: { 
+          layout: { type: UILayoutType.VERTICAL },
+          label: { 
+            text: "Spawner",
+            //backgroundColor: VETheme.color.accentShadow,
+          },
+          checkbox: { 
+            spriteOn: { name: "visu_texture_checkbox_show" },
+            spriteOff: { name: "visu_texture_checkbox_hide" },
+            store: { key: "en-coin_hide-spawn" },
+            //backgroundColor: VETheme.color.accentShadow,
+          },
+          input: {
+            //backgroundColor: VETheme.color.accentShadow,
+          },
+        },
       },
       {
         name: "en-coin_preview",
@@ -90,9 +149,10 @@ function brush_entity_coin(json) {
         config: { 
           layout: { type: UILayoutType.VERTICAL },
           label: { 
-            text: "Render spawn position",
+            text: "Show spawner",
             enable: { key: "en-coin_preview" },
-            backgroundColor: VETheme.color.accentShadow,
+            hidden: { key: "en-coin_hide-spawn" },
+            backgroundColor: VETheme.color.side,
             updateCustom: function() {
               this.preRender()
               if (Core.isType(this.context.updateTimer, Timer)) {
@@ -188,10 +248,12 @@ function brush_entity_coin(json) {
             spriteOn: { name: "visu_texture_checkbox_on" },
             spriteOff: { name: "visu_texture_checkbox_off" },
             store: { key: "en-coin_preview" },
-            backgroundColor: VETheme.color.accentShadow,
+            hidden: { key: "en-coin_hide-spawn" },
+            backgroundColor: VETheme.color.side,
           },
           input: {
-            backgroundColor: VETheme.color.accentShadow,
+            hidden: { key: "en-coin_hide-spawn" },
+            backgroundColor: VETheme.color.side,
           }
         },
       },
@@ -208,42 +270,57 @@ function brush_entity_coin(json) {
             text: "X",
             font: "font_inter_10_bold",
             offset: { y: 14 },
+            hidden: { key: "en-coin_hide-spawn" },
           }, 
           slider: {
             minValue: -1.0 * (SHROOM_SPAWN_CHANNEL_AMOUNT / 2),
             maxValue: SHROOM_SPAWN_CHANNEL_AMOUNT / 2,
             snapValue: 0.1,
             store: { key: "en-coin_x" },
+            hidden: { key: "en-coin_hide-spawn" },
           },
         },
       },
       {
         name: "en-coin_x",
-        template: VEComponents.get("text-field-increase-checkbox"),
-        layout: VELayouts.get("text-field-increase-stick-checkbox"),
+        template: VEComponents.get("numeric-input"),
+        layout: VELayouts.get("div"),
         config: { 
           layout: { type: UILayoutType.VERTICAL },
           label: { 
             text: "",
             font: "font_inter_10_bold",
+            hidden: { key: "en-coin_hide-spawn" },
           },  
-          field: { store: { key: "en-coin_x" } },
+          field: {
+            store: { key: "en-coin_x" },
+            hidden: { key: "en-coin_hide-spawn" },
+          },
           decrease: {
             store: { key: "en-coin_x" },
+            hidden: { key: "en-coin_hide-spawn" },
             factor: -0.25,
           },
           increase: {
             store: { key: "en-coin_x" },
+            hidden: { key: "en-coin_hide-spawn" },
             factor: 0.25,
+          },
+          stick: {
+            store: { key: "en-coin_x" },
+            hidden: { key: "en-coin_hide-spawn" },
+            factor: 0.001,
           },
           checkbox: { 
             spriteOn: { name: "visu_texture_checkbox_on" },
             spriteOff: { name: "visu_texture_checkbox_off" },
             store: { key: "en-coin_snap-x" },
+            hidden: { key: "en-coin_hide-spawn" },
           },
           title: { 
             text: "Snap",
             enable: { key: "en-coin_snap-x" },
+            hidden: { key: "en-coin_hide-spawn" },
           },
         },
       },
@@ -256,34 +333,41 @@ function brush_entity_coin(json) {
           label: { 
             text: "Random",
             enable: { key: "en-coin_use-rng-x" },
+            hidden: { key: "en-coin_hide-spawn" },
           },  
           field: { 
             store: { key: "en-coin_rng-x" },
             enable: { key: "en-coin_use-rng-x" },
+            hidden: { key: "en-coin_hide-spawn" },
           },
           decrease: {
             store: { key: "en-coin_rng-x" },
             enable: { key: "en-coin_use-rng-x" },
+            hidden: { key: "en-coin_hide-spawn" },
             factor: -0.25,
           },
           increase: {
             store: { key: "en-coin_rng-x" },
             enable: { key: "en-coin_use-rng-x" },
+            hidden: { key: "en-coin_hide-spawn" },
             factor: 0.25,
           },
           stick: {
             store: { key: "en-coin_rng-x" },
             enable: { key: "en-coin_use-rng-x" },
+            hidden: { key: "en-coin_hide-spawn" },
             factor: 0.001,
           },
           checkbox: { 
             spriteOn: { name: "visu_texture_checkbox_on" },
             spriteOff: { name: "visu_texture_checkbox_off" },
+            hidden: { key: "en-coin_hide-spawn" },
             store: { key: "en-coin_use-rng-x" },
           },
           title: { 
             text: "Enable",
             enable: { key: "en-coin_use-rng-x" },
+            hidden: { key: "en-coin_hide-spawn" },
           },
         },
       },
@@ -291,7 +375,10 @@ function brush_entity_coin(json) {
         name: "en-coin_rng-x-line-h",
         template: VEComponents.get("line-h"),
         layout: VELayouts.get("line-h"),
-        config: { layout: { type: UILayoutType.VERTICAL } },
+        config: {
+          layout: { type: UILayoutType.VERTICAL },
+          image: { hidden: { key: "en-coin_hide-spawn" } }
+        },
       },
       {
         name: "en-coin_y-slider",  
@@ -304,43 +391,57 @@ function brush_entity_coin(json) {
             color: VETheme.color.textShadow,
             font: "font_inter_10_bold",
             offset: { y: 14 },
+            hidden: { key: "en-coin_hide-spawn" },
           },  
           slider: {
             minValue: -1.0 * (SHROOM_SPAWN_ROW_AMOUNT / 2),
             maxValue: SHROOM_SPAWN_ROW_AMOUNT / 2,
             snapValue: 0.1,
             store: { key: "en-coin_y" },
+            hidden: { key: "en-coin_hide-spawn" },
           },
         },
       },
       {
         name: "en-coin_y",
-        template: VEComponents.get("text-field-increase-checkbox"),
-        layout: VELayouts.get("text-field-increase-stick-checkbox"),
+        template: VEComponents.get("numeric-input"),
+        layout: VELayouts.get("div"),
         config: { 
           layout: { type: UILayoutType.VERTICAL },
           label: { 
             text: "",
             font: "font_inter_10_bold",
+            hidden: { key: "en-coin_hide-spawn" },
           },  
-          field: { store: { key: "en-coin_y" } },
+          field: {
+            store: { key: "en-coin_y" },
+            hidden: { key: "en-coin_hide-spawn" },
+          },
           decrease: {
             store: { key: "en-coin_y" },
+            hidden: { key: "en-coin_hide-spawn" },
             factor: -0.25,
           },
           increase: {
             store: { key: "en-coin_y" },
+            hidden: { key: "en-coin_hide-spawn" },
             factor: 0.25,
           },
-          field: { store: { key: "en-coin_y" } },
+          stick: {
+            store: { key: "en-coin_y" },
+            hidden: { key: "en-coin_hide-spawn" },
+            factor: 0.001,
+          },
           checkbox: { 
             spriteOn: { name: "visu_texture_checkbox_on" },
             spriteOff: { name: "visu_texture_checkbox_off" },
             store: { key: "en-coin_snap-y" },
+            hidden: { key: "en-coin_hide-spawn" },
           },
           title: { 
             text: "Snap",
             enable: { key: "en-coin_snap-y" },
+            hidden: { key: "en-coin_hide-spawn" },
           },
         },
       },
@@ -353,34 +454,41 @@ function brush_entity_coin(json) {
           label: { 
             text: "Random",
             enable: { key: "en-coin_use-rng-y" },
+            hidden: { key: "en-coin_hide-spawn" },
           },  
           field: { 
             store: { key: "en-coin_rng-y" },
             enable: { key: "en-coin_use-rng-y" },
+            hidden: { key: "en-coin_hide-spawn" },
           },
           decrease: {
             store: { key: "en-coin_rng-y" },
             enable: { key: "en-coin_use-rng-y" },
+            hidden: { key: "en-coin_hide-spawn" },
             factor: -0.25,
           },
           increase: {
             store: { key: "en-coin_rng-y" },
             enable: { key: "en-coin_use-rng-y" },
+            hidden: { key: "en-coin_hide-spawn" },
             factor: 0.25,
           },
           stick: {
             store: { key: "en-coin_rng-y" },
             enable: { key: "en-coin_use-rng-y" },
+            hidden: { key: "en-coin_hide-spawn" },
             factor: 0.001,
           },
           checkbox: { 
             spriteOn: { name: "visu_texture_checkbox_on" },
             spriteOff: { name: "visu_texture_checkbox_off" },
             store: { key: "en-coin_use-rng-y" },
+            hidden: { key: "en-coin_hide-spawn" },
           },
           title: { 
             text: "Enable",
             enable: { key: "en-coin_use-rng-y" },
+            hidden: { key: "en-coin_hide-spawn" },
           },
         },
       },

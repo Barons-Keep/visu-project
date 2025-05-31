@@ -21,7 +21,7 @@ function UIComponent(json) constructor {
     return this.template(
       this.name, 
       new UILayout(
-        this.layout(Struct.get(this.config, "layout"), Struct.get(this.config, "layout")), 
+        this.layout(Struct.get(this.config, "layout")), 
         layout
       ), 
       this.config

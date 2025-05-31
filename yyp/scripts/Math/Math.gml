@@ -221,9 +221,9 @@ function Ellipse(_width, _height) constructor {
   ///@type {Number} angle
   ///@return {Number}
   static fetchRadiusFactor = function(angle) {
-    return (this.width * this.height) / sqrt(
-        (power(this.width, 2) * power(sin(angle), 2)) + 
-        (power(this.height, 2) * power(cos(angle), 2))
+    return (this.width * this.height) / Math.sqr(
+        (Math.pow(this.width, 2) * Math.pow(sin(angle), 2)) + 
+        (Math.pow(this.height, 2) * Math.pow(cos(angle), 2))
     )
   }
 
@@ -468,6 +468,19 @@ function _Math() constructor {
         camZ + mx * view[8] + my * view[9]
       ]
     }
+  }
+
+  ///@param {Number} base
+  ///@param {Number} exponent
+  ///@return {Number}
+  static pow = function(base, exponent) {
+    return power(base, exponent)
+  }
+
+  ///@param {Number} value
+  ///@return {Number}
+  static sqr = function(value) {
+    return (sign(value) == 1.0) ? sqrt(value) : 0.0
   }
 }
 global.__Math = new _Math()

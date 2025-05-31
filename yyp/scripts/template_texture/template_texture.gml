@@ -18,12 +18,70 @@ function template_texture(json = null) {
         layout: VELayouts.get("texture-field-intent"),
         config: { 
           layout: { type: UILayoutType.VERTICAL },
-          image: { 
-            name: json.name,
-            disableTextureService: json.file == "",
+          preview: { 
+            image: {
+              name: json.name,
+              disableTextureService: json.file == "",
+            },
+            store: { key: "texture-template" },
+            origin: "texture-template",
+            onMousePressedLeft: function(event) {
+              var editorIO = Beans.get(BeanVisuEditorIO)
+              var mouse = editorIO.mouse
+              if (Optional.is(mouse.getClipboard())) {
+                return
+              }
+
+              mouse.setClipboard(this)
+            },
+            onMouseOnLeft: function(event) {
+              var editorIO = Beans.get(BeanVisuEditorIO)
+              var mouse = editorIO.mouse
+              if (mouse.getClipboard() != this) {
+                return
+              }
+
+              var _x = event.data.x - this.context.area.getX() - this.area.getX() - this.context.offset.x
+              var _y = event.data.y - this.context.area.getY() - this.area.getY() - this.context.offset.y
+              var areaWidth = this.area.getWidth()
+              var areaHeight = this.area.getHeight()
+              var scaleX = this.image.getScaleX()
+              var scaleY = this.image.getScaleY()
+              this.image.scaleToFit(areaWidth, areaHeight)
+  
+              var width = this.image.getWidth() * this.image.getScaleX()
+              var height = this.image.getHeight() * this.image.getScaleY()
+              this.image.setScaleX(scaleX).setScaleY(scaleY)
+  
+              var marginH = (areaWidth - width) / 2.0
+              var marginV = (areaHeight - height) / 2.0
+  
+              var originX = round(this.image.getWidth() * ((clamp(_x, marginH, areaWidth - marginH) - marginH) / width))
+              var originY = round(this.image.getHeight() * ((clamp(_y, marginV, areaHeight - marginV) - marginV) / height))
+  
+              var textureIntent = this.store.getValue()
+              if (textureIntent.originX != originX
+                 || textureIntent.originY != originY) {
+                textureIntent.originX = originX
+                textureIntent.originY = originY
+                this.store.get().set(textureIntent)
+              }
+  
+              return this
+            },
+            preRender: function() {
+              if (!mouse_check_button(mb_left)) {
+                return this
+              }
+  
+              Beans.get(BeanVisuEditorController).uiService.send(new Event("MouseOnLeft", { 
+                x: MouseUtil.getMouseX(), 
+                y: MouseUtil.getMouseY(),
+              }))
+             
+              return this
+            },
           },
-          origin: "texture-template",
-          store: { key: "texture-template" },
           resolution: { 
             store: { 
               key: "texture-template",
@@ -36,47 +94,6 @@ function template_texture(json = null) {
               },
             },
           },
-          onMouseOnLeft: function(event) {
-            var _x = event.data.x - this.context.area.getX() - this.area.getX() - this.context.offset.x
-            var _y = event.data.y - this.context.area.getY() - this.area.getY() - this.context.offset.y
-            var areaWidth = this.area.getWidth()
-            var areaHeight = this.area.getHeight()
-            var scaleX = this.image.getScaleX()
-            var scaleY = this.image.getScaleY()
-            this.image.scaleToFit(areaWidth, areaHeight)
-
-            var width = this.image.getWidth() * this.image.getScaleX()
-            var height = this.image.getHeight() * this.image.getScaleY()
-            this.image.setScaleX(scaleX).setScaleY(scaleY)
-
-            var marginH = (areaWidth - width) / 2.0
-            var marginV = (areaHeight - height) / 2.0
-
-            var originX = round(this.image.getWidth() * ((clamp(_x, marginH, areaWidth - marginH) - marginH) / width))
-            var originY = round(this.image.getHeight() * ((clamp(_y, marginV, areaHeight - marginV) - marginV) / height))
-
-            var textureIntent = this.store.getValue()
-            if (textureIntent.originX != originX
-               || textureIntent.originY != originY) {
-              textureIntent.originX = originX
-              textureIntent.originY = originY
-              this.store.get().set(textureIntent)
-            }
-
-            return this
-          },
-          preRender: function() {
-            if (!mouse_check_button(mb_left)) {
-              return this
-            }
-
-            Beans.get(BeanVisuEditorController).uiService.send(new Event("MouseOnLeft", { 
-              x: MouseUtil.getMouseX(), 
-              y: MouseUtil.getMouseY(),
-            }))
-           
-            return this
-          }
         },
       },
       {

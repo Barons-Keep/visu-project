@@ -43,7 +43,7 @@ function ShaderUniformColor(_asset, _name, _type = ShaderUniformType.COLOR): Sha
   ///@override
   ///@param {Color} color
   static set = function(color) {
-    shader_set_uniform_f(this.asset, color.red, color.green, color.blue, color.alpha)
+    shader_set_uniform_f(this.asset, color.red, color.green, color.blue)
   }
 }
 

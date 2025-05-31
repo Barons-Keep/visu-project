@@ -68,22 +68,26 @@ function UITextField(name, json = null) {
     ///@override
     ///@param {Boolean} [_updateArea]
     ///@return {UIItem}
-    update: Struct.getDefault(json, "update", function(_updateArea = true) {
-      if (_updateArea && Optional.is(this.updateArea)) {
-        this.updateArea()
-      }
+    update: Struct.getDefault(json, "update", function(_updateArea = false) {
+      if (_updateArea) {
+        this.updateHidden()
 
-      if (Optional.is(this.updateEnable)) {
-        this.updateEnable()
+        if (Optional.is(this.updateArea)) {
+          this.updateArea()
+        }
+  
+        if (Optional.is(this.updateEnable)) {
+          this.updateEnable()
+        }
       }
 
       if (Optional.is(this.updateCustom)) {
         this.updateCustom()
       }
 
-      if (!storeSubscribed && Optional.is(this.store)) {
-        this.store.subscribe()
+      if (!storeSubscribed) {
         this.storeSubscribed = true
+        this.updateStore()
       }
 
       if (this.isHoverOver) {
@@ -105,29 +109,32 @@ function UITextField(name, json = null) {
         }
       }
 
+      if (this.hidden.value && this.textField.isFocused()) {
+        this.textField.unfocus()
+      }
+      
       var _w = this.textField.style.w
       var _h = this.textField.style.h
-      this.textField.style.w = this.area.getWidth()
-      if (this.textField.style.v_grow) {
+      this.textField.style.w = !this.hidden.value ? this.area.getWidth() : this.textField.style.w
+      if (!this.hidden.value && this.textField.style.v_grow) {
         if (this.area.getHeight() != this.textField.style.h) {
           this.area.setHeight(this.textField.style.h)
           if (Optional.is(this.context)) {
-            this.context.areaWatchdog.signal()
-            this.context.clampUpdateTimer(0.9500)
+            this.context.areaWatchdog.signal(2)
+            this.context.clampUpdateTimer(0.9000)
+          }
+
+          var layout = Struct.get(this, "layout")
+          if (Optional.is(Struct.get(layout, "setHeight"))) {
+            layout.setHeight(this.textField.style.h)
           }
         }
-
-        var layout = Struct.get(this, "layout")
-        if (Optional.is(Struct.get(layout, "setHeight"))) {
-          layout.setHeight(this.textField.style.h)
-        }
-      } else {
+      } else if (!this.hidden.value) {
         this.textField.style.h = this.area.getHeight()
       }
 
       if (this.textField.style.w != _w || this.textField.style.h != _h) {
         this.textField.updateStyle()
-        
       }
       
       if (Optional.is(this.context.surface)) {
@@ -139,6 +146,7 @@ function UITextField(name, json = null) {
       if (!this.textField.isFocused() && this.value != text) {
         this.updateValue(text)
       }
+
       return this
     }),
     

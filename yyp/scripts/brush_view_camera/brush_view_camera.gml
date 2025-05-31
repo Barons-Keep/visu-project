@@ -158,6 +158,38 @@ function brush_view_camera(json) {
         type: Boolean,
         value: Struct.get(json, "vw-cam_change-move-angle"),
       },
+      "vw-cam_hide-view": {
+        type: Boolean,
+        value: Struct.get(json, "vw-cam_hide-view"),
+      },
+      "vw-cam_hide-pos": {
+        type: Boolean,
+        value: Struct.get(json, "vw-cam_hide-pos"),
+      },
+      "vw-cam_hide-x": {
+        type: Boolean,
+        value: Struct.get(json, "vw-cam_hide-x"),
+      },
+      "vw-cam_hide-x": {
+        type: Boolean,
+        value: Struct.get(json, "vw-cam_hide-x"),
+      },
+      "vw-cam_hide-y": {
+        type: Boolean,
+        value: Struct.get(json, "vw-cam_hide-y"),
+      },
+      "vw-cam_hide-z": {
+        type: Boolean,
+        value: Struct.get(json, "vw-cam_hide-z"),
+      },
+      "vw-cam_hide-dir": {
+        type: Boolean,
+        value: Struct.get(json, "vw-cam_hide-dir"),
+      },
+      "vw-cam_hide-pitch": {
+        type: Boolean,
+        value: Struct.get(json, "vw-cam_hide-pitch"),
+      },
     }),
     components: new Array(Struct, [
       {
@@ -167,11 +199,18 @@ function brush_view_camera(json) {
         config: { 
           layout: { type: UILayoutType.VERTICAL },
           label: { 
-            text: "Camera view",
+            text: "View",
             backgroundColor: VETheme.color.accentShadow,
           },
-          input: { backgroundColor: VETheme.color.accentShadow },
-          checkbox: { backgroundColor: VETheme.color.accentShadow },
+          input: {
+            backgroundColor: VETheme.color.accentShadow
+          },
+          checkbox: {
+            spriteOn: { name: "visu_texture_checkbox_show" },
+            spriteOff: { name: "visu_texture_checkbox_hide" },
+            store: { key: "vw-cam_hide-view" },
+            backgroundColor: VETheme.color.accentShadow
+          },
         },
       },
       {
@@ -183,17 +222,20 @@ function brush_view_camera(json) {
           label: { 
             text: "Lock X",
             enable: { key: "vw-cam_use-lock-x" },
+            hidden: { key: "vw-cam_hide-view" },
           },
           checkbox: { 
             spriteOn: { name: "visu_texture_checkbox_on" },
             spriteOff: { name: "visu_texture_checkbox_off" },
             store: { key: "vw-cam_use-lock-x" },
+            hidden: { key: "vw-cam_hide-view" },
           },
           input: { 
             spriteOn: { name: "visu_texture_checkbox_switch_on" },
             spriteOff: { name: "visu_texture_checkbox_switch_off" },
             store: { key: "vw-cam_lock-x" },
             enable: { key: "vw-cam_use-lock-x" },
+            hidden: { key: "vw-cam_hide-view" },
           },
         },
       },
@@ -206,17 +248,20 @@ function brush_view_camera(json) {
           label: { 
             text: "Lock Y",
             enable: { key: "vw-cam_use-lock-y" },
+            hidden: { key: "vw-cam_hide-view" },
           },
           checkbox: { 
             spriteOn: { name: "visu_texture_checkbox_on" },
             spriteOff: { name: "visu_texture_checkbox_off" },
             store: { key: "vw-cam_use-lock-y" },
+            hidden: { key: "vw-cam_hide-view" },
           },
           input: { 
             spriteOn: { name: "visu_texture_checkbox_switch_on" },
             spriteOff: { name: "visu_texture_checkbox_switch_off" },
             store: { key: "vw-cam_lock-y" },
             enable: { key: "vw-cam_use-lock-y" },
+            hidden: { key: "vw-cam_hide-view" },
           },
         },
       },
@@ -246,13 +291,15 @@ function brush_view_camera(json) {
         config: { 
           layout: { type: UILayoutType.VERTICAL },
           label: {
-            text: "Reset view position",
+            text: "Reset position",
             enable: { key: "vw-cam_reset-follow" },
+            hidden: { key: "vw-cam_hide-view" },
           },
           checkbox: { 
             spriteOn: { name: "visu_texture_checkbox_on" },
             spriteOff: { name: "visu_texture_checkbox_off" },
             store: { key: "vw-cam_reset-follow" },
+            hidden: { key: "vw-cam_hide-view" },
           },
         },
       },
@@ -261,41 +308,45 @@ function brush_view_camera(json) {
         template: VEComponents.get("numeric-input"),
         layout: VELayouts.get("div"),
         config: {
-          layout: { 
-            type: UILayoutType.VERTICAL,
-            margin: { top: 4 },
-          },
+          layout: { type: UILayoutType.VERTICAL },
           label: { 
             text: "Margin X",
             enable: { key: "vw-cam_use-follow-x" },
+            hidden: { key: "vw-cam_hide-view" },
           },
           field: { 
             store: { key: "vw-cam_follow-x" },
             enable: { key: "vw-cam_use-follow-x" },
+            hidden: { key: "vw-cam_hide-view" },
           },
           decrease: {
             store: { key: "vw-cam_follow-x" },
             enable: { key: "vw-cam_use-follow-x" },
+            hidden: { key: "vw-cam_hide-view" },
             factor: -0.01,
           },
           increase: {
             store: { key: "vw-cam_follow-x" },
             enable: { key: "vw-cam_use-follow-x" },
+            hidden: { key: "vw-cam_hide-view" },
             factor: 0.01,
           },
           stick: {
             store: { key: "vw-cam_follow-x" },
             enable: { key: "vw-cam_use-follow-x" },
+            hidden: { key: "vw-cam_hide-view" },
             factor: 0.001,
           },
           checkbox: { 
             spriteOn: { name: "visu_texture_checkbox_on" },
             spriteOff: { name: "visu_texture_checkbox_off" },
             store: { key: "vw-cam_use-follow-x" },
+            hidden: { key: "vw-cam_hide-view" },
           },
           title: { 
             text: "Override",
             enable: { key: "vw-cam_use-follow-x" },
+            hidden: { key: "vw-cam_hide-view" },
           },
         }
       },
@@ -308,34 +359,41 @@ function brush_view_camera(json) {
           label: { 
             text: "Margin Y",
             enable: { key: "vw-cam_use-follow-y" },
+            hidden: { key: "vw-cam_hide-view" },
           },
           field: { 
             store: { key: "vw-cam_follow-y" },
             enable: { key: "vw-cam_use-follow-y" },
+            hidden: { key: "vw-cam_hide-view" },
           },
           decrease: {
             store: { key: "vw-cam_follow-y" },
             enable: { key: "vw-cam_use-follow-y" },
+            hidden: { key: "vw-cam_hide-view" },
             factor: -0.01,
           },
           increase: {
             store: { key: "vw-cam_follow-y" },
             enable: { key: "vw-cam_use-follow-y" },
+            hidden: { key: "vw-cam_hide-view" },
             factor: 0.01,
           },
           stick: {
             store: { key: "vw-cam_follow-y" },
             enable: { key: "vw-cam_use-follow-y" },
+            hidden: { key: "vw-cam_hide-view" },
             factor: 0.001,
           },
           checkbox: { 
             spriteOn: { name: "visu_texture_checkbox_on" },
             spriteOff: { name: "visu_texture_checkbox_off" },
             store: { key: "vw-cam_use-follow-y" },
+            hidden: { key: "vw-cam_hide-view" },
           },
           title: { 
             text: "Override",
             enable: { key: "vw-cam_use-follow-y" },
+            hidden: { key: "vw-cam_hide-view" },
           },
         }
       },
@@ -348,34 +406,41 @@ function brush_view_camera(json) {
           label: { 
             text: "Smooth",
             enable: { key: "vw-cam_use-follow-smooth" },
+            hidden: { key: "vw-cam_hide-view" },
           },
           field: { 
             store: { key: "vw-cam_follow-smooth" },
             enable: { key: "vw-cam_use-follow-smooth" },
+            hidden: { key: "vw-cam_hide-view" },
           },
           decrease: {
             store: { key: "vw-cam_follow-x" },
             enable: { key: "vw-cam_use-follow-smooth" },
+            hidden: { key: "vw-cam_hide-view" },
             factor: -0.25,
           },
           increase: {
             store: { key: "vw-cam_follow-smooth" },
             enable: { key: "vw-cam_use-follow-smooth" },
+            hidden: { key: "vw-cam_hide-view" },
             factor: 0.25,
           },
           stick: {
             store: { key: "vw-cam_follow-smooth" },
             enable: { key: "vw-cam_use-follow-smooth" },
+            hidden: { key: "vw-cam_hide-view" },
             factor: 0.01,
           },
           checkbox: { 
             spriteOn: { name: "visu_texture_checkbox_on" },
             spriteOff: { name: "visu_texture_checkbox_off" },
             store: { key: "vw-cam_use-follow-smooth" },
+            hidden: { key: "vw-cam_hide-view" },
           },
           title: { 
             text: "Override",
             enable: { key: "vw-cam_use-follow-smooth" },
+            hidden: { key: "vw-cam_hide-view" },
           },
         }
       },
@@ -383,7 +448,10 @@ function brush_view_camera(json) {
         name: "vw-cam_pos-line-h",
         template: VEComponents.get("line-h"),
         layout: VELayouts.get("line-h"),
-        config: { layout: { type: UILayoutType.VERTICAL } },
+        config: {
+          layout: { type: UILayoutType.VERTICAL },
+          image: { hidden: { key: "vw-cam_hide-view" } },
+        },
       },
       {
         name: "vw-cam_pos-title",
@@ -392,11 +460,39 @@ function brush_view_camera(json) {
         config: { 
           layout: { type: UILayoutType.VERTICAL },
           label: { 
-            text: "Camera position",
+            text: "Position",
             backgroundColor: VETheme.color.accentShadow,
           },
-          input: { backgroundColor: VETheme.color.accentShadow },
-          checkbox: { backgroundColor: VETheme.color.accentShadow },
+          input: {
+            backgroundColor: VETheme.color.accentShadow,
+          },
+          checkbox: {
+            spriteOn: { name: "visu_texture_checkbox_show" },
+            spriteOff: { name: "visu_texture_checkbox_hide" },
+            store: { key: "vw-cam_hide-pos" },
+            backgroundColor: VETheme.color.accentShadow,
+          },
+        },
+      },
+      {
+        name: "vw-cam_x-title",
+        template: VEComponents.get("property"),
+        layout: VELayouts.get("property"),
+        config: { 
+          layout: { type: UILayoutType.VERTICAL },
+          label: { 
+            text: "X",
+            hidden: { key: "vw-cam_hide-pos" },
+          },
+          input: {
+            hidden: { key: "vw-cam_hide-pos" },
+          },
+          checkbox: {
+            spriteOn: { name: "visu_texture_checkbox_show" },
+            spriteOff: { name: "visu_texture_checkbox_hide" },
+            store: { key: "vw-cam_hide-x" },
+            hidden: { key: "vw-cam_hide-pos" },
+          },
         },
       },
       {
@@ -404,87 +500,180 @@ function brush_view_camera(json) {
         template: VEComponents.get("number-transformer-increase-checkbox"),
         layout: VELayouts.get("number-transformer-increase-checkbox"),
         config: { 
-          layout: { 
-            type: UILayoutType.VERTICAL,
-            margin: { top: 4 },
-          },
+          layout: { type: UILayoutType.VERTICAL },
           value: {
             label: {
-              text: "Camera X",
-              font: "font_inter_10_bold",
-              color: VETheme.color.textShadow,
-              //enable: { key: "vw-cam_use-x" },
+              text: "Value",
+              //font: "font_inter_10_bold",
+              //color: VETheme.color.textShadow,
+              enable: { key: "vw-cam_use-x" },
+              hidden: {
+                keys: [
+                  { key: "vw-cam_hide-pos" },
+                  { key: "vw-cam_hide-x" },
+                ],
+              },
             },
             field: {
               store: { key: "vw-cam_x" },
               enable: { key: "vw-cam_use-x" },
+              hidden: {
+                keys: [
+                  { key: "vw-cam_hide-pos" },
+                  { key: "vw-cam_hide-x" },
+                ],
+              },
             },
             decrease: { 
               store: { key: "vw-cam_x" },
               enable: { key: "vw-cam_use-x" },
+              hidden: {
+                keys: [
+                  { key: "vw-cam_hide-pos" },
+                  { key: "vw-cam_hide-x" },
+                ],
+              },
               factor: -10.0,
             },
             increase: { 
               store: { key: "vw-cam_x" },
               enable: { key: "vw-cam_use-x" },
+              hidden: {
+                keys: [
+                  { key: "vw-cam_hide-pos" },
+                  { key: "vw-cam_hide-x" },
+                ],
+              },
               factor: 10.0,
             },
             checkbox: { 
               spriteOn: { name: "visu_texture_checkbox_on" },
               spriteOff: { name: "visu_texture_checkbox_off" },
               store: { key: "vw-cam_use-x" },
+              hidden: {
+                keys: [
+                  { key: "vw-cam_hide-pos" },
+                  { key: "vw-cam_hide-x" },
+                ],
+              },
             },
             title: { 
               text: "Override",
               enable: { key: "vw-cam_use-x" },
+              hidden: {
+                keys: [
+                  { key: "vw-cam_hide-pos" },
+                  { key: "vw-cam_hide-x" },
+                ],
+              },
             },
           },
           target: {
             label: {
               text: "Target",
               enable: { key: "vw-cam_change-x" },
+              hidden: {
+                keys: [
+                  { key: "vw-cam_hide-pos" },
+                  { key: "vw-cam_hide-x" },
+                ],
+              },
             },
             field: {
               store: { key: "vw-cam_x" },
               enable: { key: "vw-cam_change-x" },
+              hidden: {
+                keys: [
+                  { key: "vw-cam_hide-pos" },
+                  { key: "vw-cam_hide-x" },
+                ],
+              },
             },
             decrease: { 
               store: { key: "vw-cam_x" },
               enable: { key: "vw-cam_change-x" },
+              hidden: {
+                keys: [
+                  { key: "vw-cam_hide-pos" },
+                  { key: "vw-cam_hide-x" },
+                ],
+              },
               factor: -10.0,
             },
             increase: { 
               store: { key: "vw-cam_x" },
               enable: { key: "vw-cam_change-x" },
+              hidden: {
+                keys: [
+                  { key: "vw-cam_hide-pos" },
+                  { key: "vw-cam_hide-x" },
+                ],
+              },
               factor: 10.0,
             },
             checkbox: { 
               spriteOn: { name: "visu_texture_checkbox_on" },
               spriteOff: { name: "visu_texture_checkbox_off" },
               store: { key: "vw-cam_change-x" },
+              hidden: {
+                keys: [
+                  { key: "vw-cam_hide-pos" },
+                  { key: "vw-cam_hide-x" },
+                ],
+              },
             },
             title: { 
               text: "Change",
               enable: { key: "vw-cam_change-x" },
+              hidden: {
+                keys: [
+                  { key: "vw-cam_hide-pos" },
+                  { key: "vw-cam_hide-x" },
+                ],
+              },
             },
           },
           factor: {
             label: {
               text: "Factor",
               enable: { key: "vw-cam_change-x" },
+              hidden: {
+                keys: [
+                  { key: "vw-cam_hide-pos" },
+                  { key: "vw-cam_hide-x" },
+                ],
+              },
             },
             field: {
               store: { key: "vw-cam_x" },
               enable: { key: "vw-cam_change-x" },
+              hidden: {
+                keys: [
+                  { key: "vw-cam_hide-pos" },
+                  { key: "vw-cam_hide-x" },
+                ],
+              },
             },
             decrease: { 
               store: { key: "vw-cam_x" },
               enable: { key: "vw-cam_change-x" },
+              hidden: {
+                keys: [
+                  { key: "vw-cam_hide-pos" },
+                  { key: "vw-cam_hide-x" },
+                ],
+              },
               factor: -1.0,
             },
             increase: { 
               store: { key: "vw-cam_x" },
               enable: { key: "vw-cam_change-x" },
+              hidden: {
+                keys: [
+                  { key: "vw-cam_hide-pos" },
+                  { key: "vw-cam_hide-x" },
+                ],
+              },
               factor: 1.0,
             },
           },
@@ -492,19 +681,43 @@ function brush_view_camera(json) {
             label: {
               text: "Increase",
               enable: { key: "vw-cam_change-x" },
+              hidden: {
+                keys: [
+                  { key: "vw-cam_hide-pos" },
+                  { key: "vw-cam_hide-x" },
+                ],
+              },
             },
             field: {
               store: { key: "vw-cam_x" },
               enable: { key: "vw-cam_change-x" },
+              hidden: {
+                keys: [
+                  { key: "vw-cam_hide-pos" },
+                  { key: "vw-cam_hide-x" },
+                ],
+              },
             },
             decrease: { 
               store: { key: "vw-cam_x" },
               enable: { key: "vw-cam_change-x" },
+              hidden: {
+                keys: [
+                  { key: "vw-cam_hide-pos" },
+                  { key: "vw-cam_hide-x" },
+                ],
+              },
               factor: -0.001,
             },
             increase: { 
               store: { key: "vw-cam_x" },
               enable: { key: "vw-cam_change-x" },
+              hidden: {
+                keys: [
+                  { key: "vw-cam_hide-pos" },
+                  { key: "vw-cam_hide-x" },
+                ],
+              },
               factor: 0.001,
             },
           },
@@ -514,7 +727,38 @@ function brush_view_camera(json) {
         name: "vw-cam_x-line-h",
         template: VEComponents.get("line-h"),
         layout: VELayouts.get("line-h"),
-        config: { layout: { type: UILayoutType.VERTICAL } },
+        config: {
+          layout: { type: UILayoutType.VERTICAL },
+          image: {
+            hidden: {
+              keys: [
+                { key: "vw-cam_hide-pos" },
+                { key: "vw-cam_hide-x" },
+              ],
+            },
+          }
+        },
+      },
+      {
+        name: "vw-cam_y-title",
+        template: VEComponents.get("property"),
+        layout: VELayouts.get("property"),
+        config: { 
+          layout: { type: UILayoutType.VERTICAL },
+          label: { 
+            text: "Y",
+            hidden: { key: "vw-cam_hide-pos" },
+          },
+          input: {
+            hidden: { key: "vw-cam_hide-pos" },
+          },
+          checkbox: {
+            spriteOn: { name: "visu_texture_checkbox_show" },
+            spriteOff: { name: "visu_texture_checkbox_hide" },
+            store: { key: "vw-cam_hide-y" },
+            hidden: { key: "vw-cam_hide-pos" },
+          },
+        },
       },
       {
         name: "vw-cam_y",
@@ -524,81 +768,177 @@ function brush_view_camera(json) {
           layout: { type: UILayoutType.VERTICAL },
           value: {
             label: {
-              text: "Camera Y",
-              font: "font_inter_10_bold",
-              color: VETheme.color.textShadow,
-              //enable: { key: "vw-cam_use-y" },
+              text: "Value",
+              //font: "font_inter_10_bold",
+              //color: VETheme.color.textShadow,
+              enable: { key: "vw-cam_use-y" },
+              hidden: {
+                keys: [
+                  { key: "vw-cam_hide-pos" },
+                  { key: "vw-cam_hide-y" },
+                ],
+              },
             },
             field: {
               store: { key: "vw-cam_y" },
               enable: { key: "vw-cam_use-y" },
+              hidden: {
+                keys: [
+                  { key: "vw-cam_hide-pos" },
+                  { key: "vw-cam_hide-y" },
+                ],
+              },
             },
             decrease: { 
               store: { key: "vw-cam_y" },
               enable: { key: "vw-cam_use-y"},
+              hidden: {
+                keys: [
+                  { key: "vw-cam_hide-pos" },
+                  { key: "vw-cam_hide-y" },
+                ],
+              },
               factor: -10.0,
             },
             increase: { 
               store: { key: "vw-cam_y" },
               enable: { key: "vw-cam_use-y" },
+              hidden: {
+                keys: [
+                  { key: "vw-cam_hide-pos" },
+                  { key: "vw-cam_hide-y" },
+                ],
+              },
               factor: 10.0,
             },
             checkbox: { 
               spriteOn: { name: "visu_texture_checkbox_on" },
               spriteOff: { name: "visu_texture_checkbox_off" },
               store: { key: "vw-cam_use-y" },
+              hidden: {
+                keys: [
+                  { key: "vw-cam_hide-pos" },
+                  { key: "vw-cam_hide-y" },
+                ],
+              },
             },
             title: { 
               text: "Override",
               enable: { key: "vw-cam_use-y" },
+              hidden: {
+                keys: [
+                  { key: "vw-cam_hide-pos" },
+                  { key: "vw-cam_hide-y" },
+                ],
+              },
             },
           },
           target: {
             label: {
               text: "Target",
               enable: { key: "vw-cam_change-y" },
+              hidden: {
+                keys: [
+                  { key: "vw-cam_hide-pos" },
+                  { key: "vw-cam_hide-y" },
+                ],
+              },
             },
             field: {
               store: { key: "vw-cam_y" },
               enable: { key: "vw-cam_change-y" },
+              hidden: {
+                keys: [
+                  { key: "vw-cam_hide-pos" },
+                  { key: "vw-cam_hide-y" },
+                ],
+              },
             },
             decrease: { 
               store: { key: "vw-cam_y" },
               enable: { key: "vw-cam_change-y" },
+              hidden: {
+                keys: [
+                  { key: "vw-cam_hide-pos" },
+                  { key: "vw-cam_hide-y" },
+                ],
+              },
               factor: -10.0,
             },
             increase: { 
               store: { key: "vw-cam_y" },
               enable: { key: "vw-cam_change-y" },
+              hidden: {
+                keys: [
+                  { key: "vw-cam_hide-pos" },
+                  { key: "vw-cam_hide-y" },
+                ],
+              },
               factor: 10.0,
             },
             checkbox: { 
               spriteOn: { name: "visu_texture_checkbox_on" },
               spriteOff: { name: "visu_texture_checkbox_off" },
               store: { key: "vw-cam_change-y" },
+              hidden: {
+                keys: [
+                  { key: "vw-cam_hide-pos" },
+                  { key: "vw-cam_hide-y" },
+                ],
+              },
             },
             title: { 
               text: "Change",
               enable: { key: "vw-cam_change-y" },
+              hidden: {
+                keys: [
+                  { key: "vw-cam_hide-pos" },
+                  { key: "vw-cam_hide-y" },
+                ],
+              },
             },
           },
           factor: {
             label: {
               text: "Factor",
               enable: { key: "vw-cam_change-y" },
+              hidden: {
+                keys: [
+                  { key: "vw-cam_hide-pos" },
+                  { key: "vw-cam_hide-y" },
+                ],
+              },
             },
             field: {
               store: { key: "vw-cam_y" },
               enable: { key: "vw-cam_change-y" },
+              hidden: {
+                keys: [
+                  { key: "vw-cam_hide-pos" },
+                  { key: "vw-cam_hide-y" },
+                ],
+              },
             },
             decrease: { 
               store: { key: "vw-cam_y" },
               enable: { key: "vw-cam_change-y" },
+              hidden: {
+                keys: [
+                  { key: "vw-cam_hide-pos" },
+                  { key: "vw-cam_hide-y" },
+                ],
+              },
               factor: -1.0,
             },
             increase: { 
               store: { key: "vw-cam_y" },
               enable: { key: "vw-cam_change-y" },
+              hidden: {
+                keys: [
+                  { key: "vw-cam_hide-pos" },
+                  { key: "vw-cam_hide-y" },
+                ],
+              },
               factor: 1.0,
             },
           },
@@ -606,19 +946,43 @@ function brush_view_camera(json) {
             label: {
               text: "Increase",
               enable: { key: "vw-cam_change-y" },
+              hidden: {
+                keys: [
+                  { key: "vw-cam_hide-pos" },
+                  { key: "vw-cam_hide-y" },
+                ],
+              },
             },
             field: {
               store: { key: "vw-cam_y" },
               enable: { key: "vw-cam_change-y" },
+              hidden: {
+                keys: [
+                  { key: "vw-cam_hide-pos" },
+                  { key: "vw-cam_hide-y" },
+                ],
+              },
             },
             decrease: { 
               store: { key: "vw-cam_y" },
               enable: { key: "vw-cam_change-y" },
+              hidden: {
+                keys: [
+                  { key: "vw-cam_hide-pos" },
+                  { key: "vw-cam_hide-y" },
+                ],
+              },
               factor: -0.001,
             },
             increase: { 
               store: { key: "vw-cam_y" },
               enable: { key: "vw-cam_change-y" },
+              hidden: {
+                keys: [
+                  { key: "vw-cam_hide-pos" },
+                  { key: "vw-cam_hide-y" },
+                ],
+              },
               factor: 0.001,
             },
           },
@@ -628,7 +992,38 @@ function brush_view_camera(json) {
         name: "vw-cam_y-line-h",
         template: VEComponents.get("line-h"),
         layout: VELayouts.get("line-h"),
-        config: { layout: { type: UILayoutType.VERTICAL } },
+        config: {
+          layout: { type: UILayoutType.VERTICAL },
+          image: {
+            hidden: {
+              keys: [
+                { key: "vw-cam_hide-pos" },
+                { key: "vw-cam_hide-y" },
+              ],
+            },
+          },
+        },
+      },
+      {
+        name: "vw-cam_z-title",
+        template: VEComponents.get("property"),
+        layout: VELayouts.get("property"),
+        config: { 
+          layout: { type: UILayoutType.VERTICAL },
+          label: { 
+            text: "Z",
+            hidden: { key: "vw-cam_hide-pos" },
+          },
+          input: {
+            hidden: { key: "vw-cam_hide-pos" },
+          },
+          checkbox: {
+            spriteOn: { name: "visu_texture_checkbox_show" },
+            spriteOff: { name: "visu_texture_checkbox_hide" },
+            store: { key: "vw-cam_hide-z" },
+            hidden: { key: "vw-cam_hide-pos" },
+          },
+        },
       },
       {
         name: "vw-cam_z",
@@ -638,81 +1033,177 @@ function brush_view_camera(json) {
           layout: { type: UILayoutType.VERTICAL },
           value: {
             label: {
-              text: "Camera Z",
-              font: "font_inter_10_bold",
-              color: VETheme.color.textShadow,
-              //enable: { key: "vw-cam_use-z" },
+              text: "Value",
+              //font: "font_inter_10_bold",
+              //color: VETheme.color.textShadow,
+              enable: { key: "vw-cam_use-z" },
+              hidden: {
+                keys: [
+                  { key: "vw-cam_hide-pos" },
+                  { key: "vw-cam_hide-z" },
+                ],
+              },
             },
             field: {
               store: { key: "vw-cam_z" },
               enable: { key: "vw-cam_use-z" },
+              hidden: {
+                keys: [
+                  { key: "vw-cam_hide-pos" },
+                  { key: "vw-cam_hide-z" },
+                ],
+              },
             },
             decrease: { 
               store: { key: "vw-cam_z" },
               enable: { key: "vw-cam_use-z"},
               factor: -10.0,
+              hidden: {
+                keys: [
+                  { key: "vw-cam_hide-pos" },
+                  { key: "vw-cam_hide-z" },
+                ],
+              },
             },
             increase: { 
               store: { key: "vw-cam_z" },
               enable: { key: "vw-cam_use-z" },
               factor: 10.0,
+              hidden: {
+                keys: [
+                  { key: "vw-cam_hide-pos" },
+                  { key: "vw-cam_hide-z" },
+                ],
+              },
             },
             checkbox: { 
               spriteOn: { name: "visu_texture_checkbox_on" },
               spriteOff: { name: "visu_texture_checkbox_off" },
               store: { key: "vw-cam_use-z" },
+              hidden: {
+                keys: [
+                  { key: "vw-cam_hide-pos" },
+                  { key: "vw-cam_hide-z" },
+                ],
+              },
             },
             title: { 
               text: "Override",
               enable: { key: "vw-cam_use-z" },
+              hidden: {
+                keys: [
+                  { key: "vw-cam_hide-pos" },
+                  { key: "vw-cam_hide-z" },
+                ],
+              },
             },
           },
           target: {
             label: {
               text: "Target",
               enable: { key: "vw-cam_change-z" },
+              hidden: {
+                keys: [
+                  { key: "vw-cam_hide-pos" },
+                  { key: "vw-cam_hide-z" },
+                ],
+              },
             },
             field: {
               store: { key: "vw-cam_z" },
               enable: { key: "vw-cam_change-z" },
+              hidden: {
+                keys: [
+                  { key: "vw-cam_hide-pos" },
+                  { key: "vw-cam_hide-z" },
+                ],
+              },
             },
             decrease: { 
               store: { key: "vw-cam_z" },
               enable: { key: "vw-cam_change-z" },
+              hidden: {
+                keys: [
+                  { key: "vw-cam_hide-pos" },
+                  { key: "vw-cam_hide-z" },
+                ],
+              },
               factor: -10.0,
             },
             increase: { 
               store: { key: "vw-cam_z" },
               enable: { key: "vw-cam_change-z" },
+              hidden: {
+                keys: [
+                  { key: "vw-cam_hide-pos" },
+                  { key: "vw-cam_hide-z" },
+                ],
+              },
               factor: 10.0,
             },
             checkbox: { 
               spriteOn: { name: "visu_texture_checkbox_on" },
               spriteOff: { name: "visu_texture_checkbox_off" },
               store: { key: "vw-cam_change-z" },
+              hidden: {
+                keys: [
+                  { key: "vw-cam_hide-pos" },
+                  { key: "vw-cam_hide-z" },
+                ],
+              },
             },
             title: { 
               text: "Change",
               enable: { key: "vw-cam_change-z" },
+              hidden: {
+                keys: [
+                  { key: "vw-cam_hide-pos" },
+                  { key: "vw-cam_hide-z" },
+                ],
+              },
             },
           },
           factor: {
             label: {
               text: "Factor",
               enable: { key: "vw-cam_change-z" },
+              hidden: {
+                keys: [
+                  { key: "vw-cam_hide-pos" },
+                  { key: "vw-cam_hide-z" },
+                ],
+              },
             },
             field: {
               store: { key: "vw-cam_z" },
               enable: { key: "vw-cam_change-z" },
+              hidden: {
+                keys: [
+                  { key: "vw-cam_hide-pos" },
+                  { key: "vw-cam_hide-z" },
+                ],
+              },
             },
             decrease: { 
               store: { key: "vw-cam_z" },
               enable: { key: "vw-cam_change-z" },
+              hidden: {
+                keys: [
+                  { key: "vw-cam_hide-pos" },
+                  { key: "vw-cam_hide-z" },
+                ],
+              },
               factor: -1.0,
             },
             increase: { 
               store: { key: "vw-cam_z" },
               enable: { key: "vw-cam_change-z" },
+              hidden: {
+                keys: [
+                  { key: "vw-cam_hide-pos" },
+                  { key: "vw-cam_hide-z" },
+                ],
+              },
               factor: 1.0,
             },
           },
@@ -720,19 +1211,43 @@ function brush_view_camera(json) {
             label: {
               text: "Increase",
               enable: { key: "vw-cam_change-z" },
+              hidden: {
+                keys: [
+                  { key: "vw-cam_hide-pos" },
+                  { key: "vw-cam_hide-z" },
+                ],
+              },
             },
             field: {
               store: { key: "vw-cam_z" },
               enable: { key: "vw-cam_change-z" },
+              hidden: {
+                keys: [
+                  { key: "vw-cam_hide-pos" },
+                  { key: "vw-cam_hide-z" },
+                ],
+              },
             },
             decrease: { 
               store: { key: "vw-cam_z" },
               enable: { key: "vw-cam_change-z" },
+              hidden: {
+                keys: [
+                  { key: "vw-cam_hide-pos" },
+                  { key: "vw-cam_hide-z" },
+                ],
+              },
               factor: -0.001,
             },
             increase: { 
               store: { key: "vw-cam_z" },
               enable: { key: "vw-cam_change-z" },
+              hidden: {
+                keys: [
+                  { key: "vw-cam_hide-pos" },
+                  { key: "vw-cam_hide-z" },
+                ],
+              },
               factor: 0.001,
             },
           },
@@ -742,7 +1257,38 @@ function brush_view_camera(json) {
         name: "vw-cam_z-line-h",
         template: VEComponents.get("line-h"),
         layout: VELayouts.get("line-h"),
-        config: { layout: { type: UILayoutType.VERTICAL } },
+        config: {
+          layout: { type: UILayoutType.VERTICAL },
+          image: {
+            hidden: {
+              keys: [
+                { key: "vw-cam_hide-pos" },
+                { key: "vw-cam_hide-z" },
+              ],
+            },
+          },
+        },
+      },
+      {
+        name: "vw-cam_dir-title",
+        template: VEComponents.get("property"),
+        layout: VELayouts.get("property"),
+        config: { 
+          layout: { type: UILayoutType.VERTICAL },
+          label: { 
+            text: "Angle",
+            hidden: { key: "vw-cam_hide-pos" },
+          },
+          input: {
+            hidden: { key: "vw-cam_hide-pos" },
+          },
+          checkbox: {
+            spriteOn: { name: "visu_texture_checkbox_show" },
+            spriteOff: { name: "visu_texture_checkbox_hide" },
+            store: { key: "vw-cam_hide-dir" },
+            hidden: { key: "vw-cam_hide-pos" },
+          },
+        },
       },
       {
         name: "vw-cam_dir",
@@ -752,81 +1298,177 @@ function brush_view_camera(json) {
           layout: { type: UILayoutType.VERTICAL },
           value: {
             label: {
-              text: "Angle",
-              font: "font_inter_10_bold",
-              color: VETheme.color.textShadow,
-              //enable: { key: "vw-cam_use-dir" },
+              text: "Value",
+              //font: "font_inter_10_bold",
+              //color: VETheme.color.textShadow,
+              enable: { key: "vw-cam_use-dir" },
+              hidden: {
+                keys: [
+                  { key: "vw-cam_hide-pos" },
+                  { key: "vw-cam_hide-dir" },
+                ],
+              },
             },
             field: {
               store: { key: "vw-cam_dir" },
               enable: { key: "vw-cam_use-dir" },
+              hidden: {
+                keys: [
+                  { key: "vw-cam_hide-pos" },
+                  { key: "vw-cam_hide-dir" },
+                ],
+              },
             },
             decrease: { 
               store: { key: "vw-cam_dir" },
               enable: { key: "vw-cam_use-dir"},
+              hidden: {
+                keys: [
+                  { key: "vw-cam_hide-pos" },
+                  { key: "vw-cam_hide-dir" },
+                ],
+              },
               factor: -0.25,
             },
             increase: { 
               store: { key: "vw-cam_dir" },
               enable: { key: "vw-cam_use-dir" },
+              hidden: {
+                keys: [
+                  { key: "vw-cam_hide-pos" },
+                  { key: "vw-cam_hide-dir" },
+                ],
+              },
               factor: 0.25,
             },
             checkbox: { 
               spriteOn: { name: "visu_texture_checkbox_on" },
               spriteOff: { name: "visu_texture_checkbox_off" },
               store: { key: "vw-cam_use-dir" },
+              hidden: {
+                keys: [
+                  { key: "vw-cam_hide-pos" },
+                  { key: "vw-cam_hide-dir" },
+                ],
+              },
             },
             title: { 
               text: "Override",
               enable: { key: "vw-cam_use-dir" },
+              hidden: {
+                keys: [
+                  { key: "vw-cam_hide-pos" },
+                  { key: "vw-cam_hide-dir" },
+                ],
+              },
             },
           },
           target: {
             label: {
               text: "Target",
               enable: { key: "vw-cam_change-dir" },
+              hidden: {
+                keys: [
+                  { key: "vw-cam_hide-pos" },
+                  { key: "vw-cam_hide-dir" },
+                ],
+              },
             },
             field: {
               store: { key: "vw-cam_dir" },
               enable: { key: "vw-cam_change-dir" },
+              hidden: {
+                keys: [
+                  { key: "vw-cam_hide-pos" },
+                  { key: "vw-cam_hide-dir" },
+                ],
+              },
             },
             decrease: { 
               store: { key: "vw-cam_dir" },
               enable: { key: "vw-cam_change-dir" },
+              hidden: {
+                keys: [
+                  { key: "vw-cam_hide-pos" },
+                  { key: "vw-cam_hide-dir" },
+                ],
+              },
               factor: -0.25,
             },
             increase: { 
               store: { key: "vw-cam_dir" },
               enable: { key: "vw-cam_change-dir" },
+              hidden: {
+                keys: [
+                  { key: "vw-cam_hide-pos" },
+                  { key: "vw-cam_hide-dir" },
+                ],
+              },
               factor: 0.25,
             },
             checkbox: { 
               spriteOn: { name: "visu_texture_checkbox_on" },
               spriteOff: { name: "visu_texture_checkbox_off" },
               store: { key: "vw-cam_change-dir" },
+              hidden: {
+                keys: [
+                  { key: "vw-cam_hide-pos" },
+                  { key: "vw-cam_hide-dir" },
+                ],
+              },
             },
             title: { 
               text: "Change",
               enable: { key: "vw-cam_change-dir" },
+              hidden: {
+                keys: [
+                  { key: "vw-cam_hide-pos" },
+                  { key: "vw-cam_hide-dir" },
+                ],
+              },
             },
           },
           factor: {
             label: {
               text: "Factor",
               enable: { key: "vw-cam_change-dir" },
+              hidden: {
+                keys: [
+                  { key: "vw-cam_hide-pos" },
+                  { key: "vw-cam_hide-dir" },
+                ],
+              },
             },
             field: {
               store: { key: "vw-cam_dir" },
               enable: { key: "vw-cam_change-dir" },
+              hidden: {
+                keys: [
+                  { key: "vw-cam_hide-pos" },
+                  { key: "vw-cam_hide-dir" },
+                ],
+              },
             },
             decrease: { 
               store: { key: "vw-cam_dir" },
               enable: { key: "vw-cam_change-dir" },
+              hidden: {
+                keys: [
+                  { key: "vw-cam_hide-pos" },
+                  { key: "vw-cam_hide-dir" },
+                ],
+              },
               factor: -0.01,
             },
             increase: { 
               store: { key: "vw-cam_dir" },
               enable: { key: "vw-cam_change-dir" },
+              hidden: {
+                keys: [
+                  { key: "vw-cam_hide-pos" },
+                  { key: "vw-cam_hide-dir" },
+                ],
+              },
               factor: 0.01,
             },
           },
@@ -834,19 +1476,43 @@ function brush_view_camera(json) {
             label: {
               text: "Increase",
               enable: { key: "vw-cam_change-dir" },
+              hidden: {
+                keys: [
+                  { key: "vw-cam_hide-pos" },
+                  { key: "vw-cam_hide-dir" },
+                ],
+              },
             },
             field: {
               store: { key: "vw-cam_dir" },
               enable: { key: "vw-cam_change-dir" },
+              hidden: {
+                keys: [
+                  { key: "vw-cam_hide-pos" },
+                  { key: "vw-cam_hide-dir" },
+                ],
+              },
             },
             decrease: { 
               store: { key: "vw-cam_dir" },
               enable: { key: "vw-cam_change-dir" },
+              hidden: {
+                keys: [
+                  { key: "vw-cam_hide-pos" },
+                  { key: "vw-cam_hide-dir" },
+                ],
+              },
               factor: -0.001,
             },
             increase: { 
               store: { key: "vw-cam_dir" },
               enable: { key: "vw-cam_change-dir" },
+              hidden: {
+                keys: [
+                  { key: "vw-cam_hide-pos" },
+                  { key: "vw-cam_hide-dir" },
+                ],
+              },
               factor: 0.001,
             },
           },
@@ -856,7 +1522,38 @@ function brush_view_camera(json) {
         name: "vw-cam_dir-line-h",
         template: VEComponents.get("line-h"),
         layout: VELayouts.get("line-h"),
-        config: { layout: { type: UILayoutType.VERTICAL } },
+        config: {
+          layout: { type: UILayoutType.VERTICAL },
+          image: {
+            hidden: {
+              keys: [
+                { key: "vw-cam_hide-pos" },
+                { key: "vw-cam_hide-dir" },
+              ],
+            },
+          },
+        },
+      },
+      {
+        name: "vw-cam_pitch-title",
+        template: VEComponents.get("property"),
+        layout: VELayouts.get("property"),
+        config: { 
+          layout: { type: UILayoutType.VERTICAL },
+          label: { 
+            text: "Pitch",
+            hidden: { key: "vw-cam_hide-pos" },
+          },
+          input: {
+            hidden: { key: "vw-cam_hide-pos" },
+          },
+          checkbox: {
+            spriteOn: { name: "visu_texture_checkbox_show" },
+            spriteOff: { name: "visu_texture_checkbox_hide" },
+            store: { key: "vw-cam_hide-pitch" },
+            hidden: { key: "vw-cam_hide-pos" },
+          },
+        },
       },
       {
         name: "vw-cam_pitch",
@@ -866,81 +1563,177 @@ function brush_view_camera(json) {
           layout: { type: UILayoutType.VERTICAL },
           value: {
             label: {
-              text: "Pitch",
-              //enable: { key: "vw-cam_use-pitch" },
-              font: "font_inter_10_bold",
-              color: VETheme.color.textShadow,
+              text: "Value",
+              //font: "font_inter_10_bold",
+              //color: VETheme.color.textShadow,
+              enable: { key: "vw-cam_use-pitch" },
+              hidden: {
+                keys: [
+                  { key: "vw-cam_hide-pos" },
+                  { key: "vw-cam_hide-pitch" },
+                ],
+              },
             },
             field: {
               store: { key: "vw-cam_pitch" },
               enable: { key: "vw-cam_use-pitch" },
+              hidden: {
+                keys: [
+                  { key: "vw-cam_hide-pos" },
+                  { key: "vw-cam_hide-pitch" },
+                ],
+              },
             },
             decrease: { 
               store: { key: "vw-cam_pitch" },
               enable: { key: "vw-cam_use-pitch"},
+              hidden: {
+                keys: [
+                  { key: "vw-cam_hide-pos" },
+                  { key: "vw-cam_hide-pitch" },
+                ],
+              },
               factor: -0.1,
             },
             increase: { 
               store: { key: "vw-cam_pitch" },
               enable: { key: "vw-cam_use-pitch" },
+              hidden: {
+                keys: [
+                  { key: "vw-cam_hide-pos" },
+                  { key: "vw-cam_hide-pitch" },
+                ],
+              },
               factor: 0.1,
             },
             checkbox: { 
               spriteOn: { name: "visu_texture_checkbox_on" },
               spriteOff: { name: "visu_texture_checkbox_off" },
               store: { key: "vw-cam_use-pitch" },
+              hidden: {
+                keys: [
+                  { key: "vw-cam_hide-pos" },
+                  { key: "vw-cam_hide-pitch" },
+                ],
+              },
             },
             title: { 
               text: "Override",
               enable: { key: "vw-cam_use-pitch" },
+              hidden: {
+                keys: [
+                  { key: "vw-cam_hide-pos" },
+                  { key: "vw-cam_hide-pitch" },
+                ],
+              },
             },
           },
           target: {
             label: {
               text: "Target",
               enable: { key: "vw-cam_change-pitch" },
+              hidden: {
+                keys: [
+                  { key: "vw-cam_hide-pos" },
+                  { key: "vw-cam_hide-pitch" },
+                ],
+              },
             },
             field: {
               store: { key: "vw-cam_pitch" },
               enable: { key: "vw-cam_change-pitch" },
+              hidden: {
+                keys: [
+                  { key: "vw-cam_hide-pos" },
+                  { key: "vw-cam_hide-pitch" },
+                ],
+              },
             },
             decrease: { 
               store: { key: "vw-cam_pitch" },
               enable: { key: "vw-cam_change-pitch" },
+              hidden: {
+                keys: [
+                  { key: "vw-cam_hide-pos" },
+                  { key: "vw-cam_hide-pitch" },
+                ],
+              },
               factor: -0.1,
             },
             increase: { 
               store: { key: "vw-cam_pitch" },
               enable: { key: "vw-cam_change-pitch" },
+              hidden: {
+                keys: [
+                  { key: "vw-cam_hide-pos" },
+                  { key: "vw-cam_hide-pitch" },
+                ],
+              },
               factor: 0.1,
             },
             checkbox: { 
               spriteOn: { name: "visu_texture_checkbox_on" },
               spriteOff: { name: "visu_texture_checkbox_off" },
               store: { key: "vw-cam_change-pitch" },
+              hidden: {
+                keys: [
+                  { key: "vw-cam_hide-pos" },
+                  { key: "vw-cam_hide-pitch" },
+                ],
+              },
             },
             title: { 
               text: "Change",
               enable: { key: "vw-cam_change-pitch" },
+              hidden: {
+                keys: [
+                  { key: "vw-cam_hide-pos" },
+                  { key: "vw-cam_hide-pitch" },
+                ],
+              },
             },
           },
           factor: {
             label: {
               text: "Factor",
               enable: { key: "vw-cam_change-pitch" },
+              hidden: {
+                keys: [
+                  { key: "vw-cam_hide-pos" },
+                  { key: "vw-cam_hide-pitch" },
+                ],
+              },
             },
             field: {
               store: { key: "vw-cam_pitch" },
               enable: { key: "vw-cam_change-pitch" },
+              hidden: {
+                keys: [
+                  { key: "vw-cam_hide-pos" },
+                  { key: "vw-cam_hide-pitch" },
+                ],
+              },
             },
             decrease: { 
               store: { key: "vw-cam_pitch" },
               enable: { key: "vw-cam_change-pitch" },
+              hidden: {
+                keys: [
+                  { key: "vw-cam_hide-pos" },
+                  { key: "vw-cam_hide-pitch" },
+                ],
+              },
               factor: -0.01,
             },
             increase: { 
               store: { key: "vw-cam_pitch" },
               enable: { key: "vw-cam_change-pitch" },
+              hidden: {
+                keys: [
+                  { key: "vw-cam_hide-pos" },
+                  { key: "vw-cam_hide-pitch" },
+                ],
+              },
               factor: 0.01,
             },
           },
@@ -948,31 +1741,65 @@ function brush_view_camera(json) {
             label: {
               text: "Increase",
               enable: { key: "vw-cam_change-pitch" },
+              hidden: {
+                keys: [
+                  { key: "vw-cam_hide-pos" },
+                  { key: "vw-cam_hide-pitch" },
+                ],
+              },
             },
             field: {
               store: { key: "vw-cam_pitch" },
               enable: { key: "vw-cam_change-pitch" },
+              hidden: {
+                keys: [
+                  { key: "vw-cam_hide-pos" },
+                  { key: "vw-cam_hide-pitch" },
+                ],
+              },
             },
             decrease: { 
               store: { key: "vw-cam_pitch" },
               enable: { key: "vw-cam_change-pitch" },
+              hidden: {
+                keys: [
+                  { key: "vw-cam_hide-pos" },
+                  { key: "vw-cam_hide-pitch" },
+                ],
+              },
               factor: -0.001,
             },
             increase: { 
               store: { key: "vw-cam_pitch" },
               enable: { key: "vw-cam_change-pitch" },
+              hidden: {
+                keys: [
+                  { key: "vw-cam_hide-pos" },
+                  { key: "vw-cam_hide-pitch" },
+                ],
+              },
               factor: 0.001,
             },
           },
         },
       },
+      /*
       {
         name: "vw-cam_pitch-line-h",
         template: VEComponents.get("line-h"),
         layout: VELayouts.get("line-h"),
-        config: { layout: { type: UILayoutType.VERTICAL } },
+        config: {
+          layout: { type: UILayoutType.VERTICAL },
+          image: {
+            hidden: {
+              keys: [
+                { key: "vw-cam_hide-pos" },
+                { key: "vw-cam_hide-pitch" },
+              ],
+            },
+          },
+        },
       },
-      /*
       {
         name: "vw-cam_move-title",
         template: VEComponents.get("property"),

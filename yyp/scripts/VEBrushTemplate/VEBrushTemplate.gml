@@ -21,6 +21,9 @@ function VEBrushTemplate(json) constructor {
       ? json.texture
       : BRUSH_TEXTURES[0]
 
+  ///@type {Boolean}
+  hidden = Struct.getIfType(json, "hidden", Boolean, false)
+
   ///@type {?Struct}
   properties = Core.isType(Struct.get(json, "properties"), Struct) 
     ? json.properties
@@ -33,6 +36,7 @@ function VEBrushTemplate(json) constructor {
       type: this.type,
       texture: this.texture,
       color: this.color,
+      hidden: this.hidden,
     }
 
     if (Optional.is(this.properties)) {

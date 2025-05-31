@@ -114,7 +114,7 @@ function VisuHUDRenderer() constructor {
     }
 
     this.glitchService.dispatcher
-      .execute(new Event("spawn", { 
+      .execute(new Event("spawn-glitch", { 
         factor: factor, 
         rng: !useConfig
       }))
@@ -122,10 +122,13 @@ function VisuHUDRenderer() constructor {
       return this
   }
 
+  ///@param {?Number} [value]
   ///@return {VisuHUDRenderer}
-  sendGlitchEvent = function() {
-    var value = choose(0.3, 0.4, 0.5, 0.6, 0.7)
-    this.setGlitchServiceConfig(value / 100.0, false)
+  sendGlitchEvent = function(value = null) {
+    var factor = Core.isType(value, Number)
+      ? value
+      : (choose(0.3, 0.4, 0.5, 0.6, 0.7) / 100.0)
+    this.setGlitchServiceConfig(factor, false)
     this.glitchCooldown.reset()
     return this
   }

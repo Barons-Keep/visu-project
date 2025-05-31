@@ -4,7 +4,7 @@
   "name":"shader_nog_betere_2",
   "parent":{
     "name":"absurdiscord",
-    "path":"folders/io.alkapivo.core/resource/shader/absurdiscord.yy",
+    "path":"folders/io.alkapivo.core/resource/shader/ext/absurdiscord.yy",
   },
   "resourceType":"GMShader",
   "resourceVersion":"2.0",

@@ -198,6 +198,26 @@ function brush_view_subtitle(json = null) {
         passthrough: UIUtil.passthrough.getClampedStringNumber(),
         data: new Vector2(0.0, 999.9),
       },
+      "vw-sub_hide": {
+        type: Boolean,
+        value: Struct.get(json, "vw-sub_hide"),
+      },
+      "vw-sub_hide-area": {
+        type: Boolean,
+        value: Struct.get(json, "vw-sub_hide-area"),
+      },
+      "vw-sub_hide-font": {
+        type: Boolean,
+        value: Struct.get(json, "vw-sub_hide-font"),
+      },
+      "vw-sub_hide-spd": {
+        type: Boolean,
+        value: Struct.get(json, "vw-sub_hide-spd"),
+      },
+      "vw-sub_hide-dir": {
+        type: Boolean,
+        value: Struct.get(json, "vw-sub_hide-dir"),
+      },
     }),
     components: new Array(Struct, [
       {

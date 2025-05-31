@@ -15,6 +15,15 @@ function UI(config = {}) constructor {
   ///@type {Boolean}
   enable = Assert.isTrue(Struct.getDefault(config, "enable", true), Boolean)
 
+  var _hidden = Struct.get(config, "hidden")
+  ///@type {Struct}
+  hidden = {
+    value: Struct.getDefault(_hidden, "value", false),
+    key: Struct.getDefault(_hidden, "key", null),
+    keys: Struct.getDefault(_hidden, "keys", null),
+    negate: Struct.getDefault(_hidden, "negate", false),
+  }
+
   ///type {Boolean}
   propagate = Assert.isType(Struct.getDefault(config, "propagate", true), Boolean)
 
@@ -122,13 +131,17 @@ function UI(config = {}) constructor {
     name: this.name,
     value: false,
     force: false,
+    delay: 0,
     area: new Rectangle({ width: -1, height: -1 }),
-    signal: function() {
+    signal: function(delay = null) {
       this.force = true
+      this.delay = delay == null ? this.delay : delay
       return this
     },
     get: function() {
-      return this.value || this.force
+      var result = this.value || this.force || this.delay > 0
+      this.delay = clamp(this.delay - 1, 0, 10)
+      return result
     },
     update: function(area) {
       var force = this.force
@@ -161,6 +174,10 @@ function UI(config = {}) constructor {
       //}
       var updateItemArea = this.areaWatchdog.update(this.area).get()
       this.items.forEach(this.updateItem, updateItemArea)
+      
+      if (this.areaWatchdog.delay > 0) {
+        this.clampUpdateTimer(0.9000)
+      }
     }
 
   hoverItem = null
@@ -222,7 +239,7 @@ function UI(config = {}) constructor {
 
         if (this.hoverItem != item) {
           this.hoverItem = item
-          this.clampUpdateTimer(0.9500)
+          this.clampUpdateTimer(0.9000)
         }
         item.isHoverOver = true
       }
@@ -596,6 +613,7 @@ function _UIUtil() constructor {
   updateAreaTemplates = new Map(String, Callable, {
     "applyLayout": function() {
       return function() {
+        this.layout.updateHidden(this.hidden.value)
         this.area.setX(this.layout.x())
         this.area.setY(this.layout.y())
         this.area.setWidth(this.layout.width())
@@ -604,10 +622,17 @@ function _UIUtil() constructor {
     },
     "applyLayoutTextField": function() {
       return function() {
+        this.layout.updateHidden(this.hidden.value)
         this.area.setX(this.layout.x())
         this.area.setY(this.layout.y())
-        this.area.setWidth(max(this.layout.width(), this.textField.style.w_min))
+        this.area.setWidth(this.layout.hidden
+          ? this.layout.width()
+          : max(this.layout.width(), this.textField.style.w_min))
         this.area.setHeight(this.layout.height())
+
+        if (this.layout.hidden) {
+          return
+        }
 
         var _w = this.textField.style.w
         var _h = this.textField.style.h
@@ -977,11 +1002,19 @@ function _UIUtil() constructor {
    },
     "renderItemDefault": function() {
       return function(item, iterator, area) {
+        if (item.hidden.value) {
+          return
+        }
+
         item.render()
       }
     },
     "renderItemDefaultScrollable": function() {
       return function(item, iterator, area) {
+        if (item.hidden.value) {
+          return
+        }
+
         var itemX = item.area.x
         var itemY = item.area.y
         var areaX = abs(area.x)
@@ -1181,9 +1214,12 @@ function _UIUtil() constructor {
           this.data = new Vector2(0.0, 1.0)
         }
 
+
         value.value = clamp(value.value, this.data.x, this.data.y)
+        value.startValue = value.value
+        value.duration = value.duration < 0.0 ? 0.0 : value.duration
         value.target = clamp(value.target, this.data.x, this.data.y)
-        return value
+        return value.reset()
       }
     },
 
@@ -1195,8 +1231,10 @@ function _UIUtil() constructor {
         }
 
         value.value = clamp(value.value, 0.0, 1.0)
+        value.startValue = value.value
+        value.duration = value.duration < 0.0 ? 0.0 : value.duration
         value.target = clamp(value.target, 0.0, 1.0)
-        return value
+        return value.reset()
       }
     },
 
@@ -1236,6 +1274,15 @@ function _UIUtil() constructor {
           : Struct.getIfType(this, "value", String, "{\n  \n}")
       }
     },
+
+    ///@return {Callable}
+    getStringGMArray: function() {
+      return function(value) {
+        return Core.isType(JSON.parse(value), Array)
+          ? value
+          : Struct.getIfType(this, "value", String, "[\n  \n]")
+      }
+    },
   }
 
   ///@param {UI} container
@@ -1260,6 +1307,12 @@ function _UIUtil() constructor {
         return JSON.parse(this.get())
       }
     },
+
+    getStringGMArray: function() {
+      return function() {
+        return JSON.parse(this.get()).getContainer()
+      }
+    },
   }
 
   ///@param {Struct}
@@ -1267,6 +1320,12 @@ function _UIUtil() constructor {
     getStringStruct: function() {
       return function(value) {
         Assert.isType(JSON.parse(value), Struct)
+      }
+    },
+
+    getStringGMArray: function() {
+      return function(value) {
+        Assert.isType(JSON.parse(value), Array)
       }
     },
   }

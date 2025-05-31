@@ -4,8 +4,8 @@
 ///@param {Struct} [json]
 function GridItemGameMode(json = {}) constructor {
 
-  ///@type {Array<GridItemFeature>}
-  features = new Array(GridItemFeature)
+  ///@type {Array<Struct>}
+  features = new Array(Struct)
 
   ///@private
   ///@type {?Callable}
@@ -57,7 +57,7 @@ function GridItemGameMode(json = {}) constructor {
         return
       }
 
-      features.add(feature(json))
+      features.add(new feature(json))
     }, this.features)
   }
 

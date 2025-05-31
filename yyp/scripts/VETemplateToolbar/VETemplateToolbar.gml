@@ -7,6 +7,32 @@
 ///@static
 ///@type {Map<String, Callable>}
 global.__VisuTemplateContainers = new Map(String, Callable, {
+  "bar": function(name, templateToolbar, layout) {
+    return {
+      name: name,
+      state: new Map(String, any, {
+        "background-alpha": 1.0,
+        "background-color": ColorUtil.fromHex(VETheme.color.accentShadow).toGMColor(),
+      }),
+      updateTimer: new Timer(FRAME_MS * 2, { loop: Infinity, shuffle: true }),
+      templateToolbar: templateToolbar,
+      layout: layout,
+      updateArea: Callable.run(UIUtil.updateAreaTemplates.get("applyLayout")),
+      render: Callable.run(UIUtil.renderTemplates.get("renderDefault")),
+      items: {
+        "label_bar-title": {
+          type: UIText,
+          text: "Template toolbar",
+          update: Callable.run(UIUtil.updateAreaTemplates.get("applyMargin")),
+          font: "font_inter_8_bold",
+          color: VETheme.color.textShadow,
+          align: { v: VAlign.CENTER, h: HAlign.LEFT },
+          offset: { x: 4 },
+          backgroundColor: VETheme.color.accentDark,
+        }, 
+      }
+    }
+  },
   "type": function(name, templateToolbar, layout) {
     return {
       name: name,
@@ -813,6 +839,20 @@ global.__VisuTemplateContainers = new Map(String, Callable, {
           align: { v: VAlign.CENTER, h: HAlign.LEFT },
           offset: { x: 4 },
           margin: { right: 96, top: 1 },
+          onMousePressedRight: function(event) {
+            var editor = Beans.get(BeanVisuEditorController)
+            var accordion = editor.accordion
+            var node = Struct.get(this.context.layout.context.nodes, "inspector-view")
+            var containers = this.context.templateToolbar.containers
+
+            Struct.set(node, "percentageHeight", Struct.get(this, "__expandPercentageHeight") == true ? 0.0 : 1.0)
+            Struct.set(accordion.layout.store, "events-percentage", Struct.get(this, "__expandPercentageHeight") == true ? 0.0 : 1.0)
+            Struct.set(this, "__percentage", null)
+            Struct.set(this, "__expandPercentageHeight", !(Struct.get(this, "__expandPercentageHeight") == true))
+            accordion.containers.forEach(accordion.resetUpdateTimer)
+            accordion.templateToolbar.containers.forEach(accordion.resetUpdateTimer)
+            accordion.eventInspector.containers.forEach(accordion.resetUpdateTimer)
+          },
         },
         "button_template-load": Struct.appendRecursiveUnique(
           {
@@ -1211,6 +1251,9 @@ global.__VisuTemplateContainers = new Map(String, Callable, {
         this.__render()
       },
       scrollbarY: { align: HAlign.LEFT },
+      fetchViewHeight: function() {
+        return 32 * this.collection.size()
+      },
       onMousePressedLeft: Callable.run(UIUtil.mouseEventTemplates.get("onMouseScrollbarY")),
       onMouseWheelUp: Callable.run(UIUtil.mouseEventTemplates.get("scrollableOnMouseWheelUpY")),
       onMouseWheelDown: Callable.run(UIUtil.mouseEventTemplates.get("scrollableOnMouseWheelDownY")),
@@ -2213,6 +2256,7 @@ global.__VisuTemplateContainers = new Map(String, Callable, {
                   var titleBar = uiService.find("ve-title-bar")
                   var statusBar = uiService.find("ve-status-bar")
 
+                  var barNode = Struct.get(this.context.layout.context.nodes, "bar")
                   var typeNode = Struct.get(this.context.layout.context.nodes, "type")
                   var addNode = Struct.get(this.context.layout.context.nodes, "add")
                   var titleNode = Struct.get(this.context.layout.context.nodes, "title")
@@ -2224,14 +2268,15 @@ global.__VisuTemplateContainers = new Map(String, Callable, {
                   var timelineNode = editor.layout.nodes.timeline
                   
                   var top = titleBar.layout.height() + titleBar.margin.top + titleBar.margin.bottom
-                    + typeNode.height() + typeNode.margin.top + typeNode.margin.bottom
-                    + addNode.height() + addNode.margin.top + addNode.margin.bottom
-                    + titleNode.height() + titleNode.margin.top + titleNode.margin.bottom
+                    + barNode.height() + barNode.__margin.top + barNode.__margin.bottom
+                    + typeNode.height() + typeNode.__margin.top + typeNode.__margin.bottom
+                    + addNode.height() + addNode.__margin.top + addNode.__margin.bottom
+                    + titleNode.height() + titleNode.__margin.top + titleNode.__margin.bottom
                   var bottom = GuiHeight()
                     - statusBar.layout.height() 
-                    - (timelineNode.height() + timelineNode.margin.top + timelineNode.margin.bottom)
-                    - (controlNode.height() + controlNode.margin.top + controlNode.margin.bottom)
-                    - viewEventInspectorNode.height() - viewEventInspectorNode.margin.top - viewEventInspectorNode.margin.bottom
+                    - (timelineNode.height() + timelineNode.__margin.top + timelineNode.__margin.bottom)
+                    - (controlNode.height() + controlNode.__margin.top + controlNode.__margin.bottom)
+                    - viewEventInspectorNode.height() - viewEventInspectorNode.__margin.top - viewEventInspectorNode.__margin.bottom
                   var length = bottom - top
 
                   inspectorNode.percentageHeight = clamp(inspectorNode.percentageHeight, (8.0 / length), 1.0 - (8.0 / length))
@@ -2245,6 +2290,7 @@ global.__VisuTemplateContainers = new Map(String, Callable, {
               var titleBar = uiService.find("ve-title-bar")
               var statusBar = uiService.find("ve-status-bar")
 
+              var barNode = Struct.get(this.context.layout.context.nodes, "bar")
               var typeNode = Struct.get(this.context.layout.context.nodes, "type")
               var addNode = Struct.get(this.context.layout.context.nodes, "add")
               var titleNode = Struct.get(this.context.layout.context.nodes, "title")
@@ -2257,14 +2303,15 @@ global.__VisuTemplateContainers = new Map(String, Callable, {
               var timelineNode = editor.layout.nodes.timeline
               
               var top = titleBar.layout.height() + titleBar.margin.top + titleBar.margin.bottom
-                + typeNode.height() + typeNode.margin.top + typeNode.margin.bottom
-                + addNode.height() + addNode.margin.top + addNode.margin.bottom
-                + titleNode.height() + titleNode.margin.top + titleNode.margin.bottom
+                + barNode.height() + barNode.__margin.top + barNode.__margin.bottom
+                + typeNode.height() + typeNode.__margin.top + typeNode.__margin.bottom
+                + addNode.height() + addNode.__margin.top + addNode.__margin.bottom
+                + titleNode.height() + titleNode.__margin.top + titleNode.__margin.bottom
               var bottom = GuiHeight()
                 - statusBar.layout.height() 
-                - (timelineNode.height() + timelineNode.margin.top + timelineNode.margin.bottom)
-                - (controlNode.height() + controlNode.margin.top + controlNode.margin.bottom)
-                - viewEventInspectorNode.height() - viewEventInspectorNode.margin.top - viewEventInspectorNode.margin.bottom
+                - (timelineNode.height() + timelineNode.__margin.top + timelineNode.__margin.bottom)
+                - (controlNode.height() + controlNode.__margin.top + controlNode.__margin.bottom)
+                - viewEventInspectorNode.height() - viewEventInspectorNode.__margin.top - viewEventInspectorNode.__margin.bottom
               var length = bottom - top
               var position = clamp(mouseY - top, 4.0, length - 4.0)
 
@@ -2274,6 +2321,20 @@ global.__VisuTemplateContainers = new Map(String, Callable, {
             }),
             onMousePressedLeft: function(event) {
               Beans.get(BeanVisuEditorIO).mouse.setClipboard(this.clipboard)
+            },
+            onMousePressedRight: function(event) {
+              var editor = Beans.get(BeanVisuEditorController)
+              var accordion = editor.accordion
+              var node = Struct.get(this.context.layout.context.nodes, "inspector-view")
+              var containers = this.context.templateToolbar.containers
+
+              Struct.set(node, "percentageHeight", Struct.get(this, "__expandPercentageHeight") == true ? 0.0 : 1.0)
+              Struct.set(this, "__percentage", null)
+              Struct.set(this, "__expandPercentageHeight", !(Struct.get(this, "__expandPercentageHeight") == true))
+              this.updateCustom()
+              accordion.containers.forEach(accordion.resetUpdateTimer)
+              accordion.templateToolbar.containers.forEach(accordion.resetUpdateTimer)
+              accordion.eventInspector.containers.forEach(accordion.resetUpdateTimer)
             },
             onMouseHoverOver: function(event) {
               if (!mouse_check_button(mb_left)) {
@@ -2371,6 +2432,7 @@ global.__VisuTemplateContainers = new Map(String, Callable, {
               .setState({
                 context: data,
                 stage: "load-components",
+                cooldownTimer: new Timer(0.128, { loop: true }),
                 components: template.components,
                 componentsQueue: new Queue(String, GMArray
                   .map(template.components.container, function(component, index) { 
@@ -2401,8 +2463,18 @@ global.__VisuTemplateContainers = new Map(String, Callable, {
                       break
                     }
   
+                    var time = get_timer()
                     var component = new UIComponent(task.state.components.get(index))
                     task.state.context.addUIComponent(component, index, task.state.componentsConfig)
+                    time = (get_timer() - time) / 1000.0
+                    if (time > 16.0) {
+                      //task.state.stage = "cooldown"
+                    }
+                  }
+                },
+                "cooldown": function(task) {
+                  if (task.state.cooldownTimer.update().finished) {
+                    task.state.stage = "load-components"
                   }
                 },
               })
@@ -2440,7 +2512,6 @@ global.__VisuTemplateContainers = new Map(String, Callable, {
               label: { text: "Save" },
               layout: { 
                 height: function() { return 40 },
-                margin: { top: 0 },
               },
               backgroundMargin: { top: 1, bottom: 1, right: 1, left: 0 },
               callback: function() { 
@@ -2603,12 +2674,13 @@ function VETemplateToolbar(_editor) constructor {
       value: "texture",
     },
     "template": {
-      type: Optional.of(VETemplate),
+      //type: Optional.of(VETemplate),
+      type: Optional.of(Struct),
       value: null,
     },
     "shader": {
       type: String,
-      value: "shader_hue",
+      value: "shader_arc_runner",
       validate: function(value) {
         Assert.isType(ShaderUtil.fetch(value), Shader)
         Assert.isTrue(this.data.contains(value))
@@ -2632,6 +2704,7 @@ function VETemplateToolbar(_editor) constructor {
       {
         name: "template-toolbar",
         staticHeight: new BindIntent(function() {
+          var bar = Struct.get(this.nodes, "bar")
           var type = Struct.get(this.nodes, "type")
           var add = Struct.get(this.nodes, "add")
           var title = Struct.get(this.nodes, "title")
@@ -2639,33 +2712,38 @@ function VETemplateToolbar(_editor) constructor {
           var control = Struct.get(this.nodes, "control")
           var templateView = Struct.get(this.nodes, "template-view")
           var inspectorView = Struct.get(this.nodes, "inspector-view")
-          return type.height() 
-              + add.height() + add.margin.top
-              + title.height() + title.margin.top
-              + inspectorBar.height() + inspectorBar.margin.top
-              + control.height()
-              + templateView.margin.top
-              + templateView.margin.bottom
-              + inspectorView.margin.top
-              + inspectorView.margin.bottom
+          return bar.height() + bar.__margin.top + bar.__margin.bottom
+              + type.height() + type.__margin.top + type.__margin.bottom
+              + add.height() + add.__margin.top + add.__margin.bottom
+              + title.height() + title.__margin.top + title.__margin.bottom
+              + inspectorBar.height() + inspectorBar.__margin.top + inspectorBar.__margin.bottom
+              + control.height() + control.__margin.top + control.__margin.bottom
+              + templateView.__margin.top + templateView.__margin.bottom
+              + inspectorView.__margin.top + inspectorView.__margin.bottom
         }),
         nodes: {
+          "bar": {
+            name: "template-toolbar.bar",
+            y: function() { return this.context.y() + this.__margin.top },
+            height: function() { return 16 },
+            margin: { left: 1, right: 1, top: 0 },
+          },
           "type": {
             name: "template-toolbar.type",
-            y: function() { return this.context.y() },
+            y: function() { return this.context.nodes.bar.bottom() + this.__margin.top },
             height: function() { return 40 },
             margin: { left: 1, right: 1 },
           },
           "add": {
             name: "template-toolbar.add",
-            y: function() { return this.context.nodes.type.bottom() + this.margin.top },
+            y: function() { return this.context.nodes.type.bottom() + this.__margin.top },
             __height: 62,
-            height: function() { return this.__height - this.margin.top },
+            height: function() { return this.__height - this.__margin.top },
             margin: { left: 1, right: 1, top: 1 },
           },
           "title": {
             name: "template-toolbar.title",
-            y: function() { return this.context.nodes.add.bottom() + this.margin.top },
+            y: function() { return this.context.nodes.add.bottom() + this.__margin.top },
             height: function() { return 16 },
             margin: { left: 1, right: 1, top: 1 },
           },
@@ -2673,15 +2751,15 @@ function VETemplateToolbar(_editor) constructor {
             name: "template-toolbar.template-view",
             percentageHeight: 0.25,
             margin: { top: 1, bottom: 0, left: 10, right: 1 },
-            x: function() { return this.context.x() + this.margin.left },
-            y: function() { return this.margin.top + this.context.nodes.title.bottom() },
+            x: function() { return this.context.x() + this.__margin.left },
+            y: function() { return this.__margin.top + this.context.nodes.title.bottom() },
             height: function() { return ceil((this.context.height() 
               - this.context.staticHeight()) * this.percentageHeight)
-              },//- this.margin.top - this.margin.bottom },
+              },//- this.__margin.top - this.__margin.bottom },
           },
           "inspector-bar": {
             name: "template-toolbar.inspector-bar",
-            y: function() { return Struct.get(this.context.nodes, "template-view").bottom() + this.margin.top },
+            y: function() { return Struct.get(this.context.nodes, "template-view").bottom() + this.__margin.top },
             height: function() { return 16 },
             margin: { left: 1, right: 1, top: 1 },
           },
@@ -2689,11 +2767,11 @@ function VETemplateToolbar(_editor) constructor {
             name: "template-toolbar.inspector-view",
             percentageHeight: 0.75,
             margin: { top: 1, bottom: 0, left: 10, right: 1 },
-            x: function() { return this.context.x() + this.margin.left },
-            y: function() { return this.margin.top + Struct.get(this.context.nodes, "inspector-bar").bottom() },
+            x: function() { return this.context.x() + this.__margin.left },
+            y: function() { return this.__margin.top + Struct.get(this.context.nodes, "inspector-bar").bottom() },
             height: function() { return ceil((this.context.height() 
               - this.context.staticHeight()) * this.percentageHeight) 
-              - this.margin.top - this.margin.bottom },
+              - this.__margin.top - this.__margin.bottom },
           },
           "control": {
             name: "template-toolbar.control",
@@ -2943,7 +3021,7 @@ function VETemplateToolbar(_editor) constructor {
           transformer: new ColorTransformer({
             value: VETheme.color.accept,
             target: item.isHoverOver ? item.colorHoverOver : item.colorHoverOut,
-            factor: 0.016,
+            duration: 1.0,
           })
         })
         .whenUpdate(function(executor) {

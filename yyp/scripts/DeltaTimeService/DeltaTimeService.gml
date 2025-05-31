@@ -5,6 +5,7 @@ function DeltaTimeService() constructor {
 
   ///@return {Number}
   static get = function() { 
+    gml_pragma("forceinline")
     return DeltaTime.get()
   }
 

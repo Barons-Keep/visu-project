@@ -48,6 +48,63 @@ function VisuTrackLoader(_controller): Service() constructor {
         },
         transitions: { 
           "idle": null,
+          "clear-state": null,
+        },
+      },
+      "clear-state": {
+        actions: {
+          onStart: function(fsm, fsmState, path) {
+            fsmState.state.set("path", path)
+            fsmState.state.set("clearQueue", new Queue(Callable, [
+              function() { Beans.get(BeanVisuController).displayService.setCaption(game_display_name) },
+              function() { Beans.get(BeanVisuController).brushService.clearTemplates() },
+              function() { Beans.get(BeanVisuController).visuRenderer.gridRenderer.clear() },
+              function() { Beans.get(BeanVisuController).visuRenderer.executor.tasks.forEach(TaskUtil.fullfill).clear() },
+              function() {
+                var editor = Beans.get(BeanVisuEditorController)
+                if (Core.isType(editor, VisuEditorController)) {
+                  editor.popupQueue.dispatcher.execute(new Event("clear"))
+                  editor.dispatcher.execute(new Event("close"))
+                }
+              },
+              function() { Beans.get(BeanVisuController).trackService.dispatcher.execute(new Event("close-track")) },
+              function() { Beans.get(BeanVisuController).videoService.dispatcher.execute(new Event("close-video")) },
+              function() { Beans.get(BeanVisuController).gridService.dispatcher.execute(new Event("clear-grid")) },
+              function() { Beans.get(BeanVisuController).gridService.executor.tasks.forEach(TaskUtil.fullfill).clear() },
+              function() { Beans.get(BeanVisuController).gridService.loadingScreen() },
+              function() { Beans.get(BeanVisuController).playerService.dispatcher.execute(new Event("clear-player")) },
+              function() { Beans.get(BeanVisuController).shroomService.dispatcher.execute(new Event("clear-shrooms")).execute(new Event("reset-templates")) },
+              function() { Beans.get(BeanVisuController).bulletService.dispatcher.execute(new Event("clear-bullets")).execute(new Event("reset-templates")) },
+              function() { Beans.get(BeanVisuController).coinService.dispatcher.execute(new Event("clear-coins")).execute(new Event("reset-templates")) },
+              function() { Beans.get(BeanVisuController).subtitleService.dispatcher.execute(new Event("clear-subtitle")).execute(new Event("reset-templates")) },
+              function() { Beans.get(BeanVisuController).particleService.dispatcher.execute(new Event("clear-particles")).execute(new Event("reset-templates")) },
+              function() { Beans.get(BeanVisuController).shaderPipeline.dispatcher.execute(new Event("clear-shaders")).execute(new Event("reset-templates")) },
+              function() { Beans.get(BeanVisuController).shaderBackgroundPipeline.dispatcher.execute(new Event("clear-shaders")).execute(new Event("reset-templates")) },
+              function() { Beans.get(BeanVisuController).shaderCombinedPipeline.dispatcher.execute(new Event("clear-shaders")).execute(new Event("reset-templates")) },
+              function() { Beans.get(BeanTextureService).dispatcher.execute(new Event("free")) },
+            ]))
+          }
+        },
+        update: function(fsm) {
+          try {
+            var clearQueue = this.state.get("clearQueue")
+            if (clearQueue.size() == 0.0) {
+              fsm.dispatcher.send(new Event("transition", {
+                name: "parse-manifest",
+                data: this.state.get("path"),
+              }))  
+            } else {
+              Callable.run(clearQueue.pop())
+            }
+          } catch (exception) {
+            var message = $"'clear-state' fatal error: {exception.message}"
+            Beans.get(BeanVisuController).send(new Event("spawn-popup", { message: message }))
+            Logger.error("VisuTrackLoader", message)
+            fsm.dispatcher.send(new Event("transition", { name: "idle" }))
+          }
+        },
+        transitions: {
+          "idle": null,
           "parse-manifest": null,
         },
       },
@@ -55,34 +112,7 @@ function VisuTrackLoader(_controller): Service() constructor {
         actions: {
           onStart: function(fsm, fsmState, path) {
             var controller = Beans.get(BeanVisuController)
-            controller.displayService.setCaption(game_display_name)
-            controller.brushService.clearTemplates()
-            controller.visuRenderer.gridRenderer.clear()
             var editor = Beans.get(BeanVisuEditorController)
-            if (Core.isType(editor, VisuEditorController)) {
-              editor.popupQueue.dispatcher.execute(new Event("clear"))
-              editor.dispatcher.execute(new Event("close"))
-            }
-
-            controller.trackService.dispatcher.execute(new Event("close-track"))
-            controller.videoService.dispatcher.execute(new Event("close-video"))
-            
-            controller.gridService.dispatcher.execute(new Event("clear-grid"))
-            controller.gridService.executor.tasks.forEach(TaskUtil.fullfill).clear()
-            controller.gridService.init()
-            
-            controller.playerService.dispatcher.execute(new Event("clear-player"))
-            controller.shroomService.dispatcher.execute(new Event("clear-shrooms")).execute(new Event("reset-templates"))
-            controller.bulletService.dispatcher.execute(new Event("clear-bullets")).execute(new Event("reset-templates"))
-            controller.coinService.dispatcher.execute(new Event("clear-coins")).execute(new Event("reset-templates"))
-            controller.subtitleService.dispatcher.execute(new Event("clear-subtitle")).execute(new Event("reset-templates"))
-            
-            controller.particleService.dispatcher.execute(new Event("clear-particles")).execute(new Event("reset-templates"))
-            controller.shaderPipeline.dispatcher.execute(new Event("clear-shaders")).execute(new Event("reset-templates"))
-            controller.shaderBackgroundPipeline.dispatcher.execute(new Event("clear-shaders")).execute(new Event("reset-templates"))
-            controller.shaderCombinedPipeline.dispatcher.execute(new Event("clear-shaders")).execute(new Event("reset-templates"))
-            Beans.get(BeanTextureService).dispatcher.execute(new Event("free"))
-
             fsmState.state.set("promise", Beans.get(BeanFileService).send(
               new Event("fetch-file")
                 .setData({ path: path })
@@ -247,6 +277,17 @@ function VisuTrackLoader(_controller): Service() constructor {
                         //Logger.debug("VisuTrackLoader", $"Load track '{name}'")
                         acc.trackService.openTrack(new prototype(json, { 
                           handlers: acc.trackService.handlers,
+                          parseSettings: function(json) {
+                            var difficulty = Struct.get(json, "difficulty")
+                            return {
+                              "difficulty": {
+                                "EASY": Struct.getDefault(difficulty, "EASY", true),
+                                "NORMAL": Struct.getDefault(difficulty, "NORMAL", true),
+                                "HARD": Struct.getDefault(difficulty, "HARD", true),
+                                "LUNATIC": Struct.getDefault(difficulty, "LUNATIC", true),
+                              }
+                            }
+                          },
                         }))
                       },
                       acc: { trackService: controller.trackService },
@@ -588,6 +629,50 @@ function VisuTrackLoader(_controller): Service() constructor {
       "cooldown": {
         actions: {
           onStart: function(fsm, fsmState) {
+            var stack = new Stack(TextureTemplate)
+            Beans.get(BeanTextureService).templates.forEach(function(template, name, stack) {
+              stack.push(template)
+            }, stack)
+            Visu.assets().textures.forEach(function(template, name, stack) {
+              stack.push(template)
+            }, stack)
+
+            var textureLoadTask = new Task("texture-load-task")
+              .setState({
+                stack: stack
+              })
+              .setPromise(new Promise())
+              .whenUpdate(function() {
+                try {
+                  repeat (1) {
+                    if (this.state.stack.size() == 0) {
+                      this.fullfill()
+                      break
+                    } else {
+                      var template = this.state.stack.pop()
+                      for (var index = 0; index < template.frames; index++) {
+                        draw_sprite_ext(
+                          template.asset, 
+                          index, 
+                          random(GuiWidth()), 
+                          random(GuiHeight()),
+                          random(10.0),
+                          random(10.0),
+                          random(360.0),
+                          make_color_rgb(irandom(255), irandom(255), irandom(255)),
+                          0.075
+                        )
+                      }
+                    }
+                  }
+                } catch (exception) {
+                  Logger.error("VisuTrackLoader", $"texture-load-task exception: {exception.message}")
+                  Core.printStackTrace()
+                  this.reject()
+                }
+              })
+            Beans.get(BeanVisuController).visuRenderer.executor.add(textureLoadTask)
+            fsmState.state.set("texture-load-task", textureLoadTask)
             fsmState.state.set("cooldown-timer", new Timer(2.0))
 
             var controller = Beans.get(BeanVisuController)
@@ -657,6 +742,12 @@ function VisuTrackLoader(_controller): Service() constructor {
         },
         update: function(fsm) {
           try {
+            var textureLoadTask = this.state.get("texture-load-task")
+            if (textureLoadTask.promise.status == PromiseStatus.PENDING) {
+              return
+            }
+            Assert.isTrue(textureLoadTask.promise.status != PromiseStatus.REJECTED, "textureLoadTask.promise.status must be fullfilled")
+            
             var timer = this.state.get("cooldown-timer")
             var editorIO = Beans.get(BeanVisuEditorIO)
             if (timer.update().finished) {
@@ -704,7 +795,7 @@ function VisuTrackLoader(_controller): Service() constructor {
         },
         transitions: {
           "idle": null,
-          "parse-manifest": null,
+          "clear-state": null,
         },
       }
     }

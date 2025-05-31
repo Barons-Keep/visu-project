@@ -51,15 +51,8 @@ function template_coin(json = null) {
           factor: 0.1,
           increase: 0.0
         })),
-        passthrough: function(value) {
-          if (!Core.isType(value, NumberTransformer)) {
-            return this.value
-          }
-
-          value.value = clamp(value.value, -99.9, 99.9)
-          value.target = clamp(value.target, -99.9, 99.9)
-          return value
-        },
+        passthrough: UIUtil.passthrough.getClampedNumberTransformer(),
+        data: new Vector2(-99.9, 99.9),
       },
       "coin_change-speed": {
         type: Boolean,

@@ -40,10 +40,15 @@ function UIStore(config, _context = null) constructor {
   ///@param {any} value
   set = method(this, Assert.isType(Struct.getDefault(config, "set", function(value) {
     var item = this.get()
-    if (item == null) {
+    if (!Optional.is(item)) {
       return 
     }
     item.set(value)
+
+    this.context.updateHidden()
+    if (Optional.is(this.context.updateEnable)) {
+      this.context.updateEnable()
+    }
   }), Callable))
 
   ///@param {any} value

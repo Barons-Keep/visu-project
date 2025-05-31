@@ -89,8 +89,12 @@ function _Core() constructor {
           || is_instanceof(object, Array) 
           || is_instanceof(object, Map) 
           || is_instanceof(object, Stack) 
-          || is_instanceof(object, Queue))
+          || is_instanceof(object, Queue)
+          || is_instanceof(object, DSMap)
+          || is_instanceof(object, DSList))
         case GMArray: return result == "array"
+        case GMMap: return result == "ref" && ds_exists(object, ds_type_map)
+        case GMList: return result == "ref" && ds_exists(object, ds_type_list)
         case GMBuffer: return result == "ref" && buffer_exists(object)
         case GMCamera: return result == "number"
         case GMColor: return result == "number"
@@ -126,6 +130,7 @@ function _Core() constructor {
       }
     } catch (exception) {
       Logger.error("Core.isType", $"'{type}' Fatal error: {exception.message}")
+      Core.printStackTrace()
     }
     return false
   }
@@ -275,7 +280,7 @@ function _Core() constructor {
   ///@return {Core}
   static debugOverlay = function(value) {
     gml_pragma("forceinline")
-    show_debug_overlay(value)
+    show_debug_overlay(value, true, 1.0, 0.75)
     return this
   }
 
@@ -333,6 +338,21 @@ function _Core() constructor {
   static getIfEnum = function(value, type, defaultValue = null) {
     gml_pragma("forceinline")
     return Core.isEnum(value, type) ? value : defaultValue
+  }
+
+  ///@return {Array<Number>}
+  static fetchAARange = function() {
+    if (display_aa == 2) {
+      return new Array(Number, [ 0, 2 ])
+    } else if (display_aa == 6) {
+      return new Array(Number, [ 0, 2, 4 ])
+    } else if (display_aa == 12) {
+      return new Array(Number, [ 0, 4, 8 ])
+    } else if (display_aa == 14) {
+      return new Array(Number, [ 0, 2, 4, 8 ])
+    } else  {
+      return new Array(Number, [ 0 ])
+    }
   }
 }
 global.__Core = new _Core()

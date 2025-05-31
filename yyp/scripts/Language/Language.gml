@@ -12,8 +12,8 @@ global.__LanguageType = new _LanguageType()
 ///@param {Struct} json
 function LanguagePack(json) constructor {
 
-  ///@type {LanguageType}
-  code = Assert.isEnum(json.code, LanguageType)
+  ///@type {String}
+  code = Assert.isType(json.code, String)
 
   ///@private
   ///@type {Map<String, String>}

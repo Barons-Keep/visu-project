@@ -71,10 +71,7 @@ global.__EVENT_DISPATCHERS = {
               var key = this.state.get("key")
               var container = this.state.get("container")
               var transformer = this.state.get("transformer")
-              Struct.set(container, key, transformer
-                .set(Struct.get(container, key)) 
-                .update()
-                .get())
+              Struct.set(container, key, transformer.update().get())
 
               if (transformer.finished) {
                 this.fullfill()

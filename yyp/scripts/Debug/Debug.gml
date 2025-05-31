@@ -51,7 +51,7 @@ function DebugTimer(_name, _size = 60) constructor {
 
   ///@return {String}
   getMessage = function() {
-    return $"{this.name} avg: {string_format(this.getValue(), 1, 4)} ms"
+    return $"{this.name} avg: {string_format(this.getValue(), 1, 4)}ms"
   }
 }
 

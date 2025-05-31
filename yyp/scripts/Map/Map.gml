@@ -4,7 +4,7 @@
 ///@param {Type} _valueType
 ///@param {?Struct} [_container]
 ///@param {?Struct} [config]
-function Map(_keyType = any, _valueType = any, _container = null, config = { validate: false }) constructor {
+function Map(_keyType = any, _valueType = any, _container = null) constructor {
 
   ///@private
   _acc = null
@@ -20,21 +20,6 @@ function Map(_keyType = any, _valueType = any, _container = null, config = { val
     this._callback(value, key, this._acc)
   }
 
-
-  ///@private
-  ///@param {Map} map
-  ///@throws {AssertException}
-  static validateContainer = function(map) {
-    static validateEntry = function(value, key, map) {
-      Assert.isType(key, map.keyType, $"Key '{key}' must be type of '{map.keyType}'")
-      Assert.isType(value, map.valueType, $"Value '{value}' of key '{key}' must be type of '{map.valueType}'")
-    }
-    
-    if (map.keyType != any || map.valueType == any) {
-      Struct.forEach(map.container, validateEntry, map)
-    }
-  }
-
   ///@type {?Type}
   keyType = _keyType
 
@@ -43,14 +28,7 @@ function Map(_keyType = any, _valueType = any, _container = null, config = { val
 
   ///@private
   ///@type {Struct}
-  container = _container != null ? _container : {}
-  ///@description Cannot use Assert.isType due to initialization order
-  if (typeof(this.container) != "struct") {
-    throw new InvalidAssertException($"Invalid 'Map.container' type: '{typeof(this.container)}'")
-  }
-  if (Struct.get(config, "validate") == true) {
-    this.validateContainer(this)
-  }
+  container = typeof(_container) == "struct" ? _container : {}
 
   ///@private
   ///@type {Array}

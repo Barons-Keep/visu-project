@@ -90,14 +90,14 @@ function BulletTemplate(_name, json) constructor {
   ///@return {Struct}
   serialize = function() {
     return {
-      sprite: JSON.clone(this.sprite),
+      sprite: this.sprite,
       useSpeedOffset: this.useSpeedOffset,
       changeSpeedOffset: this.changeSpeedOffset,
       useAngleOffset: this.useAngleOffset,
       changeAngleOffset: this.changeAngleOffset,
       damage: this.damage,
       lifespanMax: this.lifespanMax,
-      mask: Optional.is(this.mask) ? JSON.clone(this.mask) : null,
+      mask: this.mask,
       wiggle: this.wiggle,
       wiggleTime: this.wiggleTime,
       wiggleTimeRng: this.wiggleTimeRng,
@@ -122,14 +122,14 @@ function BulletTemplate(_name, json) constructor {
   ///@return {Struct}
   serializeSpawn = function(x, y, angle, speed, producer, uid) {
     return {
-      sprite: JSON.clone(this.sprite),
+      sprite: this.sprite,
       useSpeedOffset: this.useSpeedOffset,
       changeSpeedOffset: this.changeSpeedOffset,
       useAngleOffset: this.useAngleOffset,
       changeAngleOffset: this.changeAngleOffset,
       damage: this.damage,
       lifespanMax: this.lifespanMax,
-      mask: Optional.is(this.mask) ? JSON.clone(this.mask) : null,
+      mask: this.mask,
       wiggle: this.wiggle,
       wiggleTime: this.wiggleTime,
       wiggleTimeRng: this.wiggleTimeRng,
@@ -207,6 +207,8 @@ function Bullet(template): GridItem(template) constructor {
       target: template.changeAngleOffset ? template.angleOffset.target : (template.useAngleOffset ? template.angleOffset.value : 0.0),
       factor: template.changeAngleOffset ? template.angleOffset.factor : (template.useAngleOffset ? abs(template.angleOffset.value) : 999.9),
       increase: template.changeAngleOffset ? template.angleOffset.increase : 0.0,
+      duration: template.changeAngleOffset ? Struct.get(template.angleOffset, "duration") : 0.0,
+      ease: Struct.get(template.angleOffset, "ease"),
     })
     : null
 
@@ -223,6 +225,8 @@ function Bullet(template): GridItem(template) constructor {
       target: template.changeSpeedOffset ? template.speedOffset.target : (template.useSpeedOffset ? template.speedOffset.value : 0.0),
       factor: template.changeSpeedOffset ? template.speedOffset.factor : (template.useSpeedOffset ? abs(template.speedOffset.value) : 999.9),
       increase: template.changeSpeedOffset ? template.speedOffset.increase : 0.0,
+      duration: template.changeSpeedOffset ?  Struct.get(template.speedOffset, "duration") : 0.0,
+      ease: Struct.get(template.speedOffset, "ease"),
     })
     : null
   

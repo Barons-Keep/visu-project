@@ -22,31 +22,41 @@ global.__ShaderPipelineTaskTransformerType = new _ShaderPipelineTaskTransformerT
 ///@param {Struct} json
 function ShaderPipelineTaskTemplate(_name, json) constructor {
 
+  ///@private
+  static parseProperties = function(context, properties) {
+    static parseProperty = function(json, name, context) {
+      var uniform = context.shader.uniforms.get(name)
+      if (!Core.isType(uniform, ShaderUniform)) {
+        return
+      }
+
+      var type = ShaderPipelineTaskTransformerType.get(uniform.type)
+      if (!Core.isEnum(type, ShaderPipelineTaskTransformerType)) {
+        return
+      }
+
+      context.properties.set(name, new type(json))
+    }
+
+    Struct.set(context, "properties", new Map(String, Struct))
+
+    if (Core.isType(properties, Struct)) {
+      Struct.forEach(properties, parseProperty, context)
+    }
+
+    return context.properties
+  }
+
   ///@type {String}
-  name = Assert.isType(_name, String)
+  name = Assert.isType(_name, String,
+    "ShaderPipelineTaskTemplate: name must be type of String")
 
   ///@type {Shader}
-  shader = Assert.isType(ShaderUtil.fetch(Struct.get(json, "shader")), Shader)
+  shader = Assert.isType(ShaderUtil.fetch(Struct.get(json, "shader")), Shader,
+    "ShaderPipelineTaskTemplate: shader must be type of Shader")
 
   ///@type {Map<String, Struct>}
-  properties = new Map(String, Struct)
-
-  var jsonProperties = Struct.get(json, "properties")
-  if (Core.isType(jsonProperties, Struct)) {
-    this.properties = Struct.toMap(
-      jsonProperties,
-      String,
-      Struct,
-      function(struct, name, shader) { 
-        var uniform = Assert.isType(shader.uniforms.get(name), ShaderUniform)
-        var prototype = Assert.isEnum(ShaderPipelineTaskTransformerType.get(uniform.type), ShaderPipelineTaskTransformerType)
-        var transformer = new prototype(struct)
-        return transformer
-      },
-      this.shader
-    )
-  }
-  Assert.isType(this.properties, Map, "properties")
+  properties = parseProperties(this, Struct.get(json, "properties"))
 }
 
 
@@ -290,16 +300,17 @@ function ShaderPipeline(config = {}) constructor {
   }
 
   ///@param {Callable} handler
-  ///@param {any} data
+  ///@param {any} [data]
+  ///@param {?Callable} [preRender]
+  ///@param {?Callable} [postRender]
   ///@return {ShaderPipeline}
-  render = function(handler, data) {
+  render = function(handler, data = null, preRender = null, postRender = null) {
     static setShaderProperty = function(property, key, context) {
       var value = property.transformer.get()
-      if (property.transformer.overrideValue) {
-        if (Core.isType(property.transformer, ResolutionTransformer)) {
-          value.x = context.width
-          value.y = context.height
-        }
+      if (property.transformer.overrideValue
+          && Core.isType(property.transformer, ResolutionTransformer)) {
+        value.x = context.width
+        value.y = context.height
       }
       property.uniform.set(value)
     }
@@ -311,12 +322,20 @@ function ShaderPipeline(config = {}) constructor {
         continue
       }
 
+      if (preRender != null) {
+        preRender(task, index, data)
+      }
+
       var shader = task.state.get("shader")
       var properties = task.state.get("properties")
       GPU.set.shader(shader)
       properties.forEach(setShaderProperty, this)
       handler(task, index, data)
       GPU.reset.shader()
+
+      if (postRender != null) {
+        postRender(task, index, data)
+      }
     }
     return this
   }

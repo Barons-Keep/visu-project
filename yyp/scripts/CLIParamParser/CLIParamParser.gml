@@ -77,13 +77,9 @@ function CLIParamParser(json) constructor {
       throw new Exception($"param '{cliParam.name}' require '{cliParam.args.size()}' options while '{params.size()} were provided'")
     }
   
-    var args = new Array()
-    //var args = IntStream.map(0, cliParam.args.size(), function(num, idx, params) {
-    //  return params.pop()
-    //}, params)
-    IntStream.forEach(0, cliParam.args.size(), function(num, idx, acc) {
-      acc.args.add(acc.params.pop())
-    }, { args: args, params: params })
+    var args = IntStream.map(0, cliParam.args.size(), function(num, idx, params) {
+      return params.pop()
+    }, params)
   
     cliParam.handler(args)
   

@@ -811,6 +811,7 @@ function _Visu() constructor {
               Logger.debug("CLIParamParser", $"Run --test {args.get(0)}")
               Beans.get(BeanTestRunner).push(args.get(0))
               Core.setProperty("visu.manifest.load-on-start", false)
+              Core.setProperty("visu.menu.open-on-start", false)
             },
           }),
           new CLIParam({
@@ -904,6 +905,19 @@ function _Visu() constructor {
 
   ///@param {Struct} data
   ///@param {String} useKey
+  ///@param {String} eventName
+  ///@param {any} eventData
+  ///@param {EventPump} pump
+  static resolveExecuteEventTrackEvent = function(data, useKey, eventName, eventData, pump) {
+    if (!Struct.get(data, useKey)) {
+      return
+    }
+
+    pump.execute(new Event(eventName, eventData))
+  }
+
+  ///@param {Struct} data
+  ///@param {String} useKey
   ///@param {String} transformerKey
   ///@param {String} changeKey
   ///@param {String} containerKey
@@ -928,6 +942,8 @@ function _Visu() constructor {
           target: transformer.target,
           factor: transformer.factor,
           increase: transformer.increase,
+          ease: transformer.easeType,
+          duration: transformer.duration,
         })
       }))
     }
@@ -946,18 +962,7 @@ function _Visu() constructor {
       return
     }
 
-    var colA = Struct.get(container, containerKey)
-    var colB = Struct.get(data, colorKey)
     var duration = Struct.get(data, speedKey) 
-    var length = max(
-      abs(colA.red - colB.red),
-      abs(colA.green - colB.green),
-      abs(colA.blue - colB.blue)
-    )
-
-    var factor = duration > 0.0 && length > 0.0
-      ? (length / (duration * GAME_FPS))
-      : 1.0
     pump.send(new Event("transform-property", {
       key: containerKey,
       container: container,
@@ -965,8 +970,7 @@ function _Visu() constructor {
       transformer: new ColorTransformer({
         value: Struct.get(container, containerKey).toHex(false),
         target: Struct.get(data, colorKey).toHex(false),
-        factor: factor,
-        increase: 0.0,
+        duration: duration,
       })
     }))
   }
@@ -988,6 +992,7 @@ function _Visu() constructor {
   ///@param {Number} [layerDefaultDepth]
   ///@return {Visu}
   static run = function(layerName = "layer_main", layerDefaultDepth = 100) {
+    randomize()
     initBeans()
     initGPU()
     initGMTF()
@@ -1021,6 +1026,8 @@ function _Visu() constructor {
       .set(new SettingEntry({ name: "visu.graphics.bkt-glitch", type: SettingTypes.BOOLEAN, defaultValue: true }))
       .set(new SettingEntry({ name: "visu.graphics.particle", type: SettingTypes.BOOLEAN, defaultValue: true }))
       .set(new SettingEntry({ name: "visu.graphics.shader-quality", type: SettingTypes.NUMBER, defaultValue: 0.5 }))
+      .set(new SettingEntry({ name: "visu.graphics.vsync", type: SettingTypes.BOOLEAN, defaultValue: true }))
+      .set(new SettingEntry({ name: "visu.graphics.aa", type: SettingTypes.NUMBER, defaultValue: 0 }))
       .set(new SettingEntry({ name: "visu.audio.ost-volume", type: SettingTypes.NUMBER, defaultValue: 1.0 }))
       .set(new SettingEntry({ name: "visu.audio.sfx-volume", type: SettingTypes.NUMBER, defaultValue: 0.5 }))
       .set(new SettingEntry({ name: "visu.editor.enable", type: SettingTypes.BOOLEAN, defaultValue: false }))
@@ -1043,6 +1050,7 @@ function _Visu() constructor {
       .set(new SettingEntry({ name: "visu.keyboard.player.action", type: SettingTypes.NUMBER, defaultValue: ord("Z") }))
       .set(new SettingEntry({ name: "visu.keyboard.player.bomb", type: SettingTypes.NUMBER, defaultValue: ord("X") }))
       .set(new SettingEntry({ name: "visu.keyboard.player.focus", type: SettingTypes.NUMBER, defaultValue: KeyboardKeyType.SHIFT }))
+      .set(new SettingEntry({ name: "visu.difficulty", type: SettingTypes.STRING, defaultValue: Difficulty.NORMAL }))
       .set(new SettingEntry({ 
           name: "visu.editor.theme",
           type: SettingTypes.STRUCT,
@@ -1077,6 +1085,11 @@ function _Visu() constructor {
           }
         }))
       .load()
+
+    if (!Optional.is(Core.fetchAARange().find(Lambda.equal, this.settings.getValue("visu.graphics.aa")))) {
+      this.settings.setValue("visu.graphics.aa", 0).save()
+    }
+    display_reset(this.settings.getValue("visu.graphics.aa"), this.settings.getValue("visu.graphics.vsync"))
     
     Language.load(this.settings.getValue("visu.language", LanguageType.en_EN))
     if (Core.getProperty("visu.editor.edit-theme")) {
@@ -1176,7 +1189,6 @@ function _Visu() constructor {
     }
 
     this.cliParser().parse()
-
     return this
   }
 }

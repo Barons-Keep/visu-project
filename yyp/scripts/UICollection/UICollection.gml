@@ -84,6 +84,10 @@ function UICollection(_container, config = null) constructor {
       static updateItems = function(component) { 
         component.items.forEach(function(item, index, component) {
           Struct.set(item, "component", component)
+          if (Optional.is(Struct.get(item, "onComponentInit"))) {
+            item.onComponentInit(component)
+          }
+
           if (Optional.is(item.updateArea)) {
             item.updateArea()
           }

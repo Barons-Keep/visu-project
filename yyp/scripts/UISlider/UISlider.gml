@@ -84,13 +84,17 @@ function UISliderHorizontal(name, json = null) {
     ///@override
     ///@param {Boolean} [_updateArea]
     ///@return {UIItem}
-    update: function(_updateArea = true) {
-      if (_updateArea && Optional.is(this.updateArea)) {
-        this.updateArea()
-      }
+    update: function(_updateArea = false) {
+      if (_updateArea) {
+        this.updateHidden()
 
-      if (Optional.is(this.updateEnable)) {
-        this.updateEnable()
+        if (Optional.is(this.updateArea)) {
+          this.updateArea()
+        }
+  
+        if (Optional.is(this.updateEnable)) {
+          this.updateEnable()
+        }
       }
 
       if (Optional.is(this.updateCustom)) {
@@ -101,9 +105,9 @@ function UISliderHorizontal(name, json = null) {
         this.updateHover()
       }
 
-      if (!storeSubscribed && Optional.is(this.store)) {
-        this.store.subscribe()
+      if (!storeSubscribed) {
         this.storeSubscribed = true
+        this.updateStore()
       }
 
       if (Core.isType(this.enable, Struct)) {

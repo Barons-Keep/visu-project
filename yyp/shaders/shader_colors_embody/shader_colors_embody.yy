@@ -4,7 +4,7 @@
   "name":"shader_colors_embody",
   "parent":{
     "name":"shadertoy",
-    "path":"folders/io.alkapivo.core/resource/shader/shadertoy.yy",
+    "path":"folders/io.alkapivo.core/resource/shader/ext/shadertoy.yy",
   },
   "resourceType":"GMShader",
   "resourceVersion":"2.0",

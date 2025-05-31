@@ -11,7 +11,13 @@ function Timer(_duration, config = {}) constructor {
   time = Struct.getIfType(config, "time", Number, 0.0)
 
   ///@type {Number}
+  startTime = this.time
+
+  ///@type {Number}
   loopCounter = Struct.getIfType(config, "loopCounter", Number, 0.0)
+
+  ///@type {Number}
+  startLoopCounter = this.loopCounter
 
   ///@type {Boolean}
   finished = Struct.getIfType(config, "finished", Boolean, false)
@@ -89,8 +95,8 @@ function Timer(_duration, config = {}) constructor {
   ///@return {Timer}
   static reset = function() {
     gml_pragma("forceinline")
-    this.time = 0
-    this.loopCounter = 0
+    this.time = this.startTime
+    this.loopCounter = this.startLoopCounter
     this.finished = false
     return this
   }

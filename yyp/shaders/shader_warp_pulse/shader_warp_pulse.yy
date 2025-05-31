@@ -1,0 +1,12 @@
+{
+  "$GMShader":"",
+  "%Name":"shader_warp_pulse",
+  "name":"shader_warp_pulse",
+  "parent":{
+    "name":"screen",
+    "path":"folders/io.alkapivo.core/resource/shader/screen.yy",
+  },
+  "resourceType":"GMShader",
+  "resourceVersion":"2.0",
+  "type":1,
+}

@@ -184,8 +184,184 @@ function brush_view_layer(json = null) {
         passthrough: UIUtil.passthrough.getClampedStringNumber(),
         data: new Vector2(0.0, 9999.9),
       },
+      "vw-layer_hide": {
+        type: Boolean,
+        value: Struct.get(json, "vw-layer_hide"),
+      },
+      "vw-layer_hide-blend": {
+        type: Boolean,
+        value: Struct.get(json, "vw-layer_hide-blend"),
+      },
+      "vw-layer_hide-cls": {
+        type: Boolean,
+        value: Struct.get(json, "vw-layer_hide-cls"),
+      },
+      "vw-layer_hide-tx-layer": {
+        type: Boolean,
+        value: Struct.get(json, "vw-layer_hide-tx-layer"),
+      },
+      "vw-layer_hide-tx": {
+        type: Boolean,
+        value: Struct.get(json, "vw-layer_hide-tx"),
+      },
+      "vw-layer_hide-tx-blend": {
+        type: Boolean,
+        value: Struct.get(json, "vw-layer_hide-tx-blend"),
+      },
+      "vw-layer_hide-tx-spd": {
+        type: Boolean,
+        value: Struct.get(json, "vw-layer_hide-tx-spd"),
+      },
+      "vw-layer_hide-tx-dir": {
+        type: Boolean,
+        value: Struct.get(json, "vw-layer_hide-tx-dir"),
+      },
+      "vw-layer_hide-tx-scale-x": {
+        type: Boolean,
+        value: Struct.get(json, "vw-layer_hide-tx-scale-x"),
+      },
+      "vw-layer_hide-tx-scale-y": {
+        type: Boolean,
+        value: Struct.get(json, "vw-layer_hide-tx-scale-y"),
+      },
+      "vw-layer_hide-col": {
+        type: Boolean,
+        value: Struct.get(json, "vw-layer_hide-col"),
+      },
     }),
     components: new Array(Struct, [
+      {
+        name: "vw-layer_title",
+        template: VEComponents.get("property"),
+        layout: VELayouts.get("property"),
+        config: { 
+          layout: { type: UILayoutType.VERTICAL },
+          label: { 
+            text: "Properties",
+            backgroundColor: VETheme.color.accentShadow,
+          },
+          checkbox: {
+            spriteOn: { name: "visu_texture_checkbox_show" },
+            spriteOff: { name: "visu_texture_checkbox_hide" },
+            store: { key: "vw-layer_hide" },
+            backgroundColor: VETheme.color.accentShadow,
+          },
+          input: {
+            backgroundColor: VETheme.color.accentShadow,
+          },
+        },
+      },
+      {
+        name: "vw-layer_texture-lifespan",
+        template: VEComponents.get("numeric-input"),
+        layout: VELayouts.get("div"),
+        config: {
+          layout: { type: UILayoutType.VERTICAL },
+          label: { 
+            text: "Lifespan",
+            enable: { key: "vw-layer_texture-use-lifespan" },
+            hidden: { key: "vw-layer_hide" },
+          },
+          field: { 
+            store: { key: "vw-layer_texture-lifespan" },
+            enable: { key: "vw-layer_texture-use-lifespan" },
+            hidden: { key: "vw-layer_hide" },
+          },
+          decrease: {
+            store: { key: "vw-layer_texture-lifespan" },
+            enable: { key: "vw-layer_texture-use-lifespan" },
+            hidden: { key: "vw-layer_hide" },
+            factor: -0.25,
+          },
+          increase: {
+            store: { key: "vw-layer_texture-lifespan" },
+            enable: { key: "vw-layer_texture-use-lifespan" },
+            hidden: { key: "vw-layer_hide" },
+            factor: 0.25,
+          },
+          stick: {
+            store: { key: "vw-layer_texture-lifespan" },
+            enable: { key: "vw-layer_texture-use-lifespan" },
+            hidden: { key: "vw-layer_hide" },
+            factor: 0.001,
+          },
+          checkbox: { 
+            spriteOn: { name: "visu_texture_checkbox_on" },
+            spriteOff: { name: "visu_texture_checkbox_off" },
+            store: { key: "vw-layer_texture-use-lifespan" },
+            hidden: { key: "vw-layer_hide" },
+          },
+          title: { 
+            text: "Override",
+            enable: { key: "vw-layer_texture-use-lifespan" },
+            hidden: { key: "vw-layer_hide" },
+          },
+        }
+      },
+      {
+        name: "vw-layer_fade-in",  
+        template: VEComponents.get("numeric-input"),
+        layout: VELayouts.get("div"),
+        config: { 
+          layout: { type: UILayoutType.VERTICAL },
+          label: {
+            text: "Fade in",
+            hidden: { key: "vw-layer_hide" },
+          },
+          field: {
+            store: { key: "vw-layer_fade-in" },
+            hidden: { key: "vw-layer_hide" },
+          },
+          decrease: {
+            store: { key: "vw-layer_fade-in" },
+            hidden: { key: "vw-layer_hide" },
+            factor: -0.25,
+          },
+          increase: {
+            store: { key: "vw-layer_fade-in" },
+            hidden: { key: "vw-layer_hide" },
+            factor: 0.25,
+          },
+          stick: {
+            store: { key: "vw-layer_fade-in" },
+            hidden: { key: "vw-layer_hide" },
+            factor: 0.01,
+          },
+          checkbox: { hidden: { key: "vw-layer_hide" } },
+        },
+      },
+      {
+        name: "vw-layer_fade-out",  
+        template: VEComponents.get("numeric-input"),
+        layout: VELayouts.get("div"),
+        config: { 
+          layout: { type: UILayoutType.VERTICAL },
+          label: {
+            text: "Fade out",
+            hidden: { key: "vw-layer_hide" },
+          },
+          field: {
+            store: { key: "vw-layer_fade-out" },
+            hidden: { key: "vw-layer_hide" },
+          },
+          decrease: {
+            store: { key: "vw-layer_fade-out" },
+            hidden: { key: "vw-layer_hide" },
+            factor: -0.25,
+          },
+          increase: {
+            store: { key: "vw-layer_fade-out" },
+            hidden: { key: "vw-layer_hide" },
+            factor: 0.25,
+          },
+          stick: {
+            store: { key: "vw-layer_fade-out" },
+            hidden: { key: "vw-layer_hide" },
+            factor: 0.01,
+          },
+          checkbox: { hidden: { key: "vw-layer_hide" } },
+        },
+      },
       {
         name: "vw-layer_type",
         template: VEComponents.get("spin-select"),
@@ -194,21 +370,23 @@ function brush_view_layer(json = null) {
           layout: { type: UILayoutType.VERTICAL },
           label: { 
             text: "Type",
-            font: "font_inter_10_bold",
-            color: VETheme.color.text,
+            //font: "font_inter_10_bold",
+            //color: VETheme.color.text,
+            hidden: { key: "vw-layer_hide" },
           },
-          previous: { store: { key: "vw-layer_type" } },
+          previous: {
+            store: { key: "vw-layer_type" },
+            hidden: { key: "vw-layer_hide" },
+          },
           preview: Struct.appendRecursive({ 
             store: { key: "vw-layer_type" },
+            hidden: { key: "vw-layer_hide" },
           }, Struct.get(VEStyles.get("spin-select-label"), "preview"), false),
-          next: { store: { key: "vw-layer_type" } },
+          next: {
+            store: { key: "vw-layer_type" },
+            hidden: { key: "vw-layer_hide" },
+          },
         },
-      },
-      {
-        name: "vw-layer_type-line-h",
-        template: VEComponents.get("line-h"),
-        layout: VELayouts.get("line-h"),
-        config: { layout: { type: UILayoutType.VERTICAL } },
       },
       {
         name: "vw-layer_blend-mode-title",
@@ -217,16 +395,21 @@ function brush_view_layer(json = null) {
         config: { 
           layout: { type: UILayoutType.VERTICAL },
           label: {
-            text: "Layer blend mode",
-            backgroundColor: VETheme.color.side,
+            text: "Blend mode",
             enable: { key: "vw-layer_use-blend" },
+            hidden: { key: "vw-layer_hide" },
           },
-          input: { backgroundColor: VETheme.color.side },
-          checkbox: { 
-            spriteOn: { name: "visu_texture_checkbox_on" },
-            spriteOff: { name: "visu_texture_checkbox_off" },
+          input: {
+            spriteOn: { name: "visu_texture_checkbox_switch_on" },
+            spriteOff: { name: "visu_texture_checkbox_switch_off" },
             store: { key: "vw-layer_use-blend" },
-            backgroundColor: VETheme.color.side,
+            hidden: { key: "vw-layer_hide" },
+          },
+          checkbox: { 
+            spriteOn: { name: "visu_texture_checkbox_show" },
+            spriteOff: { name: "visu_texture_checkbox_hide" },
+            store: { key: "vw-layer_hide-blend" },
+            hidden: { key: "vw-layer_hide" },
           },
         },
       },
@@ -239,14 +422,32 @@ function brush_view_layer(json = null) {
           label: { 
             text: "Source",
             enable: { key: "vw-layer_use-blend" },
+            hidden: {
+              keys: [
+                { key: "vw-layer_hide" },
+                { key: "vw-layer_hide-blend" }
+              ],
+            },
           },
           previous: {
             store: { key: "vw-layer_blend-src" },
             enable: { key: "vw-layer_use-blend" },
+            hidden: {
+              keys: [
+                { key: "vw-layer_hide" },
+                { key: "vw-layer_hide-blend" }
+              ],
+            },
           },
           preview: Struct.appendRecursive({ 
             store: { key: "vw-layer_blend-src" },
             enable: { key: "vw-layer_use-blend" },
+            hidden: {
+              keys: [
+                { key: "vw-layer_hide" },
+                { key: "vw-layer_hide-blend" }
+              ],
+            },
             preRender: function() { 
               Struct.set(this, "_text", this.label.text)
               this.label.text = String.toUpperCase(String.replaceAll(this.label.text, "_", " "))
@@ -258,6 +459,12 @@ function brush_view_layer(json = null) {
           next: { 
             store: { key: "vw-layer_blend-src" },
             enable: { key: "vw-layer_use-blend" },
+            hidden: {
+              keys: [
+                { key: "vw-layer_hide" },
+                { key: "vw-layer_hide-blend" }
+              ],
+            },
           },
         },
       },
@@ -270,14 +477,32 @@ function brush_view_layer(json = null) {
           label: { 
             text: "Target",
             enable: { key: "vw-layer_use-blend" },
+            hidden: {
+              keys: [
+                { key: "vw-layer_hide" },
+                { key: "vw-layer_hide-blend" }
+              ],
+            },
           },
           previous: {
             store: { key: "vw-layer_blend-dest" },
             enable: { key: "vw-layer_use-blend" },
+            hidden: {
+              keys: [
+                { key: "vw-layer_hide" },
+                { key: "vw-layer_hide-blend" }
+              ],
+            },
           },
           preview: Struct.appendRecursive({ 
             store: { key: "vw-layer_blend-dest" },
             enable: { key: "vw-layer_use-blend" },
+            hidden: {
+              keys: [
+                { key: "vw-layer_hide" },
+                { key: "vw-layer_hide-blend" }
+              ],
+            },
             preRender: function() { 
               Struct.set(this, "_text", this.label.text)
               this.label.text = String.toUpperCase(String.replaceAll(this.label.text, "_", " "))
@@ -289,6 +514,12 @@ function brush_view_layer(json = null) {
           next: { 
             store: { key: "vw-layer_blend-dest" },
             enable: { key: "vw-layer_use-blend" },
+            hidden: {
+              keys: [
+                { key: "vw-layer_hide" },
+                { key: "vw-layer_hide-blend" }
+              ],
+            },
           },
         },
       },
@@ -301,14 +532,32 @@ function brush_view_layer(json = null) {
           label: { 
             text: "Equation",
             enable: { key: "vw-layer_use-blend" },
+            hidden: {
+              keys: [
+                { key: "vw-layer_hide" },
+                { key: "vw-layer_hide-blend" }
+              ],
+            },
           },
           previous: {
             store: { key: "vw-layer_blend-eq" },
             enable: { key: "vw-layer_use-blend" },
+            hidden: {
+              keys: [
+                { key: "vw-layer_hide" },
+                { key: "vw-layer_hide-blend" }
+              ],
+            },
           },
           preview: Struct.appendRecursive({ 
             store: { key: "vw-layer_blend-eq" },
             enable: { key: "vw-layer_use-blend" },
+            hidden: {
+              keys: [
+                { key: "vw-layer_hide" },
+                { key: "vw-layer_hide-blend" }
+              ],
+            },
             preRender: function() { 
               Struct.set(this, "_text", this.label.text)
               this.label.text = String.toUpperCase(String.replaceAll(this.label.text, "_", " "))
@@ -320,6 +569,12 @@ function brush_view_layer(json = null) {
           next: {
             store: { key: "vw-layer_blend-eq" },
             enable: { key: "vw-layer_use-blend" },
+            hidden: {
+              keys: [
+                { key: "vw-layer_hide" },
+                { key: "vw-layer_hide-blend" }
+              ],
+            },
           },
         },
       },
@@ -332,14 +587,32 @@ function brush_view_layer(json = null) {
           label: { 
             text: "Eq. alpha",
             enable: { key: "vw-layer_use-blend" },
+            hidden: {
+              keys: [
+                { key: "vw-layer_hide" },
+                { key: "vw-layer_hide-blend" }
+              ],
+            },
           },
           previous: {
             store: { key: "vw-layer_blend-eq-alpha" },
             enable: { key: "vw-layer_use-blend" },
+            hidden: {
+              keys: [
+                { key: "vw-layer_hide" },
+                { key: "vw-layer_hide-blend" }
+              ],
+            },
           },
           preview: Struct.appendRecursive({ 
             store: { key: "vw-layer_blend-eq-alpha" },
             enable: { key: "vw-layer_use-blend" },
+            hidden: {
+              keys: [
+                { key: "vw-layer_hide" },
+                { key: "vw-layer_hide-blend" }
+              ],
+            },
             preRender: function() { 
               Struct.set(this, "_text", this.label.text)
               this.label.text = String.toUpperCase(String.replaceAll(this.label.text, "_", " "))
@@ -351,6 +624,12 @@ function brush_view_layer(json = null) {
           next: {
             store: { key: "vw-layer_blend-eq-alpha" },
             enable: { key: "vw-layer_use-blend" },
+            hidden: {
+              keys: [
+                { key: "vw-layer_hide" },
+                { key: "vw-layer_hide-blend" }
+              ],
+            },
           },
         },
       },
@@ -358,106 +637,21 @@ function brush_view_layer(json = null) {
         name: "vw-layer_blend-eq-alpha-line-h",
         template: VEComponents.get("line-h"),
         layout: VELayouts.get("line-h"),
-        config: { layout: { type: UILayoutType.VERTICAL } },
-      },
-      {
-        name: "vw-layer_texture-lifespan",
-        template: VEComponents.get("numeric-input"),
-        layout: VELayouts.get("div"),
         config: {
           layout: { type: UILayoutType.VERTICAL },
-          label: { 
-            text: "Lifespan",
-            enable: { key: "vw-layer_texture-use-lifespan" },
+          image: {
+            hidden: {
+              keys: [
+                { key: "vw-layer_hide" },
+                { key: "vw-layer_hide-blend" }
+              ],
+            },
           },
-          field: { 
-            store: { key: "vw-layer_texture-lifespan" },
-            enable: { key: "vw-layer_texture-use-lifespan" },
-          },
-          decrease: {
-            store: { key: "vw-layer_texture-lifespan" },
-            enable: { key: "vw-layer_texture-use-lifespan" },
-            factor: -0.25,
-          },
-          increase: {
-            store: { key: "vw-layer_texture-lifespan" },
-            enable: { key: "vw-layer_texture-use-lifespan" },
-            factor: 0.25,
-          },
-          stick: {
-            store: { key: "vw-layer_texture-lifespan" },
-            enable: { key: "vw-layer_texture-use-lifespan" },
-            factor: 0.001,
-          },
-          checkbox: { 
-            spriteOn: { name: "visu_texture_checkbox_on" },
-            spriteOff: { name: "visu_texture_checkbox_off" },
-            store: { key: "vw-layer_texture-use-lifespan" },
-          },
-          title: { 
-            text: "Override",
-            enable: { key: "vw-layer_texture-use-lifespan" },
-          },
-        }
-      },
-      {
-        name: "vw-layer_lifespan-line-h",
-        template: VEComponents.get("line-h"),
-        layout: VELayouts.get("line-h"),
-        config: { layout: { type: UILayoutType.VERTICAL } },
-      },
-      {
-        name: "vw-layer_fade-in",  
-        template: VEComponents.get("numeric-input"),
-        layout: VELayouts.get("div"),
-        config: { 
-          layout: { type: UILayoutType.VERTICAL },
-          label: { text: "Fade in" },
-          field: { store: { key: "vw-layer_fade-in" } },
-          decrease: {
-            store: { key: "vw-layer_fade-in" },
-            factor: -0.25,
-          },
-          increase: {
-            store: { key: "vw-layer_fade-in" },
-            factor: 0.25,
-          },
-          stick: {
-            store: { key: "vw-layer_fade-in" },
-            factor: 0.01,
-          },
-          checkbox: { },
         },
       },
-      {
-        name: "vw-layer_fade-out",  
-        template: VEComponents.get("numeric-input"),
-        layout: VELayouts.get("div"),
-        config: { 
-          layout: { type: UILayoutType.VERTICAL },
-          label: { text: "Fade out" },
-          field: { store: { key: "vw-layer_fade-out" } },
-          decrease: {
-            store: { key: "vw-layer_fade-out" },
-            factor: -0.25,
-          },
-          increase: {
-            store: { key: "vw-layer_fade-out" },
-            factor: 0.25,
-          },
-          stick: {
-            store: { key: "vw-layer_fade-out" },
-            factor: 0.01,
-          },
-          checkbox: { },
-        },
-      },
-      {
-        name: "vw-layer_fade-out-line-h",
-        template: VEComponents.get("line-h"),
-        layout: VELayouts.get("line-h"),
-        config: { layout: { type: UILayoutType.VERTICAL } },
-      },
+
+
+      
       {
         name: "vw-cls-title",
         template: VEComponents.get("property"),
@@ -465,11 +659,18 @@ function brush_view_layer(json = null) {
         config: { 
           layout: { type: UILayoutType.VERTICAL },
           label: {
-            text: "Remove layer",
+            text: "Remove",
             backgroundColor: VETheme.color.accentShadow,
           },
-          input: { backgroundColor: VETheme.color.accentShadow },
-          checkbox: { backgroundColor: VETheme.color.accentShadow },
+          input: {
+            backgroundColor: VETheme.color.accentShadow,
+          },
+          checkbox: {
+            spriteOn: { name: "visu_texture_checkbox_show" },
+            spriteOff: { name: "visu_texture_checkbox_hide" },
+            store: { key: "vw-layer_hide-cls" },
+            backgroundColor: VETheme.color.accentShadow,
+          },
         },
       },
       {
@@ -481,11 +682,16 @@ function brush_view_layer(json = null) {
           label: {
             text: "Texture",
             enable: { key: "vw-layer_cls-texture" },
+            hidden: { key: "vw-layer_hide-cls" },
+          },
+          input: { 
+            hidden: { key: "vw-layer_hide-cls" },
           },
           checkbox: { 
             spriteOn: { name: "visu_texture_checkbox_on" },
             spriteOff: { name: "visu_texture_checkbox_off" },
             store: { key: "vw-layer_cls-texture" },
+            hidden: { key: "vw-layer_hide-cls" },
           },
         },
       },
@@ -498,11 +704,16 @@ function brush_view_layer(json = null) {
           label: {
             text: "Color",
             enable: { key: "vw-layer_cls-col" },
+            hidden: { key: "vw-layer_hide-cls" },
+          },
+          input: {
+            hidden: { key: "vw-layer_hide-cls" },
           },
           checkbox: { 
             spriteOn: { name: "visu_texture_checkbox_on" },
             spriteOff: { name: "visu_texture_checkbox_off" },
             store: { key: "vw-layer_cls-col" },
+            hidden: { key: "vw-layer_hide-cls" },
           },
         },
       },
@@ -510,7 +721,10 @@ function brush_view_layer(json = null) {
         name: "vw-layer_cls-col-line-h",
         template: VEComponents.get("line-h"),
         layout: VELayouts.get("line-h"),
-        config: { layout: { type: UILayoutType.VERTICAL } },
+        config: {
+          layout: { type: UILayoutType.VERTICAL },
+          image: { hidden: { key: "vw-layer_hide-cls" } },
+        },
       },
       {
         name: "vw-layer_use-texture",
@@ -519,15 +733,20 @@ function brush_view_layer(json = null) {
         config: { 
           layout: { type: UILayoutType.VERTICAL },
           label: {
-            text: "Texture layer",
-            backgroundColor: VETheme.color.accentShadow,
+            text: "Texture",
             enable: { key: "vw-layer_use-texture" },
+            backgroundColor: VETheme.color.accentShadow,
           },
-          input: { backgroundColor: VETheme.color.accentShadow },
-          checkbox: { 
-            spriteOn: { name: "visu_texture_checkbox_on" },
-            spriteOff: { name: "visu_texture_checkbox_off" },
+          input: {
+            spriteOn: { name: "visu_texture_checkbox_switch_on" },
+            spriteOff: { name: "visu_texture_checkbox_switch_off" },
             store: { key: "vw-layer_use-texture" },
+            backgroundColor: VETheme.color.accentShadow,
+          },
+          checkbox: { 
+            spriteOn: { name: "visu_texture_checkbox_show" },
+            spriteOff: { name: "visu_texture_checkbox_hide" },
+            store: { key: "vw-layer_hide-tx-layer" },
             backgroundColor: VETheme.color.accentShadow,
           },
         },
@@ -547,12 +766,17 @@ function brush_view_layer(json = null) {
               ],
             },
             updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+            hidden: { key: "vw-layer_hide-tx-layer" },
+          },
+          input: {
+            hidden: { key: "vw-layer_hide-tx-layer" },
           },
           checkbox: { 
             spriteOn: { name: "visu_texture_checkbox_on" },
             spriteOff: { name: "visu_texture_checkbox_off" },
             store: { key: "vw-layer_use-texture-tiled" },
             enable: { key: "vw-layer_use-texture" },
+            hidden: { key: "vw-layer_hide-tx-layer" },
           },
         },
       },
@@ -571,12 +795,17 @@ function brush_view_layer(json = null) {
               ],
             },
             updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+            hidden: { key: "vw-layer_hide-tx-layer" },
+          },
+          input: {
+            hidden: { key: "vw-layer_hide-tx-layer" },
           },
           checkbox: { 
             spriteOn: { name: "visu_texture_checkbox_on" },
             spriteOff: { name: "visu_texture_checkbox_off" },
             store: { key: "vw-layer_use-texture-replace" },
             enable: { key: "vw-layer_use-texture" },
+            hidden: { key: "vw-layer_hide-tx-layer" },
           },
         },
       },
@@ -595,12 +824,42 @@ function brush_view_layer(json = null) {
               ],
             },
             updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+            hidden: { key: "vw-layer_hide-tx-layer" },
+          },
+          input: {
+            hidden: { key: "vw-layer_hide-tx-layer" },
           },
           checkbox: { 
             spriteOn: { name: "visu_texture_checkbox_on" },
             spriteOff: { name: "visu_texture_checkbox_off" },
             store: { key: "vw-layer_texture-reset-pos" },
             enable: { key: "vw-layer_use-texture" },
+            hidden: { key: "vw-layer_hide-tx-layer" },
+          },
+        },
+      },
+      {
+        name: "vw-layer_texture-title",
+        template: VEComponents.get("property"),
+        layout: VELayouts.get("property"),
+        config: { 
+          layout: { type: UILayoutType.VERTICAL },
+          label: { 
+            text: "Texture",
+            enable: { key: "vw-layer_use-texture" },
+            hidden: { key: "vw-layer_hide-tx-layer" },
+            //backgroundColor: VETheme.color.accentShadow,
+          },
+          checkbox: {
+            spriteOn: { name: "visu_texture_checkbox_show" },
+            spriteOff: { name: "visu_texture_checkbox_hide" },
+            store: { key: "vw-layer_hide-tx" },
+            hidden: { key: "vw-layer_hide-tx-layer" },
+            //backgroundColor: VETheme.color.accentShadow,
+          },
+          input: {
+            hidden: { key: "vw-layer_hide-tx-layer" },
+            //backgroundColor: VETheme.color.accentShadow,
           },
         },
       },
@@ -611,19 +870,38 @@ function brush_view_layer(json = null) {
         config: { 
           layout: { 
             type: UILayoutType.VERTICAL,
-            margin: { top: 2 },
           },
           texture: {
-            label: { enable: { key: "vw-layer_use-texture" } }, 
+            label: { 
+              enable: { key: "vw-layer_use-texture" },
+              hidden: {
+                keys: [
+                  { key: "vw-layer_hide-tx-layer" },
+                  { key: "vw-layer_hide-tx" }
+                ],
+              },
+            }, 
             field: {
               store: { key: "vw-layer_texture" },
               enable: { key: "vw-layer_use-texture" },
+              hidden: {
+                keys: [
+                  { key: "vw-layer_hide-tx-layer" },
+                  { key: "vw-layer_hide-tx" }
+                ],
+              },
             },
           },
           preview: {
             image: { name: "texture_empty" },
             store: { key: "vw-layer_texture" },
             enable: { key: "vw-layer_use-texture" },
+            hidden: {
+              keys: [
+                { key: "vw-layer_hide-tx-layer" },
+                { key: "vw-layer_hide-tx" }
+              ],
+            },
             imageBlendStoreKey: "vw-layer_texture-blend",
             useImageBlendStoreKey: "vw-layer_use-texture-blend",
             updateCustom: function() {
@@ -652,67 +930,186 @@ function brush_view_layer(json = null) {
           resolution: {
             store: { key: "vw-layer_texture" },
             enable: { key: "vw-layer_use-texture" },
+            hidden: {
+              keys: [
+                { key: "vw-layer_hide-tx-layer" },
+                { key: "vw-layer_hide-tx" }
+              ],
+            },
           },
           frame: {
-            label: { enable: { key: "vw-layer_use-texture" } },
+            label: {
+              enable: { key: "vw-layer_use-texture" },
+              hidden: {
+                keys: [
+                  { key: "vw-layer_hide-tx-layer" },
+                  { key: "vw-layer_hide-tx" }
+                ],
+              },
+            },
             field: { 
               store: { key: "vw-layer_texture" },
               enable: { key: "vw-layer_use-texture" },
+              hidden: {
+                keys: [
+                  { key: "vw-layer_hide-tx-layer" },
+                  { key: "vw-layer_hide-tx" }
+                ],
+              },
             },
             decrease: { 
               store: { key: "vw-layer_texture" },
               enable: { key: "vw-layer_use-texture" },
+              hidden: {
+                keys: [
+                  { key: "vw-layer_hide-tx-layer" },
+                  { key: "vw-layer_hide-tx" }
+                ],
+              },
             },
             increase: { 
               store: { key: "vw-layer_texture" },
               enable: { key: "vw-layer_use-texture" },
+              hidden: {
+                keys: [
+                  { key: "vw-layer_hide-tx-layer" },
+                  { key: "vw-layer_hide-tx" }
+                ],
+              },
             },
             checkbox: { 
-              store: { key: "vw-layer_texture" },
-              enable: { key: "vw-layer_use-texture" },
               spriteOn: { name: "visu_texture_checkbox_on" },
               spriteOff: { name: "visu_texture_checkbox_off" },
+              store: { key: "vw-layer_texture" },
+              enable: { key: "vw-layer_use-texture" },
+              hidden: {
+                keys: [
+                  { key: "vw-layer_hide-tx-layer" },
+                  { key: "vw-layer_hide-tx" }
+                ],
+              },
             },
-            title: { enable: { key: "vw-layer_use-texture" } },
+            title: {
+              enable: { key: "vw-layer_use-texture" },
+              hidden: {
+                keys: [
+                  { key: "vw-layer_hide-tx-layer" },
+                  { key: "vw-layer_hide-tx" }
+                ],
+              },
+            },
           },
           speed: {
-            label: { enable: { key: "vw-layer_use-texture" } },
+            label: {
+              enable: { key: "vw-layer_use-texture" },
+              hidden: {
+                keys: [
+                  { key: "vw-layer_hide-tx-layer" },
+                  { key: "vw-layer_hide-tx" }
+                ],
+              },
+            },
             field: { 
               enable: { key: "vw-layer_use-texture" },
               store: { key: "vw-layer_texture" },
+              hidden: {
+                keys: [
+                  { key: "vw-layer_hide-tx-layer" },
+                  { key: "vw-layer_hide-tx" }
+                ],
+              },
             },
             decrease: { 
               store: { key: "vw-layer_texture" },
               enable: { key: "vw-layer_use-texture" },
+              hidden: {
+                keys: [
+                  { key: "vw-layer_hide-tx-layer" },
+                  { key: "vw-layer_hide-tx" }
+                ],
+              },
             },
             increase: { 
               store: { key: "vw-layer_texture" },
               enable: { key: "vw-layer_use-texture" },
+              hidden: {
+                keys: [
+                  { key: "vw-layer_hide-tx-layer" },
+                  { key: "vw-layer_hide-tx" }
+                ],
+              },
             },
             checkbox: { 
-              store: { key: "vw-layer_texture" },
-              enable: { key: "vw-layer_use-texture" },
               spriteOn: { name: "visu_texture_checkbox_on" },
               spriteOff: { name: "visu_texture_checkbox_off" },
+              store: { key: "vw-layer_texture" },
+              enable: { key: "vw-layer_use-texture" },
+              hidden: {
+                keys: [
+                  { key: "vw-layer_hide-tx-layer" },
+                  { key: "vw-layer_hide-tx" }
+                ],
+              },
             },
-            title: { enable: { key: "vw-layer_use-texture" } },
+            title: {
+              enable: { key: "vw-layer_use-texture" },
+              hidden: {
+                keys: [
+                  { key: "vw-layer_hide-tx-layer" },
+                  { key: "vw-layer_hide-tx" }
+                ],
+              },
+            },
           },
           alpha: {
-            label: { enable: { key: "vw-layer_use-texture" } },
+            label: {
+              enable: { key: "vw-layer_use-texture" },
+              hidden: {
+                keys: [
+                  { key: "vw-layer_hide-tx-layer" },
+                  { key: "vw-layer_hide-tx" }
+                ],
+              },
+            },
             field: { 
               enable: { key: "vw-layer_use-texture" },
               store: { key: "vw-layer_texture" },
+              hidden: {
+                keys: [
+                  { key: "vw-layer_hide-tx-layer" },
+                  { key: "vw-layer_hide-tx" }
+                ],
+              },
             },
             decrease: { 
               store: { key: "vw-layer_texture" },
               enable: { key: "vw-layer_use-texture" },
+              hidden: {
+                keys: [
+                  { key: "vw-layer_hide-tx-layer" },
+                  { key: "vw-layer_hide-tx" }
+                ],
+              },
             },
             increase: { 
               store: { key: "vw-layer_texture" },
               enable: { key: "vw-layer_use-texture" },
+              hidden: {
+                keys: [
+                  { key: "vw-layer_hide-tx-layer" },
+                  { key: "vw-layer_hide-tx" }
+                ],
+              },
             },
             slider: { 
               store: { key: "vw-layer_texture" },
+              enable: { key: "vw-layer_use-texture" },
+              hidden: {
+                keys: [
+                  { key: "vw-layer_hide-tx-layer" },
+                  { key: "vw-layer_hide-tx" }
+                ],
+              },
             },
           },
         },
@@ -725,8 +1122,6 @@ function brush_view_layer(json = null) {
           layout: { type: UILayoutType.VERTICAL },
           label: {
             text: "Blend texture",
-            //color: VETheme.color.textShadow,
-            backgroundColor: VETheme.color.side,
             enable: {
               keys: [ 
                 { key: "vw-layer_use-texture" },
@@ -734,61 +1129,29 @@ function brush_view_layer(json = null) {
               ],
             },
             updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+            hidden: { key: "vw-layer_hide-tx-layer" },
           },
-          input: { backgroundColor: VETheme.color.side },
+          input: {
+            spriteOn: { name: "visu_texture_checkbox_switch_on" },
+            spriteOff: { name: "visu_texture_checkbox_switch_off" },
+            enable: { key: "vw-layer_use-texture" },
+            store: { key: "vw-layer_use-texture-blend" },
+            hidden: { key: "vw-layer_hide-tx-layer" },
+          },
           checkbox: { 
-            spriteOn: { name: "visu_texture_checkbox_on" },
-            spriteOff: { name: "visu_texture_checkbox_off" },
-            store: { key: "vw-layer_use-texture-blend" },
-            enable: { key: "vw-layer_use-texture" },
-            backgroundColor: VETheme.color.side,
+            spriteOn: { name: "visu_texture_checkbox_show" },
+            spriteOff: { name: "visu_texture_checkbox_hide" },
+            store: { key: "vw-layer_hide-tx-blend" },
+            hidden: { key: "vw-layer_hide-tx-layer" },
           },
         },
       },
-      /*
-      {
-        name: "vw-layer_texture-blend-title",
-        template: VEComponents.get("double-checkbox"),
-        layout: VELayouts.get("double-checkbox"),
-        config: { 
-          layout: { 
-            type: UILayoutType.VERTICAL,
-            margin: { top: 4 },
-          },
-          checkbox1: { },
-          label1: { },
-          checkbox2: { 
-            spriteOn: { name: "visu_texture_checkbox_on" },
-            spriteOff: { name: "visu_texture_checkbox_off" },
-            enable: { key: "vw-layer_use-texture" },
-            store: { key: "vw-layer_use-texture-blend" },
-            backgroundColor: VETheme.color.side,
-          },
-          label2: {
-            //font: "font_inter_10_regular",
-            color: VETheme.color.text,
-            backgroundColor: VETheme.color.side,
-            text: "Blend",
-            enable: {
-              keys: [ 
-                { key: "vw-layer_use-texture" },
-                { key: "vw-layer_use-texture-blend" }
-              ],
-            },
-            updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
-          },
-        },
-      },
-      */
       {
         name: "vw-layer_texture-blend",
         template: VEComponents.get("color-picker"),
         layout: VELayouts.get("color-picker"),
         config: {
-          layout: { 
-            type: UILayoutType.VERTICAL,
-            //margin: { top: 2 },
-          },
+          layout: { type: UILayoutType.VERTICAL },
           red: {
             label: {
               text: "Red",
@@ -799,6 +1162,12 @@ function brush_view_layer(json = null) {
                 ],
               },
               updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+              hidden: {
+                keys: [
+                  { key: "vw-layer_hide-tx-layer" },
+                  { key: "vw-layer_hide-tx-blend" }
+                ],
+              },
             },
             field: {
               store: { key: "vw-layer_texture-blend" },
@@ -809,6 +1178,12 @@ function brush_view_layer(json = null) {
                 ],
               },
               updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+              hidden: {
+                keys: [
+                  { key: "vw-layer_hide-tx-layer" },
+                  { key: "vw-layer_hide-tx-blend" }
+                ],
+              },
             },
             decrease: {
               store: { key: "vw-layer_texture-blend" },
@@ -819,6 +1194,12 @@ function brush_view_layer(json = null) {
                 ],
               },
               updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+              hidden: {
+                keys: [
+                  { key: "vw-layer_hide-tx-layer" },
+                  { key: "vw-layer_hide-tx-blend" }
+                ],
+              },
             },
             increase: {
               store: { key: "vw-layer_texture-blend" },
@@ -829,6 +1210,12 @@ function brush_view_layer(json = null) {
                 ],
               },
               updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+              hidden: {
+                keys: [
+                  { key: "vw-layer_hide-tx-layer" },
+                  { key: "vw-layer_hide-tx-blend" }
+                ],
+              },
             },
             slider: {
               store: { key: "vw-layer_texture-blend" },
@@ -839,6 +1226,12 @@ function brush_view_layer(json = null) {
                 ],
               },
               updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+              hidden: {
+                keys: [
+                  { key: "vw-layer_hide-tx-layer" },
+                  { key: "vw-layer_hide-tx-blend" }
+                ],
+              },
             },
           },
           green: {
@@ -851,6 +1244,12 @@ function brush_view_layer(json = null) {
                 ],
               },
               updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+              hidden: {
+                keys: [
+                  { key: "vw-layer_hide-tx-layer" },
+                  { key: "vw-layer_hide-tx-blend" }
+                ],
+              },
             },
             field: {
               store: { key: "vw-layer_texture-blend" },
@@ -861,6 +1260,12 @@ function brush_view_layer(json = null) {
                 ],
               },
               updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+              hidden: {
+                keys: [
+                  { key: "vw-layer_hide-tx-layer" },
+                  { key: "vw-layer_hide-tx-blend" }
+                ],
+              },
             },
             decrease: {
               store: { key: "vw-layer_texture-blend" },
@@ -871,6 +1276,12 @@ function brush_view_layer(json = null) {
                 ],
               },
               updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+              hidden: {
+                keys: [
+                  { key: "vw-layer_hide-tx-layer" },
+                  { key: "vw-layer_hide-tx-blend" }
+                ],
+              },
             },
             increase: {
               store: { key: "vw-layer_texture-blend" },
@@ -881,6 +1292,12 @@ function brush_view_layer(json = null) {
                 ],
               },
               updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+              hidden: {
+                keys: [
+                  { key: "vw-layer_hide-tx-layer" },
+                  { key: "vw-layer_hide-tx-blend" }
+                ],
+              },
             },
             slider: {
               store: { key: "vw-layer_texture-blend" },
@@ -891,6 +1308,12 @@ function brush_view_layer(json = null) {
                 ],
               },
               updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+              hidden: {
+                keys: [
+                  { key: "vw-layer_hide-tx-layer" },
+                  { key: "vw-layer_hide-tx-blend" }
+                ],
+              },
             },
           },
           blue: {
@@ -903,6 +1326,12 @@ function brush_view_layer(json = null) {
                 ],
               },
               updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+              hidden: {
+                keys: [
+                  { key: "vw-layer_hide-tx-layer" },
+                  { key: "vw-layer_hide-tx-blend" }
+                ],
+              },
             },
             field: {
               store: { key: "vw-layer_texture-blend" },
@@ -913,6 +1342,12 @@ function brush_view_layer(json = null) {
                 ],
               },
               updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+              hidden: {
+                keys: [
+                  { key: "vw-layer_hide-tx-layer" },
+                  { key: "vw-layer_hide-tx-blend" }
+                ],
+              },
             },
             decrease: {
               store: { key: "vw-layer_texture-blend" },
@@ -923,6 +1358,12 @@ function brush_view_layer(json = null) {
                 ],
               },
               updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+              hidden: {
+                keys: [
+                  { key: "vw-layer_hide-tx-layer" },
+                  { key: "vw-layer_hide-tx-blend" }
+                ],
+              },
             },
             increase: {
               store: { key: "vw-layer_texture-blend" },
@@ -933,6 +1374,12 @@ function brush_view_layer(json = null) {
                 ],
               },
               updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+              hidden: {
+                keys: [
+                  { key: "vw-layer_hide-tx-layer" },
+                  { key: "vw-layer_hide-tx-blend" }
+                ],
+              },
             },
             slider: {
               store: { key: "vw-layer_texture-blend" },
@@ -943,6 +1390,12 @@ function brush_view_layer(json = null) {
                 ],
               },
               updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+              hidden: {
+                keys: [
+                  { key: "vw-layer_hide-tx-layer" },
+                  { key: "vw-layer_hide-tx-blend" }
+                ],
+              },
             },
           },
           hex: { 
@@ -955,6 +1408,12 @@ function brush_view_layer(json = null) {
                 ],
               },
               updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+              hidden: {
+                keys: [
+                  { key: "vw-layer_hide-tx-layer" },
+                  { key: "vw-layer_hide-tx-blend" }
+                ],
+              },
             },
             field: {
               store: { key: "vw-layer_texture-blend" },
@@ -965,6 +1424,12 @@ function brush_view_layer(json = null) {
                 ],
               },
               updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+              hidden: {
+                keys: [
+                  { key: "vw-layer_hide-tx-layer" },
+                  { key: "vw-layer_hide-tx-blend" }
+                ],
+              },
             },
           },
         },
@@ -973,22 +1438,38 @@ function brush_view_layer(json = null) {
         name: "vw-layer_texture-blend-line-h",
         template: VEComponents.get("line-h"),
         layout: VELayouts.get("line-h"),
-        config: { layout: { type: UILayoutType.VERTICAL } },
+        config: {
+          layout: { type: UILayoutType.VERTICAL },
+          image: {
+            hidden: {
+              keys: [
+                { key: "vw-layer_hide-tx-layer" },
+                { key: "vw-layer_hide-tx-blend" }
+              ],
+            },
+          },
+        },
       },
       {
-        name: "vw-layer_position-title",
+        name: "vw-layer_spd-title",
         template: VEComponents.get("property"),
         layout: VELayouts.get("property"),
         config: { 
           layout: { type: UILayoutType.VERTICAL },
           label: {
-            text: "Texture layer movement",
-            //color: VETheme.color.textShadow,
-            backgroundColor: VETheme.color.side,
+            text: "Speed",
             enable: { key: "vw-layer_use-texture" },
+            hidden: { key: "vw-layer_hide-tx-layer" },
           },
-          input: { backgroundColor: VETheme.color.side },
-          checkbox: { backgroundColor: VETheme.color.side },
+          input: {
+            hidden: { key: "vw-layer_hide-tx-layer" },
+          },
+          checkbox: {
+            spriteOn: { name: "visu_texture_checkbox_show" },
+            spriteOff: { name: "visu_texture_checkbox_hide" },
+            store: { key: "vw-layer_hide-tx-spd" },
+            hidden: { key: "vw-layer_hide-tx-layer" },
+          },
         },
       },
       {
@@ -996,16 +1477,17 @@ function brush_view_layer(json = null) {
         template: VEComponents.get("number-transformer-increase-checkbox"),
         layout: VELayouts.get("number-transformer-increase-checkbox"),
         config: { 
-          layout: { 
-            type: UILayoutType.VERTICAL,
-            margin: { top: 4 },
-          },
+          layout: { type: UILayoutType.VERTICAL },
           value: {
             label: {
-              text: "Speed",
-              font: "font_inter_10_bold",
-              color: VETheme.color.textShadow,
-              //enable: { key: "vw-layer_use-spd" },
+              text: "Value",
+              enable: { key: "vw-layer_use-spd" },
+              hidden: {
+                keys: [
+                  { key: "vw-layer_hide-tx-layer" },
+                  { key: "vw-layer_hide-tx-spd" }
+                ],
+              },
             },
             field: {
               store: { key: "vw-layer_spd" },
@@ -1016,6 +1498,12 @@ function brush_view_layer(json = null) {
                 ],
               },
               updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+              hidden: {
+                keys: [
+                  { key: "vw-layer_hide-tx-layer" },
+                  { key: "vw-layer_hide-tx-spd" }
+                ],
+              },
             },
             decrease: {
               store: { key: "vw-layer_spd" },
@@ -1026,6 +1514,12 @@ function brush_view_layer(json = null) {
                 ],
               },
               updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+              hidden: {
+                keys: [
+                  { key: "vw-layer_hide-tx-layer" },
+                  { key: "vw-layer_hide-tx-spd" }
+                ],
+              },
               factor: -0.25,
             },
             increase: {
@@ -1037,6 +1531,12 @@ function brush_view_layer(json = null) {
                 ],
               },
               updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+              hidden: {
+                keys: [
+                  { key: "vw-layer_hide-tx-layer" },
+                  { key: "vw-layer_hide-tx-spd" }
+                ],
+              },
               factor: 0.25,        
             },
             checkbox: { 
@@ -1044,6 +1544,12 @@ function brush_view_layer(json = null) {
               spriteOff: { name: "visu_texture_checkbox_off" },
               store: { key: "vw-layer_use-spd" },
               enable: { key: "vw-layer_use-texture" },
+              hidden: {
+                keys: [
+                  { key: "vw-layer_hide-tx-layer" },
+                  { key: "vw-layer_hide-tx-spd" }
+                ],
+              },
             },
             title: { 
               text: "Override",
@@ -1054,6 +1560,12 @@ function brush_view_layer(json = null) {
                 ],
               },
               updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+              hidden: {
+                keys: [
+                  { key: "vw-layer_hide-tx-layer" },
+                  { key: "vw-layer_hide-tx-spd" }
+                ],
+              },
             },
             stick: {
               enable: {
@@ -1063,6 +1575,12 @@ function brush_view_layer(json = null) {
                 ],
               },
               updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+              hidden: {
+                keys: [
+                  { key: "vw-layer_hide-tx-layer" },
+                  { key: "vw-layer_hide-tx-spd" }
+                ],
+              },
             },
           },
           target: {
@@ -1075,6 +1593,12 @@ function brush_view_layer(json = null) {
                 ],
               },
               updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+              hidden: {
+                keys: [
+                  { key: "vw-layer_hide-tx-layer" },
+                  { key: "vw-layer_hide-tx-spd" }
+                ],
+              },
             },
             field: {
               store: { key: "vw-layer_spd" },
@@ -1085,6 +1609,12 @@ function brush_view_layer(json = null) {
                 ],
               },
               updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+              hidden: {
+                keys: [
+                  { key: "vw-layer_hide-tx-layer" },
+                  { key: "vw-layer_hide-tx-spd" }
+                ],
+              },
             },
             decrease: {
               store: { key: "vw-layer_spd" },
@@ -1095,6 +1625,12 @@ function brush_view_layer(json = null) {
                 ],
               },
               updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+              hidden: {
+                keys: [
+                  { key: "vw-layer_hide-tx-layer" },
+                  { key: "vw-layer_hide-tx-spd" }
+                ],
+              },
               factor: -0.25,
             },
             increase: {
@@ -1106,6 +1642,12 @@ function brush_view_layer(json = null) {
                 ],
               },
               updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+              hidden: {
+                keys: [
+                  { key: "vw-layer_hide-tx-layer" },
+                  { key: "vw-layer_hide-tx-spd" }
+                ],
+              },
               factor: 0.25,
             },
             checkbox: { 
@@ -1113,6 +1655,12 @@ function brush_view_layer(json = null) {
               spriteOff: { name: "visu_texture_checkbox_off" },
               store: { key: "vw-layer_change-spd" },
               enable: { key: "vw-layer_use-texture" },
+              hidden: {
+                keys: [
+                  { key: "vw-layer_hide-tx-layer" },
+                  { key: "vw-layer_hide-tx-spd" }
+                ],
+              },
             },
             title: { 
               text: "Change",
@@ -1123,6 +1671,12 @@ function brush_view_layer(json = null) {
                 ],
               },
               updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+              hidden: {
+                keys: [
+                  { key: "vw-layer_hide-tx-layer" },
+                  { key: "vw-layer_hide-tx-spd" }
+                ],
+              },
             },
             stick: {
               enable: {
@@ -1132,6 +1686,12 @@ function brush_view_layer(json = null) {
                 ],
               },
               updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+              hidden: {
+                keys: [
+                  { key: "vw-layer_hide-tx-layer" },
+                  { key: "vw-layer_hide-tx-spd" }
+                ],
+              },
             },
           },
           factor: {
@@ -1144,6 +1704,12 @@ function brush_view_layer(json = null) {
                 ],
               },
               updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+              hidden: {
+                keys: [
+                  { key: "vw-layer_hide-tx-layer" },
+                  { key: "vw-layer_hide-tx-spd" }
+                ],
+              },
             },
             field: {
               store: { key: "vw-layer_spd" },
@@ -1154,6 +1720,12 @@ function brush_view_layer(json = null) {
                 ],
               },
               updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+              hidden: {
+                keys: [
+                  { key: "vw-layer_hide-tx-layer" },
+                  { key: "vw-layer_hide-tx-spd" }
+                ],
+              },
             },
             decrease: {
               store: { key: "vw-layer_spd" },
@@ -1164,6 +1736,12 @@ function brush_view_layer(json = null) {
                 ],
               },
               updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+              hidden: {
+                keys: [
+                  { key: "vw-layer_hide-tx-layer" },
+                  { key: "vw-layer_hide-tx-spd" }
+                ],
+              },
               factor: -0.01,
             },
             increase: {
@@ -1175,6 +1753,12 @@ function brush_view_layer(json = null) {
                 ],
               },
               updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+              hidden: {
+                keys: [
+                  { key: "vw-layer_hide-tx-layer" },
+                  { key: "vw-layer_hide-tx-spd" }
+                ],
+              },
               factor: 0.01,
             },
             stick: {
@@ -1185,6 +1769,12 @@ function brush_view_layer(json = null) {
                 ],
               },
               updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+              hidden: {
+                keys: [
+                  { key: "vw-layer_hide-tx-layer" },
+                  { key: "vw-layer_hide-tx-spd" }
+                ],
+              },
             },
           },
           increase: {
@@ -1197,6 +1787,12 @@ function brush_view_layer(json = null) {
                 ],
               },
               updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+              hidden: {
+                keys: [
+                  { key: "vw-layer_hide-tx-layer" },
+                  { key: "vw-layer_hide-tx-spd" }
+                ],
+              },
             },
             field: {
               store: { key: "vw-layer_spd" },
@@ -1207,6 +1803,12 @@ function brush_view_layer(json = null) {
                 ],
               },
               updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+              hidden: {
+                keys: [
+                  { key: "vw-layer_hide-tx-layer" },
+                  { key: "vw-layer_hide-tx-spd" }
+                ],
+              },
             },
             decrease: {
               store: { key: "vw-layer_spd" },
@@ -1217,6 +1819,12 @@ function brush_view_layer(json = null) {
                 ],
               },
               updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+              hidden: {
+                keys: [
+                  { key: "vw-layer_hide-tx-layer" },
+                  { key: "vw-layer_hide-tx-spd" }
+                ],
+              },
               factor: -0.001,
             },
             increase: {
@@ -1228,6 +1836,12 @@ function brush_view_layer(json = null) {
                 ],
               },
               updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+              hidden: {
+                keys: [
+                  { key: "vw-layer_hide-tx-layer" },
+                  { key: "vw-layer_hide-tx-spd" }
+                ],
+              },
               factor: 0.001,      
             },
             stick: {
@@ -1238,7 +1852,28 @@ function brush_view_layer(json = null) {
                 ],
               },
               updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+              hidden: {
+                keys: [
+                  { key: "vw-layer_hide-tx-layer" },
+                  { key: "vw-layer_hide-tx-spd" }
+                ],
+              },
             },
+          },
+          duration: {
+            label: { updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")) },
+            field: { updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")) },
+            decrease: { updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")) },
+            increase: { updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")) },
+            stick: { updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")) },
+            checkbox: { updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")) },
+            title: { updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")) },
+          },
+          ease: {
+            label: { updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")) },
+            previous: { updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")) },
+            preview: { updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")) },
+            next: { updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")) },
           },
         },
       },
@@ -1246,7 +1881,39 @@ function brush_view_layer(json = null) {
         name: "vw-layer_spd-line-h",
         template: VEComponents.get("line-h"),
         layout: VELayouts.get("line-h"),
-        config: { layout: { type: UILayoutType.VERTICAL } },
+        config: {
+          layout: { type: UILayoutType.VERTICAL },
+          image: {
+            hidden: {
+              keys: [
+                { key: "vw-layer_hide-tx-layer" },
+                { key: "vw-layer_hide-tx-spd" }
+              ],
+            },
+          },
+        },
+      },
+      {
+        name: "vw-layer_dir-title",
+        template: VEComponents.get("property"),
+        layout: VELayouts.get("property"),
+        config: { 
+          layout: { type: UILayoutType.VERTICAL },
+          label: {
+            text: "Angle",
+            enable: { key: "vw-layer_use-texture" },
+            hidden: { key: "vw-layer_hide-tx-layer" },
+          },
+          input: {
+            hidden: { key: "vw-layer_hide-tx-layer" },
+          },
+          checkbox: {
+            spriteOn: { name: "visu_texture_checkbox_show" },
+            spriteOff: { name: "visu_texture_checkbox_hide" },
+            store: { key: "vw-layer_hide-tx-dir" },
+            hidden: { key: "vw-layer_hide-tx-layer" },
+          },
+        },
       },
       {
         name: "vw-layer_dir",
@@ -1256,10 +1923,14 @@ function brush_view_layer(json = null) {
           layout: { type: UILayoutType.VERTICAL },
           value: {
             label: {
-              text: "Angle",
-              font: "font_inter_10_bold",
-              color: VETheme.color.textShadow,
-              //enable: { key: "vw-layer_use-dir" },
+              text: "Value",
+              enable: { key: "vw-layer_use-dir" },
+              hidden: {
+                keys: [
+                  { key: "vw-layer_hide-tx-layer" },
+                  { key: "vw-layer_hide-tx-dir" }
+                ],
+              },
             },
             field: {
               store: { key: "vw-layer_dir" },
@@ -1270,6 +1941,12 @@ function brush_view_layer(json = null) {
                 ],
               },
               updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+              hidden: {
+                keys: [
+                  { key: "vw-layer_hide-tx-layer" },
+                  { key: "vw-layer_hide-tx-dir" }
+                ],
+              },
             },
             decrease: {
               store: { key: "vw-layer_dir" },
@@ -1280,6 +1957,12 @@ function brush_view_layer(json = null) {
                 ],
               },
               updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+              hidden: {
+                keys: [
+                  { key: "vw-layer_hide-tx-layer" },
+                  { key: "vw-layer_hide-tx-dir" }
+                ],
+              },
               factor: -0.25,
             },
             increase: {
@@ -1291,6 +1974,12 @@ function brush_view_layer(json = null) {
                 ],
               },
               updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+              hidden: {
+                keys: [
+                  { key: "vw-layer_hide-tx-layer" },
+                  { key: "vw-layer_hide-tx-dir" }
+                ],
+              },
               factor: 0.25,        
             },
             checkbox: { 
@@ -1298,6 +1987,12 @@ function brush_view_layer(json = null) {
               spriteOff: { name: "visu_texture_checkbox_off" },
               enable: { key: "vw-layer_use-texture" },
               store: { key: "vw-layer_use-dir" },
+              hidden: {
+                keys: [
+                  { key: "vw-layer_hide-tx-layer" },
+                  { key: "vw-layer_hide-tx-dir" }
+                ],
+              },
             },
             title: { 
               text: "Override",
@@ -1308,6 +2003,12 @@ function brush_view_layer(json = null) {
                 ],
               },
               updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+              hidden: {
+                keys: [
+                  { key: "vw-layer_hide-tx-layer" },
+                  { key: "vw-layer_hide-tx-dir" }
+                ],
+              },
             },
             stick: {
               enable: {
@@ -1317,6 +2018,12 @@ function brush_view_layer(json = null) {
                 ],
               },
               updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+              hidden: {
+                keys: [
+                  { key: "vw-layer_hide-tx-layer" },
+                  { key: "vw-layer_hide-tx-dir" }
+                ],
+              },
             }
           },
           target: {
@@ -1329,6 +2036,12 @@ function brush_view_layer(json = null) {
                 ],
               },
               updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+              hidden: {
+                keys: [
+                  { key: "vw-layer_hide-tx-layer" },
+                  { key: "vw-layer_hide-tx-dir" }
+                ],
+              },
             },
             field: {
               store: { key: "vw-layer_dir" },
@@ -1339,6 +2052,12 @@ function brush_view_layer(json = null) {
                 ],
               },
               updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+              hidden: {
+                keys: [
+                  { key: "vw-layer_hide-tx-layer" },
+                  { key: "vw-layer_hide-tx-dir" }
+                ],
+              },
             },
             decrease: {
               store: { key: "vw-layer_dir" },
@@ -1349,6 +2068,12 @@ function brush_view_layer(json = null) {
                 ],
               },
               updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+              hidden: {
+                keys: [
+                  { key: "vw-layer_hide-tx-layer" },
+                  { key: "vw-layer_hide-tx-dir" }
+                ],
+              },
               factor: -0.25,
             },
             increase: {
@@ -1360,6 +2085,12 @@ function brush_view_layer(json = null) {
                 ],
               },
               updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+              hidden: {
+                keys: [
+                  { key: "vw-layer_hide-tx-layer" },
+                  { key: "vw-layer_hide-tx-dir" }
+                ],
+              },
               factor: 0.25,
             },
             checkbox: { 
@@ -1367,6 +2098,12 @@ function brush_view_layer(json = null) {
               spriteOff: { name: "visu_texture_checkbox_off" },
               enable: { key: "vw-layer_use-texture" },
               store: { key: "vw-layer_change-dir" },
+              hidden: {
+                keys: [
+                  { key: "vw-layer_hide-tx-layer" },
+                  { key: "vw-layer_hide-tx-dir" }
+                ],
+              },
             },
             title: { 
               text: "Change",
@@ -1377,6 +2114,12 @@ function brush_view_layer(json = null) {
                 ],
               },
               updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+              hidden: {
+                keys: [
+                  { key: "vw-layer_hide-tx-layer" },
+                  { key: "vw-layer_hide-tx-dir" }
+                ],
+              },
             },
             stick: {
               enable: {
@@ -1386,6 +2129,12 @@ function brush_view_layer(json = null) {
                 ],
               },
               updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+              hidden: {
+                keys: [
+                  { key: "vw-layer_hide-tx-layer" },
+                  { key: "vw-layer_hide-tx-dir" }
+                ],
+              },
             },
           },
           factor: {
@@ -1398,6 +2147,12 @@ function brush_view_layer(json = null) {
                 ],
               },
               updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+              hidden: {
+                keys: [
+                  { key: "vw-layer_hide-tx-layer" },
+                  { key: "vw-layer_hide-tx-dir" }
+                ],
+              },
             },
             field: {
               store: { key: "vw-layer_dir" },
@@ -1408,6 +2163,12 @@ function brush_view_layer(json = null) {
                 ],
               },
               updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+              hidden: {
+                keys: [
+                  { key: "vw-layer_hide-tx-layer" },
+                  { key: "vw-layer_hide-tx-dir" }
+                ],
+              },
             },
             decrease: {
               store: { key: "vw-layer_dir" },
@@ -1418,6 +2179,12 @@ function brush_view_layer(json = null) {
                 ],
               },
               updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+              hidden: {
+                keys: [
+                  { key: "vw-layer_hide-tx-layer" },
+                  { key: "vw-layer_hide-tx-dir" }
+                ],
+              },
               factor: -0.01,
             },
             increase: {
@@ -1429,6 +2196,12 @@ function brush_view_layer(json = null) {
                 ],
               },
               updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+              hidden: {
+                keys: [
+                  { key: "vw-layer_hide-tx-layer" },
+                  { key: "vw-layer_hide-tx-dir" }
+                ],
+              },
               factor: 0.01,
             },
             checkbox: { 
@@ -1448,6 +2221,12 @@ function brush_view_layer(json = null) {
                   sprite.setAngle(value.value)
                 },
                 set: function(value) { return },
+              },
+              hidden: {
+                keys: [
+                  { key: "vw-layer_hide-tx-layer" },
+                  { key: "vw-layer_hide-tx-dir" }
+                ],
               },
               render: function() {
                 var sprite = Struct.get(this, "sprite")
@@ -1491,6 +2270,12 @@ function brush_view_layer(json = null) {
                 ],
               },
               updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+              hidden: {
+                keys: [
+                  { key: "vw-layer_hide-tx-layer" },
+                  { key: "vw-layer_hide-tx-dir" }
+                ],
+              },
             },
           },
           increase: {
@@ -1503,6 +2288,12 @@ function brush_view_layer(json = null) {
                 ],
               },
               updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+              hidden: {
+                keys: [
+                  { key: "vw-layer_hide-tx-layer" },
+                  { key: "vw-layer_hide-tx-dir" }
+                ],
+              },
             },
             field: {
               store: { key: "vw-layer_dir" },
@@ -1513,6 +2304,12 @@ function brush_view_layer(json = null) {
                 ],
               },
               updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+              hidden: {
+                keys: [
+                  { key: "vw-layer_hide-tx-layer" },
+                  { key: "vw-layer_hide-tx-dir" }
+                ],
+              },
             },
             decrease: {
               store: { key: "vw-layer_dir" },
@@ -1523,6 +2320,12 @@ function brush_view_layer(json = null) {
                 ],
               },
               updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+              hidden: {
+                keys: [
+                  { key: "vw-layer_hide-tx-layer" },
+                  { key: "vw-layer_hide-tx-dir" }
+                ],
+              },
               factor: -0.001,
             },
             increase: {
@@ -1534,6 +2337,12 @@ function brush_view_layer(json = null) {
                 ],
               },
               updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+              hidden: {
+                keys: [
+                  { key: "vw-layer_hide-tx-layer" },
+                  { key: "vw-layer_hide-tx-dir" }
+                ],
+              },
               factor: 0.001,      
             },
             stick: {
@@ -1544,7 +2353,28 @@ function brush_view_layer(json = null) {
                 ],
               },
               updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+              hidden: {
+                keys: [
+                  { key: "vw-layer_hide-tx-layer" },
+                  { key: "vw-layer_hide-tx-dir" }
+                ],
+              },
             },
+          },
+          duration: {
+            label: { updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")) },
+            field: { updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")) },
+            decrease: { updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")) },
+            increase: { updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")) },
+            stick: { updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")) },
+            checkbox: { updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")) },
+            title: { updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")) },
+          },
+          ease: {
+            label: { updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")) },
+            previous: { updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")) },
+            preview: { updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")) },
+            next: { updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")) },
           },
         },
       },
@@ -1552,7 +2382,39 @@ function brush_view_layer(json = null) {
         name: "vw-layer_dir-line-h",
         template: VEComponents.get("line-h"),
         layout: VELayouts.get("line-h"),
-        config: { layout: { type: UILayoutType.VERTICAL } },
+        config: {
+          layout: { type: UILayoutType.VERTICAL },
+          image: {
+            hidden: {
+              keys: [
+                { key: "vw-layer_hide-tx-layer" },
+                { key: "vw-layer_hide-tx-dir" }
+              ],
+            },
+          },
+        },
+      },
+      {
+        name: "vw-layer_scale-x-title",
+        template: VEComponents.get("property"),
+        layout: VELayouts.get("property"),
+        config: { 
+          layout: { type: UILayoutType.VERTICAL },
+          label: {
+            text: "Scale X",
+            enable: { key: "vw-layer_use-texture" },
+            hidden: { key: "vw-layer_hide-tx-layer" },
+          },
+          input: {
+            hidden: { key: "vw-layer_hide-tx-layer" },
+          },
+          checkbox: {
+            spriteOn: { name: "visu_texture_checkbox_show" },
+            spriteOff: { name: "visu_texture_checkbox_hide" },
+            store: { key: "vw-layer_hide-tx-scale-x" },
+            hidden: { key: "vw-layer_hide-tx-layer" },
+          },
+        },
       },
       {
         name: "vw-layer_scale-x",
@@ -1562,10 +2424,8 @@ function brush_view_layer(json = null) {
           layout: { type: UILayoutType.VERTICAL },
           value: {
             label: {
-              text: "Scale X",
-              font: "font_inter_10_bold",
-              color: VETheme.color.textShadow,
-              //enable: { key: "vw-layer_use-scale-x" },
+              text: "Value",
+              enable: { key: "vw-layer_use-scale-x" },
             },
             field: {
               store: { key: "vw-layer_scale-x" },
@@ -1576,6 +2436,12 @@ function brush_view_layer(json = null) {
                 ],
               },
               updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+              hidden: {
+                keys: [
+                  { key: "vw-layer_hide-tx-layer" },
+                  { key: "vw-layer_hide-tx-scale-x" }
+                ],
+              },
             },
             decrease: {
               store: { key: "vw-layer_scale-x" },
@@ -1586,6 +2452,12 @@ function brush_view_layer(json = null) {
                 ],
               },
               updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+              hidden: {
+                keys: [
+                  { key: "vw-layer_hide-tx-layer" },
+                  { key: "vw-layer_hide-tx-scale-x" }
+                ],
+              },
               factor: -0.25,
             },
             increase: {
@@ -1597,6 +2469,12 @@ function brush_view_layer(json = null) {
                 ],
               },
               updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+              hidden: {
+                keys: [
+                  { key: "vw-layer_hide-tx-layer" },
+                  { key: "vw-layer_hide-tx-scale-x" }
+                ],
+              },
               factor: 0.25,        
             },
             stick: {
@@ -1607,12 +2485,24 @@ function brush_view_layer(json = null) {
                 ],
               },
               updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+              hidden: {
+                keys: [
+                  { key: "vw-layer_hide-tx-layer" },
+                  { key: "vw-layer_hide-tx-scale-x" }
+                ],
+              },
             },
             checkbox: { 
               spriteOn: { name: "visu_texture_checkbox_on" },
               spriteOff: { name: "visu_texture_checkbox_off" },
               store: { key: "vw-layer_use-scale-x" },
               enable: { key: "vw-layer_use-texture" },
+              hidden: {
+                keys: [
+                  { key: "vw-layer_hide-tx-layer" },
+                  { key: "vw-layer_hide-tx-scale-x" }
+                ],
+              },
             },
             title: { 
               text: "Override",
@@ -1623,6 +2513,12 @@ function brush_view_layer(json = null) {
                 ],
               },
               updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+              hidden: {
+                keys: [
+                  { key: "vw-layer_hide-tx-layer" },
+                  { key: "vw-layer_hide-tx-scale-x" }
+                ],
+              },
             },
           },
           target: {
@@ -1635,6 +2531,12 @@ function brush_view_layer(json = null) {
                 ],
               },
               updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+              hidden: {
+                keys: [
+                  { key: "vw-layer_hide-tx-layer" },
+                  { key: "vw-layer_hide-tx-scale-x" }
+                ],
+              },
             },
             field: {
               store: { key: "vw-layer_scale-x" },
@@ -1645,6 +2547,12 @@ function brush_view_layer(json = null) {
                 ],
               },
               updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+              hidden: {
+                keys: [
+                  { key: "vw-layer_hide-tx-layer" },
+                  { key: "vw-layer_hide-tx-scale-x" }
+                ],
+              },
             },
             decrease: {
               store: { key: "vw-layer_scale-x" },
@@ -1655,6 +2563,12 @@ function brush_view_layer(json = null) {
                 ],
               },
               updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+              hidden: {
+                keys: [
+                  { key: "vw-layer_hide-tx-layer" },
+                  { key: "vw-layer_hide-tx-scale-x" }
+                ],
+              },
               factor: -0.25,
             },
             increase: {
@@ -1666,6 +2580,12 @@ function brush_view_layer(json = null) {
                 ],
               },
               updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+              hidden: {
+                keys: [
+                  { key: "vw-layer_hide-tx-layer" },
+                  { key: "vw-layer_hide-tx-scale-x" }
+                ],
+              },
               factor: 0.25,
             },
             stick: {
@@ -1676,12 +2596,24 @@ function brush_view_layer(json = null) {
                 ],
               },
               updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+              hidden: {
+                keys: [
+                  { key: "vw-layer_hide-tx-layer" },
+                  { key: "vw-layer_hide-tx-scale-x" }
+                ],
+              },
             },
             checkbox: { 
               spriteOn: { name: "visu_texture_checkbox_on" },
               spriteOff: { name: "visu_texture_checkbox_off" },
               store: { key: "vw-layer_change-scale-x" },
               enable: { key: "vw-layer_use-texture" },
+              hidden: {
+                keys: [
+                  { key: "vw-layer_hide-tx-layer" },
+                  { key: "vw-layer_hide-tx-scale-x" }
+                ],
+              },
             },
             title: { 
               text: "Change",
@@ -1692,6 +2624,12 @@ function brush_view_layer(json = null) {
                 ],
               },
               updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+              hidden: {
+                keys: [
+                  { key: "vw-layer_hide-tx-layer" },
+                  { key: "vw-layer_hide-tx-scale-x" }
+                ],
+              },
             },
           },
           factor: {
@@ -1704,6 +2642,12 @@ function brush_view_layer(json = null) {
                 ],
               },
               updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+              hidden: {
+                keys: [
+                  { key: "vw-layer_hide-tx-layer" },
+                  { key: "vw-layer_hide-tx-scale-x" }
+                ],
+              },
             },
             field: {
               store: { key: "vw-layer_scale-x" },
@@ -1714,6 +2658,12 @@ function brush_view_layer(json = null) {
                 ],
               },
               updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+              hidden: {
+                keys: [
+                  { key: "vw-layer_hide-tx-layer" },
+                  { key: "vw-layer_hide-tx-scale-x" }
+                ],
+              },
             },
             decrease: {
               store: { key: "vw-layer_scale-x" },
@@ -1724,6 +2674,12 @@ function brush_view_layer(json = null) {
                 ],
               },
               updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+              hidden: {
+                keys: [
+                  { key: "vw-layer_hide-tx-layer" },
+                  { key: "vw-layer_hide-tx-scale-x" }
+                ],
+              },
               factor: -0.01,
             },
             increase: {
@@ -1735,6 +2691,12 @@ function brush_view_layer(json = null) {
                 ],
               },
               updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+              hidden: {
+                keys: [
+                  { key: "vw-layer_hide-tx-layer" },
+                  { key: "vw-layer_hide-tx-scale-x" }
+                ],
+              },
               factor: 0.01,
             },
             stick: {
@@ -1745,8 +2707,21 @@ function brush_view_layer(json = null) {
                 ],
               },
               updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+              hidden: {
+                keys: [
+                  { key: "vw-layer_hide-tx-layer" },
+                  { key: "vw-layer_hide-tx-scale-x" }
+                ],
+              },
             },
-            checkbox: { },
+            checkbox: {
+              hidden: {
+                keys: [
+                  { key: "vw-layer_hide-tx-layer" },
+                  { key: "vw-layer_hide-tx-scale-x" }
+                ],
+              },
+            },
           },
           increase: {
             label: {
@@ -1758,6 +2733,12 @@ function brush_view_layer(json = null) {
                 ],
               },
               updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+              hidden: {
+                keys: [
+                  { key: "vw-layer_hide-tx-layer" },
+                  { key: "vw-layer_hide-tx-scale-x" }
+                ],
+              },
             },
             field: {
               store: { key: "vw-layer_scale-x" },
@@ -1768,6 +2749,12 @@ function brush_view_layer(json = null) {
                 ],
               },
               updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+              hidden: {
+                keys: [
+                  { key: "vw-layer_hide-tx-layer" },
+                  { key: "vw-layer_hide-tx-scale-x" }
+                ],
+              },
             },
             decrease: {
               store: { key: "vw-layer_scale-x" },
@@ -1778,6 +2765,12 @@ function brush_view_layer(json = null) {
                 ],
               },
               updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+              hidden: {
+                keys: [
+                  { key: "vw-layer_hide-tx-layer" },
+                  { key: "vw-layer_hide-tx-scale-x" }
+                ],
+              },
               factor: -0.001,
             },
             increase: {
@@ -1789,6 +2782,12 @@ function brush_view_layer(json = null) {
                 ],
               },
               updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+              hidden: {
+                keys: [
+                  { key: "vw-layer_hide-tx-layer" },
+                  { key: "vw-layer_hide-tx-scale-x" }
+                ],
+              },
               factor: 0.001,      
             },
             stick: {
@@ -1799,8 +2798,36 @@ function brush_view_layer(json = null) {
                 ],
               },
               updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+              hidden: {
+                keys: [
+                  { key: "vw-layer_hide-tx-layer" },
+                  { key: "vw-layer_hide-tx-scale-x" }
+                ],
+              },
             },
-            checkbox: { },
+            checkbox: {
+              hidden: {
+                keys: [
+                  { key: "vw-layer_hide-tx-layer" },
+                  { key: "vw-layer_hide-tx-scale-x" }
+                ],
+              },
+            },
+          },
+          duration: {
+            label: { updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")) },
+            field: { updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")) },
+            decrease: { updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")) },
+            increase: { updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")) },
+            stick: { updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")) },
+            checkbox: { updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")) },
+            title: { updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")) },
+          },
+          ease: {
+            label: { updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")) },
+            previous: { updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")) },
+            preview: { updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")) },
+            next: { updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")) },
           },
         },
       },
@@ -1808,7 +2835,39 @@ function brush_view_layer(json = null) {
         name: "vw-layer_scale-x-line-h",
         template: VEComponents.get("line-h"),
         layout: VELayouts.get("line-h"),
-        config: { layout: { type: UILayoutType.VERTICAL } },
+        config: {
+          layout: { type: UILayoutType.VERTICAL },
+          image: {
+            hidden: {
+              keys: [
+                { key: "vw-layer_hide-tx-layer" },
+                { key: "vw-layer_hide-tx-scale-x" }
+              ],
+            },
+          },
+        },
+      },
+      {
+        name: "vw-layer_scale-y-title",
+        template: VEComponents.get("property"),
+        layout: VELayouts.get("property"),
+        config: { 
+          layout: { type: UILayoutType.VERTICAL },
+          label: {
+            text: "Scale Y",
+            enable: { key: "vw-layer_use-texture" },
+            hidden: { key: "vw-layer_hide-tx-layer" },
+          },
+          input: {
+            hidden: { key: "vw-layer_hide-tx-layer" },
+          },
+          checkbox: {
+            spriteOn: { name: "visu_texture_checkbox_show" },
+            spriteOff: { name: "visu_texture_checkbox_hide" },
+            store: { key: "vw-layer_hide-tx-scale-y" },
+            hidden: { key: "vw-layer_hide-tx-layer" },
+          },
+        },
       },
       {
         name: "vw-layer_scale-y",
@@ -1818,10 +2877,14 @@ function brush_view_layer(json = null) {
           layout: { type: UILayoutType.VERTICAL },
           value: {
             label: {
-              text: "Scale Y",
-              font: "font_inter_10_bold",
-              color: VETheme.color.textShadow,
-              //enable: { key: "vw-layer_use-scale-y" },
+              text: "Value",
+              enable: { key: "vw-layer_use-scale-y" },
+              hidden: {
+                keys: [
+                  { key: "vw-layer_hide-tx-layer" },
+                  { key: "vw-layer_hide-tx-scale-y" }
+                ],
+              },
             },
             field: {
               store: { key: "vw-layer_scale-y" },
@@ -1832,6 +2895,12 @@ function brush_view_layer(json = null) {
                 ],
               },
               updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+              hidden: {
+                keys: [
+                  { key: "vw-layer_hide-tx-layer" },
+                  { key: "vw-layer_hide-tx-scale-y" }
+                ],
+              },
             },
             decrease: {
               store: { key: "vw-layer_scale-y" },
@@ -1842,6 +2911,12 @@ function brush_view_layer(json = null) {
                 ],
               },
               updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+              hidden: {
+                keys: [
+                  { key: "vw-layer_hide-tx-layer" },
+                  { key: "vw-layer_hide-tx-scale-y" }
+                ],
+              },
               factor: -0.25,
             },
             increase: {
@@ -1853,6 +2928,12 @@ function brush_view_layer(json = null) {
                 ],
               },
               updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+              hidden: {
+                keys: [
+                  { key: "vw-layer_hide-tx-layer" },
+                  { key: "vw-layer_hide-tx-scale-y" }
+                ],
+              },
               factor: 0.25,        
             },
             stick: {
@@ -1863,12 +2944,24 @@ function brush_view_layer(json = null) {
                 ],
               },
               updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+              hidden: {
+                keys: [
+                  { key: "vw-layer_hide-tx-layer" },
+                  { key: "vw-layer_hide-tx-scale-y" }
+                ],
+              },
             },
             checkbox: { 
               spriteOn: { name: "visu_texture_checkbox_on" },
               spriteOff: { name: "visu_texture_checkbox_off" },
               store: { key: "vw-layer_use-scale-y" },
               enable: { key: "vw-layer_use-texture" },
+              hidden: {
+                keys: [
+                  { key: "vw-layer_hide-tx-layer" },
+                  { key: "vw-layer_hide-tx-scale-y" }
+                ],
+              },
             },
             title: { 
               text: "Override",
@@ -1879,6 +2972,12 @@ function brush_view_layer(json = null) {
                 ],
               },
               updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+              hidden: {
+                keys: [
+                  { key: "vw-layer_hide-tx-layer" },
+                  { key: "vw-layer_hide-tx-scale-y" }
+                ],
+              },
             },
           },
           target: {
@@ -1891,6 +2990,12 @@ function brush_view_layer(json = null) {
                 ],
               },
               updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+              hidden: {
+                keys: [
+                  { key: "vw-layer_hide-tx-layer" },
+                  { key: "vw-layer_hide-tx-scale-y" }
+                ],
+              },
             },
             field: {
               store: { key: "vw-layer_scale-y" },
@@ -1901,6 +3006,12 @@ function brush_view_layer(json = null) {
                 ],
               },
               updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+              hidden: {
+                keys: [
+                  { key: "vw-layer_hide-tx-layer" },
+                  { key: "vw-layer_hide-tx-scale-y" }
+                ],
+              },
             },
             decrease: {
               store: { key: "vw-layer_scale-y" },
@@ -1911,6 +3022,12 @@ function brush_view_layer(json = null) {
                 ],
               },
               updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+              hidden: {
+                keys: [
+                  { key: "vw-layer_hide-tx-layer" },
+                  { key: "vw-layer_hide-tx-scale-y" }
+                ],
+              },
               factor: -0.25,
             },
             increase: {
@@ -1922,6 +3039,12 @@ function brush_view_layer(json = null) {
                 ],
               },
               updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+              hidden: {
+                keys: [
+                  { key: "vw-layer_hide-tx-layer" },
+                  { key: "vw-layer_hide-tx-scale-y" }
+                ],
+              },
               factor: 0.25,
             },
             stick: {
@@ -1932,12 +3055,24 @@ function brush_view_layer(json = null) {
                 ],
               },
               updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+              hidden: {
+                keys: [
+                  { key: "vw-layer_hide-tx-layer" },
+                  { key: "vw-layer_hide-tx-scale-y" }
+                ],
+              },
             },
             checkbox: { 
               spriteOn: { name: "visu_texture_checkbox_on" },
               spriteOff: { name: "visu_texture_checkbox_off" },
               store: { key: "vw-layer_change-scale-y" },
               enable: { key: "vw-layer_use-texture" },
+              hidden: {
+                keys: [
+                  { key: "vw-layer_hide-tx-layer" },
+                  { key: "vw-layer_hide-tx-scale-y" }
+                ],
+              },
             },
             title: { 
               text: "Change",
@@ -1948,6 +3083,12 @@ function brush_view_layer(json = null) {
                 ],
               },
               updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+              hidden: {
+                keys: [
+                  { key: "vw-layer_hide-tx-layer" },
+                  { key: "vw-layer_hide-tx-scale-y" }
+                ],
+              },
             },
           },
           factor: {
@@ -1960,6 +3101,12 @@ function brush_view_layer(json = null) {
                 ],
               },
               updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+              hidden: {
+                keys: [
+                  { key: "vw-layer_hide-tx-layer" },
+                  { key: "vw-layer_hide-tx-scale-y" }
+                ],
+              },
             },
             field: {
               store: { key: "vw-layer_scale-y" },
@@ -1970,6 +3117,12 @@ function brush_view_layer(json = null) {
                 ],
               },
               updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+              hidden: {
+                keys: [
+                  { key: "vw-layer_hide-tx-layer" },
+                  { key: "vw-layer_hide-tx-scale-y" }
+                ],
+              },
             },
             decrease: {
               store: { key: "vw-layer_scale-y" },
@@ -1980,6 +3133,12 @@ function brush_view_layer(json = null) {
                 ],
               },
               updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+              hidden: {
+                keys: [
+                  { key: "vw-layer_hide-tx-layer" },
+                  { key: "vw-layer_hide-tx-scale-y" }
+                ],
+              },
               factor: -0.01,
             },
             increase: {
@@ -1991,6 +3150,12 @@ function brush_view_layer(json = null) {
                 ],
               },
               updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+              hidden: {
+                keys: [
+                  { key: "vw-layer_hide-tx-layer" },
+                  { key: "vw-layer_hide-tx-scale-y" }
+                ],
+              },
               factor: 0.01,
             },
             stick: {
@@ -2001,8 +3166,21 @@ function brush_view_layer(json = null) {
                 ],
               },
               updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+              hidden: {
+                keys: [
+                  { key: "vw-layer_hide-tx-layer" },
+                  { key: "vw-layer_hide-tx-scale-y" }
+                ],
+              },
             },
-            checkbox: { },
+            checkbox: {
+              hidden: {
+                keys: [
+                  { key: "vw-layer_hide-tx-layer" },
+                  { key: "vw-layer_hide-tx-scale-y" }
+                ],
+              },
+            },
           },
           increase: {
             label: {
@@ -2014,6 +3192,12 @@ function brush_view_layer(json = null) {
                 ],
               },
               updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+              hidden: {
+                keys: [
+                  { key: "vw-layer_hide-tx-layer" },
+                  { key: "vw-layer_hide-tx-scale-y" }
+                ],
+              },
             },
             field: {
               store: { key: "vw-layer_scale-y" },
@@ -2024,6 +3208,12 @@ function brush_view_layer(json = null) {
                 ],
               },
               updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+              hidden: {
+                keys: [
+                  { key: "vw-layer_hide-tx-layer" },
+                  { key: "vw-layer_hide-tx-scale-y" }
+                ],
+              },
             },
             decrease: {
               store: { key: "vw-layer_scale-y" },
@@ -2034,6 +3224,12 @@ function brush_view_layer(json = null) {
                 ],
               },
               updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+              hidden: {
+                keys: [
+                  { key: "vw-layer_hide-tx-layer" },
+                  { key: "vw-layer_hide-tx-scale-y" }
+                ],
+              },
               factor: -0.001,
             },
             increase: {
@@ -2045,6 +3241,12 @@ function brush_view_layer(json = null) {
                 ],
               },
               updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+              hidden: {
+                keys: [
+                  { key: "vw-layer_hide-tx-layer" },
+                  { key: "vw-layer_hide-tx-scale-y" }
+                ],
+              },
               factor: 0.001,      
             },
             stick: {
@@ -2055,8 +3257,36 @@ function brush_view_layer(json = null) {
                 ],
               },
               updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+              hidden: {
+                keys: [
+                  { key: "vw-layer_hide-tx-layer" },
+                  { key: "vw-layer_hide-tx-scale-y" }
+                ],
+              },
             },
-            checkbox: { },
+            checkbox: {
+              hidden: {
+                keys: [
+                  { key: "vw-layer_hide-tx-layer" },
+                  { key: "vw-layer_hide-tx-scale-y" }
+                ],
+              },
+            },
+          },
+          duration: {
+            label: { updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")) },
+            field: { updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")) },
+            decrease: { updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")) },
+            increase: { updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")) },
+            stick: { updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")) },
+            checkbox: { updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")) },
+            title: { updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")) },
+          },
+          ease: {
+            label: { updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")) },
+            previous: { updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")) },
+            preview: { updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")) },
+            next: { updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")) },
           },
         },
       },
@@ -2064,7 +3294,42 @@ function brush_view_layer(json = null) {
         name: "vw-layer-col-line-h",
         template: VEComponents.get("line-h"),
         layout: VELayouts.get("line-h"),
-        config: { layout: { type: UILayoutType.VERTICAL } },
+        config: {
+          layout: { type: UILayoutType.VERTICAL },
+          image: {
+            hidden: {
+              keys: [
+                { key: "vw-layer_hide-tx-layer" },
+                { key: "vw-layer_hide-tx-scale-y" }
+              ],
+            },
+          },
+        },
+      },
+      {
+        name: "vw-layer_col-title",
+        template: VEComponents.get("property"),
+        layout: VELayouts.get("property"),
+        config: { 
+          layout: { type: UILayoutType.VERTICAL },
+          label: {
+            text: "Color",
+            enable: { key: "vw-layer_use-col" },
+            backgroundColor: VETheme.color.accentShadow,
+          },
+          input: {
+            spriteOn: { name: "visu_texture_checkbox_switch_on" },
+            spriteOff: { name: "visu_texture_checkbox_switch_off" },
+            store: { key: "vw-layer_use-col" },
+            backgroundColor: VETheme.color.accentShadow,
+          },
+          checkbox: {
+            spriteOn: { name: "visu_texture_checkbox_show" },
+            spriteOff: { name: "visu_texture_checkbox_hide" },
+            store: { key: "vw-layer_hide-col" },
+            backgroundColor: VETheme.color.accentShadow,
+          },
+        },
       },
       {
         name: "vw-layer_col",
@@ -2072,91 +3337,86 @@ function brush_view_layer(json = null) {
         layout: VELayouts.get("color-picker-alpha"),
         config: { 
           layout: { type: UILayoutType.VERTICAL },
-          title: {
-            label: { 
-              text: "Color layer",
-              enable: { key: "vw-layer_use-col" },
-              backgroundColor: VETheme.color.accentShadow,
-            },  
-            checkbox: { 
-              spriteOn: { name: "visu_texture_checkbox_on" },
-              spriteOff: { name: "visu_texture_checkbox_off" },
-              store: { key: "vw-layer_use-col" },
-              backgroundColor: VETheme.color.accentShadow,
-            },
-            input: { 
-              store: { key: "vw-layer_col" },
-              enable: { key: "vw-layer_use-col" },
-              backgroundColor: VETheme.color.accentShadow,
-            }
-          },
           red: {
             label: { 
               text: "Red",
               enable: { key: "vw-layer_use-col" },
+              hidden: { key: "vw-layer_hide-col" },
             },
             field: { 
               store: { key: "vw-layer_col" },
               enable: { key: "vw-layer_use-col" },
+              hidden: { key: "vw-layer_hide-col" },
             },
             slider: { 
               store: { key: "vw-layer_col" },
               enable: { key: "vw-layer_use-col" },
+              hidden: { key: "vw-layer_hide-col" },
             },
           },
           green: {
             label: { 
               text: "Green",
               enable: { key: "vw-layer_use-col" },
+              hidden: { key: "vw-layer_hide-col" },
             },
             field: { 
               store: { key: "vw-layer_col" },
               enable: { key: "vw-layer_use-col" },
+              hidden: { key: "vw-layer_hide-col" },
             },
             slider: { 
               store: { key: "vw-layer_col" },
               enable: { key: "vw-layer_use-col" },
+              hidden: { key: "vw-layer_hide-col" },
             },
           },
           blue: {
             label: { 
               text: "Blue",
               enable: { key: "vw-layer_use-col" },
+              hidden: { key: "vw-layer_hide-col" },
             },
             field: { 
               store: { key: "vw-layer_col" },
               enable: { key: "vw-layer_use-col" },
+              hidden: { key: "vw-layer_hide-col" },
             },
             slider: { 
               store: { key: "vw-layer_col" },
               enable: { key: "vw-layer_use-col" },
+              hidden: { key: "vw-layer_hide-col" },
             },
           },
           alpha: {
             label: { 
               text: "Alpha",
               enable: { key: "vw-layer_use-col" },
+              hidden: { key: "vw-layer_hide-col" },
             },
             field: { 
               store: { key: "vw-layer_col" },
               enable: { key: "vw-layer_use-col" },
+              hidden: { key: "vw-layer_hide-col" },
             },
             slider: { 
               store: { key: "vw-layer_col" },
               enable: { key: "vw-layer_use-col" },
+              hidden: { key: "vw-layer_hide-col" },
             },
           },
           hex: { 
             label: { 
               text: "Hex",
               enable: { key: "vw-layer_use-col" },
+              hidden: { key: "vw-layer_hide-col" },
             },
             field: { 
               store: { key: "vw-layer_col" },
               enable: { key: "vw-layer_use-col" },
+              hidden: { key: "vw-layer_hide-col" },
             },
           },
-          line: { disable: true },
         },
       },
     ]),

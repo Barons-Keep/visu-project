@@ -26,9 +26,9 @@ function VEPopupQueue(_editor) constructor {
       _width: 300,
       _height: 32,
       _margin: 8,
-      x: function() { return this._x + this.margin.left },
+      x: function() { return this._x + this.__margin.left },
       y: function() { return this._y + (index * this.height()) + (index * _margin) },
-      width: function() { return this._width - this.margin.left - this.margin.right },
+      width: function() { return this._width - this.__margin.left - this.__margin.right },
       height: function() { return this._height },
       margin: { right: 32, left: 32 },
       nodes: {
@@ -37,30 +37,30 @@ function VEPopupQueue(_editor) constructor {
           _offsetY: 0,
           _width: 0,
           _height: 32,
-          x: function() { return this.margin.left },
-          y: function() { return this._offsetY + this.margin.top },
-          width: function() { return _width - this.margin.left - this.margin.right },
-          height: function() { return _height - this.margin.top - this.margin.bottom },
+          x: function() { return this.__margin.left },
+          y: function() { return this._offsetY + this.__margin.top },
+          width: function() { return _width - this.__margin.left - this.__margin.right },
+          height: function() { return _height - this.__margin.top - this.__margin.bottom },
           margin: { top: 0, right: 4, bottom: 0, left: 4 },
         },
         message: {
           name: "ve-popup-queue_item.message",
           _height: 32,
-          x: function() { return this.context.nodes.icon.right() + this.margin.left },
-          y: function() { return this.margin.top },
+          x: function() { return this.context.nodes.icon.right() + this.__margin.left },
+          y: function() { return this.__margin.top },
           width: function() { return this.context.width()
             - this.context.nodes.icon.width()
-            - this.context.nodes.icon.margin.left
-            - this.context.nodes.icon.margin.right
+            - this.context.nodes.icon.__margin.left
+            - this.context.nodes.icon.__margin.right
             - this.context.nodes.close.width()
-            - this.context.nodes.close.margin.left
-            - this.context.nodes.close.margin.right
-            - this.margin.right
-            - this.margin.left
+            - this.context.nodes.close.__margin.left
+            - this.context.nodes.close.__margin.right
+            - this.__margin.right
+            - this.__margin.left
           },
           height: function() { return this._height
-            - this.margin.top 
-            - this.margin.bottom },
+            - this.__margin.top 
+            - this.__margin.bottom },
           margin: { top: 0, right: 4, bottom: 0, left: 4 },
         },
         close: {
@@ -68,10 +68,10 @@ function VEPopupQueue(_editor) constructor {
           _offsetY: 0,
           _width: 32,
           _height: 32,
-          x: function() { return this.context.nodes.message.right() + this.margin.left },
-          y: function() { return this._offsetY + this.margin.top },
-          width: function() { return this._width - this.margin.left - this.margin.right },
-          height: function() { return this._height - this.margin.top - this.margin.bottom },
+          x: function() { return this.context.nodes.message.right() + this.__margin.left },
+          y: function() { return this._offsetY + this.__margin.top },
+          width: function() { return this._width - this.__margin.left - this.__margin.right },
+          height: function() { return this._height - this.__margin.top - this.__margin.bottom },
           margin: { top: 0, right: 4, bottom: 0, left: 4 },
         },
       }

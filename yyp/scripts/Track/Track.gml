@@ -45,6 +45,7 @@ function Track(json, config = null) constructor {
           name: Assert.isType(Struct.get(channel, "name"), String),
           events: Assert.isType(Struct.get(channel, "events"), GMArray),
           index: index,
+          settings: Struct.getIfType(channel, "settings", Struct, { }),
         }, config)
       }
 
@@ -407,6 +408,9 @@ function TrackChannel(json, config = null) constructor {
 ///@param {Struct} json
 ///@param {?Struct} [config]
 function TrackEvent(json, config = null): Event("TrackEvent") constructor {
+
+  ///@type {?String}
+  uid = Struct.getIfType(json, "uid", String)
 
   ///@override
   ///@type {Struct}

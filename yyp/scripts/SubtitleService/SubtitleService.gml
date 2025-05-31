@@ -58,13 +58,13 @@ function SubtitleService(config = null) constructor {
       })
 
       var task = new Task("subtitle-task")
+        .setTimeout(event.data.timeout)
         .setState({
           subtitle: subtitle,
           charPointer: 0,
           linePointer: 0,
           time: 0.0,
         })
-        .setTimeout(event.data.timeout)
         .whenUpdate(function() { 
           var state = this.state
           state.time = state.time + DeltaTime.apply(FRAME_MS)
@@ -113,6 +113,9 @@ function SubtitleService(config = null) constructor {
             
             return
           }
+        })
+        .whenTimeout(function() {
+          this.fullfill()
         })
       
       this.executor.add(task)

@@ -34,12 +34,6 @@ function ShroomService(_controller, config = {}): Service() constructor {
   ///@type {?Struct}
   subtitlesAreaEvent = null
 
-  ///@type {?Struct}
-  playerBorder = null
-
-  ///@type {?Struct}
-  playerBorderEvent = null
-
   ///@type {?GameMode}
   gameMode = null
 
@@ -114,6 +108,29 @@ function ShroomService(_controller, config = {}): Service() constructor {
         Struct.set(template, "healthPoints", event.data.hp)
       }
       
+      var inherit = Struct.get(event.data, "inherit")
+      var inheritSize = inherit != null ? GMArray.size(inherit) : 0
+      var templateInheritSize = template.inherit != null ? GMArray.size(template.inherit) : 0
+      if (inheritSize + templateInheritSize > 0) {
+        var service = this
+        var acc = {
+          names: { },
+          service: service,
+          features: Struct.getIfType(template.gameModes.bulletHell, "features", GMArray, [])
+        }
+
+        for (var idx = 0; idx < templateInheritSize; idx++) {
+          this.parseInherit(template.inherit[idx], idx, acc)
+        }
+
+        for (var idx = 0; idx < inheritSize; idx++) {
+          this.parseInherit(inherit[idx], idx, acc)
+        }
+
+        Struct.set(template.gameModes.bulletHell, "features", acc.features)
+      }
+
+
       var shroom = new Shroom(template)
       shroom.updateGameMode(this.controller.gameMode)
 
@@ -134,13 +151,63 @@ function ShroomService(_controller, config = {}): Service() constructor {
     },
   }))
 
-  static spawnShroom = function(name, spawnX, spawnY, angle, spd, snapH, snapV, lifespan, hp) {
+  static parseInherit = function(name, i, acc) {
+    static addFeature = function(feature, index, features) {
+      GMArray.add(features, feature)
+    }
+
+    if (Struct.get(acc.names, name) == true) {
+      return
+    }
+
+    Struct.set(acc.names, name, true)
+
+    var template = acc.service.getTemplate(name)
+    if (!Optional.is(template)) {
+      return
+    }
+    
+    var gameModes = template.serializeGameModes()
+    var features = Struct.getIfType(gameModes.bulletHell, "features", GMArray)
+    if (Optional.is(features)) {
+      GMArray.forEach(features, addFeature, acc.features)
+    }
+
+    if (GMArray.size(template.inherit) > 0) {
+      for (var index = 0; index < GMArray.size(template.inherit); index++) {
+        acc.service.parseInherit(template.inherit[index], index, acc)
+      }
+    }
+  }
+
+  static spawnShroom = function(name, spawnX, spawnY, angle, spd, snapH, snapV, lifespan, hp, inherit) {
     var view = this.controller.gridService.view
     var locked = this.controller.gridService.targetLocked
     var viewX = snapH ? locked.snapH : view.x
     var viewY = snapV ? locked.snapV : view.y
     var template = this.getTemplate(name).serializeSpawn(viewX + spawnX, viewY + spawnY, spd / 1000.0, angle, this.controller.gridService.generateUID(), lifespan, hp)
-    
+
+    var inheritSize = inherit != null ? GMArray.size(inherit) : 0
+    var templateInheritSize = template.inherit != null ? GMArray.size(template.inherit) : 0
+    if (inheritSize + templateInheritSize > 0) {
+      var service = this
+      var acc = {
+        names: { },
+        service: service,
+        features: Struct.getIfType(template.gameModes.bulletHell, "features", GMArray, [])
+      }
+
+      for (var idx = 0; idx < templateInheritSize; idx++) {
+        this.parseInherit(template.inherit[idx], idx, acc)
+      }
+
+      for (var idx = 0; idx < inheritSize; idx++) {
+        this.parseInherit(inherit[idx], idx, acc)
+      }
+
+      Struct.set(template.gameModes.bulletHell, "features", acc.features)
+    }
+
     var shroom = new Shroom(template)
     shroom.updateGameMode(this.controller.gameMode)
 
