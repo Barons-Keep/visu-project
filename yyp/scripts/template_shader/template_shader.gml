@@ -3,6 +3,86 @@
 ///@static
 ///@type {Map<String, Callable>}
 global.__ve_shader_configs = new Map(String, Struct, {
+  "shader_funk_flux": {
+    "u_angle": {
+      "store": {
+        "value": 0.0,
+        "target": 0.0,
+        "duration": 0.0,
+        "ease": "LINEAR"
+      },
+      "components": { }
+    },
+    "u_factor": {
+      "store": {
+        "value": 3.0,
+        "target": 3.0,
+        "duration": 0.0,
+        "ease": "LINEAR"
+      },
+      "components": { }
+    },
+    "u_mix": {
+      "store": {
+        "value": 0.0,
+        "target": 0.0,
+        "duration": 0.0,
+        "ease": "LINEAR"
+      },
+      "components": { }
+    },
+    "u_time": {
+      "store": {
+        "value": 0.0,
+        "target": 999.9,
+        "duration": 999.9,
+        "ease": "LINEAR",
+      },
+      "components": { }
+    },
+    "u_offset": {
+      "store": {
+        "x": {
+          "value": 0.5,
+          "target": 0.5,
+          "duration": 0.0,
+          "ease": "LINEAR",
+        },
+        "y": {
+          "value": 0.5,
+          "target": 0.5,
+          "duration": 0.0,
+          "ease": "LINEAR",
+        },
+      },
+      "components": { }
+    },
+    "u_res": {
+      "store": {
+        "x": {
+          "value": 1.0,
+          "target": 1.0,
+          "duration": 0.0,
+          "ease": "LINEAR",
+        },
+        "y": {
+          "value": 1.0,
+          "target": 1.0,
+          "duration": 0.0,
+          "ease": "LINEAR",
+        },
+      },
+      "components": { }
+    },
+    "u_tint": {
+      "store": {
+        "value": "#ffffff",
+        "target": "#ffffff",
+        "duration": 0.0,
+      },
+      "components": { }
+    },
+  },
   "shader_arc_runner": {
     //"u_tint": "COLOR",
     //"u_offset": "VECTOR2",
@@ -313,7 +393,8 @@ global.__ve_shader_configs = new Map(String, Struct, {
 global.__ShaderUniformTemplates = new Map(String, Callable)
   .set(ShaderUniformType.findKey(ShaderUniformType.COLOR), function(uniform, json, config = null) {
     var store = {}
-
+    var storeConfig = Struct.get(config, "store")
+    var componentsConfig = Struct.get(config, "components")
     Struct.set(store, $"{uniform.name}", {
       type: ColorTransformer,
       value: new ColorTransformer(Struct.getIfType(json, uniform.name, Struct, !Optional.is(config) ? {

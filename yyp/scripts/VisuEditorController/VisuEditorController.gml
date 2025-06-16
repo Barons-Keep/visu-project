@@ -328,7 +328,7 @@ function VisuEditorController() constructor {
   ///@return {Task}
   factoryInitUITask = function() {
     return new Task("open-editor-ui")
-      .setTimeout(20.0)
+      .setTimeout(60.0)
       .setState({
         cooldown: new Timer(0., { loop: Infinity }),
         primary: new Queue(Struct, [

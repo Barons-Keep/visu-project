@@ -45,6 +45,18 @@ global.__FancyBlendModes = new _FancyBlendModes()
 ///@static
 ///@type {Struct}
 global.__shaders = {
+  "shader_funk_flux": {
+    "type": "GLSL_ES",
+    "uniforms": {
+      "u_angle": "FLOAT",
+      "u_factor": "FLOAT",
+      "u_mix": "FLOAT",
+      "u_time": "FLOAT",
+      "u_offset": "VECTOR2",
+      "u_res": "VECTOR2",
+      "u_tint": "COLOR",
+    }
+  },
   "shader_arc_runner": {
     "type": "GLSL_ES",
     "uniforms": {

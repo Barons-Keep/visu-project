@@ -27,10 +27,56 @@ global.__TrackStatus = new _TrackStatus()
 function Track(json, config = null) constructor {
 
   ///@type {String}
-  name = Assert.isType(Struct.get(json, "name"), String)
+  name = Assert.isType(Struct.get(json, "name"), String,
+    "Track.name must be type of String")
 
   ///@type {Sound}
-  audio = Assert.isType(SoundUtil.fetch(Struct.get(json, "audio"), { loop: false }), Sound)
+  audio = Assert.isType(SoundUtil.fetch(Struct.get(json, "audio"), { loop: false }), Sound,
+    "Track.sound must be type of Sound")
+
+  ///@type {Map<String, TrackChannel>}
+  channels = new Map(String, TrackChannel)
+
+  ///@type {Task}
+  var track = this
+  task = new Task("parse-track")
+    .setPromise(Struct.getIfType(config, "promise", Promise, null))
+    .setState({
+      track: track,
+      config: config,
+      index: 0,
+      channel: null,
+      channels: new Queue(Struct, Struct.getIfType(json, "channels", GMArray, [])),
+    })
+    .whenUpdate(function() {
+      if (!Struct.getIfType(this.state.config, "parseAsync", Boolean, false)) {
+        this.state.channels.forEach(function(entry, index, state) {
+          var channel = state.track.parseTrackChannel(entry, index, state.config)
+          channel.task.update()
+          state.index = index
+          state.track.channels.add(channel, channel.name)
+        }, this.state)
+        
+        this.fullfill()
+      } else {
+        if (!Optional.is(this.state.channel)) {
+          if (this.state.channels.size() == 0) {
+            this.fullfill()
+            return
+          }
+          this.state.channel = this.state.track.parseTrackChannel(this.state.channels.pop(), this.state.index, this.state.config)
+        } else {
+          this.state.channel.task.update()
+          if (this.state.channel.task.status == TaskStatus.FULLFILLED) {
+            this.state.track.channels.add(this.state.channel, this.state.channel.name)
+            this.state.channel = null
+            this.state.index += 1
+          } else if (this.state.channel.task.status == TaskStatus.REJECTED) {
+            this.reject()
+          }
+        }
+      }
+    })
 
   ///@private
   ///@param {Struct} channel
@@ -48,17 +94,6 @@ function Track(json, config = null) constructor {
           settings: Struct.getIfType(channel, "settings", Struct, { }),
         }, config)
       }
-
-  ///@type {Map<String, TrackChannel>}
-  channels = new Map(String, TrackChannel)
-  var context = this
-  GMArray.forEach(Struct.get(json, "channels"), function(channel, index, acc) {
-    var trackChannel = acc.context.parseTrackChannel(channel, index, acc.config)
-    acc.context.channels.add(trackChannel, trackChannel.name)
-  }, {
-    context: context,
-    config: config,
-  })
 
   ///@private
   ///@param {String} name
@@ -252,6 +287,9 @@ function TrackChannel(json, config = null) constructor {
 
   ///@private
   ///@type {Array<TrackEvent>}
+  events = new Array(TrackEvent, GMArray.createGMArray(GMArray.size(Struct.getIfType(json, "events", GMArray, [ ]))))
+  //events = new Array(TrackEvent)
+  /*
   events = GMArray
     .toArray(
       Struct.getIfType(json, "events", GMArray, [ ]), 
@@ -260,6 +298,41 @@ function TrackChannel(json, config = null) constructor {
       Struct.set((Core.isType(config, Struct) ? config : { }),
         "__channelName", this.name)
     ).sort(compareEvents)
+  */
+
+  ///@type {Task}
+  var channel = this
+  task = new Task("parse-track-channel")
+    .setPromise(Struct.getIfType(config, "promise", Promise, null))
+    .setState({
+      channel: channel,
+      config: Struct.set((Core.isType(config, Struct) ? config : { }), "__channelName", channel.name),
+      index: 0,
+      events: Struct.getIfType(json, "events", GMArray, [ ]),
+      parseEvent: channel.parseEvent,
+      compareEvents: channel.compareEvents,
+    })
+    .whenUpdate(function() {
+      var size = GMArray.size(this.state.events)
+      if (!Struct.getIfType(this.state.config, "parseAsync", Boolean, false)) {
+        GMArray.forEach(this.state.events, function(entry, index, state) {
+          state.channel.events.set(index, state.parseEvent(entry, index, state.config))
+          state.index = index + 1
+        }, this.state)
+        this.state.channel.events.sort(this.state.compareEvents)
+        this.fullfill()
+      } else if (this.state.index < size) {
+        var step = Struct.getIfType(this.state.config, "parseTrackEventStep", Number, 32)
+        for (var idx = this.state.index; idx < clamp(min(idx + step, size), 0, size); idx++) {
+          //this.state.channel.events.add(this.state.parseEvent(this.state.events[idx], idx, this.state.config))
+          this.state.channel.events.set(idx, this.state.parseEvent(this.state.events[idx], idx, this.state.config))
+          this.state.index = idx + 1
+        }
+      } else {
+        this.state.channel.events.sort(this.state.compareEvents)
+        this.fullfill()
+      }
+    })
 
   ///@type {Struct}
   settings = this.parseSettings(Struct.get(json, "settings"))

@@ -4,41 +4,39 @@
 function UILabel(json) constructor {
 
   ///@type {String}
-  text = Assert.isType(Struct.getDefault(json, "text", ""), String)
+  text = Struct.getIfType(json, "text", String, "")
 
   ///@type {Font}
-  font = Assert.isType(FontUtil.fetch(Struct.getDefault(json, "font", "font_basic")), Font)
+  font = Assert.isType(FontUtil.fetch(Struct.getIfType(json, "font", String, "font_basic")), Font,
+    "UILabel.font must be type of Font")
 
   ///@type {GMColor}
-  color = ColorUtil.fromHex(Struct.getDefault(json, "color", "#000000")).toGMColor()
+  color = ColorUtil.fromHex(Struct.getIfType(json, "color", String, "#000000")).toGMColor()
 
   ///@type {Number}
-  alpha = Assert.isType(Struct.getDefault(json, "alpha", 1.0), Number)
+  alpha = clamp(Struct.getIfType(json, "alpha", Number, 1.0), 0.0, 1.0)
 
   ///@type {Struct}
   align = {
-    v: Assert.isEnum(Struct.getDefault(Struct
-      .get(json, "align"), "v", VAlign.TOP), VAlign),
-    h: Assert.isEnum(Struct.getDefault(Struct
-      .get(json, "align"), "h", HAlign.LEFT), HAlign),
+    v: Struct.getIfEnum(Struct.get(json, "align"), "v", VAlign, VAlign.TOP),
+    h: Struct.getIfEnum(Struct.get(json, "align"), "h", HAlign, HAlign.LEFT),
   }
 
   ///@type {Vector2}
   offset = Vector.parse(Struct.get(json, "offset"), Vector2)
 
   ///@type {Boolean}
-  outline = Assert.isType(Struct.getDefault(json, "outline", false), Boolean)
+  outline = Struct.getIfType(json, "outline", Boolean, false)
 
   ///@type {GMColor}
-  outlineColor = ColorUtil.fromHex(Struct.getDefault(json, "outlineColor", "#ffffff")).toGMColor()
+  outlineColor = ColorUtil.fromHex(Struct.getIfType(json, "outlineColor", String, "#ffffff")).toGMColor()
 
   ///@type {any}
   value = null
 
   ///@type {Boolean}
-  enableColorWrite = Core.isType(Struct.get(json, "enableColorWrite"), Boolean) 
-    ? json.enableColorWrite
-    : Core.getProperty("core.ui-service.use-surface-optimalization", false)
+  enableColorWrite = Struct.getIfType(json, "enableColorWrite", Boolean, 
+    Core.getProperty("core.ui-service.use-surface-optimalization", false))
 
   ///@type {Boolean}
   useScale = Struct.getIfType(json, "useScale", Boolean, true)

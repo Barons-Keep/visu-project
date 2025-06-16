@@ -102,7 +102,7 @@ function GridCamera(config = null) constructor {
 	///@return {Camera}
 	update = function(layout) {
     var editor = Beans.get(BeanVisuEditorController)
-    var enableEditor = true;//Optional.is(editor) && editor.renderUI
+    var enableEditor = Optional.is(editor) && editor.renderUI
     var enableDebugOverlay = is_debug_overlay_open()
     if ((enableEditor || enableDebugOverlay) && this.enableMouseLook && keyboard_check(vk_alt)) {
       var _x = layout.x()

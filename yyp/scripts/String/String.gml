@@ -46,8 +46,9 @@ function _String() constructor {
   ///@return {String}
   static formatTimestamp = function(time) {
     gml_pragma("forceinline")
-    var seconds = String.replace(String.format(time mod 60, 2, 0), " ", "0")
-    var minutes = String.replace(String.format(time div 60, 2, 0), " ", "0")
+    var totalSeconds = floor(time)
+    var seconds = String.replace(String.format(totalSeconds mod 60, 2, 0), " ", "0")
+    var minutes = String.replace(String.format(totalSeconds div 60, 2, 0), " ", "0")
     return $"{minutes}:{seconds}"
   }
 
@@ -55,9 +56,10 @@ function _String() constructor {
   ///@return {String}
   static formatTimestampMilisecond = function(time) {
     gml_pragma("forceinline")
-    var miliSeconds = String.copy(String.format(time - floor(time), 0, 2), 3, 2)
-    var seconds = String.replace(String.format(time mod 60, 2, 0), " ", "0")
-    var minutes = String.replace(String.format(time div 60, 2, 0), " ", "0")
+    var totalSeconds = floor(time)
+    var miliSeconds = String.copy(String.format(time - totalSeconds, 0, 2), 3, 2)
+    var seconds = String.replace(String.format(totalSeconds mod 60, 2, 0), " ", "0")
+    var minutes = String.replace(String.format(totalSeconds div 60, 2, 0), " ", "0")
     return $"{minutes}:{seconds}.{miliSeconds}"
   }
 
@@ -257,7 +259,7 @@ function _String() constructor {
       result += currentText
     }
 
-    if (Optional.is(_font) && _font != font) {
+    if (_font != null && _font != font) {
       GPU.set.font(_font)
     }
     return result

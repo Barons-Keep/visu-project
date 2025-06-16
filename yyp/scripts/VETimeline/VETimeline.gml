@@ -572,31 +572,37 @@ function VETimeline(_editor) constructor {
         _onMouseWheelDown: new BindIntent(Callable.run(UIUtil.mouseEventTemplates.get("scrollableOnMouseWheelDownY"))),
         onMousePressedLeft: function(event) {
           this._onMousePressedLeft(event)
+          //Core.print("ve-timeline-channels", "onMousePressedLeft", "finishUpdateTimer", irandom(100))
           this.finishUpdateTimer()
 
           var events = this.controller.containers.get("ve-timeline-events")
           if (Optional.is(events)) {
             events.offset.y = this.offset.y
+            //Core.print("ve-timeline-channels", "onMousePressedLeft.events", "finishUpdateTimer", irandom(100))
             events.finishUpdateTimer()
           }
         },
         onMouseWheelUp: function(event) {
           this._onMouseWheelUp(event)
+          //Core.print("ve-timeline-channels", "onMouseWheelUp", "finishUpdateTimer", irandom(100))
           this.finishUpdateTimer()
 
           var events = this.controller.containers.get("ve-timeline-events")
           if (Optional.is(events)) {
             events.offset.y = this.offset.y
+            //Core.print("ve-timeline-channels", "onMouseWheelUp.events", "finishUpdateTimer", irandom(100))
             events.finishUpdateTimer()
           }
         },
         onMouseWheelDown: function(event) {
           this._onMouseWheelDown(event)
+          //Core.print("ve-timeline-channels", "onMouseWheelDown", "finishUpdateTimer", irandom(100))
           this.finishUpdateTimer()
 
           var events = this.controller.containers.get("ve-timeline-events")
           if (Optional.is(events)) {
             events.offset.y = this.offset.y
+            //Core.print("ve-timeline-channels", "onMouseWheelDown.events", "finishUpdateTimer", irandom(100))
             events.finishUpdateTimer()
           }
         },
@@ -679,11 +685,13 @@ function VETimeline(_editor) constructor {
                 }, track.channels)
 
               this.onInit()
+              //Core.print("ve-timeline-channels", "onMouseDropLeft", "finishUpdateTimer", irandom(100))
               this.finishUpdateTimer()
 
               var events = this.controller.containers.get("ve-timeline-events")
               if (Optional.is(events)) {
                 events.onInit()
+                //Core.print("ve-timeline-channels", "onMouseDropLeft.events", "finishUpdateTimer", irandom(100))
                 events.finishUpdateTimer()
               }
             }
@@ -1119,6 +1127,7 @@ function VETimeline(_editor) constructor {
             var areaWidth = this.area.getWidth()
             var areaHeight = this.area.getHeight()
             if (point_in_rectangle(mouseX, mouseY, areaX, areaY, areaX + areaWidth, areaY + areaHeight)) {
+              //Core.print("ve-timeline-events", "updateCustom.point_in_rectangle", "finishUpdateTimer", irandom(100))
               this.finishUpdateTimer()
               this.items.forEach(this.itemMouseEraseEvent, { 
                 data: {
@@ -1148,6 +1157,7 @@ function VETimeline(_editor) constructor {
                 acc.container.add(uiItem, uiItem.name)
               }, { channel: channel, container: container })
               
+              //Core.print("ve-timeline-events", "updateCustom.initializeChannel", "finishUpdateTimer", irandom(100))
               this.finishUpdateTimer()
               return
             }
@@ -1526,21 +1536,25 @@ function VETimeline(_editor) constructor {
         _onMouseWheelDown: new BindIntent(Callable.run(UIUtil.mouseEventTemplates.get("scrollableOnMouseWheelDownY"))),
         onMouseWheelUp: function(event) {
           this._onMouseWheelUp(event)
+          //Core.print("ve-timeline-events", "onMouseWheelUp", "finishUpdateTimer", irandom(100))
           this.finishUpdateTimer()
 
           var channels = this.controller.containers.get("ve-timeline-channels")
           if (Optional.is(channels)) {
             channels.offset.y = this.offset.y
+            //Core.print("ve-timeline-events", "onMouseWheelUp.channels", "finishUpdateTimer", irandom(100))
             channels.finishUpdateTimer()
           }
         },
         onMouseWheelDown: function(event) {
           this._onMouseWheelDown(event)
+          //Core.print("ve-timeline-events", "onMouseWheelDown", "finishUpdateTimer", irandom(100))
           this.finishUpdateTimer()
 
           var channels = this.controller.containers.get("ve-timeline-channels")
           if (Optional.is(channels)) {
             channels.offset.y = this.offset.y
+            //Core.print("ve-timeline-events", "onMouseWheelDown.channels", "finishUpdateTimer", irandom(100))
             channels.finishUpdateTimer()
           }
         },
@@ -1760,10 +1774,12 @@ function VETimeline(_editor) constructor {
 
           var inspector = Beans.get(BeanVisuEditorController).uiService.find("ve-event-inspector-properties")
           if (Optional.is(inspector)) {
+            //Core.print("ve-timeline-events", "handleMouseDropTrackEvent", "finishUpdateTimer", irandom(100))
             inspector.finishUpdateTimer()
           }
         }),
         onMouseDropLeft: function(event) {
+          //Core.print("ve-timeline-events", "onMouseDropLeft", "finishUpdateTimer", irandom(100))
           this.finishUpdateTimer()
 
           var mouse = Beans.get(BeanVisuEditorIO).mouse
@@ -1779,15 +1795,18 @@ function VETimeline(_editor) constructor {
         },
 
         onMousePressedLeft: function(event) {
+          //Core.print("ve-timeline-events", "onMousePressedLeft", "finishUpdateTimer", irandom(100))
           this.finishUpdateTimer()
         },
 
         onMousePressedRight: function(event) {
+          //Core.print("ve-timeline-events", "onMousePressedRight", "finishUpdateTimer", irandom(100))
           this.finishUpdateTimer()
         },
         
         onMouseReleasedLeft: function(event) {
           try {
+            //Core.print("ve-timeline-events", "onMouseReleasedLeft", "finishUpdateTimer", irandom(100))
             this.finishUpdateTimer()
             
             var initialized = this.controller.containers
@@ -1826,6 +1845,7 @@ function VETimeline(_editor) constructor {
 
                 var inspector = Beans.get(BeanVisuEditorController).uiService.find("ve-event-inspector-properties")
                 if (Optional.is(inspector)) {
+                  //Core.print("ve-timeline-events", "onMouseReleasedLeft.BRUSH", "finishUpdateTimer", irandom(100))
                   inspector.finishUpdateTimer()
                 }
                 
@@ -1974,6 +1994,7 @@ function VETimeline(_editor) constructor {
 
                 var inspector = Beans.get(BeanVisuEditorController).uiService.find("ve-event-inspector-properties")
                 if (Optional.is(inspector)) {
+                  //Core.print("ve-timeline-events", "onMouseReleasedLeft.CLONE", "finishUpdateTimer", irandom(100))
                   inspector.finishUpdateTimer()
                 }
             
@@ -1987,6 +2008,7 @@ function VETimeline(_editor) constructor {
         },
 
         onMouseReleasedRight: function(event) {
+          //Core.print("ve-timeline-events", "onMouseReleaseRight", "finishUpdateTimer", irandom(100))
           this.finishUpdateTimer()
           
           var initialized = this.controller.containers
@@ -2261,6 +2283,7 @@ function VETimeline(_editor) constructor {
                     
                     var inspector = Beans.get(BeanVisuEditorController).uiService.find("ve-event-inspector-properties")
                     if (Optional.is(inspector)) {
+                      //Core.print("ve-timeline-events", "factoryEventUIItem", "finishUpdateTimer", irandom(100))
                       inspector.finishUpdateTimer()
                     }
 
@@ -2318,6 +2341,7 @@ function VETimeline(_editor) constructor {
               this.data.name = uiItem.name
               this.data.uiItem = uiItem
               this.data.event = trackEvent
+              //Core.print("ve-timeline-events", "addEvent.apply", "finishUpdateTimer", irandom(100))
               this.data.context.finishUpdateTimer()
 
               ///@description select
@@ -2341,6 +2365,7 @@ function VETimeline(_editor) constructor {
                 data: this.data.event,
               })
 
+              //Core.print("ve-timeline-events", "addEvent.rollback", "finishUpdateTimer", irandom(100))
               this.data.context.finishUpdateTimer()
 
               return this
@@ -2384,6 +2409,7 @@ function VETimeline(_editor) constructor {
                 data: this.data.event,
               })
 
+              //Core.print("ve-timeline-events", "removeEvent.apply", "finishUpdateTimer", irandom(100))
               this.data.context.finishUpdateTimer()
 
               return this
@@ -2405,6 +2431,7 @@ function VETimeline(_editor) constructor {
               this.data.uiItem = uiItem
               this.data.event = trackEvent
               
+              //Core.print("ve-timeline-events", "removeEvent.rollback", "finishUpdateTimer", irandom(100))
               this.data.context.finishUpdateTimer()
 
               ///@description select
@@ -2585,6 +2612,7 @@ function VETimeline(_editor) constructor {
 
           var events = this.controller.containers.get("ve-timeline-events")
           if (Optional.is(events) && camera != cameraPrevious) {
+            //Core.print("ve-timeline-ruler", "finishUpdateTimer", irandom(100))
             events.finishUpdateTimer()
           }
 

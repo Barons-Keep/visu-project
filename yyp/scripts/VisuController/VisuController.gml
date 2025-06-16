@@ -29,7 +29,9 @@ function VisuController(layerName) constructor {
     return {
       initialState: Struct.getIfType(
         Struct.get(Scene.getIntent(), BeanVisuController),
-        "initialState", Struct, { name: "splashscreen" }),
+        "initialState", Struct, {
+          name: Core.getProperty("visu.skip-splashscreen") ? "idle" : "splashscreen",
+        }),
     }
   }
 
@@ -63,11 +65,13 @@ function VisuController(layerName) constructor {
             }
 
             var task = TaskUtil.factory.splashscreen({
-              fadeIn: 0.75,
-              duration: 2.5,
+              fadeIn: 1.75,
+              duration: 6.0,
               fadeOut: 0.75,
-              showSkipTimer: 1.0,
+              showSkipTimer: 0.5,
               skipTimer: 0.5,
+              initTimer: new Timer(1.5),
+              sfxPlayed: false,
               logo: Assert.isType(SpriteUtil.parse({ name: "texture_barons_keep" }), Sprite, 
                 "logo must be type of Sprite"),
               label: new UILabel({
@@ -84,35 +88,45 @@ function VisuController(layerName) constructor {
                 var width = layout.width()
                 var height = layout.height()
 
+                if (!task.state.initTimer.update().finished) {
+                  return
+                }
+
+                if (!task.state.sfxPlayed && task.state.fadeIn.finished) {
+                  task.state.sfxPlayed = true
+                  controller.sfxService.play("player-force-level-up")
+                }
+
                 if (shader_is_compiled(shader_dissolve)) {
                   var u_time = shader_get_uniform(shader_dissolve, "u_time")
 
-                  var time = (task.state.fadeIn.duration * task.state.fadeIn.getProgress())
-                    + (task.state.duration.duration * task.state.duration.getProgress())
-                    + (task.state.fadeOut.duration * task.state.fadeOut.getProgress())
+                  var time = (0.75 * task.state.fadeIn.getProgress())
+                    + (2.5 * task.state.duration.getProgress())
+                    + (0.75 * task.state.fadeOut.getProgress())
                   shader_set(shader_dissolve)
                   shader_set_uniform_f(u_time, 6.0 + time)
                   task.state.logo
-                    .scaleToFit(max(displayService.minWidth, ((time * 50.0) + width) / 1.33), max(displayService.minHeight, ((time * 50.0) + height) / 1.33))
+                    .scaleToFit(max(displayService.minWidth, ((time * 50.0) + width) / 1.5), max(displayService.minHeight, ((time * 50.0) + height) / 1.5))
                     .setAlpha(task.state.alpha)
                     .render(width / 2.0, height / 2.0)
                   shader_reset()
                 } else {
                   task.state.logo
-                    .scaleToFit(max(displayService.minWidth, width / 1.33), max(displayService.minHeight, height / 1.33))
+                    .scaleToFit(max(displayService.minWidth, width / 1.5), max(displayService.minHeight, height / 1.5))
                     .setAlpha(task.state.alpha)
                     .render(width / 2.0, height / 2.0)
                 }
 
                 task.state.label
                   .setAlpha(task.state.skipAlpha)
-                  .render(width / 2.0, height * 0.9, width * 0.9, height * 0.2)
+                  .render(width / 2.0, height * 0.925, width * 0.9, height * 0.2)
 
                 return this
               },
             })
 
-            Beans.get(BeanVisuController).visuRenderer.executor.add(task)
+            controller.visuRenderer.executor.add(task)
+
           },
           onFinish: function(fsm, fsmState, data) {
             var controller = Beans.get(BeanVisuController)
@@ -1037,6 +1051,33 @@ function VisuController(layerName) constructor {
     return this
   }
 
+  ///@param {String} message
+  exceptionDebugHandler = function(message) {
+    Logger.error(BeanVisuController, message)
+    Core.printStackTrace()
+    this.send(new Event("spawn-popup", { message: message }))
+
+    var stateName = this.trackService.isTrackLoaded() ? "pause" : "idle"
+    this.fsm.dispatcher.send(new Event("transition", { name: stateName }))
+
+    if (!Beans.exists(BeanVisuEditorIO)) {
+      Beans.add(Beans.factory(BeanVisuEditorIO, GMServiceInstance, layerId,
+        new VisuEditorIO()))
+    }
+
+    if (!Beans.exists(BeanVisuEditorController)) {
+      Beans.add(Beans.factory(BeanVisuEditorController, GMServiceInstance, layerId,
+        new VisuEditorController()))
+    }
+    
+    var editor = Beans.get(BeanVisuEditorController)
+    if (Optional.is(editor)) {
+      editor.renderUI = true
+      editor.updateServices = false
+      editor.send(new Event("open"))
+    }
+  }
+
   ///@private
   ///@param {Struct} service
   ///@param {Number} iterator
@@ -1045,24 +1086,7 @@ function VisuController(layerName) constructor {
     try {
       service.struct.update()
     } catch (exception) {
-      var message = $"'{service.name}::update' fatal error: {exception.message}"
-      Logger.error(BeanVisuController, message)
-      Core.printStackTrace()
-      controller.send(new Event("spawn-popup", { message: message }))
-      controller.fsm.dispatcher.send(new Event("transition", { name: trackService.isTrackLoaded() ? "pause" : "idle" }))
-
-      if (!Beans.exists(BeanVisuEditorIO)) {
-        Beans.add(Beans.factory(BeanVisuEditorIO, GMServiceInstance, layerId,
-          new VisuEditorIO()))
-      }
-      
-      if (!Beans.exists(BeanVisuEditorController)) {
-        Beans.add(Beans.factory(BeanVisuEditorController, GMServiceInstance, layerId,
-          new VisuEditorController()))
-      }
-      var editor = Beans.get(BeanVisuEditorController)
-      editor.renderUI = true
-      editor.send(new Event("open"))
+      controller.exceptionDebugHandler($"'{service.name}::update' fatal error: {exception.message}")
     }
   }
 
@@ -1234,7 +1258,7 @@ function VisuController(layerName) constructor {
       var task = new Task("load-manifest")
         .setTimeout(60.0)
         .setState({
-          cooldown: new Timer(1.8),
+          cooldown: new Timer(1.0),
           event: new Event("load", {
             manifest: FileUtil.get(Core.getProperty("visu.manifest.path")),
             autoplay: Assert.isType(Core.getProperty("visu.manifest.play-on-start", false), Boolean),
@@ -1256,7 +1280,7 @@ function VisuController(layerName) constructor {
       var task = new Task("load-manifest")
         .setTimeout(60.0)
         .setState({
-          cooldown: new Timer(2.0),
+          cooldown: new Timer(1.0),
           event: event,
         })
         .whenUpdate(function() {

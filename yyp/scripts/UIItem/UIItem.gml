@@ -147,7 +147,7 @@ function UIItem(_name, config = {}) constructor {
       }
 
       this.hidden.value = !isValid
-      this.context.areaWatchdog.signal(2)
+      this.context.areaWatchdog.signal(1)
       this.context.clampUpdateTimer(0.9000)
     } else {
       if (!Optional.is(this.hidden.key)) {
@@ -165,7 +165,7 @@ function UIItem(_name, config = {}) constructor {
       }
   
       this.hidden.value = value
-      this.context.areaWatchdog.signal(2)
+      this.context.areaWatchdog.signal(1)
       this.context.clampUpdateTimer(0.9000)
     }
   }
@@ -377,7 +377,7 @@ function _UIItemUtils() constructor {
         var value = Struct.getDefault(this.enable, "negate", false) ? !item.get() : item.get()
         if (Struct.get(this.enable, "value") != value) {
           Struct.set(this.enable, "value", value)
-          this.context.areaWatchdog.signal(2)
+          this.context.areaWatchdog.signal(1)
           this.context.clampUpdateTimer(0.9000)
         }
       }
@@ -417,7 +417,7 @@ function _UIItemUtils() constructor {
 
         if (Struct.get(this.enable, "value") != isValid) {
           Struct.set(this.enable, "value", isValid)
-          this.context.areaWatchdog.signal(2)
+          this.context.areaWatchdog.signal(1)
           this.context.clampUpdateTimer(0.9000)
         }
       }

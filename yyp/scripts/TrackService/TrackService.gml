@@ -46,6 +46,12 @@ function TrackService(_context, config = {}): Service() constructor {
     },
   }))
 
+  ///@type {TaskExecutor}
+  executor = new TaskExecutor(this, {
+    enableLogger: true,
+    catchException: false,
+  })
+
   ///@param {Event} event
   ///@return {TrackService}
   send = function(event) {
@@ -64,11 +70,28 @@ function TrackService(_context, config = {}): Service() constructor {
 
   ///@param {Track} track
   ///@return {TrackService}
-  ///@throws {InvalidAssertException}
-  openTrack = function(track) {
-    this.track = Assert.isType(track, Track)
-    this.duration = this.track.audio.getLength()
-    Logger.debug("TrackService", "Track was opened successfully")
+  openTrack = function(track, promise = null) {
+    var trackService = this
+    this.track = null
+    this.executor.tasks.forEach(TaskUtil.fullfill).clear()
+    this.executor.add(new Task("open-track")
+      .setPromise(promise)
+      .setState({
+        track: Assert.isType(track, Track, "Track.openTrack track must be type of Track"),
+        trackService: trackService,
+      })
+      .whenUpdate(function(executor) {        
+        this.state.track.task.update(executor)
+        if (this.state.track.task.status == TaskStatus.FULLFILLED) {
+          this.state.trackService.track = this.state.track
+          this.state.trackService.duration = this.state.track.audio.getLength()
+          this.fullfill()
+          Logger.info("TrackService", "Track was opened successfully")
+        } else if (this.state.track.task.status == TaskStatus.REJECTED) {
+          Logger.error("TrackService", "Track was not opened successfully")
+        }
+      }))
+
     return this
   }
 
@@ -131,8 +154,7 @@ function TrackService(_context, config = {}): Service() constructor {
   }
 
   ///@return {TrackService}
-  update = function() {
-    this.dispatcher.update()
+  updateTrack = function() {
     if (!this.isTrackLoaded()) {
       return this
     }
@@ -153,6 +175,14 @@ function TrackService(_context, config = {}): Service() constructor {
     }
     
     this.track.update(this.time)
+    return this
+  }
+
+  ///@return {TrackService}
+  update = function() {
+    this.dispatcher.update()
+    this.executor.update()
+    this.updateTrack()
     return this
   }
 

@@ -1,38 +1,8 @@
 ///@package com.alkapivo.visu.service.grid.GridItem
 
-///@param {?Struct} [json]
-///@param {Boolean} [useScale]
-function GridItemMovement(json = null, _useScale = true) constructor {
-  
-  ///@todo Make it deprecated
-  ///@type {Boolean}
-  useScale = _useScale
-
-  ///@type {Number}
-  speed = Struct.getIfType(json, "speed", Number, 0.0) / (this.useScale ? 100.0 : 1.0)
-  
-  ///@type {Number}
-  speedMax = Struct.getIfType(json, "speedMax", Number, 2.1) / (this.useScale ? 100.0 : 1.0)
-
-  ///@type {Number}
-  speedMaxFocus = Struct.getIfType(json, "speedMaxFocus", Number, 0.66) / (this.useScale ? 100.0 : 1.0)
-  
-  ///@type {Number}
-  acceleration = Struct.getIfType(json, "acceleration", Number, 1.92) / (this.useScale ? 1000.0 : 1.0)
-  
-  ///@type {Number}
-  friction = Struct.getIfType(json, "friction", Number, 9.3) / (this.useScale ? 10000.0 : 1.0)
-
-  ///@return {Struct}
-  serialize = function() {
-    return {
-      speed: this.speed * (this.useScale ? 100.0 : 1.0),
-      speedMax: this.speedMax * (this.useScale ? 100.0 : 1.0),
-      acceleration: this.acceleration * (this.useScale ? 1000.0 : 1.0),
-      friction: this.friction * (this.useScale ? 10000.0 : 1.0),
-    }
-  }
-}
+///@type {Struct}
+global.__GRID_ITEM_DEFAULT_SPRITE = { name: "texture_missing" }
+#macro GRID_ITEM_DEFAULT_SPRITE global.__GRID_ITEM_DEFAULT_SPRITE
 
 
 function GridItemSignals() constructor {
@@ -81,13 +51,216 @@ function GridItemSignals() constructor {
   }
 }
 
-global.__GRID_ITEM_DEFAULT_SPRITE = { name: "texture_missing" }
-#macro GRID_ITEM_DEFAULT_SPRITE global.__GRID_ITEM_DEFAULT_SPRITE
+
+///@param {?Struct} [json]
+///@param {Boolean} [useScale]
+function GridItemMovement(json = null, _useScale = true) constructor {
+  
+  ///@todo Make it deprecated
+  ///@type {Boolean}
+  useScale = _useScale
+
+  ///@type {Number}
+  speed = Struct.getIfType(json, "speed", Number, 0.0) / (this.useScale ? 100.0 : 1.0)
+  
+  ///@type {Number}
+  speedMax = Struct.getIfType(json, "speedMax", Number, 2.1) / (this.useScale ? 100.0 : 1.0)
+
+  ///@type {Number}
+  speedMaxFocus = Struct.getIfType(json, "speedMaxFocus", Number, 0.66) / (this.useScale ? 100.0 : 1.0)
+  
+  ///@type {Number}
+  acceleration = Struct.getIfType(json, "acceleration", Number, 1.92) / (this.useScale ? 1000.0 : 1.0)
+  
+  ///@type {Number}
+  friction = Struct.getIfType(json, "friction", Number, 9.3) / (this.useScale ? 10000.0 : 1.0)
+
+  ///@return {Struct}
+  serialize = function() {
+    return {
+      speed: this.speed * (this.useScale ? 100.0 : 1.0),
+      speedMax: this.speedMax * (this.useScale ? 100.0 : 1.0),
+      acceleration: this.acceleration * (this.useScale ? 1000.0 : 1.0),
+      friction: this.friction * (this.useScale ? 10000.0 : 1.0),
+    }
+  }
+}
+
+
+///@param {?Struct} [json]
+function GridItemEmitter(json = null) constructor {
+  
+  ///@type {Number}
+  x = Struct.getIfType(json, "x", Number, 0)
+
+  ///@type {Number}
+  y = Struct.getIfType(json, "y", Number, 0)
+
+  ///@type {Number}
+  amount = Struct.getIfType(json, "amount", Number, 1)
+
+  ///@type {Number}
+  arrays = Struct.getIfType(json, "arrays", Number, 1)
+
+  ///@type {NumberTransformer}
+  angle = new NumberTransformer(Struct.getDefault(json, "angle", {
+    value: 0.0,
+    target: 0.0,
+    duration: 0.0,
+    ease: EaseType.LINEAR,
+  }))
+
+  ///@type {Number}
+  angleRng = Struct.getIfType(json, "angleRng", Number, 0.0)
+
+  ///@type {Number}
+  angleStep = Struct.getIfType(json, "angleStep", Number, 0.0)
+
+  ///@type {Number}
+  perArray = Struct.getIfType(json, "perArray", Number, 1)
+
+  ///@type {NumberTransformer}
+  anglePerArray = new NumberTransformer(Struct.getDefault(json, "anglePerArray", {
+    value: 0.0,
+    target: 0.0,
+    duration: 0.0,
+    ease: EaseType.LINEAR,
+  }))
+
+  ///@type {Number}
+  anglePerArrayRng = Struct.getIfType(json, "anglePerArrayRng", Number, 0.0)
+
+  ///@type {Number}
+  anglePerArrayStep = Struct.getIfType(json, "anglePerArrayStep", Number, 15.0)
+
+  ///@type {NumberTransformer}
+  speed = new NumberTransformer(Struct.getDefault(json, "speed", {
+    value: 1.0,
+    target: 1.0,
+    duration: 0.0,
+    ease: EaseType.LINEAR,
+  }))
+
+  ///@type {Number}
+  speedRng = Struct.getIfType(json, "speedRng", Number, 0.0)
+
+  ///@type {Number}
+  duration = Struct.getIfType(json, "duration", Number, 0)
+
+  ///@type {Number}
+  interval = this.amount < 1 ? this.duration : (this.duration / (this.amount - 1))
+
+  ///@type {NumberTransformer}
+  offsetX = new NumberTransformer(Struct.getDefault(json, "offsetX", {
+    value: 0.0,
+    target: 0.0,
+    duration: 0.0,
+    ease: EaseType.LINEAR,
+  }))
+
+  ///@type {NumberTransformer}
+  offsetY = new NumberTransformer(Struct.getDefault(json, "offsetY", {
+    value: 0.0,
+    target: 0.0,
+    duration: 0.0,
+    ease: EaseType.LINEAR,
+  }))
+
+  ///@type {any}
+  state = Struct.get(json, "state")
+
+  ///@type {?Callable} function(item, controller, emitter) { }
+  preCallback = Struct.getIfType(json, "preCallback", Callable)
+
+  ///@type {?Callable} function(item, controller, emitter, idx, arrIdx, x, y, angle, speed) { }
+  callback = Struct.getIfType(json, "callback", Callable)
+
+  ///@type {?Callable} function(item, controller, emitter) { }
+  postCallback = Struct.getIfType(json, "postCallback", Callable)
+
+  ///@type {Number}
+  emitted = 0
+
+  ///@type {Number}
+  time = this.interval
+
+  ///@param {GridItem} item
+  ///@param {VisuController} controller
+  ///@return {GridItemEmitter}
+  static update = function(item, controller) {
+    if (this.emitted >= this.amount) {
+      return
+    }
+
+    this.offsetX.update()
+    this.offsetY.update()
+    this.speed.update()
+    this.angle.update()
+    this.anglePerArray.update()
+
+    this.time += DeltaTime.apply(FRAME_MS)
+    if (this.time < this.interval) {
+      return this
+    }
+    this.time = this.time - (floor(this.time / this.interval) * this.interval)
+
+    var pixelWidth = SHROOM_SPAWN_CHANNEL_AMOUNT
+    var pixelHeight = SHROOM_SPAWN_ROW_AMOUNT
+    var offsetLength = Math.fetchLength(0.0, 0.0, this.offsetX.value / pixelWidth, this.offsetY.value / pixelHeight)
+    var offsetAngle = Math.fetchPointsAngle(0.0, 0.0, this.offsetX.value / pixelWidth, this.offsetY.value / pixelHeight)
+    var posX = this.x + Math.fetchCircleX(offsetLength, offsetAngle)
+    var posY = this.y + Math.fetchCircleY(offsetLength, offsetAngle)
+    var angle = this.angle.value + item.angle
+    var spd = this.speed.value + item.speed
+
+    if (this.preCallback != null) {
+      this.preCallback(item, controller, this)
+    }
+    
+    if (this.callback != null) {
+      for (var idx = 0; idx < this.arrays; idx++) {
+        angle += (idx * this.angleStep) + random(this.angleRng)
+        for (var arrIdx = 0; arrIdx < this.perArray; arrIdx++) {
+          this.callback(
+            item, controller, this, idx, arrIdx, posX, posY,
+            angle + this.anglePerArray.value + (arrIdx * this.anglePerArrayStep) + random(this.anglePerArrayRng),
+            spd + random(this.speedRng)
+          )
+        }
+      }
+    }
+    this.emitted += 1
+
+    if (this.postCallback != null) {
+      this.postCallback(item, controller, this)
+    }
+
+    return this
+  }
+
+  ///@return {GridItemEmitter}
+  static reset = function() {
+    this.time = 0.0
+    this.emitted = 0
+    this.offsetX.reset()
+    this.offsetY.reset()
+    this.speed.reset()
+    this.angle.reset()
+    this.anglePerArray.reset()
+    return this
+  }
+
+  ///@return {Boolean}
+  static finished = function() {
+    return this.emitted >= this.amount
+  }
+}
+
 
 ///@interface
-///@param {Struct} [config]
+///@param {Struct} config
 ///@return {GridItem}
-function GridItem(config = {}) constructor {
+function GridItem(config) constructor {
 
   ///@type {String}
   uid = Assert.isType(config.uid, String, "GridItem.uid must be type of String")

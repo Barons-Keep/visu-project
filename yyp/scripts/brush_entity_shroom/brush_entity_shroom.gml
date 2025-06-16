@@ -169,6 +169,174 @@ function brush_entity_shroom(json) {
         type: Boolean,
         value: Struct.get(json, "en-shr_hide-inherit"),
       },
+      "en-shr_hide-em": {
+        type: Boolean,
+        value: Struct.get(json, "en-shr_hide-em"),
+      },
+      "en-shr_hide-em-cfg": {
+        type: Boolean,
+        value: Struct.get(json, "en-shr_hide-em-cfg"),
+      },
+      "en-shr_hide-em-angle": {
+        type: Boolean,
+        value: Struct.get(json, "en-shr_hide-em-angle"),
+      },
+      "en-shr_hide-em-per-array": {
+        type: Boolean,
+        value: Struct.get(json, "en-shr_hide-em-per-array"),
+      },
+      "en-shr_hide-em-spd": {
+        type: Boolean,
+        value: Struct.get(json, "en-shr_hide-em-spd"),
+      },
+      "en-shr_use-em": {
+        type: Boolean,
+        value: Struct.get(json, "en-shr_use-em"),
+      },
+      "en-shr_em-amount": {
+        type: Number,
+        value: Struct.get(json, "en-shr_em-amount"),
+        passthrough: UIUtil.passthrough.getClampedStringInteger(),
+        data: new Vector2(1, 999),
+      },
+      "en-shr_em-arrays": {
+        type: Number,
+        value: Struct.get(json, "en-shr_em-arrays"),
+        passthrough: UIUtil.passthrough.getClampedStringInteger(),
+        data: new Vector2(1, 999),
+      },
+      "en-shr_em-per-array": {
+        type: Number,
+        value: Struct.get(json, "en-shr_em-per-array"),
+        passthrough: UIUtil.passthrough.getClampedStringInteger(),
+        data: new Vector2(1, 999),
+      },
+      "en-shr_em-duration": {
+        type: Number,
+        value: Struct.get(json, "en-shr_em-duration"),
+        passthrough: UIUtil.passthrough.getClampedStringNumber(),
+        data: new Vector2(0.0, 999.9),
+      },
+      "en-shr_em-angle": {
+        type: NumberTransformer,
+        value: Struct.get(json, "en-shr_em-angle"),
+        passthrough: UIUtil.passthrough.getClampedNumberTransformer(),
+        data: new Vector2(-99999.9, 99999.9),
+      },
+      "en-shr_em-use-angle": {
+        type: Boolean,
+        value: Struct.get(json, "en-shr_em-use-angle"),
+      },
+      "en-shr_em-change-angle": {
+        type: Boolean,
+        value: Struct.get(json, "en-shr_em-change-angle"),
+      },
+      "en-shr_em-angle-step": {
+        type: Number,
+        value: Struct.get(json, "en-shr_em-angle-step"),
+        passthrough: UIUtil.passthrough.getClampedStringNumber(),
+        data: new Vector2(-99999.9, 99999.9),
+      },
+      "en-shr_em-angle-rng": {
+        type: Number,
+        value: Struct.get(json, "en-shr_em-angle-rng"),
+        passthrough: UIUtil.passthrough.getClampedStringNumber(),
+        data: new Vector2(0.0, 99999.9),  
+      },
+      "en-shr_em-use-angle-rng": {
+        type: Boolean,
+        value: Struct.get(json, "en-shr_em-use-angle-rng"),
+      },
+      "en-shr_em-per-array-dir": {
+        type: NumberTransformer,
+        value: Struct.get(json, "en-shr_em-per-array-dir"),
+        passthrough: UIUtil.passthrough.getClampedNumberTransformer(),
+        data: new Vector2(-99999.9, 99999.9),
+      },
+      "en-shr_em-use-per-array-dir": {
+        type: Boolean,
+        value: Struct.get(json, "en-shr_em-use-per-array-dir"),
+      },
+      "en-shr_em-change-per-array-dir": {
+        type: Boolean,
+        value: Struct.get(json, "en-shr_em-change-per-array-dir"),
+      },
+      "en-shr_em-per-array-step": {
+        type: Number,
+        value: Struct.get(json, "en-shr_em-per-array-step"),
+        passthrough: UIUtil.passthrough.getClampedStringNumber(),
+        data: new Vector2(-99999.9, 99999.9),
+      },
+      "en-shr_em-per-array-rng": {
+        type: Number,
+        value: Struct.get(json, "en-shr_em-per-array-rng"),
+        passthrough: UIUtil.passthrough.getClampedStringNumber(),
+        data: new Vector2(0.0, 99999.9),  
+      },
+      "en-shr_em-use-per-array-rng": {
+        type: Boolean,
+        value: Struct.get(json, "en-shr_em-use-per-array-rng"),
+      },
+      "en-shr_em-spd": {
+        type: NumberTransformer,
+        value: Struct.get(json, "en-shr_em-spd"),
+        passthrough: UIUtil.passthrough.getClampedNumberTransformer(),
+        data: new Vector2(-99999.9, 99999.9),
+      },
+      "en-shr_em-use-spd": {
+        type: Boolean,
+        value: Struct.get(json, "en-shr_em-use-spd"),
+      },
+      "en-shr_em-change-spd": {
+        type: Boolean,
+        value: Struct.get(json, "en-shr_em-change-spd"),
+      },
+      "en-shr_em-spd-rng": {
+        type: Number,
+        value: Struct.get(json, "en-shr_em-spd-rng"),
+        passthrough: UIUtil.passthrough.getClampedStringNumber(),
+        data: new Vector2(0.0, 99999.9),  
+      },
+      "en-shr_em-use-spd-rng": {
+        type: Boolean,
+        value: Struct.get(json, "en-shr_em-use-spd-rng"),
+      },
+      "en-shr_hide-em-offset-x": {
+        type: Boolean,
+        value: Struct.get(json, "en-shr_hide-em-offset-x"),
+      },
+      "en-shr_em-offset-x": {
+        type: NumberTransformer,
+        value: Struct.get(json, "en-shr_em-offset-x"),
+        passthrough: UIUtil.passthrough.getClampedNumberTransformer(),
+        data: new Vector2(-99999.9, 99999.9),
+      },
+      "en-shr_em-use-offset-x": {
+        type: Boolean,
+        value: Struct.get(json, "en-shr_em-use-offset-x"),
+      },
+      "en-shr_em-change-offset-x": {
+        type: Boolean,
+        value: Struct.get(json, "en-shr_em-change-offset-x"),
+      },
+      "en-shr_hide-em-offset-y": {
+        type: Boolean,
+        value: Struct.get(json, "en-shr_hide-em-offset-y"),
+      },
+      "en-shr_em-offset-y": {
+        type: NumberTransformer,
+        value: Struct.get(json, "en-shr_em-offset-y"),
+        passthrough: UIUtil.passthrough.getClampedNumberTransformer(),
+        data: new Vector2(-99999.9, 99999.9),
+      },
+      "en-shr_em-use-offset-y": {
+        type: Boolean,
+        value: Struct.get(json, "en-shr_em-use-offset-y"),
+      },
+      "en-shr_em-change-offset-y": {
+        type: Boolean,
+        value: Struct.get(json, "en-shr_em-change-offset-y"),
+      },
     }),
     components: new Array(Struct, [
       {
@@ -1283,340 +1451,3030 @@ function brush_entity_shroom(json) {
           },
         },
       },
-      /*
-      ,{
-        name: "en-shr-dir-rng-y-line-h",
-        template: VEComponents.get("line-h"),
-        layout: VELayouts.get("line-h"),
-        config: { layout: { type: UILayoutType.VERTICAL } },
-      },
       {
-        name: "en-shr_texture",
-        template: VEComponents.get("texture-field-ext"),
-        layout: VELayouts.get("texture-field-ext"),
-        config: { 
-          layout: { type: UILayoutType.VERTICAL },
-          title: {
-            label: {
-              text: "Override texture",
-              backgroundColor: VETheme.color.accentShadow,
-              enable: { key: "en-shr_use-texture" },
-            },
-            input: { backgroundColor: VETheme.color.accentShadow },
-            checkbox: { 
-              backgroundColor: VETheme.color.accentShadow,
-              spriteOn: { name: "visu_texture_checkbox_on" },
-              spriteOff: { name: "visu_texture_checkbox_off" },
-              store: { key: "en-shr_use-texture" },
-            },
-          },
-          texture: {
-            label: { 
-              text: "Texture",
-              enable: { key: "en-shr_use-texture" },
-            }, 
-            field: { 
-              store: { key: "en-shr_texture" },
-              enable: { key: "en-shr_use-texture" },
-            },
-          },
-          preview: {
-            image: { name: "texture_empty" },
-            store: { key: "en-shr_texture" },
-            enable: { key: "en-shr_use-texture" },
-          },
-          resolution: {
-            store: { key: "en-shr_texture" },
-            enable: { key: "en-shr_use-texture" },
-          },
-          alpha: {
-            label: { 
-              text: "Alpha",
-              enable: { key: "en-shr_use-texture" },
-            },
-            field: { 
-              store: { key: "en-shr_texture" },
-              enable: { key: "en-shr_use-texture" },
-            },
-            decrease: { 
-              store: { key: "en-shr_texture" },
-              enable: { key: "en-shr_use-texture" },
-            },
-            increase: { 
-              store: { key: "en-shr_texture" },
-              enable: { key: "en-shr_use-texture" },
-            },
-            slider: { 
-              minValue: 0.0,
-              maxValue: 1.0,
-              snapValue: 0.01 / 1.0,
-              store: { key: "en-shr_texture" },
-              enable: { key: "en-shr_use-texture" },
-            },
-          },
-          frame: {
-            label: { 
-              text: "Frame",
-              enable: { key: "en-shr_use-texture" },
-            },
-            field: { 
-              store: { key: "en-shr_texture" },
-              enable: { key: "en-shr_use-texture" },
-            },
-            decrease: { 
-              store: { key: "en-shr_texture" },
-              enable: { key: "en-shr_use-texture" },
-            },
-            increase: { 
-              store: { key: "en-shr_texture" },
-              enable: { key: "en-shr_use-texture" },
-            },
-            checkbox: { 
-              store: { key: "en-shr_texture" },
-              spriteOn: { name: "visu_texture_checkbox_on" },
-              spriteOff: { name: "visu_texture_checkbox_off" },
-              enable: { key: "en-shr_use-texture" },
-            },
-            title: { 
-              text: "Rng",
-              enable: { key: "en-shr_use-texture" },
-            }, 
-            stick: { 
-              store: { key: "en-shr_texture" },
-              enable: { key: "en-shr_use-texture" },
-            },
-          },
-          speed: {
-            label: { 
-              text: "Speed",
-              enable: { key: "en-shr_use-texture" },
-            },
-            field: { 
-              store: { key: "en-shr_texture" },
-              enable: { key: "en-shr_use-texture" },
-            },
-            decrease: { 
-              store: { key: "en-shr_texture" },
-              enable: { key: "en-shr_use-texture" },
-            },
-            increase: { 
-              store: { key: "en-shr_texture" },
-              enable: { key: "en-shr_use-texture" },
-            },
-            checkbox: { 
-              store: { key: "en-shr_texture" },
-              spriteOn: { name: "visu_texture_checkbox_on" },
-              spriteOff: { name: "visu_texture_checkbox_off" },
-              enable: { key: "en-shr_use-texture" },
-            },
-            stick: { 
-              store: { key: "en-shr_texture" },
-              enable: { key: "en-shr_use-texture" },
-            },
-          },
-          scaleX: {
-            label: { 
-              text: "Scale X",
-              enable: { key: "en-shr_use-texture" },
-            },
-            field: { 
-              store: { key: "en-shr_texture" },
-              enable: { key: "en-shr_use-texture" },
-            },
-            decrease: { 
-              store: { key: "en-shr_texture" },
-              enable: { key: "en-shr_use-texture" },
-            },
-            increase: { 
-              store: { key: "en-shr_texture" },
-              enable: { key: "en-shr_use-texture" },
-            },
-            stick: { 
-              store: { key: "en-shr_texture" },
-              enable: { key: "en-shr_use-texture" },
-            },
-          },
-          scaleY: {
-            label: { 
-              text: "Scale Y",
-              enable: { key: "en-shr_use-texture" },
-            },
-            field: { 
-              store: { key: "en-shr_texture" },
-              enable: { key: "en-shr_use-texture" },
-            },
-            decrease: { 
-              store: { key: "en-shr_texture" },
-              enable: { key: "en-shr_use-texture" },
-            },
-            increase: { 
-              store: { key: "en-shr_texture" },
-              enable: { key: "en-shr_use-texture" },
-            },
-            stick: { 
-              store: { key: "en-shr_texture" },
-              enable: { key: "en-shr_use-texture" },
-            },
-          },
-        },
-      },
-      {
-        name: "en-shr_texture-line-h",
-        template: VEComponents.get("line-h"),
-        layout: VELayouts.get("line-h"),
-        config: { layout: { type: UILayoutType.VERTICAL } },
-      },
-      {
-        name: "en-shr_mask-title",
+        name: "en-shr_em-title",
         template: VEComponents.get("property"),
         layout: VELayouts.get("property"),
         config: { 
           layout: { type: UILayoutType.VERTICAL },
           label: {
-            text: "Override collision mask",
-            enable: { key: "en-shr_use-mask" },
-            backgroundColor: VETheme.color.side,
+            text: "Emitter",
+            backgroundColor: VETheme.color.accentShadow,
+            enable: { key: "en-shr_use-em"},
           },
-          input: { backgroundColor: VETheme.color.side },
-          checkbox: { 
+          input: {
+            backgroundColor: VETheme.color.accentShadow,
+            spriteOn: { name: "visu_texture_checkbox_switch_on" },
+            spriteOff: { name: "visu_texture_checkbox_switch_off" },
+            store: { key: "en-shr_use-em" },
+          },
+          checkbox: {
+            backgroundColor: VETheme.color.accentShadow,
+            store: { key: "en-shr_hide-em" },
+            spriteOn: { name: "visu_texture_checkbox_show" },
+            spriteOff: { name: "visu_texture_checkbox_hide" },
+          },
+        },
+      },
+      {
+        name: "en-shr_em-cfg-title",
+        template: VEComponents.get("property"),
+        layout: VELayouts.get("property"),
+        config: { 
+          layout: { type: UILayoutType.VERTICAL },
+          label: { 
+            text: "Properties",
+            hidden: { key: "en-shr_hide-em" },
+            enable: { key: "en-shr_use-em" },
+          },
+          input: {
+            hidden: { key: "en-shr_hide-em" },
+          },
+          checkbox: {
+            spriteOn: { name: "visu_texture_checkbox_show" },
+            spriteOff: { name: "visu_texture_checkbox_hide" },
+            hidden: { key: "en-shr_hide-em" },
+            store: { key: "en-shr_hide-em-cfg" },
+          },
+        },
+      },
+      {
+        name: "en-shr_em-amount ",
+        template: VEComponents.get("numeric-input"),
+        layout: VELayouts.get("div"),
+        config: { 
+          layout: {
+            type: UILayoutType.VERTICAL,
+            //margin: { top: 1, bottom: 0 },
+          },
+          label: { 
+            text: "Amount",
+            hidden: {
+              keys: [
+                { key: "en-shr_hide-em" },
+                { key: "en-shr_hide-em-cfg" }
+              ]
+            },
+            enable: { key: "en-shr_use-em" },
+          },  
+          field: { 
+            store: { key: "en-shr_em-amount" },
+            hidden: {
+              keys: [
+                { key: "en-shr_hide-em" },
+                { key: "en-shr_hide-em-cfg" }
+              ]
+            },
+            enable: { key: "en-shr_use-em" },
+          },
+          decrease: {
+            store: { key: "en-shr_em-amount" },
+            hidden: {
+              keys: [
+                { key: "en-shr_hide-em" },
+                { key: "en-shr_hide-em-cfg" }
+              ]
+            },
+            enable: { key: "en-shr_use-em" },
+            factor: -1.0,
+          },
+          increase: {
+            store: { key: "en-shr_em-amount" },
+            hidden: {
+              keys: [
+                { key: "en-shr_hide-em" },
+                { key: "en-shr_hide-em-cfg" }
+              ]
+            },
+            enable: { key: "en-shr_use-em" },
+            factor: 1,
+          },
+          stick: {
+            store: { key: "en-shr_em-amount" },
+            hidden: {
+              keys: [
+                { key: "en-shr_hide-em" },
+                { key: "en-shr_hide-em-cfg" }
+              ]
+            },
+            enable: { key: "en-shr_use-em" },
+            factor: 1.0,
+          },
+          checkbox: {
+            hidden: {
+              keys: [
+                { key: "en-shr_hide-em" },
+                { key: "en-shr_hide-em-cfg" }
+              ]
+            },
+          },
+        },
+      },
+
+      {
+        name: "en-shr_em-arrays ",
+        template: VEComponents.get("numeric-input"),
+        layout: VELayouts.get("div"),
+        config: { 
+          layout: {
+            type: UILayoutType.VERTICAL,
+            //margin: { top: 1, bottom: 0 },
+          },
+          label: { 
+            text: "Arrays",
+            hidden: {
+              keys: [
+                { key: "en-shr_hide-em" },
+                { key: "en-shr_hide-em-cfg" }
+              ]
+            },
+            enable: { key: "en-shr_use-em" },
+          },  
+          field: { 
+            store: { key: "en-shr_em-arrays" },
+            hidden: {
+              keys: [
+                { key: "en-shr_hide-em" },
+                { key: "en-shr_hide-em-cfg" }
+              ]
+            },
+            enable: { key: "en-shr_use-em" },
+          },
+          decrease: {
+            store: { key: "en-shr_em-arrays" },
+            hidden: {
+              keys: [
+                { key: "en-shr_hide-em" },
+                { key: "en-shr_hide-em-cfg" }
+              ]
+            },
+            enable: { key: "en-shr_use-em" },
+            factor: -1.0,
+          },
+          increase: {
+            store: { key: "en-shr_em-arrays" },
+            hidden: {
+              keys: [
+                { key: "en-shr_hide-em" },
+                { key: "en-shr_hide-em-cfg" }
+              ]
+            },
+            enable: { key: "en-shr_use-em" },
+            factor: 1,
+          },
+          stick: {
+            store: { key: "en-shr_em-arrays" },
+            hidden: {
+              keys: [
+                { key: "en-shr_hide-em" },
+                { key: "en-shr_hide-em-cfg" }
+              ]
+            },
+            enable: { key: "en-shr_use-em" },
+            factor: 1.0,
+          },
+          checkbox: {
+            hidden: {
+              keys: [
+                { key: "en-shr_hide-em" },
+                { key: "en-shr_hide-em-cfg" }
+              ]
+            },
+          },
+        },
+      },
+
+      {
+        name: "en-shr_em-per-array ",
+        template: VEComponents.get("numeric-input"),
+        layout: VELayouts.get("div"),
+        config: { 
+          layout: {
+            type: UILayoutType.VERTICAL,
+            //margin: { top: 1, bottom: 0 },
+          },
+          label: { 
+            text: "Per array",
+            hidden: {
+              keys: [
+                { key: "en-shr_hide-em" },
+                { key: "en-shr_hide-em-cfg" }
+              ]
+            },
+            enable: { key: "en-shr_use-em" },
+          },  
+          field: { 
+            store: { key: "en-shr_em-per-array" },
+            hidden: {
+              keys: [
+                { key: "en-shr_hide-em" },
+                { key: "en-shr_hide-em-cfg" }
+              ]
+            },
+            enable: { key: "en-shr_use-em" },
+          },
+          decrease: {
+            store: { key: "en-shr_em-per-array" },
+            hidden: {
+              keys: [
+                { key: "en-shr_hide-em" },
+                { key: "en-shr_hide-em-cfg" }
+              ]
+            },
+            enable: { key: "en-shr_use-em" },
+            factor: -1.0,
+          },
+          increase: {
+            store: { key: "en-shr_em-per-array" },
+            hidden: {
+              keys: [
+                { key: "en-shr_hide-em" },
+                { key: "en-shr_hide-em-cfg" }
+              ]
+            },
+            enable: { key: "en-shr_use-em" },
+            factor: 1,
+          },
+          stick: {
+            store: { key: "en-shr_em-per-array" },
+            hidden: {
+              keys: [
+                { key: "en-shr_hide-em" },
+                { key: "en-shr_hide-em-cfg" }
+              ]
+            },
+            enable: { key: "en-shr_use-em" },
+            factor: 1.0,
+          },
+          checkbox: {
+            hidden: {
+              keys: [
+                { key: "en-shr_hide-em" },
+                { key: "en-shr_hide-em-cfg" }
+              ]
+            },
+          },
+        },
+      },
+      {
+        name: "en-shr_em-duration ",
+        template: VEComponents.get("numeric-input"),
+        layout: VELayouts.get("div"),
+        config: { 
+          layout: {
+            type: UILayoutType.VERTICAL,
+            //margin: { top: 1, bottom: 0 },
+          },
+          label: { 
+            text: "Duration",
+            hidden: {
+              keys: [
+                { key: "en-shr_hide-em" },
+                { key: "en-shr_hide-em-cfg" }
+              ]
+            },
+            enable: { key: "en-shr_use-em" },
+          },  
+          field: { 
+            store: { key: "en-shr_em-duration" },
+            hidden: {
+              keys: [
+                { key: "en-shr_hide-em" },
+                { key: "en-shr_hide-em-cfg" }
+              ]
+            },
+            enable: { key: "en-shr_use-em" },
+          },
+          decrease: {
+            store: { key: "en-shr_em-duration" },
+            hidden: {
+              keys: [
+                { key: "en-shr_hide-em" },
+                { key: "en-shr_hide-em-cfg" }
+              ]
+            },
+            enable: { key: "en-shr_use-em" },
+            factor: -0.01,
+          },
+          increase: {
+            store: { key: "en-shr_em-duration" },
+            hidden: {
+              keys: [
+                { key: "en-shr_hide-em" },
+                { key: "en-shr_hide-em-cfg" }
+              ]
+            },
+            enable: { key: "en-shr_use-em" },
+            factor: 0.01,
+          },
+          stick: {
+            store: { key: "en-shr_em-duration" },
+            hidden: {
+              keys: [
+                { key: "en-shr_hide-em" },
+                { key: "en-shr_hide-em-cfg" }
+              ]
+            },
+            enable: { key: "en-shr_use-em" },
+            factor: 0.01,
+          },
+          checkbox: {
+            hidden: {
+              keys: [
+                { key: "en-shr_hide-em" },
+                { key: "en-shr_hide-em-cfg" }
+              ]
+            },
+          },
+        },
+      },
+      {
+        name: "en-shr_em-cfg-line-h",
+        template: VEComponents.get("line-h"),
+        layout: VELayouts.get("line-h"),
+        config: {
+          layout: {
+            type: UILayoutType.VERTICAL,
+            margin: { top: 0, bottom: 0 },
+            height: function() { return 0 },
+          },
+          image: { 
+            hidden: {
+              keys: [
+                { key: "en-shr_hide-em" },
+                { key: "en-shr_hide-em-cfg" }
+              ]
+            },
+            backgroundAlpha: 0.0,
+          },
+        },
+      },
+      {
+        name: "en-shr_em-angle-title",
+        template: VEComponents.get("property"),
+        layout: VELayouts.get("property"),
+        config: { 
+          layout: { type: UILayoutType.VERTICAL },
+          label: { 
+            text: "Angle",
+            hidden: { key: "en-shr_hide-em" },
+            enable: { key: "en-shr_use-em" },
+          },
+          input: {
+            hidden: { key: "en-shr_hide-em" },
+          },
+          checkbox: {
+            spriteOn: { name: "visu_texture_checkbox_show" },
+            spriteOff: { name: "visu_texture_checkbox_hide" },
+            hidden: { key: "en-shr_hide-em" },
+            store: { key: "en-shr_hide-em-angle" },
+          },
+        },
+      },
+      {
+        name: "en-shr_em-angle",
+        template: VEComponents.get("number-transformer-increase-checkbox"),
+        layout: VELayouts.get("number-transformer-increase-checkbox"),
+        config: { 
+          layout: { type: UILayoutType.VERTICAL },
+          value: {
+            label: {
+              text: "Value",
+              enable: {
+                keys: [
+                  { key: "en-shr_use-em" },
+                  { key: "en-shr_em-use-angle" }
+                ],
+              },
+              updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+              hidden: {
+                keys: [
+                  { key: "en-shr_hide-em" },
+                  { key: "en-shr_hide-em-angle" }
+                ],
+              },
+            },
+            field: {
+              store: { key: "en-shr_em-angle" },
+              enable: {
+                keys: [
+                  { key: "en-shr_use-em" },
+                  { key: "en-shr_em-use-angle" }
+                ],
+              },
+              updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+              hidden: {
+                keys: [
+                  { key: "en-shr_hide-em" },
+                  { key: "en-shr_hide-em-angle" }
+                ],
+              },
+            },
+            decrease: {
+              store: { key: "en-shr_em-angle" },
+              enable: {
+                keys: [
+                  { key: "en-shr_use-em" },
+                  { key: "en-shr_em-use-angle" }
+                ],
+              },
+              updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+              hidden: {
+                keys: [
+                  { key: "en-shr_hide-em" },
+                  { key: "en-shr_hide-em-angle" }
+                ],
+              },
+              factor: -0.01,
+            },
+            increase: {
+              store: { key: "en-shr_em-angle" },
+              enable: {
+                keys: [
+                  { key: "en-shr_use-em" },
+                  { key: "en-shr_em-use-angle" }
+                ],
+              },
+              updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+              hidden: {
+                keys: [
+                  { key: "en-shr_hide-em" },
+                  { key: "en-shr_hide-em-angle" }
+                ],
+              },
+              factor: 0.01,
+            },
+            stick: {
+              store: { key: "en-shr_em-angle" },
+              enable: {
+                keys: [
+                  { key: "en-shr_use-em" },
+                  { key: "en-shr_em-use-angle" }
+                ],
+              },
+              updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+              hidden: {
+                keys: [
+                  { key: "en-shr_hide-em" },
+                  { key: "en-shr_hide-em-angle" }
+                ],
+              },
+              factor: 0.01,
+            },
+            checkbox: { 
+              spriteOn: { name: "visu_texture_checkbox_on" },
+              spriteOff: { name: "visu_texture_checkbox_off" },
+              store: { key: "en-shr_em-use-angle" },
+              enable: { key: "en-shr_use-em" },
+              hidden: {
+                keys: [
+                  { key: "en-shr_hide-em" },
+                  { key: "en-shr_hide-em-angle" }
+                ],
+              },
+            },
+            title: { 
+              text: "Use",
+              enable: {
+                keys: [
+                  { key: "en-shr_use-em" },
+                  { key: "en-shr_em-use-angle" }
+                ],
+              },
+              updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+              hidden: {
+                keys: [
+                  { key: "en-shr_hide-em" },
+                  { key: "en-shr_hide-em-angle" }
+                ],
+              },
+            },
+          },
+          target: {
+            label: {
+              text: "Target",
+              enable: {
+                keys: [
+                  { key: "en-shr_use-em" },
+                  { key: "en-shr_em-change-angle" }
+                ],
+              },
+              updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+              hidden: {
+                keys: [
+                  { key: "en-shr_hide-em" },
+                  { key: "en-shr_hide-em-angle" }
+                ],
+              },
+            },
+            field: {
+              store: { key: "en-shr_em-angle" },
+              enable: {
+                keys: [
+                  { key: "en-shr_use-em" },
+                  { key: "en-shr_em-change-angle" }
+                ],
+              },
+              updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+              hidden: {
+                keys: [
+                  { key: "en-shr_hide-em" },
+                  { key: "en-shr_hide-em-angle" }
+                ],
+              },
+            },
+            decrease: {
+              store: { key: "en-shr_em-angle" },
+              enable: {
+                keys: [
+                  { key: "en-shr_use-em" },
+                  { key: "en-shr_em-change-angle" }
+                ],
+              },
+              updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+              hidden: {
+                keys: [
+                  { key: "en-shr_hide-em" },
+                  { key: "en-shr_hide-em-angle" }
+                ],
+              },
+              factor: -0.01,
+            },
+            increase: {
+              store: { key: "en-shr_em-angle" },
+              enable: {
+                keys: [
+                  { key: "en-shr_use-em" },
+                  { key: "en-shr_em-change-angle" }
+                ],
+              },
+              updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+              hidden: {
+                keys: [
+                  { key: "en-shr_hide-em" },
+                  { key: "en-shr_hide-em-angle" }
+                ],
+              },
+              factor: 0.01,
+            },
+            stick: {
+              store: { key: "en-shr_em-angle" },
+              enable: {
+                keys: [
+                  { key: "en-shr_use-em" },
+                  { key: "en-shr_em-change-angle" }
+                ],
+              },
+              updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+              hidden: {
+                keys: [
+                  { key: "en-shr_hide-em" },
+                  { key: "en-shr_hide-em-angle" }
+                ],
+              },
+              factor: 0.01,
+            },
+            checkbox: { 
+              spriteOn: { name: "visu_texture_checkbox_on" },
+              spriteOff: { name: "visu_texture_checkbox_off" },
+              store: { key: "en-shr_em-change-angle" },
+              hidden: {
+                keys: [
+                  { key: "en-shr_hide-em" },
+                  { key: "en-shr_hide-em-angle" }
+                ],
+              },
+              enable: { key: "en-shr_use-em" },
+            },
+            title: { 
+              text: "Change",
+              enable: {
+                keys: [
+                  { key: "en-shr_use-em" },
+                  { key: "en-shr_em-change-angle" }
+                ],
+              },
+              updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+              hidden: {
+                keys: [
+                  { key: "en-shr_hide-em" },
+                  { key: "en-shr_hide-em-angle" }
+                ],
+              },
+            },
+          },
+          duration: {
+            label: {
+              text: "Duration",
+              enable: {
+                keys: [
+                  { key: "en-shr_use-em" },
+                  { key: "en-shr_em-change-angle" }
+                ],
+              },
+              updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+              hidden: {
+                keys: [
+                  { key: "en-shr_hide-em" },
+                  { key: "en-shr_hide-em-angle" }
+                ],
+              },
+            },
+            field: {
+              store: { key: "en-shr_em-angle" },
+              enable: {
+                keys: [
+                  { key: "en-shr_use-em" },
+                  { key: "en-shr_em-change-angle" }
+                ],
+              },
+              updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+              hidden: {
+                keys: [
+                  { key: "en-shr_hide-em" },
+                  { key: "en-shr_hide-em-angle" }
+                ],
+              },
+            },
+            decrease: {
+              store: { key: "en-shr_em-angle" },
+              enable: {
+                keys: [
+                  { key: "en-shr_use-em" },
+                  { key: "en-shr_em-change-angle" }
+                ],
+              },
+              updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+              hidden: {
+                keys: [
+                  { key: "en-shr_hide-em" },
+                  { key: "en-shr_hide-em-angle" }
+                ],
+              },
+              factor: -0.01,
+            },
+            increase: {
+              store: { key: "en-shr_em-angle" },
+              enable: {
+                keys: [
+                  { key: "en-shr_use-em" },
+                  { key: "en-shr_em-change-angle" }
+                ],
+              },
+              updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+              hidden: {
+                keys: [
+                  { key: "en-shr_hide-em" },
+                  { key: "en-shr_hide-em-angle" }
+                ],
+              },
+              factor: 0.01,
+            },
+            stick: {
+              store: { key: "en-shr_em-angle" },
+              enable: {
+                keys: [
+                  { key: "en-shr_use-em" },
+                  { key: "en-shr_em-change-angle" }
+                ],
+              },
+              updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+              hidden: {
+                keys: [
+                  { key: "en-shr_hide-em" },
+                  { key: "en-shr_hide-em-angle" }
+                ],
+              },
+              factor: 0.01,
+            },
+          },
+          ease: {
+            label: {
+              text: "Ease",
+              enable: {
+                keys: [
+                  { key: "en-shr_use-em" },
+                  { key: "en-shr_em-change-angle" }
+                ],
+              },
+              updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+              hidden: {
+                keys: [
+                  { key: "en-shr_hide-em" },
+                  { key: "en-shr_hide-em-angle" }
+                ],
+              },
+            },
+            previous: {
+              store: { key: "en-shr_em-angle" },
+              enable: {
+                keys: [
+                  { key: "en-shr_use-em" },
+                  { key: "en-shr_em-change-angle" }
+                ],
+              },
+              updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+              hidden: {
+                keys: [
+                  { key: "en-shr_hide-em" },
+                  { key: "en-shr_hide-em-angle" }
+                ],
+              },
+            },
+            preview: {
+              store: { key: "en-shr_em-angle" },
+              enable: {
+                keys: [
+                  { key: "en-shr_use-em" },
+                  { key: "en-shr_em-change-angle" }
+                ],
+              },
+              updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+              hidden: {
+                keys: [
+                  { key: "en-shr_hide-em" },
+                  { key: "en-shr_hide-em-angle" }
+                ],
+              },
+            },
+            next: {
+              store: { key: "en-shr_em-angle" },
+              enable: {
+                keys: [
+                  { key: "en-shr_use-em" },
+                  { key: "en-shr_em-change-angle" }
+                ],
+              },
+              updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+              hidden: {
+                keys: [
+                  { key: "en-shr_hide-em" },
+                  { key: "en-shr_hide-em-angle" }
+                ],
+              },
+            },
+          },
+        },
+      },
+      {
+        name: "en-shr_em-angle-step",
+        template: VEComponents.get("numeric-input"),
+        layout: VELayouts.get("div"),
+        config: { 
+          layout: {
+            type: UILayoutType.VERTICAL,
+            //margin: { top: 2, bottom: 0 },
+          },
+          label: { 
+            text: "Angle step",
+            hidden: {
+              keys: [
+                { key: "en-shr_hide-em" },
+                { key: "en-shr_hide-em-angle" }
+              ],
+            },
+            enable: { key: "en-shr_use-em" },
+          },  
+          field: { 
+            store: { key: "en-shr_em-angle-step" },
+            hidden: {
+              keys: [
+                { key: "en-shr_hide-em" },
+                { key: "en-shr_hide-em-angle" }
+              ],
+            },
+            enable: { key: "en-shr_use-em" },
+          },
+          decrease: {
+            store: { key: "en-shr_em-angle-step" },
+            hidden: {
+              keys: [
+                { key: "en-shr_hide-em" },
+                { key: "en-shr_hide-em-angle" }
+              ],
+            },
+            enable: { key: "en-shr_use-em" },
+            factor: -0.01,
+          },
+          increase: {
+            store: { key: "en-shr_em-angle-step" },
+            hidden: {
+              keys: [
+                { key: "en-shr_hide-em" },
+                { key: "en-shr_hide-em-angle" }
+              ],
+            },
+            enable: { key: "en-shr_use-em" },
+            factor: 0.01,
+          },
+          stick: {
+            store: { key: "en-shr_em-angle-step" },
+            hidden: {
+              keys: [
+                { key: "en-shr_hide-em" },
+                { key: "en-shr_hide-em-angle" }
+              ],
+            },
+            enable: { key: "en-shr_use-em" },
+            factor: 0.01,
+          },
+          checkbox: {
+            hidden: {
+              keys: [
+                { key: "en-shr_hide-em" },
+                { key: "en-shr_hide-em-angle" }
+              ],
+            },
+          },
+        },
+      },
+      {
+        name: "en-shr_em-angle-rng",
+        template: VEComponents.get("numeric-input"),
+        layout: VELayouts.get("div"),
+        config: { 
+          layout: {
+            type: UILayoutType.VERTICAL,
+            //margin: { top: 1, bottom: 0 },
+          },
+          label: { 
+            text: "Rand. dir.",
+            hidden: {
+              keys: [
+                { key: "en-shr_hide-em" },
+                { key: "en-shr_hide-em-angle" }
+              ],
+            },
+            enable: {
+              keys: [
+                { key: "en-shr_use-em" },
+                { key: "en-shr_em-use-angle-rng" }
+              ],
+            },
+            updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+          },  
+          field: { 
+            store: { key: "en-shr_em-angle-rng" },
+            hidden: {
+              keys: [
+                { key: "en-shr_hide-em" },
+                { key: "en-shr_hide-em-angle" }
+              ],
+            },
+            enable: {
+              keys: [
+                { key: "en-shr_use-em" },
+                { key: "en-shr_em-use-angle-rng" }
+              ],
+            },
+            updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+          },
+          decrease: {
+            store: { key: "en-shr_em-angle-rng" },
+            hidden: {
+              keys: [
+                { key: "en-shr_hide-em" },
+                { key: "en-shr_hide-em-angle" }
+              ],
+            },
+            enable: {
+              keys: [
+                { key: "en-shr_use-em" },
+                { key: "en-shr_em-use-angle-rng" }
+              ],
+            },
+            updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+            factor: -0.01,
+          },
+          increase: {
+            store: { key: "en-shr_em-angle-rng" },
+            hidden: {
+              keys: [
+                { key: "en-shr_hide-em" },
+                { key: "en-shr_hide-em-angle" }
+              ],
+            },
+            enable: {
+              keys: [
+                { key: "en-shr_use-em" },
+                { key: "en-shr_em-use-angle-rng" }
+              ],
+            },
+            updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+            factor: 0.01,
+          },
+          stick: {
+            store: { key: "en-shr_em-angle-rng" },
+            hidden: {
+              keys: [
+                { key: "en-shr_hide-em" },
+                { key: "en-shr_hide-em-angle" }
+              ],
+            },
+            enable: {
+              keys: [
+                { key: "en-shr_use-em" },
+                { key: "en-shr_em-use-angle-rng" }
+              ],
+            },
+            updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+            factor: 0.01,
+          },
+          checkbox: {
             spriteOn: { name: "visu_texture_checkbox_on" },
             spriteOff: { name: "visu_texture_checkbox_off" },
-            store: { key: "en-shr_use-mask" },
-            backgroundColor: VETheme.color.side,
+            store: { key: "en-shr_em-use-angle-rng" },
+            hidden: {
+              keys: [
+                { key: "en-shr_hide-em" },
+                { key: "en-shr_hide-em-angle" }
+              ],
+            },
+            enable: { key: "en-shr_use-em" },
+          },
+          title: {
+            text: "Use",
+            enable: {
+              keys: [
+                { key: "en-shr_use-em" },
+                { key: "en-shr_em-use-angle-rng" }
+              ],
+            },
+            updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+            hidden: {
+              keys: [
+                { key: "en-shr_hide-em" },
+                { key: "en-shr_hide-em-angle" }
+              ],
+            },
+          }
+        },
+      },
+      {
+        name: "en-shr_em-angle-line-h",
+        template: VEComponents.get("line-h"),
+        layout: VELayouts.get("line-h"),
+        config: {
+          layout: {
+            type: UILayoutType.VERTICAL,
+            margin: { top: 0, bottom: 0 },
+            height: function() { return 0 },
+          },
+          image: { 
+            hidden: {
+              keys: [
+                { key: "en-shr_hide-em" },
+                { key: "en-shr_hide-em-angle" }
+              ]
+            },
+            backgroundAlpha: 0.0,
           },
         },
       },
       {
-        name: "en-shr_mask-preview",
-        template: VEComponents.get("preview-image-mask"),
-        layout: VELayouts.get("preview-image-mask"),
+        name: "en-shr_em-per-array-title",
+        template: VEComponents.get("property"),
+        layout: VELayouts.get("property"),
         config: { 
           layout: { type: UILayoutType.VERTICAL },
-          preview: {
-            enable: { key: "en-shr_use-mask" },
-            image: { name: "texture_empty" },
-            store: { key: "en-shr_texture" },
-            mask: "en-shr_mask",
+          label: { 
+            text: "Angle per array",
+            hidden: { key: "en-shr_hide-em" },
+            enable: { key: "en-shr_use-em" },
           },
-          resolution: {
-            enable: { key: "en-shr_use-mask" },
-            store: { key: "en-shr_texture" },
+          input: {
+            hidden: { key: "en-shr_hide-em" },
+          },
+          checkbox: {
+            spriteOn: { name: "visu_texture_checkbox_show" },
+            spriteOff: { name: "visu_texture_checkbox_hide" },
+            hidden: { key: "en-shr_hide-em" },
+            store: { key: "en-shr_hide-em-per-array" },
           },
         },
       },
       {
-        name: "en-shr_mask",
-        template: VEComponents.get("vec4-stick-increase"),
-        layout: VELayouts.get("vec4"),
+        name: "en-shr_em-per-array-dir",
+        template: VEComponents.get("number-transformer-increase-checkbox"),
+        layout: VELayouts.get("number-transformer-increase-checkbox"),
         config: { 
           layout: { type: UILayoutType.VERTICAL },
-          x: {
+          value: {
             label: {
-              text: "X",
-              enable: { key: "en-shr_use-mask" },
+              text: "Value",
+              enable: {
+                keys: [
+                  { key: "en-shr_use-em" },
+                  { key: "en-shr_em-use-per-array-dir" }
+                ],
+              },
+              updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+              hidden: {
+                keys: [
+                  { key: "en-shr_hide-em" },
+                  { key: "en-shr_hide-em-per-array" }
+                ],
+              },
             },
             field: {
-              store: { key: "en-shr_mask" },
-              enable: { key: "en-shr_use-mask" },
-              GMTF_DECIMAL: 0,
+              store: { key: "en-shr_em-per-array-dir" },
+              enable: {
+                keys: [
+                  { key: "en-shr_use-em" },
+                  { key: "en-shr_em-use-per-array-dir" }
+                ],
+              },
+              updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+              hidden: {
+                keys: [
+                  { key: "en-shr_hide-em" },
+                  { key: "en-shr_hide-em-per-array" }
+                ],
+              },
             },
             decrease: {
-              store: { key: "en-shr_mask" },
-              enable: { key: "en-shr_use-mask" },
-              factor: -1.0,
+              store: { key: "en-shr_em-per-array-dir" },
+              enable: {
+                keys: [
+                  { key: "en-shr_use-em" },
+                  { key: "en-shr_em-use-per-array-dir" }
+                ],
+              },
+              updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+              hidden: {
+                keys: [
+                  { key: "en-shr_hide-em" },
+                  { key: "en-shr_hide-em-per-array" }
+                ],
+              },
+              factor: -0.01,
             },
             increase: {
-              store: { key: "en-shr_mask" },
-              enable: { key: "en-shr_use-mask" },
-              factor: 1.0,
+              store: { key: "en-shr_em-per-array-dir" },
+              enable: {
+                keys: [
+                  { key: "en-shr_use-em" },
+                  { key: "en-shr_em-use-per-array-dir" }
+                ],
+              },
+              updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+              hidden: {
+                keys: [
+                  { key: "en-shr_hide-em" },
+                  { key: "en-shr_hide-em-per-array" }
+                ],
+              },
+              factor: 0.01,
             },
-            slider: {
-              store: { key: "en-shr_mask" },
-              enable: { key: "en-shr_use-mask" },
-              factor: 0.1,
+            stick: {
+              store: { key: "en-shr_em-per-array-dir" },
+              enable: {
+                keys: [
+                  { key: "en-shr_use-em" },
+                  { key: "en-shr_em-use-per-array-dir" }
+                ],
+              },
+              updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+              hidden: {
+                keys: [
+                  { key: "en-shr_hide-em" },
+                  { key: "en-shr_hide-em-per-array" }
+                ],
+              },
+              factor: 0.01,
+            },
+            checkbox: { 
+              spriteOn: { name: "visu_texture_checkbox_on" },
+              spriteOff: { name: "visu_texture_checkbox_off" },
+              store: { key: "en-shr_em-use-per-array-dir" },
+              enable: { key: "en-shr_use-em" },
+              hidden: {
+                keys: [
+                  { key: "en-shr_hide-em" },
+                  { key: "en-shr_hide-em-per-array" }
+                ],
+              },
+            },
+            title: { 
+              text: "Use",
+              enable: {
+                keys: [
+                  { key: "en-shr_use-em" },
+                  { key: "en-shr_em-use-per-array-dir" }
+                ],
+              },
+              updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+              hidden: {
+                keys: [
+                  { key: "en-shr_hide-em" },
+                  { key: "en-shr_hide-em-per-array" }
+                ],
+              },
             },
           },
-          y: {
+          target: {
             label: {
-              text: "Y",
-              enable: { key: "en-shr_use-mask" },
+              text: "Target",
+              enable: {
+                keys: [
+                  { key: "en-shr_use-em" },
+                  { key: "en-shr_em-change-per-array-dir" }
+                ],
+              },
+              updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+              hidden: {
+                keys: [
+                  { key: "en-shr_hide-em" },
+                  { key: "en-shr_hide-em-per-array" }
+                ],
+              },
             },
             field: {
-              store: { key: "en-shr_mask" },
-              enable: { key: "en-shr_use-mask" },
-              GMTF_DECIMAL: 0,
+              store: { key: "en-shr_em-per-array-dir" },
+              enable: {
+                keys: [
+                  { key: "en-shr_use-em" },
+                  { key: "en-shr_em-change-per-array-dir" }
+                ],
+              },
+              updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+              hidden: {
+                keys: [
+                  { key: "en-shr_hide-em" },
+                  { key: "en-shr_hide-em-per-array" }
+                ],
+              },
             },
             decrease: {
-              store: { key: "en-shr_mask" },
-              enable: { key: "en-shr_use-mask" },
-              factor: -1.0,
+              store: { key: "en-shr_em-per-array-dir" },
+              enable: {
+                keys: [
+                  { key: "en-shr_use-em" },
+                  { key: "en-shr_em-change-per-array-dir" }
+                ],
+              },
+              updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+              hidden: {
+                keys: [
+                  { key: "en-shr_hide-em" },
+                  { key: "en-shr_hide-em-per-array" }
+                ],
+              },
+              factor: -0.01,
             },
             increase: {
-              store: { key: "en-shr_mask" },
-              enable: { key: "en-shr_use-mask" },
-              factor: 1.0,
+              store: { key: "en-shr_em-per-array-dir" },
+              enable: {
+                keys: [
+                  { key: "en-shr_use-em" },
+                  { key: "en-shr_em-change-per-array-dir" }
+                ],
+              },
+              updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+              hidden: {
+                keys: [
+                  { key: "en-shr_hide-em" },
+                  { key: "en-shr_hide-em-per-array" }
+                ],
+              },
+              factor: 0.01,
             },
-            slider: {
-              store: { key: "en-shr_mask" },
-              enable: { key: "en-shr_use-mask" },
-              factor: 0.1,
+            stick: {
+              store: { key: "en-shr_em-per-array-dir" },
+              enable: {
+                keys: [
+                  { key: "en-shr_use-em" },
+                  { key: "en-shr_em-change-per-array-dir" }
+                ],
+              },
+              updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+              hidden: {
+                keys: [
+                  { key: "en-shr_hide-em" },
+                  { key: "en-shr_hide-em-per-array" }
+                ],
+              },
+              factor: 0.01,
+            },
+            checkbox: { 
+              spriteOn: { name: "visu_texture_checkbox_on" },
+              spriteOff: { name: "visu_texture_checkbox_off" },
+              store: { key: "en-shr_em-change-per-array-dir" },
+              hidden: {
+                keys: [
+                  { key: "en-shr_hide-em" },
+                  { key: "en-shr_hide-em-per-array" }
+                ],
+              },
+              enable: { key: "en-shr_use-em" },
+            },
+            title: { 
+              text: "Change",
+              enable: {
+                keys: [
+                  { key: "en-shr_use-em" },
+                  { key: "en-shr_em-change-per-array-dir" }
+                ],
+              },
+              updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+              hidden: {
+                keys: [
+                  { key: "en-shr_hide-em" },
+                  { key: "en-shr_hide-em-per-array" }
+                ],
+              },
             },
           },
-          z: {
+          duration: {
             label: {
-              text: "Width",
-              enable: { key: "en-shr_use-mask" },
+              text: "Duration",
+              enable: {
+                keys: [
+                  { key: "en-shr_use-em" },
+                  { key: "en-shr_em-change-per-array-dir" }
+                ],
+              },
+              updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+              hidden: {
+                keys: [
+                  { key: "en-shr_hide-em" },
+                  { key: "en-shr_hide-em-per-array" }
+                ],
+              },
             },
             field: {
-              store: { key: "en-shr_mask" },
-              enable: { key: "en-shr_use-mask" },
-              GMTF_DECIMAL: 0,
+              store: { key: "en-shr_em-per-array-dir" },
+              enable: {
+                keys: [
+                  { key: "en-shr_use-em" },
+                  { key: "en-shr_em-change-per-array-dir" }
+                ],
+              },
+              updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+              hidden: {
+                keys: [
+                  { key: "en-shr_hide-em" },
+                  { key: "en-shr_hide-em-per-array" }
+                ],
+              },
             },
             decrease: {
-              store: { key: "en-shr_mask" },
-              enable: { key: "en-shr_use-mask" },
-              factor: -1.0,
+              store: { key: "en-shr_em-per-array-dir" },
+              enable: {
+                keys: [
+                  { key: "en-shr_use-em" },
+                  { key: "en-shr_em-change-per-array-dir" }
+                ],
+              },
+              updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+              hidden: {
+                keys: [
+                  { key: "en-shr_hide-em" },
+                  { key: "en-shr_hide-em-per-array" }
+                ],
+              },
+              factor: -0.01,
             },
             increase: {
-              store: { key: "en-shr_mask" },
-              enable: { key: "en-shr_use-mask" },
-              factor: 1.0,
+              store: { key: "en-shr_em-per-array-dir" },
+              enable: {
+                keys: [
+                  { key: "en-shr_use-em" },
+                  { key: "en-shr_em-change-per-array-dir" }
+                ],
+              },
+              updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+              hidden: {
+                keys: [
+                  { key: "en-shr_hide-em" },
+                  { key: "en-shr_hide-em-per-array" }
+                ],
+              },
+              factor: 0.01,
             },
-            slider: {
-              store: { key: "en-shr_mask" },
-              enable: { key: "en-shr_use-mask" },
-              factor: 0.1,
+            stick: {
+              store: { key: "en-shr_em-per-array-dir" },
+              enable: {
+                keys: [
+                  { key: "en-shr_use-em" },
+                  { key: "en-shr_em-change-per-array-dir" }
+                ],
+              },
+              updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+              hidden: {
+                keys: [
+                  { key: "en-shr_hide-em" },
+                  { key: "en-shr_hide-em-per-array" }
+                ],
+              },
+              factor: 0.01,
             },
           },
-          a: {
+          ease: {
             label: {
-              text: "Height",
-              enable: { key: "en-shr_use-mask" },
+              text: "Ease",
+              enable: {
+                keys: [
+                  { key: "en-shr_use-em" },
+                  { key: "en-shr_em-change-per-array-dir" }
+                ],
+              },
+              updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+              hidden: {
+                keys: [
+                  { key: "en-shr_hide-em" },
+                  { key: "en-shr_hide-em-per-array" }
+                ],
+              },
             },
-            field: {
-              store: { key: "en-shr_mask" },
-              enable: { key: "en-shr_use-mask" },
-              GMTF_DECIMAL: 0,
+            previous: {
+              store: { key: "en-shr_em-per-array-dir" },
+              enable: {
+                keys: [
+                  { key: "en-shr_use-em" },
+                  { key: "en-shr_em-change-per-array-dir" }
+                ],
+              },
+              updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+              hidden: {
+                keys: [
+                  { key: "en-shr_hide-em" },
+                  { key: "en-shr_hide-em-per-array" }
+                ],
+              },
             },
-            decrease: {
-              store: { key: "en-shr_mask" },
-              enable: { key: "en-shr_use-mask" },
-              factor: -1.0,
+            preview: {
+              store: { key: "en-shr_em-per-array-dir" },
+              enable: {
+                keys: [
+                  { key: "en-shr_use-em" },
+                  { key: "en-shr_em-change-per-array-dir" }
+                ],
+              },
+              updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+              hidden: {
+                keys: [
+                  { key: "en-shr_hide-em" },
+                  { key: "en-shr_hide-em-per-array" }
+                ],
+              },
             },
-            increase: {
-              store: { key: "en-shr_mask" },
-              enable: { key: "en-shr_use-mask" },
-              factor: 1.0,
-            },
-            slider: {
-              store: { key: "en-shr_mask" },
-              enable: { key: "en-shr_use-mask" },
-              factor: 0.1,
+            next: {
+              store: { key: "en-shr_em-per-array-dir" },
+              enable: {
+                keys: [
+                  { key: "en-shr_use-em" },
+                  { key: "en-shr_em-change-per-array-dir" }
+                ],
+              },
+              updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+              hidden: {
+                keys: [
+                  { key: "en-shr_hide-em" },
+                  { key: "en-shr_hide-em-per-array" }
+                ],
+              },
             },
           },
         },
       },
-      */
+      {
+        name: "en-shr_em-per-array-step",
+        template: VEComponents.get("numeric-input"),
+        layout: VELayouts.get("div"),
+        config: { 
+          layout: {
+            type: UILayoutType.VERTICAL,
+            //margin: { top: 2, bottom: 0 },
+          },
+          label: { 
+            text: "Angle step",
+            hidden: {
+              keys: [
+                { key: "en-shr_hide-em" },
+                { key: "en-shr_hide-em-per-array" }
+              ],
+            },
+            enable: { key: "en-shr_use-em" },
+          },  
+          field: { 
+            store: { key: "en-shr_em-per-array-step" },
+            hidden: {
+              keys: [
+                { key: "en-shr_hide-em" },
+                { key: "en-shr_hide-em-per-array" }
+              ],
+            },
+            enable: { key: "en-shr_use-em" },
+          },
+          decrease: {
+            store: { key: "en-shr_em-per-array-step" },
+            hidden: {
+              keys: [
+                { key: "en-shr_hide-em" },
+                { key: "en-shr_hide-em-per-array" }
+              ],
+            },
+            enable: { key: "en-shr_use-em" },
+            factor: -0.01,
+          },
+          increase: {
+            store: { key: "en-shr_em-per-array-step" },
+            hidden: {
+              keys: [
+                { key: "en-shr_hide-em" },
+                { key: "en-shr_hide-em-per-array" }
+              ],
+            },
+            enable: { key: "en-shr_use-em" },
+            factor: 0.01,
+          },
+          stick: {
+            store: { key: "en-shr_em-per-array-step" },
+            hidden: {
+              keys: [
+                { key: "en-shr_hide-em" },
+                { key: "en-shr_hide-em-per-array" }
+              ],
+            },
+            enable: { key: "en-shr_use-em" },
+            factor: 0.01,
+          },
+          checkbox: {
+            hidden: {
+              keys: [
+                { key: "en-shr_hide-em" },
+                { key: "en-shr_hide-em-per-array" }
+              ],
+            },
+          },
+        },
+      },
+      {
+        name: "en-shr_em-per-array-rng",
+        template: VEComponents.get("numeric-input"),
+        layout: VELayouts.get("div"),
+        config: { 
+          layout: {
+            type: UILayoutType.VERTICAL,
+            //margin: { top: 1, bottom: 0 },
+          },
+          label: { 
+            text: "Rand. dir.",
+            hidden: {
+              keys: [
+                { key: "en-shr_hide-em" },
+                { key: "en-shr_hide-em-per-array" }
+              ],
+            },
+            enable: {
+              keys: [
+                { key: "en-shr_use-em" },
+                { key: "en-shr_em-use-per-array-rng" }
+              ],
+            },
+            updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+          },  
+          field: { 
+            store: { key: "en-shr_em-per-array-rng" },
+            hidden: {
+              keys: [
+                { key: "en-shr_hide-em" },
+                { key: "en-shr_hide-em-per-array" }
+              ],
+            },
+            enable: {
+              keys: [
+                { key: "en-shr_use-em" },
+                { key: "en-shr_em-use-per-array-rng" }
+              ],
+            },
+            updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+          },
+          decrease: {
+            store: { key: "en-shr_em-per-array-rng" },
+            hidden: {
+              keys: [
+                { key: "en-shr_hide-em" },
+                { key: "en-shr_hide-em-per-array" }
+              ],
+            },
+            enable: {
+              keys: [
+                { key: "en-shr_use-em" },
+                { key: "en-shr_em-use-per-array-rng" }
+              ],
+            },
+            updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+            factor: -0.01,
+          },
+          increase: {
+            store: { key: "en-shr_em-per-array-rng" },
+            hidden: {
+              keys: [
+                { key: "en-shr_hide-em" },
+                { key: "en-shr_hide-em-per-array" }
+              ],
+            },
+            enable: {
+              keys: [
+                { key: "en-shr_use-em" },
+                { key: "en-shr_em-use-per-array-rng" }
+              ],
+            },
+            updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+            factor: 0.01,
+          },
+          stick: {
+            store: { key: "en-shr_em-per-array-rng" },
+            hidden: {
+              keys: [
+                { key: "en-shr_hide-em" },
+                { key: "en-shr_hide-em-per-array" }
+              ],
+            },
+            enable: {
+              keys: [
+                { key: "en-shr_use-em" },
+                { key: "en-shr_em-use-per-array-rng" }
+              ],
+            },
+            updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+            factor: 0.01,
+          },
+          checkbox: {
+            spriteOn: { name: "visu_texture_checkbox_on" },
+            spriteOff: { name: "visu_texture_checkbox_off" },
+            store: { key: "en-shr_em-use-per-array-rng" },
+            hidden: {
+              keys: [
+                { key: "en-shr_hide-em" },
+                { key: "en-shr_hide-em-per-array" }
+              ],
+            },
+            enable: { key: "en-shr_use-em" },
+          },
+          title: {
+            text: "Use",
+            enable: {
+              keys: [
+                { key: "en-shr_use-em" },
+                { key: "en-shr_em-use-per-array-rng" }
+              ],
+            },
+            updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+            hidden: {
+              keys: [
+                { key: "en-shr_hide-em" },
+                { key: "en-shr_hide-em-per-array" }
+              ],
+            },
+          }
+        },
+      },
+      {
+        name: "en-shr_em-per-array-line-h",
+        template: VEComponents.get("line-h"),
+        layout: VELayouts.get("line-h"),
+        config: {
+          layout: {
+            type: UILayoutType.VERTICAL,
+            margin: { top: 0, bottom: 0 },
+            height: function() { return 0 },
+          },
+          image: { 
+            hidden: {
+              keys: [
+                { key: "en-shr_hide-em" },
+                { key: "en-shr_hide-em-per-array" }
+              ]
+            },
+            backgroundAlpha: 0.0,
+          },
+        },
+      },
+      {
+        name: "en-shr_em-spd-title",
+        template: VEComponents.get("property"),
+        layout: VELayouts.get("property"),
+        config: { 
+          layout: { type: UILayoutType.VERTICAL },
+          label: { 
+            text: "Speed",
+            hidden: { key: "en-shr_hide-em" },
+            enable: { key: "en-shr_use-em" },
+          },
+          input: {
+            hidden: { key: "en-shr_hide-em" },
+          },
+          checkbox: {
+            spriteOn: { name: "visu_texture_checkbox_show" },
+            spriteOff: { name: "visu_texture_checkbox_hide" },
+            hidden: { key: "en-shr_hide-em" },
+            store: { key: "en-shr_hide-em-spd" },
+          },
+        },
+      },
+      {
+        name: "en-shr_em-spd",
+        template: VEComponents.get("number-transformer-increase-checkbox"),
+        layout: VELayouts.get("number-transformer-increase-checkbox"),
+        config: { 
+          layout: { type: UILayoutType.VERTICAL },
+          value: {
+            label: {
+              text: "Value",
+              enable: {
+                keys: [
+                  { key: "en-shr_use-em" },
+                  { key: "en-shr_em-use-spd" }
+                ],
+              },
+              updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+              hidden: {
+                keys: [
+                  { key: "en-shr_hide-em" },
+                  { key: "en-shr_hide-em-spd" }
+                ],
+              },
+            },
+            field: {
+              store: { key: "en-shr_em-spd" },
+              enable: {
+                keys: [
+                  { key: "en-shr_use-em" },
+                  { key: "en-shr_em-use-spd" }
+                ],
+              },
+              updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+              hidden: {
+                keys: [
+                  { key: "en-shr_hide-em" },
+                  { key: "en-shr_hide-em-spd" }
+                ],
+              },
+            },
+            decrease: {
+              store: { key: "en-shr_em-spd" },
+              enable: {
+                keys: [
+                  { key: "en-shr_use-em" },
+                  { key: "en-shr_em-use-spd" }
+                ],
+              },
+              updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+              hidden: {
+                keys: [
+                  { key: "en-shr_hide-em" },
+                  { key: "en-shr_hide-em-spd" }
+                ],
+              },
+              factor: -0.01,
+            },
+            increase: {
+              store: { key: "en-shr_em-spd" },
+              enable: {
+                keys: [
+                  { key: "en-shr_use-em" },
+                  { key: "en-shr_em-use-spd" }
+                ],
+              },
+              updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+              hidden: {
+                keys: [
+                  { key: "en-shr_hide-em" },
+                  { key: "en-shr_hide-em-spd" }
+                ],
+              },
+              factor: 0.01,
+            },
+            stick: {
+              store: { key: "en-shr_em-spd" },
+              enable: {
+                keys: [
+                  { key: "en-shr_use-em" },
+                  { key: "en-shr_em-use-spd" }
+                ],
+              },
+              updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+              hidden: {
+                keys: [
+                  { key: "en-shr_hide-em" },
+                  { key: "en-shr_hide-em-spd" }
+                ],
+              },
+              factor: 0.01,
+            },
+            checkbox: { 
+              spriteOn: { name: "visu_texture_checkbox_on" },
+              spriteOff: { name: "visu_texture_checkbox_off" },
+              store: { key: "en-shr_em-use-spd" },
+              enable: { key: "en-shr_use-em" },
+              hidden: {
+                keys: [
+                  { key: "en-shr_hide-em" },
+                  { key: "en-shr_hide-em-spd" }
+                ],
+              },
+            },
+            title: { 
+              text: "Use",
+              enable: {
+                keys: [
+                  { key: "en-shr_use-em" },
+                  { key: "en-shr_em-use-spd" }
+                ],
+              },
+              updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+              hidden: {
+                keys: [
+                  { key: "en-shr_hide-em" },
+                  { key: "en-shr_hide-em-spd" }
+                ],
+              },
+            },
+          },
+          target: {
+            label: {
+              text: "Target",
+              enable: {
+                keys: [
+                  { key: "en-shr_use-em" },
+                  { key: "en-shr_em-change-spd" }
+                ],
+              },
+              updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+              hidden: {
+                keys: [
+                  { key: "en-shr_hide-em" },
+                  { key: "en-shr_hide-em-spd" }
+                ],
+              },
+            },
+            field: {
+              store: { key: "en-shr_em-spd" },
+              enable: {
+                keys: [
+                  { key: "en-shr_use-em" },
+                  { key: "en-shr_em-change-spd" }
+                ],
+              },
+              updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+              hidden: {
+                keys: [
+                  { key: "en-shr_hide-em" },
+                  { key: "en-shr_hide-em-spd" }
+                ],
+              },
+            },
+            decrease: {
+              store: { key: "en-shr_em-spd" },
+              enable: {
+                keys: [
+                  { key: "en-shr_use-em" },
+                  { key: "en-shr_em-change-spd" }
+                ],
+              },
+              updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+              hidden: {
+                keys: [
+                  { key: "en-shr_hide-em" },
+                  { key: "en-shr_hide-em-spd" }
+                ],
+              },
+              factor: -0.01,
+            },
+            increase: {
+              store: { key: "en-shr_em-spd" },
+              enable: {
+                keys: [
+                  { key: "en-shr_use-em" },
+                  { key: "en-shr_em-change-spd" }
+                ],
+              },
+              updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+              hidden: {
+                keys: [
+                  { key: "en-shr_hide-em" },
+                  { key: "en-shr_hide-em-spd" }
+                ],
+              },
+              factor: 0.01,
+            },
+            stick: {
+              store: { key: "en-shr_em-spd" },
+              enable: {
+                keys: [
+                  { key: "en-shr_use-em" },
+                  { key: "en-shr_em-change-spd" }
+                ],
+              },
+              updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+              hidden: {
+                keys: [
+                  { key: "en-shr_hide-em" },
+                  { key: "en-shr_hide-em-spd" }
+                ],
+              },
+              factor: 0.01,
+            },
+            checkbox: { 
+              spriteOn: { name: "visu_texture_checkbox_on" },
+              spriteOff: { name: "visu_texture_checkbox_off" },
+              store: { key: "en-shr_em-change-spd" },
+              hidden: {
+                keys: [
+                  { key: "en-shr_hide-em" },
+                  { key: "en-shr_hide-em-spd" }
+                ],
+              },
+              enable: { key: "en-shr_use-em" },
+            },
+            title: { 
+              text: "Change",
+              enable: {
+                keys: [
+                  { key: "en-shr_use-em" },
+                  { key: "en-shr_em-change-spd" }
+                ],
+              },
+              updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+              hidden: {
+                keys: [
+                  { key: "en-shr_hide-em" },
+                  { key: "en-shr_hide-em-spd" }
+                ],
+              },
+            },
+          },
+          duration: {
+            label: {
+              text: "Duration",
+              enable: {
+                keys: [
+                  { key: "en-shr_use-em" },
+                  { key: "en-shr_em-change-spd" }
+                ],
+              },
+              updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+              hidden: {
+                keys: [
+                  { key: "en-shr_hide-em" },
+                  { key: "en-shr_hide-em-spd" }
+                ],
+              },
+            },
+            field: {
+              store: { key: "en-shr_em-spd" },
+              enable: {
+                keys: [
+                  { key: "en-shr_use-em" },
+                  { key: "en-shr_em-change-spd" }
+                ],
+              },
+              updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+              hidden: {
+                keys: [
+                  { key: "en-shr_hide-em" },
+                  { key: "en-shr_hide-em-spd" }
+                ],
+              },
+            },
+            decrease: {
+              store: { key: "en-shr_em-spd" },
+              enable: {
+                keys: [
+                  { key: "en-shr_use-em" },
+                  { key: "en-shr_em-change-spd" }
+                ],
+              },
+              updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+              hidden: {
+                keys: [
+                  { key: "en-shr_hide-em" },
+                  { key: "en-shr_hide-em-spd" }
+                ],
+              },
+              factor: -0.01,
+            },
+            increase: {
+              store: { key: "en-shr_em-spd" },
+              enable: {
+                keys: [
+                  { key: "en-shr_use-em" },
+                  { key: "en-shr_em-change-spd" }
+                ],
+              },
+              updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+              hidden: {
+                keys: [
+                  { key: "en-shr_hide-em" },
+                  { key: "en-shr_hide-em-spd" }
+                ],
+              },
+              factor: 0.01,
+            },
+            stick: {
+              store: { key: "en-shr_em-spd" },
+              enable: {
+                keys: [
+                  { key: "en-shr_use-em" },
+                  { key: "en-shr_em-change-spd" }
+                ],
+              },
+              updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+              hidden: {
+                keys: [
+                  { key: "en-shr_hide-em" },
+                  { key: "en-shr_hide-em-spd" }
+                ],
+              },
+              factor: 0.01,
+            },
+          },
+          ease: {
+            label: {
+              text: "Ease",
+              enable: {
+                keys: [
+                  { key: "en-shr_use-em" },
+                  { key: "en-shr_em-change-spd" }
+                ],
+              },
+              updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+              hidden: {
+                keys: [
+                  { key: "en-shr_hide-em" },
+                  { key: "en-shr_hide-em-spd" }
+                ],
+              },
+            },
+            previous: {
+              store: { key: "en-shr_em-spd" },
+              enable: {
+                keys: [
+                  { key: "en-shr_use-em" },
+                  { key: "en-shr_em-change-spd" }
+                ],
+              },
+              updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+              hidden: {
+                keys: [
+                  { key: "en-shr_hide-em" },
+                  { key: "en-shr_hide-em-spd" }
+                ],
+              },
+            },
+            preview: {
+              store: { key: "en-shr_em-spd" },
+              enable: {
+                keys: [
+                  { key: "en-shr_use-em" },
+                  { key: "en-shr_em-change-spd" }
+                ],
+              },
+              updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+              hidden: {
+                keys: [
+                  { key: "en-shr_hide-em" },
+                  { key: "en-shr_hide-em-spd" }
+                ],
+              },
+            },
+            next: {
+              store: { key: "en-shr_em-spd" },
+              enable: {
+                keys: [
+                  { key: "en-shr_use-em" },
+                  { key: "en-shr_em-change-spd" }
+                ],
+              },
+              updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+              hidden: {
+                keys: [
+                  { key: "en-shr_hide-em" },
+                  { key: "en-shr_hide-em-spd" }
+                ],
+              },
+            },
+          },
+        },
+      },
+      {
+        name: "en-shr_em-spd-rng",
+        template: VEComponents.get("numeric-input"),
+        layout: VELayouts.get("div"),
+        config: { 
+          layout: {
+            type: UILayoutType.VERTICAL,
+            //margin: { top: 1, bottom: 0 },
+          },
+          label: { 
+            text: "Rand. spd.",
+            hidden: {
+              keys: [
+                { key: "en-shr_hide-em" },
+                { key: "en-shr_hide-em-spd" }
+              ],
+            },
+            enable: {
+              keys: [
+                { key: "en-shr_use-em" },
+                { key: "en-shr_em-use-spd-rng" }
+              ],
+            },
+            updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+          },  
+          field: { 
+            store: { key: "en-shr_em-spd-rng" },
+            hidden: {
+              keys: [
+                { key: "en-shr_hide-em" },
+                { key: "en-shr_hide-em-spd" }
+              ],
+            },
+            enable: {
+              keys: [
+                { key: "en-shr_use-em" },
+                { key: "en-shr_em-use-spd-rng" }
+              ],
+            },
+            updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+          },
+          decrease: {
+            store: { key: "en-shr_em-spd-rng" },
+            hidden: {
+              keys: [
+                { key: "en-shr_hide-em" },
+                { key: "en-shr_hide-em-spd" }
+              ],
+            },
+            enable: {
+              keys: [
+                { key: "en-shr_use-em" },
+                { key: "en-shr_em-use-spd-rng" }
+              ],
+            },
+            updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+            factor: -0.01,
+          },
+          increase: {
+            store: { key: "en-shr_em-spd-rng" },
+            hidden: {
+              keys: [
+                { key: "en-shr_hide-em" },
+                { key: "en-shr_hide-em-spd" }
+              ],
+            },
+            enable: {
+              keys: [
+                { key: "en-shr_use-em" },
+                { key: "en-shr_em-use-spd-rng" }
+              ],
+            },
+            updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+            factor: 0.01,
+          },
+          stick: {
+            store: { key: "en-shr_em-spd-rng" },
+            hidden: {
+              keys: [
+                { key: "en-shr_hide-em" },
+                { key: "en-shr_hide-em-spd" }
+              ],
+            },
+            enable: {
+              keys: [
+                { key: "en-shr_use-em" },
+                { key: "en-shr_em-use-spd-rng" }
+              ],
+            },
+            updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+            factor: 0.01,
+          },
+          checkbox: {
+            spriteOn: { name: "visu_texture_checkbox_on" },
+            spriteOff: { name: "visu_texture_checkbox_off" },
+            store: { key: "en-shr_em-use-spd-rng" },
+            hidden: {
+              keys: [
+                { key: "en-shr_hide-em" },
+                { key: "en-shr_hide-em-spd" }
+              ],
+            },
+            enable: { key: "en-shr_use-em" },
+          },
+          title: {
+            text: "Use",
+            enable: {
+              keys: [
+                { key: "en-shr_use-em" },
+                { key: "en-shr_em-use-spd-rng" }
+              ],
+            },
+            updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+            hidden: {
+              keys: [
+                { key: "en-shr_hide-em" },
+                { key: "en-shr_hide-em-spd" }
+              ],
+            },
+          }
+        },
+      },
+      {
+        name: "en-shr_em-spd-line-h",
+        template: VEComponents.get("line-h"),
+        layout: VELayouts.get("line-h"),
+        config: {
+          layout: {
+            type: UILayoutType.VERTICAL,
+            margin: { top: 0, bottom: 0 },
+            height: function() { return 0 },
+          },
+          image: { 
+            hidden: {
+              keys: [
+                { key: "en-shr_hide-em" },
+                { key: "en-shr_hide-em-spd" }
+              ]
+            },
+            backgroundAlpha: 0.0,
+          },
+        },
+      },
+      {
+        name: "en-shr_em-offest-x-title",
+        template: VEComponents.get("property"),
+        layout: VELayouts.get("property"),
+        config: { 
+          layout: { type: UILayoutType.VERTICAL },
+          label: { 
+            text: "Offset X",
+            hidden: { key: "en-shr_hide-em" },
+            enable: { key: "en-shr_use-em" },
+          },
+          input: {
+            hidden: { key: "en-shr_hide-em" },
+          },
+          checkbox: {
+            spriteOn: { name: "visu_texture_checkbox_show" },
+            spriteOff: { name: "visu_texture_checkbox_hide" },
+            hidden: { key: "en-shr_hide-em" },
+            store: { key: "en-shr_hide-em-offset-x" },
+          },
+        },
+      },
+      {
+        name: "en-shr_em-offset-x",
+        template: VEComponents.get("number-transformer-increase-checkbox"),
+        layout: VELayouts.get("number-transformer-increase-checkbox"),
+        config: { 
+          layout: { type: UILayoutType.VERTICAL },
+          value: {
+            label: {
+              text: "Value",
+              enable: {
+                keys: [
+                  { key: "en-shr_use-em" },
+                  { key: "en-shr_em-use-offset-x" }
+                ],
+              },
+              updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+              hidden: {
+                keys: [
+                  { key: "en-shr_hide-em" },
+                  { key: "en-shr_hide-em-offset-x" }
+                ],
+              },
+            },
+            field: {
+              store: { key: "en-shr_em-offset-x" },
+              enable: {
+                keys: [
+                  { key: "en-shr_use-em" },
+                  { key: "en-shr_em-use-offset-x" }
+                ],
+              },
+              updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+              hidden: {
+                keys: [
+                  { key: "en-shr_hide-em" },
+                  { key: "en-shr_hide-em-offset-x" }
+                ],
+              },
+            },
+            decrease: {
+              store: { key: "en-shr_em-offset-x" },
+              enable: {
+                keys: [
+                  { key: "en-shr_use-em" },
+                  { key: "en-shr_em-use-offset-x" }
+                ],
+              },
+              updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+              hidden: {
+                keys: [
+                  { key: "en-shr_hide-em" },
+                  { key: "en-shr_hide-em-offset-x" }
+                ],
+              },
+              factor: -0.01,
+            },
+            increase: {
+              store: { key: "en-shr_em-offset-x" },
+              enable: {
+                keys: [
+                  { key: "en-shr_use-em" },
+                  { key: "en-shr_em-use-offset-x" }
+                ],
+              },
+              updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+              hidden: {
+                keys: [
+                  { key: "en-shr_hide-em" },
+                  { key: "en-shr_hide-em-offset-x" }
+                ],
+              },
+              factor: 0.01,
+            },
+            stick: {
+              store: { key: "en-shr_em-offset-x" },
+              enable: {
+                keys: [
+                  { key: "en-shr_use-em" },
+                  { key: "en-shr_em-use-offset-x" }
+                ],
+              },
+              updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+              hidden: {
+                keys: [
+                  { key: "en-shr_hide-em" },
+                  { key: "en-shr_hide-em-offset-x" }
+                ],
+              },
+              factor: 0.01,
+            },
+            checkbox: { 
+              spriteOn: { name: "visu_texture_checkbox_on" },
+              spriteOff: { name: "visu_texture_checkbox_off" },
+              store: { key: "en-shr_em-use-offset-x" },
+              enable: { key: "en-shr_use-em" },
+              hidden: {
+                keys: [
+                  { key: "en-shr_hide-em" },
+                  { key: "en-shr_hide-em-offset-x" }
+                ],
+              },
+            },
+            title: { 
+              text: "Use",
+              enable: {
+                keys: [
+                  { key: "en-shr_use-em" },
+                  { key: "en-shr_em-use-offset-x" }
+                ],
+              },
+              updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+              hidden: {
+                keys: [
+                  { key: "en-shr_hide-em" },
+                  { key: "en-shr_hide-em-offset-x" }
+                ],
+              },
+            },
+          },
+          target: {
+            label: {
+              text: "Target",
+              enable: {
+                keys: [
+                  { key: "en-shr_use-em" },
+                  { key: "en-shr_em-change-offset-x" }
+                ],
+              },
+              updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+              hidden: {
+                keys: [
+                  { key: "en-shr_hide-em" },
+                  { key: "en-shr_hide-em-offset-x" }
+                ],
+              },
+            },
+            field: {
+              store: { key: "en-shr_em-offset-x" },
+              enable: {
+                keys: [
+                  { key: "en-shr_use-em" },
+                  { key: "en-shr_em-change-offset-x" }
+                ],
+              },
+              updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+              hidden: {
+                keys: [
+                  { key: "en-shr_hide-em" },
+                  { key: "en-shr_hide-em-offset-x" }
+                ],
+              },
+            },
+            decrease: {
+              store: { key: "en-shr_em-offset-x" },
+              enable: {
+                keys: [
+                  { key: "en-shr_use-em" },
+                  { key: "en-shr_em-change-offset-x" }
+                ],
+              },
+              updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+              hidden: {
+                keys: [
+                  { key: "en-shr_hide-em" },
+                  { key: "en-shr_hide-em-offset-x" }
+                ],
+              },
+              factor: -0.01,
+            },
+            increase: {
+              store: { key: "en-shr_em-offset-x" },
+              enable: {
+                keys: [
+                  { key: "en-shr_use-em" },
+                  { key: "en-shr_em-change-offset-x" }
+                ],
+              },
+              updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+              hidden: {
+                keys: [
+                  { key: "en-shr_hide-em" },
+                  { key: "en-shr_hide-em-offset-x" }
+                ],
+              },
+              factor: 0.01,
+            },
+            stick: {
+              store: { key: "en-shr_em-offset-x" },
+              enable: {
+                keys: [
+                  { key: "en-shr_use-em" },
+                  { key: "en-shr_em-change-offset-x" }
+                ],
+              },
+              updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+              hidden: {
+                keys: [
+                  { key: "en-shr_hide-em" },
+                  { key: "en-shr_hide-em-offset-x" }
+                ],
+              },
+              factor: 0.01,
+            },
+            checkbox: { 
+              spriteOn: { name: "visu_texture_checkbox_on" },
+              spriteOff: { name: "visu_texture_checkbox_off" },
+              store: { key: "en-shr_em-change-offset-x" },
+              hidden: {
+                keys: [
+                  { key: "en-shr_hide-em" },
+                  { key: "en-shr_hide-em-offset-x" }
+                ],
+              },
+              enable: { key: "en-shr_use-em" },
+            },
+            title: { 
+              text: "Change",
+              enable: {
+                keys: [
+                  { key: "en-shr_use-em" },
+                  { key: "en-shr_em-change-offset-x" }
+                ],
+              },
+              updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+              hidden: {
+                keys: [
+                  { key: "en-shr_hide-em" },
+                  { key: "en-shr_hide-em-offset-x" }
+                ],
+              },
+            },
+          },
+          duration: {
+            label: {
+              text: "Duration",
+              enable: {
+                keys: [
+                  { key: "en-shr_use-em" },
+                  { key: "en-shr_em-change-offset-x" }
+                ],
+              },
+              updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+              hidden: {
+                keys: [
+                  { key: "en-shr_hide-em" },
+                  { key: "en-shr_hide-em-offset-x" }
+                ],
+              },
+            },
+            field: {
+              store: { key: "en-shr_em-offset-x" },
+              enable: {
+                keys: [
+                  { key: "en-shr_use-em" },
+                  { key: "en-shr_em-change-offset-x" }
+                ],
+              },
+              updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+              hidden: {
+                keys: [
+                  { key: "en-shr_hide-em" },
+                  { key: "en-shr_hide-em-offset-x" }
+                ],
+              },
+            },
+            decrease: {
+              store: { key: "en-shr_em-offset-x" },
+              enable: {
+                keys: [
+                  { key: "en-shr_use-em" },
+                  { key: "en-shr_em-change-offset-x" }
+                ],
+              },
+              updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+              hidden: {
+                keys: [
+                  { key: "en-shr_hide-em" },
+                  { key: "en-shr_hide-em-offset-x" }
+                ],
+              },
+              factor: -0.01,
+            },
+            increase: {
+              store: { key: "en-shr_em-offset-x" },
+              enable: {
+                keys: [
+                  { key: "en-shr_use-em" },
+                  { key: "en-shr_em-change-offset-x" }
+                ],
+              },
+              updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+              hidden: {
+                keys: [
+                  { key: "en-shr_hide-em" },
+                  { key: "en-shr_hide-em-offset-x" }
+                ],
+              },
+              factor: 0.01,
+            },
+            stick: {
+              store: { key: "en-shr_em-offset-x" },
+              enable: {
+                keys: [
+                  { key: "en-shr_use-em" },
+                  { key: "en-shr_em-change-offset-x" }
+                ],
+              },
+              updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+              hidden: {
+                keys: [
+                  { key: "en-shr_hide-em" },
+                  { key: "en-shr_hide-em-offset-x" }
+                ],
+              },
+              factor: 0.01,
+            },
+          },
+          ease: {
+            label: {
+              text: "Ease",
+              enable: {
+                keys: [
+                  { key: "en-shr_use-em" },
+                  { key: "en-shr_em-change-offset-x" }
+                ],
+              },
+              updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+              hidden: {
+                keys: [
+                  { key: "en-shr_hide-em" },
+                  { key: "en-shr_hide-em-offset-x" }
+                ],
+              },
+            },
+            previous: {
+              store: { key: "en-shr_em-offset-x" },
+              enable: {
+                keys: [
+                  { key: "en-shr_use-em" },
+                  { key: "en-shr_em-change-offset-x" }
+                ],
+              },
+              updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+              hidden: {
+                keys: [
+                  { key: "en-shr_hide-em" },
+                  { key: "en-shr_hide-em-offset-x" }
+                ],
+              },
+            },
+            preview: {
+              store: { key: "en-shr_em-offset-x" },
+              enable: {
+                keys: [
+                  { key: "en-shr_use-em" },
+                  { key: "en-shr_em-change-offset-x" }
+                ],
+              },
+              updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+              hidden: {
+                keys: [
+                  { key: "en-shr_hide-em" },
+                  { key: "en-shr_hide-em-offset-x" }
+                ],
+              },
+            },
+            next: {
+              store: { key: "en-shr_em-offset-x" },
+              enable: {
+                keys: [
+                  { key: "en-shr_use-em" },
+                  { key: "en-shr_em-change-offset-x" }
+                ],
+              },
+              updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+              hidden: {
+                keys: [
+                  { key: "en-shr_hide-em" },
+                  { key: "en-shr_hide-em-offset-x" }
+                ],
+              },
+            },
+          },
+        },
+      },
+      {
+        name: "en-shr_em-offset-x-line-h",
+        template: VEComponents.get("line-h"),
+        layout: VELayouts.get("line-h"),
+        config: {
+          layout: {
+            type: UILayoutType.VERTICAL,
+            margin: { top: 0, bottom: 0 },
+            height: function() { return 0 },
+          },
+          image: { 
+            hidden: {
+              keys: [
+                { key: "en-shr_hide-em" },
+                { key: "en-shr_hide-em-offset-x" }
+              ]
+            },
+            backgroundAlpha: 0.0,
+          },
+        },
+      },
+      {
+        name: "en-shr_em-offest-y-title",
+        template: VEComponents.get("property"),
+        layout: VELayouts.get("property"),
+        config: { 
+          layout: { type: UILayoutType.VERTICAL },
+          label: { 
+            text: "Offset Y",
+            hidden: { key: "en-shr_hide-em" },
+            enable: { key: "en-shr_use-em" },
+          },
+          input: {
+            hidden: { key: "en-shr_hide-em" },
+          },
+          checkbox: {
+            spriteOn: { name: "visu_texture_checkbox_show" },
+            spriteOff: { name: "visu_texture_checkbox_hide" },
+            hidden: { key: "en-shr_hide-em" },
+            store: { key: "en-shr_hide-em-offset-y" },
+          },
+        },
+      },
+      {
+        name: "en-shr_em-offset-y",
+        template: VEComponents.get("number-transformer-increase-checkbox"),
+        layout: VELayouts.get("number-transformer-increase-checkbox"),
+        config: { 
+          layout: { type: UILayoutType.VERTICAL },
+          value: {
+            label: {
+              text: "Value",
+              enable: {
+                keys: [
+                  { key: "en-shr_use-em" },
+                  { key: "en-shr_em-use-offset-y" }
+                ],
+              },
+              updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+              hidden: {
+                keys: [
+                  { key: "en-shr_hide-em" },
+                  { key: "en-shr_hide-em-offset-y" }
+                ],
+              },
+            },
+            field: {
+              store: { key: "en-shr_em-offset-y" },
+              enable: {
+                keys: [
+                  { key: "en-shr_use-em" },
+                  { key: "en-shr_em-use-offset-y" }
+                ],
+              },
+              updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+              hidden: {
+                keys: [
+                  { key: "en-shr_hide-em" },
+                  { key: "en-shr_hide-em-offset-y" }
+                ],
+              },
+            },
+            decrease: {
+              store: { key: "en-shr_em-offset-y" },
+              enable: {
+                keys: [
+                  { key: "en-shr_use-em" },
+                  { key: "en-shr_em-use-offset-y" }
+                ],
+              },
+              updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+              hidden: {
+                keys: [
+                  { key: "en-shr_hide-em" },
+                  { key: "en-shr_hide-em-offset-y" }
+                ],
+              },
+              factor: -0.01,
+            },
+            increase: {
+              store: { key: "en-shr_em-offset-y" },
+              enable: {
+                keys: [
+                  { key: "en-shr_use-em" },
+                  { key: "en-shr_em-use-offset-y" }
+                ],
+              },
+              updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+              hidden: {
+                keys: [
+                  { key: "en-shr_hide-em" },
+                  { key: "en-shr_hide-em-offset-y" }
+                ],
+              },
+              factor: 0.01,
+            },
+            stick: {
+              store: { key: "en-shr_em-offset-y" },
+              enable: {
+                keys: [
+                  { key: "en-shr_use-em" },
+                  { key: "en-shr_em-use-offset-y" }
+                ],
+              },
+              updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+              hidden: {
+                keys: [
+                  { key: "en-shr_hide-em" },
+                  { key: "en-shr_hide-em-offset-y" }
+                ],
+              },
+              factor: 0.01,
+            },
+            checkbox: { 
+              spriteOn: { name: "visu_texture_checkbox_on" },
+              spriteOff: { name: "visu_texture_checkbox_off" },
+              store: { key: "en-shr_em-use-offset-y" },
+              enable: { key: "en-shr_use-em" },
+              hidden: {
+                keys: [
+                  { key: "en-shr_hide-em" },
+                  { key: "en-shr_hide-em-offset-y" }
+                ],
+              },
+            },
+            title: { 
+              text: "Use",
+              enable: {
+                keys: [
+                  { key: "en-shr_use-em" },
+                  { key: "en-shr_em-use-offset-y" }
+                ],
+              },
+              updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+              hidden: {
+                keys: [
+                  { key: "en-shr_hide-em" },
+                  { key: "en-shr_hide-em-offset-y" }
+                ],
+              },
+            },
+          },
+          target: {
+            label: {
+              text: "Target",
+              enable: {
+                keys: [
+                  { key: "en-shr_use-em" },
+                  { key: "en-shr_em-change-offset-y" }
+                ],
+              },
+              updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+              hidden: {
+                keys: [
+                  { key: "en-shr_hide-em" },
+                  { key: "en-shr_hide-em-offset-y" }
+                ],
+              },
+            },
+            field: {
+              store: { key: "en-shr_em-offset-y" },
+              enable: {
+                keys: [
+                  { key: "en-shr_use-em" },
+                  { key: "en-shr_em-change-offset-y" }
+                ],
+              },
+              updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+              hidden: {
+                keys: [
+                  { key: "en-shr_hide-em" },
+                  { key: "en-shr_hide-em-offset-y" }
+                ],
+              },
+            },
+            decrease: {
+              store: { key: "en-shr_em-offset-y" },
+              enable: {
+                keys: [
+                  { key: "en-shr_use-em" },
+                  { key: "en-shr_em-change-offset-y" }
+                ],
+              },
+              updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+              hidden: {
+                keys: [
+                  { key: "en-shr_hide-em" },
+                  { key: "en-shr_hide-em-offset-y" }
+                ],
+              },
+              factor: -0.01,
+            },
+            increase: {
+              store: { key: "en-shr_em-offset-y" },
+              enable: {
+                keys: [
+                  { key: "en-shr_use-em" },
+                  { key: "en-shr_em-change-offset-y" }
+                ],
+              },
+              updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+              hidden: {
+                keys: [
+                  { key: "en-shr_hide-em" },
+                  { key: "en-shr_hide-em-offset-y" }
+                ],
+              },
+              factor: 0.01,
+            },
+            stick: {
+              store: { key: "en-shr_em-offset-y" },
+              enable: {
+                keys: [
+                  { key: "en-shr_use-em" },
+                  { key: "en-shr_em-change-offset-y" }
+                ],
+              },
+              updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+              hidden: {
+                keys: [
+                  { key: "en-shr_hide-em" },
+                  { key: "en-shr_hide-em-offset-y" }
+                ],
+              },
+              factor: 0.01,
+            },
+            checkbox: { 
+              spriteOn: { name: "visu_texture_checkbox_on" },
+              spriteOff: { name: "visu_texture_checkbox_off" },
+              store: { key: "en-shr_em-change-offset-y" },
+              hidden: {
+                keys: [
+                  { key: "en-shr_hide-em" },
+                  { key: "en-shr_hide-em-offset-y" }
+                ],
+              },
+              enable: { key: "en-shr_use-em" },
+            },
+            title: { 
+              text: "Change",
+              enable: {
+                keys: [
+                  { key: "en-shr_use-em" },
+                  { key: "en-shr_em-change-offset-y" }
+                ],
+              },
+              updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+              hidden: {
+                keys: [
+                  { key: "en-shr_hide-em" },
+                  { key: "en-shr_hide-em-offset-y" }
+                ],
+              },
+            },
+          },
+          duration: {
+            label: {
+              text: "Duration",
+              enable: {
+                keys: [
+                  { key: "en-shr_use-em" },
+                  { key: "en-shr_em-change-offset-y" }
+                ],
+              },
+              updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+              hidden: {
+                keys: [
+                  { key: "en-shr_hide-em" },
+                  { key: "en-shr_hide-em-offset-y" }
+                ],
+              },
+            },
+            field: {
+              store: { key: "en-shr_em-offset-y" },
+              enable: {
+                keys: [
+                  { key: "en-shr_use-em" },
+                  { key: "en-shr_em-change-offset-y" }
+                ],
+              },
+              updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+              hidden: {
+                keys: [
+                  { key: "en-shr_hide-em" },
+                  { key: "en-shr_hide-em-offset-y" }
+                ],
+              },
+            },
+            decrease: {
+              store: { key: "en-shr_em-offset-y" },
+              enable: {
+                keys: [
+                  { key: "en-shr_use-em" },
+                  { key: "en-shr_em-change-offset-y" }
+                ],
+              },
+              updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+              hidden: {
+                keys: [
+                  { key: "en-shr_hide-em" },
+                  { key: "en-shr_hide-em-offset-y" }
+                ],
+              },
+              factor: -0.01,
+            },
+            increase: {
+              store: { key: "en-shr_em-offset-y" },
+              enable: {
+                keys: [
+                  { key: "en-shr_use-em" },
+                  { key: "en-shr_em-change-offset-y" }
+                ],
+              },
+              updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+              hidden: {
+                keys: [
+                  { key: "en-shr_hide-em" },
+                  { key: "en-shr_hide-em-offset-y" }
+                ],
+              },
+              factor: 0.01,
+            },
+            stick: {
+              store: { key: "en-shr_em-offset-y" },
+              enable: {
+                keys: [
+                  { key: "en-shr_use-em" },
+                  { key: "en-shr_em-change-offset-y" }
+                ],
+              },
+              updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+              hidden: {
+                keys: [
+                  { key: "en-shr_hide-em" },
+                  { key: "en-shr_hide-em-offset-y" }
+                ],
+              },
+              factor: 0.01,
+            },
+          },
+          ease: {
+            label: {
+              text: "Ease",
+              enable: {
+                keys: [
+                  { key: "en-shr_use-em" },
+                  { key: "en-shr_em-change-offset-y" }
+                ],
+              },
+              updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+              hidden: {
+                keys: [
+                  { key: "en-shr_hide-em" },
+                  { key: "en-shr_hide-em-offset-y" }
+                ],
+              },
+            },
+            previous: {
+              store: { key: "en-shr_em-offset-y" },
+              enable: {
+                keys: [
+                  { key: "en-shr_use-em" },
+                  { key: "en-shr_em-change-offset-y" }
+                ],
+              },
+              updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+              hidden: {
+                keys: [
+                  { key: "en-shr_hide-em" },
+                  { key: "en-shr_hide-em-offset-y" }
+                ],
+              },
+            },
+            preview: {
+              store: { key: "en-shr_em-offset-y" },
+              enable: {
+                keys: [
+                  { key: "en-shr_use-em" },
+                  { key: "en-shr_em-change-offset-y" }
+                ],
+              },
+              updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+              hidden: {
+                keys: [
+                  { key: "en-shr_hide-em" },
+                  { key: "en-shr_hide-em-offset-y" }
+                ],
+              },
+            },
+            next: {
+              store: { key: "en-shr_em-offset-y" },
+              enable: {
+                keys: [
+                  { key: "en-shr_use-em" },
+                  { key: "en-shr_em-change-offset-y" }
+                ],
+              },
+              updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+              hidden: {
+                keys: [
+                  { key: "en-shr_hide-em" },
+                  { key: "en-shr_hide-em-offset-y" }
+                ],
+              },
+            },
+          },
+        },
+      },
+      {
+        name: "en-shr_em-offset-y-line-h",
+        template: VEComponents.get("line-h"),
+        layout: VELayouts.get("line-h"),
+        config: {
+          layout: {
+            type: UILayoutType.VERTICAL,
+            margin: { top: 0, bottom: 0 },
+            height: function() { return 0 },
+          },
+          image: { 
+            hidden: {
+              keys: [
+                { key: "en-shr_hide-em" },
+                { key: "en-shr_hide-em-offset-y" }
+              ]
+            },
+            backgroundAlpha: 0.0,
+          },
+        },
+      },
+      {
+        name: "en-shr_em-line-h",
+        template: VEComponents.get("line-h"),
+        layout: VELayouts.get("line-h"),
+        config: {
+          layout: {
+            type: UILayoutType.VERTICAL,
+            margin: { top: 0, bottom: 0 },
+            height: function() { return 0 },
+          },
+          image: { 
+            hidden: { key: "en-shr_hide-em" },
+            backgroundAlpha: 0.0,
+          },
+        },
+      },
     ]),
   }
 }

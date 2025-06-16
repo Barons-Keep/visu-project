@@ -78,7 +78,7 @@ function VisuRenderer() constructor {
   
   ///@private
   ///@type {Timer}
-  initTimer = new Timer(1.5)
+  initTimer = new Timer(0.5)
 
   ///@type {Timer}
   fadeTimer = new Timer(0.25)

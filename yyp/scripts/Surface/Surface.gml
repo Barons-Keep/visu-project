@@ -46,10 +46,13 @@ function Surface(config = null) constructor {
   ///@type {Boolean}
   updated = false
 
+  ///@type {Boolean}
+  depth = Struct.getIfType(config, "depth", Boolean, false)
+
   ///@param {?Number} [width]
   ///@param {?Number} [height]
   ///@return {Surface}
-  static update = function(width = null, height = null) {
+  update = function(width = null, height = null) {
     this.updated = false
     if (Core.isType(width, Number) && width > 2) {
       this.width = round(width)
@@ -60,13 +63,22 @@ function Surface(config = null) constructor {
     }
 
     if (!Core.isType(this.asset, GMSurface)) {
-      surface_depth_disable(true)
+      surface_depth_disable(!this.depth)
       this.asset = surface_create(this.width, this.height, this.format)
       this.updated = true
+    } else {
+      if (this.depth && !surface_has_depth(this.asset)) {
+        surface_free(this.asset)
+        this.asset = null
+        
+        surface_depth_disable(!this.depth)
+        this.asset = surface_create(this.width, this.height, this.format)
+        this.updated = true
+      }
     }
 
     if (surface_get_format(this.asset) != this.format) {
-      surface_depth_disable(true)
+      surface_depth_disable(!this.depth)
       this.asset = surface_create(this.width, this.height, this.format)
       this.updated = true
     }
@@ -84,7 +96,7 @@ function Surface(config = null) constructor {
   ///@param {any} [data]
   ///@param {Boolean} [gpuSetSurface]
   ///@return {Surface}
-  static renderOn = function(callback, data = null, gpuSetSurface = true) {
+  renderOn = function(callback, data = null, gpuSetSurface = true) {
     if (!Core.isType(this.asset, GMSurface)) {
       Logger.error("Surface", "renderOn fatal error")
       return this
@@ -102,7 +114,7 @@ function Surface(config = null) constructor {
   }
 
   ///@return {Surface}
-  static render = function(x = 0, y = 0, alpha = 1.0) {
+  render = function(x = 0, y = 0, alpha = 1.0) {
     if (!Core.isType(this.asset, GMSurface)) {
       Logger.error("Surface", "render fatal error")
       return this
@@ -120,7 +132,7 @@ function Surface(config = null) constructor {
   ///@param {GMColor} [blend]
   ///@param {?BlendConfig} [blendConfig]
   ///@return {Surface}
-  static renderStretched = function(width, height, x = 0, y = 0, alpha = 1.0, blend = c_white, blendConfig = null) {
+  renderStretched = function(width, height, x = 0, y = 0, alpha = 1.0, blend = c_white, blendConfig = null) {
     if (!Core.isType(this.asset, GMSurface)) {
       Logger.error("Surface", "render fatal error")
       return this
@@ -146,7 +158,7 @@ function Surface(config = null) constructor {
   ///@param {Number} [xScale]
   ///@param {Number} [yScale]
   ///@return {Surface}
-  static renderScaledAndRotated = function(x = 0, y = 0, angle = 0.0, alpha = 1.0, xOrigin = 0.5, yOrigin = 0.5, xScale = 1.0, yScale = 1.0) {
+  renderScaledAndRotated = function(x = 0, y = 0, angle = 0.0, alpha = 1.0, xOrigin = 0.5, yOrigin = 0.5, xScale = 1.0, yScale = 1.0) {
     var surfaceXOrigin = this.width * xOrigin
     var surfaceYOrigin = this.height * yOrigin
     var surfaceXOriginBegin = 0
@@ -178,7 +190,7 @@ function Surface(config = null) constructor {
   ///@param {Number} width
   ///@param {Number} height
   ///@return {Surface}
-  static scaleToFill = function(width, height) {
+  scaleToFill = function(width, height) {
     if (width < 2 || height < 2) {
       return this
     }
@@ -197,7 +209,7 @@ function Surface(config = null) constructor {
     return this
   }
 
-  static free = function() {
+  free = function() {
     if (Core.isType(this.asset, GMSurface)) {
       surface_free(this.asset)
     }

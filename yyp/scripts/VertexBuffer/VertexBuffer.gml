@@ -23,6 +23,16 @@ function VertexBuffer() constructor {
   static build = function() {
     return this
   }
+
+  ///@return {VertexBuffer}
+  static free = function() {
+    if (this.buffer != null) {
+      vertex_delete_buffer(this.buffer)
+      this.buffer = null
+    }
+
+    return this
+  }
 }
 
 

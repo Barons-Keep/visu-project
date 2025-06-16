@@ -407,8 +407,9 @@ function VEEventInspector(_editor) constructor {
             }).clear()
           }
 
-          if (Core.isType(this.eventInspector.editor, VisuEditorController)) {
-            this.eventInspector.editor.store
+          var editor = Beans.get(BeanVisuEditorController)
+          if (Optional.is(editor)) {
+            editor.store
               .get("selected-event")
               .removeSubscriber(this.name)
           }

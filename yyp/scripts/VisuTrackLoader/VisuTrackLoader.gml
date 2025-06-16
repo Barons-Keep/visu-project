@@ -23,8 +23,9 @@ function VisuTrackLoader(_controller): Service() constructor {
       }
       return true
     },
-    mapPromiseToTask: function(promise) {
-      return Assert.isType(promise.response, Task)
+    mapPromiseToTask: function(promise, iterator, acc) {
+      return Assert.isType(promise.response, Task,
+        $"{iterator} promise.response must be type of Task")
     },
   }
 
@@ -54,6 +55,7 @@ function VisuTrackLoader(_controller): Service() constructor {
       "clear-state": {
         actions: {
           onStart: function(fsm, fsmState, path) {
+            Beans.get(BeanVisuController).visuRenderer.gridRenderer.pathTrack = null
             fsmState.state.set("path", path)
             fsmState.state.set("clearQueue", new Queue(Callable, [
               function() { Beans.get(BeanVisuController).displayService.setCaption(game_display_name) },
@@ -94,7 +96,8 @@ function VisuTrackLoader(_controller): Service() constructor {
                 data: this.state.get("path"),
               }))  
             } else {
-              Callable.run(clearQueue.pop())
+              //Callable.run(clearQueue.pop())
+              clearQueue.forEach(Callable.run)
             }
           } catch (exception) {
             var message = $"'clear-state' fatal error: {exception.message}"
@@ -180,8 +183,231 @@ function VisuTrackLoader(_controller): Service() constructor {
         actions: {
           onStart: function(fsm, fsmState, data) {
             var controller = fsm.context.controller
+            var callback = function(promises, name, data) {
+              promises.set(name, Beans.get(BeanFileService).send(data))
+            }
+
             controller.track = data.manifest
-            var promises = new Map(String, Promise, {
+            var events = new Stack(Struct, [
+              {
+                name: "texture",
+                callback: callback,
+                data: new Event("fetch-file")
+                  .setData({ path: $"{data.path}{data.manifest.texture}" })
+                  .setPromise(new Promise()
+                    .setState({ 
+                      callback: function(prototype, json, iterator, acc) {
+                        //Logger.debug("VisuTrackLoader", $"Load texture '{json.name}'")
+                        acc.promises.forEach(function(promise, key) {
+                          if (promise.status == PromiseStatus.REJECTED) {
+                            throw new Exception($"Found rejected load-texture promise for key '{key}'")
+                          }
+                        })
+
+                        var textureIntent = Assert.isType(new prototype(json), TextureIntent)
+                        textureIntent.file = FileUtil.get($"{acc.path}{textureIntent.file}")
+                        var promise = new Promise()
+                        acc.service.send(new Event("load-texture")
+                          .setData(textureIntent)
+                          .setPromise(promise))
+                        acc.promises.add(promise, textureIntent.name)
+                      },
+                      acc: {
+                        service: Beans.get(BeanTextureService),
+                        promises: new Map(String, Promise),
+                        path: controller.track.path,
+                      },
+                      steps: 2,
+                    })
+                    .whenSuccess(function(result) {
+                      return Assert.isType(JSON.parserTask(result.data, this.state), Task)
+                    })),
+              },
+              {
+                name: "sound",
+                callback: callback,
+                data: new Event("fetch-file")
+                  .setData({ path: $"{data.path}{data.manifest.sound}" })
+                  .setPromise(new Promise()
+                    .setState({ 
+                      callback: function(prototype, json, key, acc) {
+                        //Logger.debug("VisuTrackLoader", $"Load sound intent '{key}'")
+                        var soundIntent = new prototype(json)
+                        var soundService = acc.soundService
+                        var visuWASM = Callable.run("VisuWASM")
+                        if (Core.getRuntimeType() == RuntimeType.GXGAMES && Core.isType(visuWASM, Struct)) {
+                          Assert.isTrue(audio_group_is_loaded(visuWASM.getAudioGroup()), "audiogroup must be loaded")
+
+                          var sound = Struct.get(visuWASM.getSounds(), soundIntent.file)
+                          Assert.isType(sound, GMSound, $"Couldn't find sound for wasm target, {soundIntent.file}")
+                          soundService.sounds.add(sound, key)
+                          return
+                        }
+
+                        var path = FileUtil.get($"{acc.path}{soundIntent.file}")
+                        Assert.fileExists(path)
+                        Assert.isFalse(soundService.sounds.contains(key), "GMSound already loaded")
+
+                        var stream = audio_create_stream(path)
+                        soundService.sounds.add(stream, key)
+                        soundService.intents.add(soundIntent, key)
+                      },
+                      acc: {
+                        soundService: Beans.get(BeanSoundService),
+                        path: controller.track.path,
+                      },
+                      steps: 1,
+                    })
+                    .whenSuccess(function(result) {
+                      return Assert.isType(JSON.parserTask(result.data, this.state), Task)
+                    })),
+              },
+              {
+                name: "shader",
+                callback: callback,
+                data: new Event("fetch-file")
+                  .setData({ path: $"{data.path}{data.manifest.shader}" })
+                  .setPromise(new Promise()
+                    .setState({ 
+                      callback: function(prototype, json, key, acc) {
+                        //Logger.debug("VisuTrackLoader", $"Load shader template '{key}'")
+                        acc.set(key, new prototype(key, json))
+                      },
+                      acc: controller.shaderPipeline.templates,
+                      steps: MAGIC_NUMBER_TASK,
+                    })
+                    .whenSuccess(function(result) {
+                      return Assert.isType(JSON.parserTask(result.data, this.state), Task)
+                    })),
+              },
+              {
+                name: "track",
+                callback: callback,
+                data: new Event("fetch-file")
+                  .setData({ path: $"{data.path}{data.manifest.track}" })
+                  .setPromise(new Promise()
+                    .setState({ 
+                      callback: function(prototype, json, key, acc) {
+                        var name = Struct.get(json, "name")
+                        Logger.debug("VisuTrackLoader", $"Load track '{name}'")
+                        acc.trackService.openTrack(new prototype(json, { 
+                          handlers: acc.trackService.handlers,
+                          parseAsync: Core.getProperty("visu.manifest.parse-track-async", true),
+                          parseTrackEventStep: Core.getProperty("visu.manifest.parse-track-event-step", 32),
+                          parseSettings: function(json) {
+                            var difficulty = Struct.get(json, "difficulty")
+                            return {
+                              "difficulty": {
+                                "EASY": Struct.getDefault(difficulty, "EASY", true),
+                                "NORMAL": Struct.getDefault(difficulty, "NORMAL", true),
+                                "HARD": Struct.getDefault(difficulty, "HARD", true),
+                                "LUNATIC": Struct.getDefault(difficulty, "LUNATIC", true),
+                              }
+                            }
+                          },
+                        }))
+                      },
+                      acc: { trackService: controller.trackService },
+                    })
+                    .whenSuccess(function(result) {
+                      return Assert.isType(JSON.parserTask(result.data, this.state), Task)
+                    })),
+              },
+              {
+                name: "bullet",
+                callback: callback,
+                data: new Event("fetch-file")
+                  .setData({ path: $"{data.path}{data.manifest.bullet}" })
+                  .setPromise(new Promise()
+                    .setState({ 
+                      callback: function(prototype, json, key, acc) {
+                        //Logger.debug("VisuTrackLoader", $"Load bullet template '{key}'")
+                        acc.set(key, new prototype(key, json))
+                      },
+                      acc: controller.bulletService.templates,
+                      steps: MAGIC_NUMBER_TASK,
+                    })
+                    .whenSuccess(function(result) {
+                      return Assert.isType(JSON.parserTask(result.data, this.state), Task)
+                    })),
+              },
+              {
+                name: "coin",
+                callback: callback,
+                data: new Event("fetch-file")
+                  .setData({ path: $"{data.path}{data.manifest.coin}" })
+                  .setPromise(new Promise()
+                    .setState({ 
+                      callback: function(prototype, json, key, acc) {
+                        //Logger.debug("VisuTrackLoader", $"Load coin template '{key}'")
+                        acc.set(key, new prototype(key, json))
+                      },
+                      acc: controller.coinService.templates,
+                      steps: MAGIC_NUMBER_TASK,
+                    })
+                    .whenSuccess(function(result) {
+                      return Assert.isType(JSON.parserTask(result.data, this.state), Task)
+                    }))
+              },
+              {
+                name: "subtitle",
+                callback: callback,
+                data: new Event("fetch-file")
+                  .setData({ path: $"{data.path}{data.manifest.subtitle}" })
+                  .setPromise(new Promise()
+                    .setState({ 
+                      callback: function(prototype, json, key, acc) {
+                        //Logger.debug("VisuTrackLoader", $"Load subtitle template '{key}'")
+                        acc.set(key, new prototype(key, json))
+                      },
+                      acc: controller.subtitleService.templates,
+                      steps: MAGIC_NUMBER_TASK,
+                    })
+                    .whenSuccess(function(result) {
+                      return Assert.isType(JSON.parserTask(result.data, this.state), Task)
+                    })),
+              },
+              {
+                name: "shroom",
+                callback: callback,
+                data: new Event("fetch-file")
+                  .setData({ path: $"{data.path}{data.manifest.shroom}" })
+                  .setPromise(new Promise()
+                    .setState({ 
+                      callback: function(prototype, json, key, acc) {
+                        //Logger.debug("VisuTrackLoader", $"Load shroom template '{key}'")
+                        acc.set(key, new prototype(key, json))
+                      },
+                      acc: controller.shroomService.templates,
+                      steps: MAGIC_NUMBER_TASK,
+                    })
+                    .whenSuccess(function(result) {
+                      return Assert.isType(JSON.parserTask(result.data, this.state), Task)
+                    })),
+              },
+              {
+                name: "particle",
+                callback: callback,
+                data: new Event("fetch-file")
+                  .setData({ path: $"{data.path}{data.manifest.particle}" })
+                  .setPromise(new Promise()
+                    .setState({ 
+                      callback: function(prototype, json, key, acc) {
+                        //Logger.debug("VisuTrackLoader", $"Load particle template '{key}'")
+                        acc.set(key, new prototype(key, json))
+                      },
+                      acc: controller.particleService.templates,
+                      steps: MAGIC_NUMBER_TASK,
+                    })
+                    .whenSuccess(function(result) {
+                      return Assert.isType(JSON.parserTask(result.data, this.state), Task)
+                    })),
+              }
+            ])
+
+            var promises = new Map(String, Promise)
+            /*
+            var _promises = new Map(String, Promise, {
               "texture": Beans.get(BeanFileService).send(
                 new Event("fetch-file")
                   .setData({ path: $"{data.path}{data.manifest.texture}" })
@@ -377,7 +603,9 @@ function VisuTrackLoader(_controller): Service() constructor {
                     }))
               ),
             })
+            */
 
+            var promises = new Map(String, Promise)
             if (Core.isType(Struct.get(data.manifest, "video"), String)) {
               fsmState.state.set("video", new Event("open-video", {
                 video: {
@@ -390,7 +618,8 @@ function VisuTrackLoader(_controller): Service() constructor {
               }))
             }
 
-            if (Core.getRuntimeType() == RuntimeType.GXGAMES && Core.isType(Callable.run("VisuWASM"), Struct)) {
+            if (Core.getRuntimeType() == RuntimeType.GXGAMES
+                && Core.isType(Callable.run("VisuWASM"), Struct)) {
               var audioGroupTask = new Task("load-audio-group")
                 .setPromise(new Promise())
                 .setTimeout(10.0)
@@ -416,6 +645,37 @@ function VisuTrackLoader(_controller): Service() constructor {
               fsmState.state.set("audio-group", audioGroupTask.promise)
             }
             
+            if (Core.getProperty("visu.manifest.load-brushes")) {
+              data.manifest.editor.forEach(function(file, index, acc) { 
+                acc.events.push({
+                  name: file,
+                  callback: acc.callback,
+                  data: new Event("fetch-file")
+                    .setData({ path: $"{acc.data.path}{file}" })
+                    .setPromise(new Promise()
+                      .setState({ 
+                        callback: function(prototype, json, index, acc) {
+                          //Logger.debug("VisuTrackLoader", $"Load brush '{json.name}'")
+                          acc.saveTemplate(new prototype(json))
+                        },
+                        acc: {
+                          saveTemplate: Beans.get(BeanVisuController).brushService.saveTemplate,
+                          file: file,
+                        },
+                        steps: MAGIC_NUMBER_TASK,
+                      })
+                      .whenSuccess(function(result) {
+                        return Assert.isType(JSON.parserTask(result.data, this.state), Task)
+                      })),
+                })
+              }, {
+                data: data,
+                callback: callback,
+                events: events,
+              })
+            }
+
+            /*
             data.manifest.editor.forEach(function(file, index, acc) { 
               var promise = Beans.get(BeanFileService).send(
                 new Event("fetch-file")
@@ -438,25 +698,39 @@ function VisuTrackLoader(_controller): Service() constructor {
               )
               acc.promises.add(promise, file)
             }, { data: data, promises: promises })
+            */
           
             fsmState.state.set("promises", promises)
+            fsmState.state.set("events", events)
           },
         },
         update: function(fsm) {
           try {
             var promises = this.state.get("promises")
+            var events = this.state.get("events")
+            if (events.size() > 0) {
+              var event = events.pop()
+              event.callback(promises, event.name, event.data)
+              //events.forEach(function(event, iterator, promises) {
+              //  event.callback(promises, event.name, event.data)
+              //}, promises)
+              return
+            }
+            
             var filtered = promises.filter(fsm.context.utils.filterPromise)
             if (filtered.size() != promises.size()) {
               return
             }
 
-            if (Core.getRuntimeType() == RuntimeType.GXGAMES) {
+            if (Core.getRuntimeType() == RuntimeType.GXGAMES
+                && Core.isType(Callable.run("VisuWASM"), Struct)) {
               var audioGroupPromise = this.state.get("audio-group")
               if (audioGroupPromise.status == PromiseStatus.PENDING) {
                 return
               }
 
-              Assert.isTrue(audioGroupPromise.status == PromiseStatus.FULLFILLED)
+              Assert.isTrue(audioGroupPromise.status == PromiseStatus.FULLFILLED,
+                "audioGroupPromise value must be equal to PromiseStatus.FULLFILLED")
             }
 
             fsm.dispatcher.send(new Event("transition", {
@@ -468,9 +742,11 @@ function VisuTrackLoader(_controller): Service() constructor {
             }))
           } catch (exception) {
             var message = $"'create-parser-tasks' fatal error: {exception.message}",
-            Beans.get(BeanVisuController).send(new Event("spawn-popup", { message: message }))
             Logger.error("VisuTrackLoader", message)
+            Core.printStackTrace()
+
             fsm.dispatcher.send(new Event("transition", { name: "idle" }))
+            Beans.get(BeanVisuController).send(new Event("spawn-popup", { message: message }))
           }
         },
         transitions: {
@@ -603,9 +879,15 @@ function VisuTrackLoader(_controller): Service() constructor {
               return
             }
 
+            if (fsm.context.controller.trackService.track == null) {
+              Assert.isTrue(fsm.context.controller.trackService.executor.tasks.size() > 0,
+                "parse-secondary-assets TrackService.executor.tasks.size() must be > 0")
+              return
+            }
+
             var audio = Assert.isType(fsm.context.controller.trackService.track.audio, Sound)
             var attempts = this.state.inject("attempts", GAME_FPS * 5) - DeltaTime.apply(1)
-            Assert.isTrue(attempts >= 0.0)
+            Assert.isTrue(attempts >= 0.0, "parse-secondary-assets attempts must be >= 0.0")
             this.state.set("attempts", attempts)
             audio.rewind(0.0)
             if (audio.getPosition() != 0.0) {
@@ -639,12 +921,20 @@ function VisuTrackLoader(_controller): Service() constructor {
 
             var textureLoadTask = new Task("texture-load-task")
               .setState({
-                stack: stack
+                stack: stack,
+                setup: false,
               })
               .setPromise(new Promise())
               .whenUpdate(function() {
+                if (!this.state.setup) {
+                  if (Beans.get(BeanVisuController).visuRenderer.spinnerFactor < 1.0) {
+                    this.state.setup = true
+                  }
+                  return
+                }
+
                 try {
-                  repeat (1) {
+                  repeat (16) {
                     if (this.state.stack.size() == 0) {
                       this.fullfill()
                       break
@@ -660,7 +950,7 @@ function VisuTrackLoader(_controller): Service() constructor {
                           random(10.0),
                           random(360.0),
                           make_color_rgb(irandom(255), irandom(255), irandom(255)),
-                          0.075
+                          1.0
                         )
                       }
                     }
@@ -673,7 +963,7 @@ function VisuTrackLoader(_controller): Service() constructor {
               })
             Beans.get(BeanVisuController).visuRenderer.executor.add(textureLoadTask)
             fsmState.state.set("texture-load-task", textureLoadTask)
-            fsmState.state.set("cooldown-timer", new Timer(2.0))
+            fsmState.state.set("cooldown-timer", new Timer(0.125))
 
             var controller = Beans.get(BeanVisuController)
             controller.executor.tasks.forEach(function(task) {
@@ -789,6 +1079,9 @@ function VisuTrackLoader(_controller): Service() constructor {
               editor.send(new Event("open"))
             }
 
+            //var pathTrack = new PathTrack()
+            //pathTrack.build(controller.trackService.duration)
+            //controller.visuRenderer.gridRenderer.pathTrack = pathTrack
             controller.send(new Event("spawn-popup", 
               { message: $"Project '{Beans.get(BeanVisuController).trackService.track.name}' loaded successfully" }))
           }

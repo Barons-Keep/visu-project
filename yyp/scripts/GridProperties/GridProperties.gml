@@ -17,10 +17,10 @@ function GridProperties(config = null) constructor {
   channelsSecondaryColor = ColorUtil.fromHex(Struct.get(config, "properties.channelsSecondaryColor"), "#7daaff")
 
   ///@type {Number}
-  channelsPrimaryAlpha = Struct.getIfType(config, "properties.channelsPrimaryAlpha", Number, 0.8)
+  channelsPrimaryAlpha = Struct.getIfType(config, "properties.channelsPrimaryAlpha", Number, 0.0)
 
   ///@type {Number}
-  channelsSecondaryAlpha = Struct.getIfType(config, "properties.channelsSecondaryAlpha", Number, 0.6)
+  channelsSecondaryAlpha = Struct.getIfType(config, "properties.channelsSecondaryAlpha", Number, 0.0)
 
   ///@type {Number}
   channelsPrimaryThickness = Struct.getIfType(config, "properties.channelsPrimaryThickness", Number, 6.0)
@@ -47,11 +47,11 @@ function GridProperties(config = null) constructor {
 
   ///@type {Number}
   separatorsPrimaryAlpha = Assert.isType(Struct
-    .getDefault(config, "properties.separatorsPrimaryAlpha", 0.8), Number)
+    .getDefault(config, "properties.separatorsPrimaryAlpha", 0.0), Number)
 
   ///@type {Number}
   separatorsSecondaryAlpha = Assert.isType(Struct
-    .getDefault(config, "properties.separatorsSecondaryAlpha", 0.6), Number)  
+    .getDefault(config, "properties.separatorsSecondaryAlpha", 0.0), Number)  
 
   ///@type {Number}
   separatorsPrimaryThickness = Assert.isType(Struct
@@ -244,6 +244,60 @@ function GridProperties(config = null) constructor {
   ///@private
   ///@type {Timer}
   separatorTimer = new Timer(FRAME_MS, { amount: this.speed / 1000.0, loop: Infinity })
+
+  ///@param {Struct} context
+  ///@return {GridProperties}
+  init = function(context) {
+    var properties = this
+    var pump = context.dispatcher
+    var executor = context.executor
+    pump.send(new Event("transform-property", {
+      key: "channelsPrimaryAlpha",
+      container: properties,
+      executor: executor,
+      transformer: new NumberTransformer({
+        value: 0.0,
+        target: 0.8,
+        ease: EaseType.LINEAR,
+        duration: 0.8,
+      })
+    }))
+    pump.send(new Event("transform-property", {
+      key: "channelsSecondaryAlpha",
+      container: properties,
+      executor: executor,
+      transformer: new NumberTransformer({
+        value: 0.0,
+        target: 0.6,
+        ease: EaseType.LINEAR,
+        duration: 0.8,
+      })
+    }))
+    pump.send(new Event("transform-property", {
+      key: "separatorsPrimaryAlpha",
+      container: properties,
+      executor: executor,
+      transformer: new NumberTransformer({
+        value: 0.0,
+        target: 0.8,
+        ease: EaseType.LINEAR,
+        duration: 0.8,
+      })
+    }))
+    pump.send(new Event("transform-property", {
+      key: "separatorsSecondaryAlpha",
+      container: properties,
+      executor: executor,
+      transformer: new NumberTransformer({
+        value: 0.0,
+        target: 0.6,
+        ease: EaseType.LINEAR,
+        duration: 0.8,
+      })
+    }))
+
+    return this
+  }
 
   ///@param {GridService} gridService
   ///@return {GridProperties}

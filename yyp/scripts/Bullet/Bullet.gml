@@ -43,6 +43,9 @@ function BulletTemplate(_name, json) constructor {
   angleOffset = Struct.getIfType(json, "angleOffset", Struct)
 
   ///@type {Boolean}
+  sumAngleOffset = Struct.getIfType(json, "sumAngleOffset", Boolean, false)
+
+  ///@type {Boolean}
   angleOffsetRng = Struct.getIfType(json, "angleOffsetRng", Boolean, false)
 
   ///@type {Boolean}
@@ -53,6 +56,9 @@ function BulletTemplate(_name, json) constructor {
 
   ///@type {?Struct}
   speedOffset = Struct.getIfType(json, "speedOffset", Struct)
+
+  ///@type {Boolean}
+  sumSpeedOffset = Struct.getIfType(json, "sumSpeedOffset", Boolean, false)
 
   ///@type {Boolean}
   useSpeedOffset = Struct.getIfType(json, "useSpeedOffset", Boolean, false)
@@ -76,6 +82,9 @@ function BulletTemplate(_name, json) constructor {
   onDeathAngleStep = Struct.getIfType(json, "onDeathAngleStep", Number)
 
   ///@type {?Number}
+  onDeathAngleIncrease = Struct.getIfType(json, "onDeathAngleIncrease", Number)
+
+  ///@type {?Number}
   onDeathRngStep = Struct.getIfType(json, "onDeathRngStep", Number)
 
   ///@type {?Number}
@@ -90,13 +99,19 @@ function BulletTemplate(_name, json) constructor {
   ///@return {Struct}
   serialize = function() {
     return {
-      sprite: this.sprite,
-      useSpeedOffset: this.useSpeedOffset,
-      changeSpeedOffset: this.changeSpeedOffset,
+      angleOffset: this.angleOffset,
       useAngleOffset: this.useAngleOffset,
       changeAngleOffset: this.changeAngleOffset,
+      sumAngleOffset: this.sumAngleOffset,
+      angleOffsetRng: this.angleOffsetRng,
+      speedOffset: this.speedOffset,
+      useSpeedOffset: this.useSpeedOffset,
+      changeSpeedOffset: this.changeSpeedOffset,
+      sumSpeedOffset: this.sumSpeedOffset,
+
       damage: this.damage,
       lifespanMax: this.lifespanMax,
+      sprite: this.sprite,
       mask: this.mask,
       wiggle: this.wiggle,
       wiggleTime: this.wiggleTime,
@@ -104,14 +119,12 @@ function BulletTemplate(_name, json) constructor {
       wiggleFrequency: this.wiggleFrequency,
       wiggleDirRng: this.wiggleDirRng,
       wiggleAmplitude: this.wiggleAmplitude,
-      angleOffset: this.angleOffset,
-      angleOffsetRng: this.angleOffsetRng,
-      speedOffset: this.speedOffset,
       onDeath: this.onDeath,
       onDeathAmount: this.onDeathAmount,
       onDeathAngle: this.onDeathAngle,
       onDeathAngleRng: this.onDeathAngleRng,
       onDeathAngleStep: this.onDeathAngleStep,
+      onDeathAngleIncrease: this.onDeathAngleIncrease,
       onDeathRngStep: this.onDeathRngStep,
       onDeathSpeed: this.onDeathSpeed,
       onDeathSpeedMerge: this.onDeathSpeedMerge,
@@ -119,16 +132,39 @@ function BulletTemplate(_name, json) constructor {
     }
   }
 
+  ///@param {String} uid
+  ///@param {Shroom|Player} producer
+  ///@param {Number} x
+  ///@param {Number} y
+  ///@param {Number} angle
+  ///@param {Number} speed
+  ///@param {?Number|?Struct} [angleOffset]
+  ///@param {?Boolean} [angleOffsetRng]
+  ///@param {?Boolean} [sumAngleOffset]
+  ///@param {?Number|?Struct} [speedOffset]
+  ///@param {?Boolean} [sumSpeedOffset]
   ///@return {Struct}
-  serializeSpawn = function(x, y, angle, speed, producer, uid) {
+  serializeSpawn = function(uid, producer, x, y, angle, speed, angleOffset = null, angleOffsetRng = null, sumAngleOffset = null, speedOffset = null, sumSpeedOffset = null) {
     return {
-      sprite: this.sprite,
-      useSpeedOffset: this.useSpeedOffset,
-      changeSpeedOffset: this.changeSpeedOffset,
-      useAngleOffset: this.useAngleOffset,
-      changeAngleOffset: this.changeAngleOffset,
+      uid: uid,
+      producer: producer,
+      x: x,
+      y: y,
+      angle: angle,
+      speed: speed,
+      angleOffset: angleOffset != null ? angleOffset : this.angleOffset,
+      angleOffsetRng: angleOffsetRng != null ? angleOffsetRng : this.angleOffsetRng,
+      useAngleOffset: angleOffset != null ? true : this.useAngleOffset,
+      changeAngleOffset: angleOffset != null ? true : this.changeAngleOffset,
+      sumAngleOffset: sumAngleOffset != null ? sumAngleOffset : this.sumAngleOffset,
+      speedOffset: speedOffset != null ? speedOffset : this.speedOffset,
+      useSpeedOffset: speedOffset != null ? true : this.useSpeedOffset,
+      changeSpeedOffset: speedOffset != null ? true : this.changeSpeedOffset,
+      sumSpeedOffset: sumSpeedOffset != null ? sumSpeedOffset : this.sumSpeedOffset,
+
       damage: this.damage,
       lifespanMax: this.lifespanMax,
+      sprite: this.sprite,
       mask: this.mask,
       wiggle: this.wiggle,
       wiggleTime: this.wiggleTime,
@@ -136,24 +172,16 @@ function BulletTemplate(_name, json) constructor {
       wiggleFrequency: this.wiggleFrequency,
       wiggleDirRng: this.wiggleDirRng,
       wiggleAmplitude: this.wiggleAmplitude,
-      angleOffset: this.angleOffset,
-      angleOffsetRng: this.angleOffsetRng,
-      speedOffset: this.speedOffset,
       onDeath: this.onDeath,
       onDeathAmount: this.onDeathAmount,
       onDeathAngle: this.onDeathAngle,
       onDeathAngleRng: this.onDeathAngleRng,
       onDeathAngleStep: this.onDeathAngleStep,
+      onDeathAngleIncrease: this.onDeathAngleIncrease,
       onDeathRngStep: this.onDeathRngStep,
       onDeathSpeed: this.onDeathSpeed,
       onDeathSpeedMerge: this.onDeathSpeedMerge,
       onDeathRngSpeed: this.onDeathRngSpeed,
-      x: x,
-      y: y,
-      angle: angle,
-      speed: speed,
-      producer: producer,
-      uid: uid,
     }
   }
 }
@@ -170,9 +198,7 @@ function Bullet(template): GridItem(template) constructor {
   
   ///@type {Player|Shroom}
   producer = template.producer
-  //Assert.isTrue(this.producer == Player || this.producer == Shroom)
 
-  ///@private
   ///@type {Number}
   lifespanMax = Struct.get(template, "lifespanMax")
   
@@ -182,53 +208,49 @@ function Bullet(template): GridItem(template) constructor {
   ///@type {Boolean}
   wiggle = Struct.get(template, "wiggle")
 
-  ///@type {Number}
-  wiggleTime = Struct.get(template, "wiggleTime")
-
   ///@type {Boolean}
   wiggleTimeRng = Struct.get(template, "wiggleTimeRng")
 
   ///@type {Number}
-  wiggleFrequency = Struct.get(template, "wiggleFrequency")
-
+  wiggleTime = this.wiggleTimeRng
+    ? random(Struct.get(template, "wiggleTime"))
+    : Struct.get(template, "wiggleTime")
+  
   ///@type {Boolean}
   wiggleDirRng = Struct.get(template, "wiggleDirRng")
 
   ///@type {Number}
+  this.wiggleFrequency = Struct.get(template, "wiggleFrequency")
+    * (this.wiggleDirRng ? choose(1.0, -1.0) : 1.0)
+
+  ///@type {Number}
   wiggleAmplitude = Struct.get(template, "wiggleAmplitude")
 
-  this.wiggleTime = this.wiggleTimeRng ? random(this.wiggleTime) : this.wiggleTime
-  this.wiggleFrequency = this.wiggleDirRng ? choose(1, -1) * this.wiggleFrequency : this.wiggleFrequency
-
   ///@type {?NumberTransformer}
-  angleOffset = Optional.is(Struct.get(template, "angleOffset"))
-    ? new NumberTransformer({
-      value: template.useAngleOffset ? template.angleOffset.value : 0.0,
-      target: template.changeAngleOffset ? template.angleOffset.target : (template.useAngleOffset ? template.angleOffset.value : 0.0),
-      factor: template.changeAngleOffset ? template.angleOffset.factor : (template.useAngleOffset ? abs(template.angleOffset.value) : 999.9),
-      increase: template.changeAngleOffset ? template.angleOffset.increase : 0.0,
-      duration: template.changeAngleOffset ? Struct.get(template.angleOffset, "duration") : 0.0,
-      ease: Struct.get(template.angleOffset, "ease"),
-    })
+  angleOffset = Struct.get(template, "angleOffset") != null && Struct.get(template, "useAngleOffset")
+    ? new NumberTransformer(Struct.get(template, "changeAngleOffset")
+      ? template.angleOffset 
+      : Struct.get(template.angleOffset, "value"))
     : null
 
   ///@type {Boolean}
-  angleOffsetRng = Struct.get(template, "angleOffsetRng") // false
+  angleOffsetRng = Struct.get(template, "angleOffsetRng")
+
+  ///@type {Boolean}
+  sumAngleOffset = Struct.get(template, "sumAngleOffset")
 
   ///@param {Number}
   angleOffsetDir = this.angleOffsetRng ? choose(1.0, -1.0) : 1.0
 
   ///@type {?NumberTransformer}
-  speedOffset = Optional.is(Struct.get(template, "speedOffset"))
-    ? new NumberTransformer({
-      value: template.useSpeedOffset ? template.speedOffset.value : 0.0,
-      target: template.changeSpeedOffset ? template.speedOffset.target : (template.useSpeedOffset ? template.speedOffset.value : 0.0),
-      factor: template.changeSpeedOffset ? template.speedOffset.factor : (template.useSpeedOffset ? abs(template.speedOffset.value) : 999.9),
-      increase: template.changeSpeedOffset ? template.speedOffset.increase : 0.0,
-      duration: template.changeSpeedOffset ?  Struct.get(template.speedOffset, "duration") : 0.0,
-      ease: Struct.get(template.speedOffset, "ease"),
-    })
+  speedOffset = Struct.get(template, "speedOffset") != null && Struct.get(template, "useSpeedOffset")
+    ? new NumberTransformer(Struct.get(template, "changeSpeedOffset")
+      ? template.speedOffset 
+      : Struct.get(template.speedOffset, "value"))
     : null
+
+  ///@type {Boolean}
+  sumSpeedOffset = Struct.get(template, "sumSpeedOffset")
   
   ///@type {?String}
   onDeath = Struct.get(template, "onDeath")
@@ -246,6 +268,9 @@ function Bullet(template): GridItem(template) constructor {
   onDeathAngleStep = Struct.get(template, "onDeathAngleStep")
 
   ///@type {?Number}
+  onDeathAngleIncrease = Struct.get(template, "onDeathAngleIncrease")
+
+  ///@type {?Number}
   onDeathRngStep = Struct.get(template, "onDeathRngStep")
 
   ///@type {?Number}
@@ -257,70 +282,63 @@ function Bullet(template): GridItem(template) constructor {
   ///@type {?Number}
   onDeathRngSpeed = Struct.get(template, "onDeathRngSpeed")
 
+  ///@type {Number}
+  fadeOut = 0.5
+
   ///@param {VisuController} controller
   ///@return {Bullet}
   static update = function(controller) {
     gml_pragma("forceinline")
-    var componentAngle = 0.0
-    var componentSpeed = 0.0
 
+    #region @Implement component Lifespan
+    this.lifespan += DeltaTime.apply(FRAME_MS)
+    if (this.lifespan >= this.lifespanMax
+        || this.signals.shroomCollision != null
+        || this.signals.playerCollision != null) {
+      this.signal("kill")
+    }
+    #endregion
+
+    #region @Implement component Fade
+    if (this.fadeIn < 1.0 && this.lifespan < this.lifespanMax - this.fadeOut) {
+      this.fadeIn = clamp(this.fadeIn + this.fadeInFactor, 0.0, 1.0)
+    } else {
+      this.fadeIn = clamp(this.lifespanMax - this.lifespan, 0.0, 1.0)
+    }
+    #endregion
+
+    #region @Implement component Angle
+    var componentAngle = 0.0
     if (this.wiggle) {
       this.wiggleTime += DeltaTime.apply(this.wiggleFrequency * FRAME_MS)
-      if (this.wiggleTime > TAU) {
-        this.wiggleTime -= TAU
-      } else if (this.wiggleTime < 0.0) {
-        this.wiggleTime += TAU
-      }
-      componentAngle += sin(this.wiggleTime) * this.wiggleAmplitude
+      this.wiggleTime = this.wiggleTime > TAU
+        ? this.wiggleTime - TAU
+        : (this.wiggleTime < 0.0
+          ? this.wiggleTime + TAU
+          : this.wiggleTime)
+      componentAngle += this.angleOffsetDir * sin(this.wiggleTime) * this.wiggleAmplitude
     }
-
+    
     if (this.angleOffset != null) {
       componentAngle += this.angleOffsetDir * this.angleOffset.update().value
     }
 
-    this.angle = this.startAngle + componentAngle
+    this.angle = this.sumAngleOffset
+      ? this.angle + componentAngle
+      : this.startAngle + componentAngle
+    #endregion
 
+    #region @Implement component Speed
+    var componentSpeed = 0.0
     if (this.speedOffset != null) {
       componentSpeed = this.speedOffset.update().value / 1000.0
     }
 
-    this.speed = abs(this.startSpeed + componentSpeed)
-    
-    this.lifespan += DeltaTime.apply(FRAME_MS)
-    if (this.lifespan >= this.lifespanMax
-      || Optional.is(this.signals.shroomCollision)
-      || Optional.is(this.signals.playerCollision)) {
-      this.signal("kill")
-    }
+    this.speed = this.sumSpeedOffset
+      ? this.speed + componentSpeed
+      : this.startSpeed + componentSpeed
+    #endregion
 
-    if (this.fadeIn < 1.0) {
-      this.fadeIn = clamp(this.fadeIn + this.fadeInFactor, 0.0, 1.0)
-    }
-    
     return this
   }
-
-  /* 
-  ///@param {VisuController} controller
-  ///@return {Bullet}
-  static update = function(controller) {
-    if (Optional.is(this.gameMode)) {
-      gameMode.update(this, controller)
-    }
-
-    if (this.fadeIn < 1.0) {
-      this.fadeIn = clamp(this.fadeIn + this.fadeInFactor, 0.0, 1.0)
-    }
-    
-    return this
-  }
-
-  this.gameModes
-    .set(GameMode.RACING, BulletRacingGameMode(Struct
-      .getDefault(Struct.get(template, "gameModes"), "racing", {})))
-    .set(GameMode.BULLETHELL, BulletBulletHellGameMode(Struct
-      .getDefault(Struct.get(template, "gameModes"), "bulletHell", {})))
-    .set(GameMode.PLATFORMER, BulletPlatformerGameMode(Struct
-      .getDefault(Struct.get(template, "gameModes"), "platformer", {})))
-  */
 }

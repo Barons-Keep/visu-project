@@ -43,6 +43,26 @@ function PlayerBulletHellGameMode(json) {
       },
     },
     
+    ///@type {Struct}
+    previous: {
+      x: {
+        value: 0.0,
+        prev: null,
+        get: function() {
+          return this.value - this.prev
+        },
+        update: function(value) {
+          this.prev = this.prev == null ? value : this.value
+          this.value = value
+          return this
+        },
+        reset: function() {
+          this.value = 0.0
+          this.prev = this.value
+          return this
+        },
+      },
+    },
 
     ///@type {Array<Struct>}
     guns: new Array(Struct, Core.isType(Struct.get(json, "guns"), GMArray)
@@ -75,6 +95,7 @@ function PlayerBulletHellGameMode(json) {
       this.guns.forEach(function(gun) {
         gun.cooldown.reset()
       })
+      this.previous.x.reset()
       player.speed = 0
       player.angle = 90
       player.sprite.setAngle(player.angle)
@@ -142,20 +163,20 @@ function PlayerBulletHellGameMode(json) {
 
         acc.controller.bulletService.spawnBullet(
           gun.bullet, 
+          Player,
           acc.player.x + (gun.offsetX / GRID_SERVICE_PIXEL_WIDTH), 
           acc.player.y + (gun.offsetY / GRID_SERVICE_PIXEL_HEIGHT),
           gun.angle,
-          gun.speed,
-          Player
+          gun.speed
         )
 
         //acc.controller.bulletService.send(new Event("spawn-bullet", {
+        //  template: gun.bullet,
+        //  producer: Player,
         //  x: acc.player.x + (gun.offsetX / GRID_SERVICE_PIXEL_WIDTH),
         //  y: acc.player.y + (gun.offsetY / GRID_SERVICE_PIXEL_HEIGHT),
-        //  producer: Player,
         //  angle: gun.angle,
         //  speed: gun.speed,
-        //  template: gun.bullet,
         //}))
 
         acc.controller.sfxService.play("player-shoot")
@@ -215,6 +236,8 @@ function PlayerBulletHellGameMode(json) {
         controller.gridService.height
       )
 
+      this.previous.x.update(player.x)
+
       return this
     },
   }))
@@ -249,7 +272,7 @@ function PlayerRacingGameMode(json) {
       speedMax: 3.5,
       friction: 0.1,
     }), false),
- 
+
     ///@override
     ///@param {GridItem} player
     ///@param {VisuController} controller
@@ -341,7 +364,6 @@ function PlayerRacingGameMode(json) {
 ///@param {Struct} json
 ///@return {GridItemGameMode}
 function PlayerPlatformerGameMode(json) {
-
   return new GridItemGameMode(Struct.append(json, {
 
     ///@param {Callable}

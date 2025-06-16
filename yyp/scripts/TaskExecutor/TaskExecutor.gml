@@ -88,7 +88,7 @@ function TaskExecutor(_context, config = {}) constructor {
   
         if (Optional.is(executor.exceptionCallback)) {
           try {
-            executor.exceptionCallback(task)
+            executor.exceptionCallback(task, exception)
           } catch (ex) {
             Logger.error(executor.loggerPrefix, 
               $"TaskExecutor::execute fatal error while running exceptionCallback: {ex.message}")

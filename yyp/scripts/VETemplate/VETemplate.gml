@@ -230,6 +230,9 @@ function VETemplate(json) constructor {
       onDeathAngleStep: this.store.getValue("bullet_use-on-death")
         ? this.store.getValue("bullet_on-death-angle-step")
         : null,
+      onDeathAngleIncrease: this.store.getValue("bullet_use-on-death")
+        ? this.store.getValue("bullet_on-death-angle-increase")
+        : null,
       onDeathRngStep: this.store.getValue("bullet_use-on-death")
         ? this.store.getValue("bullet_on-death-rng-step")
         : null,

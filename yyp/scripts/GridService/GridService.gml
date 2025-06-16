@@ -406,7 +406,7 @@ function GridService(_config = null) constructor {
       this.targetLocked.lockX = null
       this.targetLocked.lockY = null
 
-      properties = new GridProperties(Struct.getIfType(this.config, "properties", Struct))
+      this.properties = new GridProperties(Struct.getIfType(this.config, "properties", Struct)).init(this)
     },
   }))
 
@@ -972,4 +972,157 @@ function GridService(_config = null) constructor {
       executor.context.init()
       this.fullfill()
     }))
+
+  this.properties.init(this)
+}
+
+
+function PathTrack() constructor {
+
+  ///@type {GMPath}
+  path = test_path
+
+  ///@type {Number}
+  length = 0.0
+
+  ///@type {Number}
+  step = 0.5
+
+  ///@type {Number}
+  size = 1.0
+
+  ///@type {Number}
+  size2 = 1.0
+
+  ///@type {?VertexBuffer}
+  vertexBuffer = null
+
+  ///@type {DebugNumericKeyboardValue}
+  keyLength = new DebugNumericKeyboardValue({
+    name: "length",
+    value: this.length,
+    factor: 0.2 * GAME_FPS,
+    minValue: 0.0,
+    keyIncrement: ord("T"),
+    keyDecrement: ord("G"),
+    pressed: true,
+  })
+
+  ///@type {DebugNumericKeyboardValue}
+  keyStep = new DebugNumericKeyboardValue({
+    name: "step",
+    value: this.step,
+    factor: 0.1,
+    minValue: 0.016,
+    keyIncrement: ord("Y"),
+    keyDecrement: ord("H"),
+    pressed: true,
+  })
+
+  
+  ///@type {DebugNumericKeyboardValue}
+  keySize = new DebugNumericKeyboardValue({
+    name: "size",
+    value: this.size,
+    factor: 0.1,
+    minValue: 0.1,
+    keyIncrement: ord("U"),
+    keyDecrement: ord("J"),
+    pressed: true,
+  })
+
+  update = function() {
+    var length = this.keyLength.update().value
+    var step = this.keyStep.update().value
+    var size = this.keySize.update().value
+    if (this.length != length || this.step != step || this.size != size) {
+      this.length = length
+      this.step = step
+      this.size = size
+      this.build(this.length)
+    }
+
+    return this
+  }
+
+  build = function(length) {
+    if (this.vertexBuffer != null) {
+      this.vertexBuffer.free()
+    }
+
+    this.length = length
+    this.keyLength.value = length
+    var vertexes = new Array(DefaultVertex)
+    var col1 = ColorUtil.parse("#f70925") // red
+    var col2 = ColorUtil.parse("#74f709") // green
+    var col3 = ColorUtil.parse("#3d09f7") // blue
+    var col4 = ColorUtil.parse("#f2df10") // yellow
+    var col5 = ColorUtil.parse("#f709d7") // fuchsia
+    var col6 = ColorUtil.parse("#3bbbf7") // sea
+    var width = GRID_SERVICE_PIXEL_WIDTH * this.size
+    var height = GRID_SERVICE_PIXEL_HEIGHT * this.size
+    for (var index = 0; index < this.length; index += this.step) {
+      var current = index / this.length
+      var currentX = round(path_get_x(this.path, current) * GRID_SERVICE_PIXEL_WIDTH)
+      var currentY = round(path_get_y(this.path, current) * GRID_SERVICE_PIXEL_HEIGHT)
+      var currentZ = round(path_get_speed(this.path, current))
+
+      var next = (index + this.step) / this.length
+      var nextX = round(path_get_x(this.path, next) * GRID_SERVICE_PIXEL_WIDTH)
+      var nextY = round(path_get_y(this.path, next) * GRID_SERVICE_PIXEL_HEIGHT)
+      var nextZ = round(path_get_speed(this.path, next))
+
+      var next2 = (index + this.step + this.step) / this.length
+      var next2X = round(path_get_x(this.path, next2) * GRID_SERVICE_PIXEL_WIDTH)
+      var next2Y = round(path_get_y(this.path, next2) * GRID_SERVICE_PIXEL_HEIGHT)
+      var next2Z = round(path_get_speed(this.path, next2))
+
+      next2Z = nextZ
+      nextZ = round((currentZ + next2Z) / 2.0)
+
+      var angle = Math.fetchPointsAngle(currentX, currentY, nextX, nextY)
+      var angle2 = Math.fetchPointsAngle(nextX, nextY, next2X, next2Y)
+
+      var v1x = currentX
+      var v1y = currentY
+      var v2x = v1x - Math.fetchCircleX(width, Math.normalizeAngle(angle + 180.0))
+      var v2y = v1y - Math.fetchCircleY(height, Math.normalizeAngle(angle + 180.0))
+      var v3x = v2x - Math.fetchCircleX(width, Math.normalizeAngle(angle + 90.0))
+      var v3y = v2y - Math.fetchCircleY(height, Math.normalizeAngle(angle + 90.0))
+      var v4x = nextX
+      var v4y = nextY
+      var v5x = v4x - Math.fetchCircleX(width, Math.normalizeAngle(angle2 + 180.0))
+      var v5y = v4y - Math.fetchCircleY(height, Math.normalizeAngle(angle2 + 180.0))
+      var v6x = v5x - Math.fetchCircleX(width, Math.normalizeAngle(angle2 + 90.0))
+      var v6y = v5y - Math.fetchCircleY(height, Math.normalizeAngle(angle2 + 90.0))
+
+      //vertexes
+      //  .add(new DefaultVertex(v1x, v1y, currentZ, 0, 0, 1, 0, 0, col1, 1.0))
+      //  .add(new DefaultVertex(v2x, v2y, currentZ, 0, 0, 1, 1, 0, col1, 1.0)) //col2
+      //  .add(new DefaultVertex(v3x, v3y, currentZ, 0, 0, 1, 1, 1, col3, 1.0))
+      //  .add(new DefaultVertex(v4x, v4y, next2Z, 0, 0, 1, 1, 1, col1, 1.0))
+      //  .add(new DefaultVertex(v3x, v3y, currentZ, 0, 0, 1, 1, 0, col3, 1.0))
+      //  .add(new DefaultVertex(v2x, v2y, currentZ, 0, 0, 1, 0, 0, col1, 1.0)) //col2
+      //  .add(new DefaultVertex(v3x, v3y, currentZ, 0, 0, 1, 1, 1, col3, 1.0))
+      //  .add(new DefaultVertex(v4x, v4y, next2Z, 0, 0, 1, 1, 0, col1, 1.0))
+      //  .add(new DefaultVertex(v6x, v6y, next2Z, 0, 0, 1, 0, 0, col3, 1.0))
+
+      vertexes
+        .add(new DefaultVertex(v1x, v1y, currentZ,  0, 0, 1,  0, 0, col1, 1.0))
+        .add(new DefaultVertex(v2x, v2y, currentZ,  0, 0, 1,  1, 0, col2, 1.0)) //col1
+        .add(new DefaultVertex(v3x, v3y, currentZ,  0, 0, 1,  1, 1, col3, 1.0))
+        .add(new DefaultVertex(v4x, v4y, next2Z,    0, 0, 1,  1, 1, col1, 1.0))
+        .add(new DefaultVertex(v3x, v3y, currentZ,  0, 0, 1,  1, 0, col3, 1.0))
+        .add(new DefaultVertex(v2x, v2y, currentZ,  0, 0, 1,  0, 0, col2, 1.0)) //col1
+        .add(new DefaultVertex(v3x, v3y, currentZ,  0, 0, 1,  1, 1, col3, 1.0))
+        .add(new DefaultVertex(v4x, v4y, next2Z,    0, 0, 1,  1, 0, col1, 1.0))
+        .add(new DefaultVertex(v6x, v6y, next2Z,    0, 0, 1,  0, 0, col3, 1.0))
+        .add(new DefaultVertex(v2x, v2y, currentZ,  0, 0, 1,  0, 0, col2, 1.0))
+        .add(new DefaultVertex(v5x, v5y, next2Z,    0, 0, 1,  1, 0, col2, 1.0))
+        .add(new DefaultVertex(v4x, v4y, next2Z,    0, 0, 1,  1, 1, col1, 1.0))
+    }
+
+    this.vertexBuffer = new DefaultVertexBuffer(vertexes).build()
+    return this
+  }
 }

@@ -17,7 +17,7 @@ function GridRenderer() constructor {
 
   ///@private
   ///@type {Surface}
-  gridSurface = new Surface({ width: GuiWidth(), height: GuiHeight() })
+  gridSurface = new Surface({ width: GuiWidth(), height: GuiHeight(), depth: false })
 
   ///@private
   ///@type {Surface}
@@ -160,13 +160,25 @@ function GridRenderer() constructor {
     }
   }
 
+  ///@type {?PathTrack}
+  pathTrack = null;//new PathTrack().build(3.0 * GAME_FPS)
+
   ///@private
   ///@return {GridRenderer}
   init = function() {
     application_surface_enable(false)
     application_surface_draw_enable(false)
+    
     gpu_set_ztestenable(false)
     gpu_set_zwriteenable(false)
+    gpu_set_zfunc(cmpfunc_lessequal)
+    gpu_set_alphatestenable(false)
+    gpu_set_alphatestref(0)
+    //gpu_set_ztestenable(true)
+    //gpu_set_zwriteenable(true)
+    //gpu_set_zfunc(cmpfunc_lessequal)
+    //gpu_set_alphatestenable(true)
+    //gpu_set_alphatestref(0)
     gpu_set_cullmode(cull_counterclockwise)
 
     return this
@@ -1358,6 +1370,20 @@ function GridRenderer() constructor {
     ))
     this.gridRenderSeparators(gridService)
 
+    gpu_set_ztestenable(true)
+    gpu_set_zwriteenable(true)
+    gpu_set_alphatestenable(true)
+    if (this.pathTrack != null) {
+      var xxx = (((gridService.width - gridService.view.width) / 2.0) - gridService.view.x) * GRID_SERVICE_PIXEL_WIDTH
+      var yyy = (gridService.height - gridService.view.y) * GRID_SERVICE_PIXEL_HEIGHT
+      matrix_set(matrix_world, matrix_build(
+        baseX + xxx, baseY + yyy, depths.coinZ - 1, 
+        0, 0, 0,
+        1, 1, 1
+      ))
+      vertex_submit(this.pathTrack.vertexBuffer.buffer, pr_trianglelist, -1)
+    }
+
     //if (Visu.settings.getValue("visu.graphics.particle")) {
     //  matrix_set(matrix_world, matrix_build(
     //    baseX, baseY, depths.particleZ, 
@@ -1380,7 +1406,6 @@ function GridRenderer() constructor {
     ))
     _renderCoins(gridService, coinService)
 
-    gpu_set_alphatestenable(true)
     matrix_set(matrix_world, matrix_build(
       baseX, baseY, depths.shroomZ, 
       0, 0, 0, 
@@ -1436,6 +1461,8 @@ function GridRenderer() constructor {
     }
     
     this.editorRenderSpawners(gridService, shroomService, layout)
+    gpu_set_ztestenable(false)
+    gpu_set_zwriteenable(false)
     gpu_set_alphatestenable(false)
 
     matrix_set(matrix_world, matrix_build(
@@ -1812,6 +1839,10 @@ function GridRenderer() constructor {
     this.backgroundGlitchService.update(width, height)
     this.gridGlitchService.update(width, height)
     this.combinedGlitchService.update(width, height)
+
+    if (this.pathTrack != null) {
+      this.pathTrack.update()
+    }
     
     return this
   }

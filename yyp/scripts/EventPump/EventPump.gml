@@ -121,7 +121,7 @@ function EventPump(_context, _dispatchers, config = {}) constructor {
   
         if (Optional.is(this.exceptionCallback)) {
           try {
-            this.exceptionCallback(event)
+            this.exceptionCallback(event, exception)
           } catch (ex) {
             Logger.error(this.loggerPrefix, 
               $"EventPump::execute fatal error while running exceptionCallback: {ex.message}")

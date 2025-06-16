@@ -450,7 +450,7 @@ function UI(config = {}) constructor {
       return this
     }
 
-    this.updateTimer.time = this.updateTimer.duration + random(this.updateTimer.duration / 2.0)
+    this.updateTimer.time = this.updateTimer.duration;// + random(this.updateTimer.duration / 2.0)
     return this
   }))
 

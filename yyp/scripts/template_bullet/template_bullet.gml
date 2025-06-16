@@ -48,7 +48,7 @@ function template_bullet(json = null) {
         type: Number,
         value: Struct.getIfType(json, "wiggleTime", Number, 8.0),
         passthrough: function(value) {
-          return clamp(NumberUtil.parse(value, this.value), 0.0, 99.9)
+          return clamp(NumberUtil.parse(value, this.value), 0.0, 999.9)
         },
       },
       "bullet_use-wiggle-time-rng": {
@@ -92,13 +92,17 @@ function template_bullet(json = null) {
         type: Boolean,
         value: Struct.getIfType(json, "changeAngleOffset", Boolean, false),
       },
+      "bullet_sum-angle-offset": {
+        type: Boolean,
+        value: Struct.getIfType(json, "sumAngleOffset", Boolean, false),
+      },
       "bullet_use-angle-offset-rng": {
         type: Boolean,
         value: Struct.getIfType(json, "angleOffsetRng", Boolean, false),
       },
       "bullet_use-speed-offset": {
         type: Boolean,
-        value: Struct.getIfType(json, "bullet_use-speed-offset", Boolean, false),
+        value: Struct.getIfType(json, "useSpeedOffset", Boolean, false),
       },
       "bullet_speed-offset": {
         type: NumberTransformer,
@@ -111,7 +115,11 @@ function template_bullet(json = null) {
       },
       "bullet_change-speed-offset": {
         type: Boolean,
-        value: Struct.getIfType(json, "bullet_change-speed-offset", Boolean, false),
+        value: Struct.getIfType(json, "changeSpeedOffset", Boolean, false),
+      },
+      "bullet_sum-speed-offset": {
+        type: Boolean,
+        value: Struct.getIfType(json, "sumSpeedOffset", Boolean, false),
       },
       "bullet_use-on-death": {
         type: Boolean,
@@ -151,6 +159,12 @@ function template_bullet(json = null) {
         passthrough: function(value) {
           return clamp(NumberUtil.parse(value, this.value), -360.0, 360.0)
         },
+      },
+      "bullet_on-death-angle-increase": {
+        type: Number,
+        value: Struct.getIfType(json, "onDeathAngleIncrease", Number, 1.0),
+        passthrough: UIUtil.passthrough.getClampedStringNumber(),
+        data: new Vector2(1.0, 99.9),
       },
       "bullet_on-death-rng-step": {
         type: Number,
@@ -513,18 +527,22 @@ function template_bullet(json = null) {
         config: { layout: { type: UILayoutType.VERTICAL } },
       },
       {
-        name: "bullet_movement-title",
+        name: "bullet_speed-title",
         template: VEComponents.get("property"),
         layout: VELayouts.get("property"),
         config: { 
           layout: { type: UILayoutType.VERTICAL },
           label: { 
-            text: "Bullet movement",
-            backgroundColor: VETheme.color.accentShadow,
+            text: "Speed",
+            enable: { key: "bullet_use-speed-offset" },
           },
-          input: { backgroundColor: VETheme.color.accentShadow },
+          input: {
+            spriteOn: { name: "visu_texture_checkbox_switch_on" },
+            spriteOff: { name: "visu_texture_checkbox_switch_off" },
+            store: { key: "bullet_use-speed-offset" },
+          },
           checkbox: { 
-            backgroundColor: VETheme.color.accentShadow,
+
           },
         },
       },
@@ -539,10 +557,8 @@ function template_bullet(json = null) {
           },
           value: {
             label: {
-              text: "Speed",
-              font: "font_inter_10_bold",
-              color: VETheme.color.textShadow,
-              //enable: { key: "bullet_use-speed-offset" },
+              text: "Value",
+              enable: { key: "bullet_use-speed-offset" },
             },
             field: {
               store: { key: "bullet_speed-offset" },
@@ -566,95 +582,174 @@ function template_bullet(json = null) {
             checkbox: { 
               spriteOn: { name: "visu_texture_checkbox_on" },
               spriteOff: { name: "visu_texture_checkbox_off" },
-              store: { key: "bullet_use-speed-offset" },
+              store: { key: "bullet_sum-speed-offset" },
+              enable: { key: "bullet_use-speed-offset" },
             },
             title: { 
-              text: "Override",
-              enable: { key: "bullet_use-speed-offset" },
+              text: "Sum",
+              enable: { key: "bullet_sum-speed-offset" },
             },
           },
           target: {
             label: {
               text: "Target",
-              enable: { key: "bullet_change-speed-offset" },
+              enable: { 
+                keys: [
+                  { key: "bullet_use-speed-offset" },
+                  { key: "bullet_change-speed-offset" }
+                ],
+              },
+              updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
             },
             field: {
               store: { key: "bullet_speed-offset" },
-              enable: { key: "bullet_change-speed-offset" },
+              enable: { 
+                keys: [
+                  { key: "bullet_use-speed-offset" },
+                  { key: "bullet_change-speed-offset" }
+                ],
+              },
+              updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
             },
             decrease: {
               store: { key: "bullet_speed-offset" },
-              enable: { key: "bullet_change-speed-offset" },
+              enable: { 
+                keys: [
+                  { key: "bullet_use-speed-offset" },
+                  { key: "bullet_change-speed-offset" }
+                ],
+              },
               factor: -1.0,
+              updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
             },
             increase: {
               store: { key: "bullet_speed-offset" },
-              enable: { key: "bullet_change-speed-offset" },
+              enable: { 
+                keys: [
+                  { key: "bullet_use-speed-offset" },
+                  { key: "bullet_change-speed-offset" }
+                ],
+              },
               factor: 1.0,
+              updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
             },
             stick: {
               store: { key: "bullet_speed-offset" },
-              enable: { key: "bullet_change-speed-offset" },
-              factor: 0.001,        
+              enable: { 
+                keys: [
+                  { key: "bullet_use-speed-offset" },
+                  { key: "bullet_change-speed-offset" }
+                ],
+              },
+              factor: 0.001,
+              updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),     
             },
             checkbox: { 
               spriteOn: { name: "visu_texture_checkbox_on" },
               spriteOff: { name: "visu_texture_checkbox_off" },
+              enable: { key: "bullet_use-speed-offset" },
               store: { key: "bullet_change-speed-offset" },
             },
             title: { 
               text: "Change",
-              enable: { key: "bullet_change-speed-offset" },
+              enable: { 
+                keys: [
+                  { key: "bullet_use-speed-offset" },
+                  { key: "bullet_change-speed-offset" }
+                ],
+              },
+              updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
             },
           },
-          factor: {
+          duration: {
             label: {
-              text: "Factor",
-              enable: { key: "bullet_change-speed-offset" },
+              text: "Duration",
+              enable: { 
+                keys: [
+                  { key: "bullet_use-speed-offset" },
+                  { key: "bullet_change-speed-offset" }
+                ],
+              },
+              updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
             },
             field: {
               store: { key: "bullet_speed-offset" },
-              enable: { key: "bullet_change-speed-offset" },
+              enable: { 
+                keys: [
+                  { key: "bullet_use-speed-offset" },
+                  { key: "bullet_change-speed-offset" }
+                ],
+              },
+              updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
             },
             decrease: {
               store: { key: "bullet_speed-offset" },
-              enable: { key: "bullet_change-speed-offset" },
-              factor: -0.01,
-            },
-            increase: {
-              store: { key: "bullet_speed-offset" },
-              enable: { key: "bullet_change-speed-offset" },
-              factor: 0.01,
-            },
-            stick: {
-              store: { key: "bullet_speed-offset" },
-              enable: { key: "bullet_change-speed-offset" },
-              factor: 0.001,        
-            },
-          },
-          increase: {
-            label: {
-              text: "Increase",
-              enable: { key: "bullet_change-speed-offset" },
-            },
-            field: {
-              store: { key: "bullet_speed-offset" },
-              enable: { key: "bullet_change-speed-offset" },
-            },
-            decrease: {
-              store: { key: "bullet_speed-offset" },
-              enable: { key: "bullet_change-speed-offset" },
+              enable: { 
+                keys: [
+                  { key: "bullet_use-speed-offset" },
+                  { key: "bullet_change-speed-offset" }
+                ],
+              },
               factor: -0.001,
+              updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
             },
             increase: {
               store: { key: "bullet_speed-offset" },
-              enable: { key: "bullet_change-speed-offset" },
-              factor: 0.001,      
+              enable: { 
+                keys: [
+                  { key: "bullet_use-speed-offset" },
+                  { key: "bullet_change-speed-offset" }
+                ],
+              },
+              factor: 0.001,
+              updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
             },
             stick: {
               store: { key: "bullet_speed-offset" },
-              enable: { key: "bullet_change-speed-offset" },
-              factor: 0.0001,        
+              enable: { 
+                keys: [
+                  { key: "bullet_use-speed-offset" },
+                  { key: "bullet_change-speed-offset" }
+                ],
+              },
+              factor: 0.001,
+              updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),     
+            },
+          },
+          ease: {
+            label: {
+              text: "Ease",
+              updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+            },
+            previous: {
+              store: { key: "bullet_speed-offset" },
+              enable: { 
+                keys: [
+                  { key: "bullet_use-speed-offset" },
+                  { key: "bullet_change-speed-offset" }
+                ],
+              },
+              updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+            },
+            preview: {
+              store: { key: "bullet_speed-offset" },
+              enable: { 
+                keys: [
+                  { key: "bullet_use-speed-offset" },
+                  { key: "bullet_change-speed-offset" }
+                ],
+              },
+              updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+            },
+            next: {
+              store: { key: "bullet_speed-offset" },
+              enable: { 
+                keys: [
+                  { key: "bullet_use-speed-offset" },
+                  { key: "bullet_change-speed-offset" }
+                ],
+              },
+              updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
             },
           },
         },
@@ -666,6 +761,26 @@ function template_bullet(json = null) {
         config: { layout: { type: UILayoutType.VERTICAL } },
       },
       {
+        name: "bullet_angle-title",
+        template: VEComponents.get("property"),
+        layout: VELayouts.get("property"),
+        config: { 
+          layout: { type: UILayoutType.VERTICAL },
+          label: { 
+            text: "Angle",
+            enable: { key: "bullet_use-angle-offset" },
+          },
+          input: {
+            spriteOn: { name: "visu_texture_checkbox_switch_on" },
+            spriteOff: { name: "visu_texture_checkbox_switch_off" },
+            store: { key: "bullet_use-angle-offset" },
+          },
+          checkbox: { 
+
+          },
+        },
+      },
+      {
         name: "bullet_angle-offset",
         template: VEComponents.get("number-transformer-increase-checkbox"),
         layout: VELayouts.get("number-transformer-increase-checkbox"),
@@ -673,10 +788,8 @@ function template_bullet(json = null) {
           layout: { type: UILayoutType.VERTICAL },
           value: {
             label: {
-              text: "Angle",
-              font: "font_inter_10_bold",
-              color: VETheme.color.textShadow,
-              //enable: { key: "bullet_use-angle-offset" },
+              text: "Value",
+              enable: { key: "bullet_use-angle-offset" },
             },
             field: {
               store: { key: "bullet_angle-offset" },
@@ -700,89 +813,196 @@ function template_bullet(json = null) {
             checkbox: { 
               spriteOn: { name: "visu_texture_checkbox_on" },
               spriteOff: { name: "visu_texture_checkbox_off" },
-              store: { key: "bullet_use-angle-offset" },
+              store: { key: "bullet_sum-angle-offset" },
+              enable: { key: "bullet_use-angle-offset" },
             },
             title: { 
-              text: "Override",
-              enable: { key: "bullet_use-angle-offset" },
+              text: "Sum",
+              enable: { 
+                keys: [
+                  { key: "bullet_use-angle-offset" },
+                  { key: "bullet_sum-angle-offset" }
+                ],
+              },
+              updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
             },
           },
           target: {
             label: {
               text: "Target",
-              enable: { key: "bullet_change-angle-offset" },
+              enable: { 
+                keys: [
+                  { key: "bullet_use-angle-offset" },
+                  { key: "bullet_change-angle-offset" }
+                ],
+              },
+              updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
             },
             field: {
               store: { key: "bullet_angle-offset" },
-              enable: { key: "bullet_change-angle-offset" },
+              enable: { 
+                keys: [
+                  { key: "bullet_use-angle-offset" },
+                  { key: "bullet_change-angle-offset" }
+                ],
+              },
+              updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
             },
             decrease: {
               store: { key: "bullet_angle-offset" },
-              enable: { key: "bullet_change-angle-offset" },
+              enable: { 
+                keys: [
+                  { key: "bullet_use-angle-offset" },
+                  { key: "bullet_change-angle-offset" }
+                ],
+              },
               factor: -0.25,
+              updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
             },
             increase: {
               store: { key: "bullet_angle-offset" },
-              enable: { key: "bullet_change-angle-offset" },
+              enable: { 
+                keys: [
+                  { key: "bullet_use-angle-offset" },
+                  { key: "bullet_change-angle-offset" }
+                ],
+              },
               factor: 0.25,
+              updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+            },
+            stick: {
+              store: { key: "bullet_angle-offset" },
+              enable: { 
+                keys: [
+                  { key: "bullet_use-angle-offset" },
+                  { key: "bullet_change-angle-offset" }
+                ],
+              },
+              factor: 0.001,
+              updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),     
             },
             checkbox: { 
               spriteOn: { name: "visu_texture_checkbox_on" },
               spriteOff: { name: "visu_texture_checkbox_off" },
               store: { key: "bullet_change-angle-offset" },
+              enable: { key: "bullet_use-angle-offset" },
             },
             title: { 
               text: "Change",
-              enable: { key: "bullet_change-angle-offset" },
+              enable: { 
+                keys: [
+                  { key: "bullet_use-angle-offset" },
+                  { key: "bullet_change-angle-offset" }
+                ],
+              },
+              updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
             },
           },
-          factor: {
+          duration: {
             label: {
-              text: "Factor",
-              enable: { key: "bullet_change-angle-offset" },
+              text: "Duration",
+              enable: { 
+                keys: [
+                  { key: "bullet_use-angle-offset" },
+                  { key: "bullet_change-angle-offset" }
+                ],
+              },
+              updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
             },
             field: {
               store: { key: "bullet_angle-offset" },
-              enable: { key: "bullet_change-angle-offset" },
+              enable: { 
+                keys: [
+                  { key: "bullet_use-angle-offset" },
+                  { key: "bullet_change-angle-offset" }
+                ],
+              },
+              updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
             },
             decrease: {
               store: { key: "bullet_angle-offset" },
-              enable: { key: "bullet_change-angle-offset" },
-              factor: -0.01,
+              enable: { 
+                keys: [
+                  { key: "bullet_use-angle-offset" },
+                  { key: "bullet_change-angle-offset" }
+                ],
+              },
+              factor: -0.001,
+              updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
             },
             increase: {
               store: { key: "bullet_angle-offset" },
-              enable: { key: "bullet_change-angle-offset" },
-              factor: 0.01,
+              enable: { 
+                keys: [
+                  { key: "bullet_use-angle-offset" },
+                  { key: "bullet_change-angle-offset" }
+                ],
+              },
+              factor: 0.001,
+              updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
+            },
+            stick: {
+              store: { key: "bullet_angle-offset" },
+              enable: { 
+                keys: [
+                  { key: "bullet_use-angle-offset" },
+                  { key: "bullet_change-angle-offset" }
+                ],
+              },
+              factor: 0.001,
+              updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),     
             },
             checkbox: { 
               spriteOn: { name: "visu_texture_checkbox_on" },
               spriteOff: { name: "visu_texture_checkbox_off" },
               store: { key: "bullet_use-angle-offset-rng" },
+              enable: { key: "bullet_use-angle-offset" },
             },
-            title: {
+            title: { 
               text: "Rand. dir.",
-              enable: { key: "bullet_use-angle-offset-rng" },
+              enable: { 
+                keys: [
+                  { key: "bullet_use-angle-offset" },
+                  { key: "bullet_use-angle-offset-rng" }
+                ],
+              },
+              updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
             },
           },
-          increase: {
+          ease: {
             label: {
-              text: "Increase",
-              enable: { key: "bullet_change-angle-offset" },
+              text: "Ease",
+              updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
             },
-            field: {
+            previous: {
               store: { key: "bullet_angle-offset" },
-              enable: { key: "bullet_change-angle-offset" },
+              enable: { 
+                keys: [
+                  { key: "bullet_use-angle-offset" },
+                  { key: "bullet_change-angle-offset" }
+                ],
+              },
+              updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
             },
-            decrease: {
+            preview: {
               store: { key: "bullet_angle-offset" },
-              enable: { key: "bullet_change-angle-offset" },
-              factor: -0.001,
+              enable: { 
+                keys: [
+                  { key: "bullet_use-angle-offset" },
+                  { key: "bullet_change-angle-offset" }
+                ],
+              },
+              updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
             },
-            increase: {
+            next: {
               store: { key: "bullet_angle-offset" },
-              enable: { key: "bullet_change-angle-offset" },
-              factor: 0.001,      
+              enable: { 
+                keys: [
+                  { key: "bullet_use-angle-offset" },
+                  { key: "bullet_change-angle-offset" }
+                ],
+              },
+              updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
             },
           },
         },
@@ -802,14 +1022,14 @@ function template_bullet(json = null) {
           label: {
             text: "Wiggle",
             enable: { key: "bullet_use-wiggle" },
-            backgroundColor: VETheme.color.side,
           },
-          input: { backgroundColor: VETheme.color.side },
-          checkbox: { 
-            spriteOn: { name: "visu_texture_checkbox_on" },
-            spriteOff: { name: "visu_texture_checkbox_off" },
+          input: {
+            spriteOn: { name: "visu_texture_checkbox_switch_on" },
+            spriteOff: { name: "visu_texture_checkbox_switch_off" },
             store: { key: "bullet_use-wiggle" },
-            backgroundColor: VETheme.color.side,
+          },
+          checkbox: { 
+            
           },
         },
       },
@@ -850,7 +1070,13 @@ function template_bullet(json = null) {
           },
           title: {
             text: "Randomize",
-            enable: { key: "bullet_use-wiggle" },
+            enable: { 
+              keys: [
+                { key: "bullet_use-wiggle" },
+                { key: "bullet_use-wiggle-time-rng" }
+              ],
+            },
+            updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
           }
         },
       },
@@ -891,7 +1117,13 @@ function template_bullet(json = null) {
           },
           title: {
             text: "Rand. dir.",
-            enable: { key: "bullet_use-wiggle" },
+            enable: { 
+              keys: [
+                { key: "bullet_use-wiggle" },
+                { key: "bullet_use-wiggle-dir-rng" }
+              ],
+            },
+            updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
           },
         },
       },
@@ -1010,7 +1242,13 @@ function template_bullet(json = null) {
           },
           title: {
             text: "Rand. dir.",
-            enable: { key: "bullet_use-on-death" },
+            enable: { 
+              keys: [
+                { key: "bullet_use-on-death" },
+                { key: "bullet_on-death-angle-rng" }
+              ],
+            },
+            updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
           },
         },
       },
@@ -1061,7 +1299,7 @@ function template_bullet(json = null) {
         config: { 
           layout: { type: UILayoutType.VERTICAL },
           label: { 
-            text: "Angle step",
+            text: "Step",
             enable: { key: "bullet_use-on-death" },
           },  
           field: { 
@@ -1096,7 +1334,9 @@ function template_bullet(json = null) {
               var store = this.store.getStore()
               var amount = store.getValue("bullet_on-death-amount")
               var angle = store.getValue("bullet_on-death-angle")
+              var rng = store.getValue("bullet_on-death-angle-rng")
               var step = store.getValue("bullet_on-death-angle-step")
+              var increase = store.getValue("bullet_on-death-angle-increase")
 
               var sprite = Struct.get(this, "sprite")
               if (!Core.isType(sprite, Sprite)) {
@@ -1104,20 +1344,88 @@ function template_bullet(json = null) {
                 Struct.set(this, "sprite", sprite)
               }
 
-              var alpha = sprite.getAlpha()
-              sprite.setAlpha(alpha * (Struct.get(this.enable, "value") == false ? 0.5 : 1.0))
-                .scaleToFit(this.area.getHeight() * 2, this.area.getHeight() * 2)
+              var _alpha = sprite.getAlpha()
+              var alpha = _alpha * (Struct.get(this.enable, "value") == false ? 0.5 : 1.0)
+              var blend = sprite.getBlend()
+              var blendRight = ColorUtil.parse(VETheme.color.textFocus).toGMColor()
+              var blendLeft = ColorUtil.parse(VETheme.color.primaryLight).toGMColor()
               var _x = this.context.area.getX() + this.area.getX() + this.margin.left + this.margin.right + 2.0,
               var _y = this.context.area.getY() + this.area.getY() - this.margin.top
-              for (var index = 0; index < amount; index++) {
+
+              sprite
+                .setAlpha(alpha)
+                .scaleToFit(this.area.getHeight() * 2, this.area.getHeight() * 2)
+
+              for (var index = amount - 1; index > 0; index--) {
                 sprite
-                  .setAngle(angle - (index * step))
+                  .setAngle(angle - (index * step * Math.pow(increase, index - 1)))
+                  .setAlpha((((amount - index) / amount) * (alpha * 0.5)) + (alpha * 0.25))
+                  .setBlend(blendRight)
+                  .render(_x, _y)
+            
+                if (!rng) {
+                  continue
+                }
+
+                sprite
+                  .setAngle(angle + (index * step * Math.pow(increase, index - 1)))
+                  .setAlpha((((amount - index) / amount) * (alpha * 0.5)) + (alpha * 0.25))
+                  .setBlend(blendLeft)
                   .render(_x, _y)
               }
 
-              sprite.setAlpha(alpha)
+              sprite.setAngle(angle).setAlpha(alpha).setBlend(blend).render(_x, _y).setAlpha(_alpha)
               return this
             },
+          },
+        },
+      },
+      {
+        name: "bullet_on-death-angle-increase",
+        template: VEComponents.get("numeric-input"),
+        layout: VELayouts.get("div"),
+        config: { 
+          layout: { type: UILayoutType.VERTICAL },
+          label: { 
+            text: "Increase",
+            enable: { key: "bullet_use-on-death" },
+          },  
+          field: { 
+            store: { key: "bullet_on-death-angle-increase" },
+            enable: { key: "bullet_use-on-death" },
+          },
+          decrease: {
+            store: { key: "bullet_on-death-angle-increase" },
+            enable: { key: "bullet_use-on-death" },
+            factor: -0.01,
+          },
+          increase: {
+            store: { key: "bullet_on-death-angle-increase" },
+            enable: { key: "bullet_use-on-death" },
+            factor: 0.01,
+          },
+          stick: {
+            store: { key: "bullet_on-death-angle-increase" },
+            enable: { key: "bullet_use-on-death" },
+            factor: 0.01,
+            step: 10,
+            treshold: 64,
+          },
+          checkbox: {
+            store: { key: "bullet_on-death-angle-rng" },
+            spriteOn: { name: "visu_texture_checkbox_on" },
+            spriteOff: { name: "visu_texture_checkbox_off" },
+            enable: { key: "bullet_use-on-death" },
+          },
+          title: {
+            text: "Rand. dir.",
+            enable: { 
+              keys: [
+                { key: "bullet_use-on-death" },
+                { key: "bullet_on-death-angle-rng" }
+              ],
+            },
+            updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
           },
         },
       },
@@ -1166,7 +1474,13 @@ function template_bullet(json = null) {
           },
           title: {
             text: "Merge",
-            enable: { key: "bullet_use-on-death" },
+            enable: { 
+              keys: [
+                { key: "bullet_use-on-death" },
+                { key: "bullet_on-death-speed-merge" }
+              ],
+            },
+            updateEnable: Callable.run(UIItemUtils.templates.get("updateEnableKeys")),
           }
         },
       },
@@ -1177,7 +1491,7 @@ function template_bullet(json = null) {
         config: {
           layout: { type: UILayoutType.VERTICAL },
           label: {
-            text: "Rng speed",
+            text: "Randomize",
             enable: { key: "bullet_use-on-death" },
           },  
           field: { 

@@ -141,8 +141,12 @@ function ShroomService(_controller, config = {}): Service() constructor {
         this.controller.gridService.textureGroups.sortItems(this.shrooms)
       }
     },
+    "spawn-shroom-emitter": function(event) {
+
+    },
     "clear-shrooms": function(event) {
       this.shrooms.clear()
+      this.executor.tasks.forEach(TaskUtil.fullfill).clear()
       this.chunkService.clear()
     },
     "reset-templates": function(event) {
@@ -150,6 +154,17 @@ function ShroomService(_controller, config = {}): Service() constructor {
       this.dispatcher.container.clear()
     },
   }))
+
+  ///@type {TaskExecutor}
+  executor = new TaskExecutor(this, { 
+    loggerPrefix: "ShroomServiceExecutor",
+    enableLogger: true,
+    catchException: true,
+    exceptionCallback: function(task, exception) {
+      Beans.get(BeanVisuController).exceptionDebugHandler(
+        $"'ShroomService::executor' (task.name: {task.name}), fatal error: {exception.message}")
+    },
+  })
 
   static parseInherit = function(name, i, acc) {
     static addFeature = function(feature, index, features) {
@@ -219,6 +234,42 @@ function ShroomService(_controller, config = {}): Service() constructor {
     }
   }
 
+  ///@param {Struct} item
+  ///@param {Struct} emitter
+  static spawnShroomEmitter = function(item, emitter) {
+    var task = new Task("shroom-emitter")
+      .setTimeout(60.0)
+      .setState({
+        item: item,
+        emitter: new GridItemEmitter(Struct.appendRecursive({
+          callback: function(item, controller, emitter, idx, arrIdx, x, y, angle, speed) {
+            controller.shroomService.spawnShroom(
+              item.name,
+              item.spawnX + x,
+              item.spawnY + y,
+              angle,
+              speed,
+              item.snapH,
+              item.snapV,
+              item.lifespan,
+              item.hp,
+              item.inherit
+            )
+          }
+        }, emitter, false)),
+      })
+      .whenUpdate(function() {
+        if (this.state.emitter.finished()) {
+          this.fullfill()
+          return
+        }
+
+        this.state.emitter.update(this.state.item, Beans.get(BeanVisuController))
+      })
+    this.executor.add(task)
+    return this
+  }
+
   ///@param {Event} event
   ///@return {?Promise}
   static send = function(event) {
@@ -249,6 +300,7 @@ function ShroomService(_controller, config = {}): Service() constructor {
     }
 
     this.dispatcher.update()
+    this.executor.update()
     this.shrooms.forEach(this.updateShroom, this).runGC()
     return this
   }

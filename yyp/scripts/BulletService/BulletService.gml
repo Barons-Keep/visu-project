@@ -97,8 +97,31 @@ function BulletService(_controller, config = {}): Service() constructor {
     },
   }))
 
-  static spawnBullet = function(name, x, y, angle, speed, producer) {
-    var template = this.getTemplate(name).serializeSpawn(x, y, angle, speed / 1000.0, producer, this.controller.gridService.generateUID())
+  ///@param {String} name
+  ///@param {Shroom|Player} producer
+  ///@param {Number} x
+  ///@param {Number} y
+  ///@param {Number} angle
+  ///@param {Number} speed
+  ///@param {?Number|?Struct} [angleOffset]
+  ///@param {?Boolean} [angleOffsetRng]
+  ///@param {?Boolean} [sumAngleOffset]
+  ///@param {?Number|?Struct} [speedOffset]
+  ///@param {?Boolean} [sumSpeedOffset]
+  static spawnBullet = function(name, producer, x, y, angle, speed, angleOffset = null, angleOffsetRng = null, sumAngleOffset = null, speedOffset = null, sumSpeedOffset = null) {
+    var template = this.getTemplate(name).serializeSpawn(
+      this.controller.gridService.generateUID(),
+      producer,
+      x,
+      y,
+      angle,
+      speed / 1000.0,
+      angleOffset,
+      angleOffsetRng,
+      sumAngleOffset,
+      speedOffset,
+      sumSpeedOffset
+    )
     if (producer == Shroom) {
       controller.sfxService.play("shroom-shoot")
     }
@@ -148,7 +171,7 @@ function BulletService(_controller, config = {}): Service() constructor {
       var rngDir = bullet.onDeathAngleRng ? choose(1, -1) : 1
       var rngSpd = random(bullet.onDeathRngSpeed)
       var dir = bullet.angle + (rngDir * bullet.onDeathAngle) 
-        + (rngDir * idx * bullet.onDeathAngleStep) 
+        + (rngDir * idx * bullet.onDeathAngleStep * Math.pow(bullet.onDeathAngleIncrease, clamp(idx - 1, 1, bullet.onDeathAmount))) 
         + (rngDir * (random(2.0 * bullet.onDeathRngStep) - bullet.onDeathRngStep))
       var spd = clamp(abs(bullet.onDeathSpeedMerge 
         ? (rngSpd + (bullet.speed * 1000.0) + bullet.onDeathSpeed) 
@@ -156,19 +179,19 @@ function BulletService(_controller, config = {}): Service() constructor {
 
       context.spawnBullet(
         bullet.onDeath, 
+        bullet.producer,
         bullet.x, 
         bullet.y,
         dir,
-        spd,
-        bullet.producer
+        spd
       )        
       //context.send(new Event("spawn-bullet", {
+      //  template: bullet.onDeath,
+      //  producer: bullet.producer,
       //  x: bullet.x,
       //  y: bullet.y,
       //  angle: dir,
       //  speed: spd,
-      //  producer: bullet.producer,
-      //  template: bullet.onDeath,
       //}))
     }
   }

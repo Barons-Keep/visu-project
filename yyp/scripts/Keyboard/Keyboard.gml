@@ -236,12 +236,12 @@ function PrioritizedPressedKeyUpdater(json = null) constructor {
       this.treshold.reset()
     }
 
-    if (Optional.is(this.current)
+    if (this.current != null
         && this.treshold.update().finished
         && this.cooldown.update().finished) {
       
       var key = keyboard.getKey(this.current.name)
-      if (Optional.is(key)) {
+      if (key != null) {
         key.pressed = true
       }
     }

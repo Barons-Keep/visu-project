@@ -747,7 +747,7 @@ function _GMArray() constructor {
     var size = array_length(array)
     var cloned = array_create(size)
 
-    if (Optional.is(callback)) {
+    if (callback != null) {
       for (var index = 0; index < size; index++) {
         cloned[index] = callback(array[index], index, acc)
       }

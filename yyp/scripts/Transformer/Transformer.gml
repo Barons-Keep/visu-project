@@ -139,12 +139,13 @@ function ColorTransformer(json = null) constructor {
   this.setDuration(this.duration)
 }
 
-
-///@param {?Struct} [json]
+///@param {?Struct|?Number} [json]
 function NumberTransformer(json = null) constructor {
 
   ///@type {Number}
-  value = Struct.getIfType(json, "value", Number, 0.0)
+  value = Core.isType(json, Number) 
+    ? json
+    : Struct.getIfType(json, "value", Number, 0.0)
 
   ///@type {Number}
   startValue = this.value

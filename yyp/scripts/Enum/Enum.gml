@@ -73,7 +73,7 @@ function Enum() constructor {
           && key != "containsKey"
     }
 
-    if (!Optional.is(this._keys)) {
+    if (this._keys == null) {
       this._keys = new Array(String, GMArray.filter(Struct.keys(this), filterKeys))
     }
 

@@ -5359,26 +5359,6 @@ global.__VEComponents = new Map(String, Callable, {
                 },
               },
             }),
-            checkbox: { },
-            title: {
-              store: Struct.get(Struct.get(config, "checkbox"), "store"),
-              onMouseReleasedLeft: function(event) {
-                if (!Core.isType(this.store, UIStore)) {
-                  return
-                }
-
-                var item = this.store.get()
-                if (!Core.isType(item, StoreItem)) {
-                  return
-                }
-
-                item.set(!item.get())
-
-                if (Optional.is(this.context)) {
-                  this.context.clampUpdateTimer(0.7500)
-                }
-              }
-            }
           },
           config, 
           false
@@ -5749,7 +5729,6 @@ global.__VEComponents = new Map(String, Callable, {
       $"{name}_target",
       layout.nodes.target,
       Struct.appendRecursive(
-        Struct.get(config, "target"),
         { 
           layout: { 
             //type: layout.type,
@@ -5765,6 +5744,7 @@ global.__VEComponents = new Map(String, Callable, {
             hidden: JSON.clone(Struct.getIfType(Struct.get(Struct.get(config, "target"), "field"), "hidden", Struct, { })),
           },
         },
+        Struct.get(config, "target"),
         false
       )
     ).forEach(addItem, items)
@@ -5823,7 +5803,6 @@ global.__VEComponents = new Map(String, Callable, {
       $"{name}_duration",
       layout.nodes.duration,
       Struct.appendRecursive(
-        Struct.get(config, "duration"),
         {
           layout: { 
             //type: layout.type,
@@ -5866,6 +5845,7 @@ global.__VEComponents = new Map(String, Callable, {
             hidden: JSON.clone(Struct.getIfType(Struct.get(Struct.get(config, "increase"), "field"), "hidden", Struct, { })),
           },
         },
+        Struct.get(config, "duration"),
         false
       )
     ).forEach(addItem, items)
@@ -5874,7 +5854,6 @@ global.__VEComponents = new Map(String, Callable, {
       $"{name}_ease",
       layout.nodes.duration,
       Struct.appendRecursive(
-        Struct.get(config, "ease"),
         {
           layout: { 
             //type: layout.type,
@@ -5901,6 +5880,7 @@ global.__VEComponents = new Map(String, Callable, {
             hidden: JSON.clone(Struct.getIfType(Struct.get(Struct.get(config, "increase"), "field"), "hidden", Struct, { })),
           },
         },
+        Struct.get(config, "ease"),
         false
       )
     ).forEach(addItem, items)
