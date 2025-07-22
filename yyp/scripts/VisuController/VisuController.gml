@@ -94,7 +94,15 @@ function VisuController(layerName) constructor {
 
                 if (!task.state.sfxPlayed && task.state.fadeIn.finished) {
                   task.state.sfxPlayed = true
-                  controller.sfxService.play("player-force-level-up")
+                  //controller.sfxService.play("menu-splashscreen")
+                  try {
+                    var sound = Assert.isType(SoundUtil.fetch("sound_sfx_intro", { loop: false }), Sound, "sound_sfx_intro must be sound")
+                    var ostVolume = Visu.settings.getValue("visu.audio.ost-volume")
+                    sound.play(0.0).setVolume(ostVolume, 1.0)
+                  } catch (exception) {
+                    Core.printStackTrace()
+                    Logger.error(BeanVisuController, $"Fatal error, splashscreen, {exception.message}")
+                  }
                 }
 
                 if (shader_is_compiled(shader_dissolve)) {
@@ -633,6 +641,13 @@ function VisuController(layerName) constructor {
 
   ///@param {String} name
   ///@return {Boolean}
+  bulletTemplateExists = function(name) {
+    return this.bulletService.templates.contains(name) 
+        || Visu.assets().bulletTemplates.contains(name)
+  }
+
+  ///@param {String} name
+  ///@return {Boolean}
   coinTemplateExists = function(name) {
     return this.coinService.templates.contains(name) 
         || Visu.assets().coinTemplates.contains(name)
@@ -890,8 +905,8 @@ function VisuController(layerName) constructor {
       this.fsm.dispatcher.send(new Event("transition", { name: "quit" }))
     },
     "spawn-popup": function(event) {
-      var _editor = Beans.get(BeanVisuEditorController)
-      if (Core.isType(_editor, VisuEditorController)) {
+      var _editor = Beans.get(Visu.modules().editor.controller)
+      if (Optional.is(_editor)) {
         _editor.popupQueue.send(new Event("push", event.data))
       }
     },
@@ -1020,6 +1035,7 @@ function VisuController(layerName) constructor {
       .set("menu-move-cursor", new SFX("sound_sfx_player_collect_point_or_force"), 1)
       .set("menu-select-entry", new SFX("sound_sfx_player_shoot"), 1)
       .set("menu-use-entry", new SFX("sound_sfx_shroom_damage"), 1)
+      .set("menu-splashscreen", new SFX("sound_sfx_intro"), 1)
     
 
     if (Visu.settings.getValue("visu.server.enable", false)) {
@@ -1060,17 +1076,23 @@ function VisuController(layerName) constructor {
     var stateName = this.trackService.isTrackLoaded() ? "pause" : "idle"
     this.fsm.dispatcher.send(new Event("transition", { name: stateName }))
 
-    if (!Beans.exists(BeanVisuEditorIO)) {
-      Beans.add(Beans.factory(BeanVisuEditorIO, GMServiceInstance, layerId,
-        new VisuEditorIO()))
+    var editorIOConstructor = Core.getConstructor(Visu.modules().editor.io)
+    if (Optional.is(editorIOConstructor)) {
+      if (!Beans.exists(Visu.modules().editor.io)) {
+        Beans.add(Beans.factory(Visu.modules().editor.io, GMServiceInstance, layerId,
+          new editorIOConstructor()))
+      }
     }
 
-    if (!Beans.exists(BeanVisuEditorController)) {
-      Beans.add(Beans.factory(BeanVisuEditorController, GMServiceInstance, layerId,
-        new VisuEditorController()))
+    var editorConstructor = Core.getConstructor(Visu.modules().editor.controller)
+    if (Optional.is(editorConstructor)) {
+      if (!Beans.exists(Visu.modules().editor.controller)) {
+        Beans.add(Beans.factory(Visu.modules().editor.controller, GMServiceInstance, layerId,
+          new editorConstructor()))
+      }
     }
     
-    var editor = Beans.get(BeanVisuEditorController)
+    var editor = Beans.get(Visu.modules().editor.controller)
     if (Optional.is(editor)) {
       editor.renderUI = true
       editor.updateServices = false
@@ -1121,7 +1143,7 @@ function VisuController(layerName) constructor {
   updateCursor = function() {
     var cursor = this.displayService.getCursor()
     var size = this.menu.containers.size()
-    var editor = Beans.get(BeanVisuEditorController)
+    var editor = Beans.get(Visu.modules().editor.controller)
     if (Optional.is(editor)) {
       if (editor.renderUI && cursor == Cursor.NONE && cursor_sprite == -1) {
         displayService.setCursor(Cursor.DEFAULT)
@@ -1182,7 +1204,7 @@ function VisuController(layerName) constructor {
     
     this.updateCursor()
 
-    var editor = Beans.get(BeanVisuEditorController)
+    var editor = Beans.get(Visu.modules().editor.controller)
     if ((this.menu.containers.size() == 0) 
         && (state != "splashscreen")
         && (state != "game-over")
@@ -1238,8 +1260,9 @@ function VisuController(layerName) constructor {
       this.visuRenderer.renderGUI()
     } catch (exception) {
       var message = $"'renderGUI' fatal error: {exception.message}"
-      Beans.get(BeanVisuController).send(new Event("spawn-popup", { message: message }))
       Logger.error(BeanVisuController, message)
+      Core.printStackTrace()
+      Beans.get(BeanVisuController).send(new Event("spawn-popup", { message: message }))
       GPU.reset.shader()
       GPU.reset.surface()
       GPU.reset.blendMode()
@@ -1267,11 +1290,18 @@ function VisuController(layerName) constructor {
         .whenUpdate(function() {
           var controller = Beans.get(BeanVisuController)
           var stateName = controller.fsm.getStateName()
-          if (stateName != "splashscreen"
-              && this.state.cooldown.update().finished) {
-            Beans.get(BeanVisuController).send(this.state.event)
-            this.fullfill()
+          if (stateName == "splashscreen") {
+            return
           }
+
+          if (!this.state.cooldown.update().finished) {
+            return
+          }
+
+          if (stateName == "idle") {
+            controller.send(this.state.event)
+          }
+          this.fullfill()
         })
       
       this.executor.add(task)
@@ -1286,11 +1316,18 @@ function VisuController(layerName) constructor {
         .whenUpdate(function() {
           var controller = Beans.get(BeanVisuController)
           var stateName = controller.fsm.getStateName()
-          if (stateName != "splashscreen"
-              && this.state.cooldown.update().finished) {
-            controller.menu.send(this.state.event)
-            this.fullfill()
+          if (stateName == "splashscreen") {
+            return
           }
+
+          if (!this.state.cooldown.update().finished) {
+            return
+          }
+
+          if (stateName == "idle") {
+            controller.menu.send(this.state.event)
+          }
+          this.fullfill()
         })
       
       this.executor.add(task)

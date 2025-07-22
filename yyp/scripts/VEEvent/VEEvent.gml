@@ -62,7 +62,7 @@ function VEEvent(_context, json = null) constructor {
       layout: VELayouts.get("property"),
       config: { 
         layout: { type: UILayoutType.VERTICAL },
-        label: { text: $"{Struct.get(VEBrushTypeNames, json.type)}" },
+        label: { text: $"{Struct.get(BrushTypeNames, json.type)}" },
         checkbox: { 
           spriteOn: { name: "visu_texture_checkbox_show" },
           spriteOff: { name: "visu_texture_checkbox_hide" },
@@ -138,6 +138,10 @@ function VEEvent(_context, json = null) constructor {
               return
             }
 
+            if (!Optional.is(this.store)) {
+              return
+            }
+            
             var store = this.store.getStore()
             if (!Optional.is(store)) {
               return

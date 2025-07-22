@@ -3,6 +3,7 @@
 ///@enum
 function _VisuMenuEntryEventType(): Enum() constructor {
   OPEN_NODE = "open-node"
+  OPEN_TRACK_SETUP = "open-track-setup"
   LOAD_TRACK = "load-track"
 }
 global.__VisuMenuEntryEventType = new _VisuMenuEntryEventType()
@@ -235,6 +236,14 @@ function VisuMenu(_config = null) constructor {
                         : menu.factoryOpenMainMenuEvent())
                       controller.sfxService.play("menu-select-entry")
                       break
+                    case VisuMenuEntryEventType.OPEN_TRACK_SETUP:
+                      if (!Optional.is(Struct.getIfType(event.data, "title", String))) {
+                        Struct.set(event.data, "title", this.text)
+                      }
+
+                      menu.send(menu.factoryOpenTrackSetupEvent(event.data))
+                      controller.sfxService.play("menu-select-entry")
+                      break
                     case VisuMenuEntryEventType.LOAD_TRACK:
                       controller.send(new Event("load", {
                         manifest: $"{working_directory}{event.data.path}",
@@ -275,12 +284,161 @@ function VisuMenu(_config = null) constructor {
                 onMouseReleasedLeft: function() {
                   this.callback()
                 },
-                colorHoverOut: VETheme.color.deny,
+                colorHoverOut: VisuTheme.color.deny,
               },
             }
           }
         ).getContainer()
       ),
+    })
+
+    return event
+  }
+
+  ///@param {?Struct} [_config]
+  ///@return {Event}
+  factoryOpenTrackSetupEvent = function(_config = null) {
+    var context = this
+    var config = Struct.appendUnique(
+      _config,
+      {
+        title: "",
+        path: "",
+        node: null,
+      }
+    )
+
+    var event = new Event("open").setData({
+      layout: Beans.get(BeanVisuController).visuRenderer.layout,
+      title: {
+        name: "open-track-setup_title",
+        template: VisuComponents.get("menu-title"),
+        layout: VisuLayouts.get("menu-title"),
+        config: { label: { text: config.title } },
+      },
+      content: new Array(Struct, [
+        {
+          name: "open-track-setup_menu-button-entry_play",
+          template: VisuComponents.get("menu-button-entry"),
+          layout: VisuLayouts.get("menu-button-entry"),
+          config: {
+            layout: { type: UILayoutType.VERTICAL },
+            label: { 
+              text: "Play",
+              callback: new BindIntent(function() {
+                Beans.get(BeanVisuController).send(new Event("load", {
+                  manifest: $"{working_directory}{this.callbackData}",
+                  autoplay: true,
+                }))
+                Beans.get(BeanVisuController).sfxService.play("menu-select-entry")
+              }),
+              callbackData: config.path,
+              onMouseReleasedLeft: function() {
+                this.callback()
+              },
+            },
+          }
+        },
+        {
+          name: "open-track-setup_menu-spin-select-entry_difficulty",
+          template: VisuComponents.get("menu-spin-select-entry"),
+          layout: VisuLayouts.get("menu-spin-select-entry"),
+          config: { 
+            layout: { type: UILayoutType.VERTICAL },
+            label: { text: "Difficulty" },
+            previous: { 
+              callback: function() {
+                var map = new Map(String, Number)
+                  .set(Difficulty.EASY, 0)
+                  .set(Difficulty.NORMAL, 1)
+                  .set(Difficulty.HARD, 2)
+                  .set(Difficulty.LUNATIC, 3)
+                var pointer = map.getDefault(Visu.settings.getValue("visu.difficulty"), 1)
+                var target = clamp(int64(pointer - 1), 0, 3)
+                var value = map.findKey(function(value, key, target) {
+                  return value == target
+                }, target)
+
+                if (!Optional.is(value)) {
+                  return
+                }
+
+                Visu.settings.setValue("visu.difficulty", value).save()
+                Beans.get(BeanVisuController).sfxService.play("menu-use-entry")
+              },
+              updateCustom: function() {
+                var value = Visu.settings.getValue("visu.difficulty")
+                if (value == Difficulty.EASY) {
+                  this.sprite.setAlpha(0.15)
+                } else {
+                  this.sprite.setAlpha(1.0)
+                }
+              }
+            },
+            preview: {
+              label: {
+                text: Visu.settings.getValue("visu.difficulty")
+              },
+              updateCustom: function() { 
+                this.label.text = Visu.settings.getValue("visu.difficulty")
+              },
+            },
+            next: { 
+              callback: function() {
+                var map = new Map(String, Number)
+                  .set(Difficulty.EASY, 0)
+                  .set(Difficulty.NORMAL, 1)
+                  .set(Difficulty.HARD, 2)
+                  .set(Difficulty.LUNATIC, 3)
+                var pointer = map.getDefault(Visu.settings.getValue("visu.difficulty"), 1)
+                var target = clamp(int64(pointer + 1), 0, 3)
+                var value = map.findKey(function(value, key, target) {
+                  return value == target
+                }, target)
+
+                if (!Optional.is(value)) {
+                  return
+                }
+
+                Visu.settings.setValue("visu.difficulty", value).save()
+                Beans.get(BeanVisuController).sfxService.play("menu-use-entry")
+              },
+              updateCustom: function() {
+                var value = Visu.settings.getValue("visu.difficulty")
+                if (value == Difficulty.LUNATIC) {
+                  this.sprite.setAlpha(0.15)
+                } else {
+                  this.sprite.setAlpha(1.0)
+                }
+              }
+            },
+          },
+        },
+        {
+          name: "open-track-setup_menu-button-entry_back",
+          template: VisuComponents.get("menu-button-entry"),
+          layout: VisuLayouts.get("menu-button-entry"),
+          config: {
+            layout: { type: UILayoutType.VERTICAL },
+            label: { 
+              text: "Back",
+              callback: new BindIntent(function() {
+                var controller = Beans.get(BeanVisuController)
+                var menu = controller.menu
+                menu.send(Core.isType(menu.nodes.get(this.callbackData), VisuMenuNode)
+                  ? menu.factoryOpenVisuMenuNode(this.callbackData)
+                  : menu.factoryOpenMainMenuEvent())
+                controller.sfxService.play("menu-select-entry")
+              }),
+              callbackData: config.node,
+              onMouseReleasedLeft: function() {
+                this.callback()
+              },
+              colorHoverOut: VisuTheme.color.deny,
+            },
+          }
+        }
+      ])
     })
 
     return event
@@ -541,7 +699,7 @@ function VisuMenu(_config = null) constructor {
             onMouseReleasedLeft: function() {
               this.callback()
             },
-            colorHoverOut: VETheme.color.deny,
+            colorHoverOut: VisuTheme.color.deny,
           },
         }
       })
@@ -764,7 +922,7 @@ function VisuMenu(_config = null) constructor {
               onMouseReleasedLeft: function() {
                 this.callback()
               },
-              colorHoverOut: VETheme.color.deny,
+              colorHoverOut: VisuTheme.color.deny,
             },
           }
         }
@@ -774,10 +932,10 @@ function VisuMenu(_config = null) constructor {
     return event
   }
 
-    ///@param {?Struct} [_config]
+  ///@param {?Struct} [_config]
   ///@return {Event}
   factoryOpenCreditsMenuEvent = function(_config = null) {
-    static  factoryCreditsEntry = function(index, text) {
+    static factoryCreditsEntry = function(index, text) {
       return {
         name: $"credits_menu-button-entry_{index}",
         template: VisuComponents.get("menu-label-entry"),
@@ -899,7 +1057,7 @@ function VisuMenu(_config = null) constructor {
               onMouseReleasedLeft: function() {
                 this.callback()
               },
-              colorHoverOut: VETheme.color.deny,
+              colorHoverOut: VisuTheme.color.deny,
             },
           }
         }
@@ -1406,7 +1564,7 @@ function VisuMenu(_config = null) constructor {
               onMouseReleasedLeft: function() {
                 this.callback()
               },
-              colorHoverOut: VETheme.color.deny,
+              colorHoverOut: VisuTheme.color.deny,
             },
           }
         }
@@ -1552,7 +1710,7 @@ function VisuMenu(_config = null) constructor {
               onMouseReleasedLeft: function() {
                 this.callback()
               },
-              colorHoverOut: VETheme.color.deny,
+              colorHoverOut: VisuTheme.color.deny,
             },
           }
         }
@@ -1761,7 +1919,7 @@ function VisuMenu(_config = null) constructor {
               onMouseReleasedLeft: function() {
                 this.callback()
               },
-              colorHoverOut: VETheme.color.deny,
+              colorHoverOut: VisuTheme.color.deny,
             },
           }
         }
@@ -1853,7 +2011,7 @@ function VisuMenu(_config = null) constructor {
               onMouseReleasedLeft: function() {
                 this.callback()
               },
-              colorHoverOut: VETheme.color.deny,
+              colorHoverOut: VisuTheme.color.deny,
             },
           }
         }
@@ -2145,24 +2303,29 @@ function VisuMenu(_config = null) constructor {
               callback: function() {
                 Beans.get(BeanVisuController).sfxService.play("menu-use-entry")
                 var value = false
+                var editorIOConstructor = Core.getConstructor(Visu.modules().editor.io)
+                var editorControllerConstructor = Core.getConstructor(Visu.modules().editor.controller)
+                if (!Optional.is(editorIOConstructor) || !Optional.is(editorControllerConstructor)) {
+                  return
+                }
                 
-                if (Optional.is(Beans.get(BeanVisuEditorIO))) {
-                  Beans.kill(BeanVisuEditorIO)
+                if (Optional.is(Beans.get(Visu.modules().editor.io))) {
+                  Beans.kill(Visu.modules().editor.io)
                   value = false
                 } else {
-                  Beans.add(Beans.factory(BeanVisuEditorIO, GMServiceInstance, 
-                    Beans.get(BeanVisuController).layerId, new VisuEditorIO()))
+                  Beans.add(Beans.factory(Visu.modules().editor.io, GMServiceInstance, 
+                    Beans.get(BeanVisuController).layerId, new editorIOConstructor()))
                   value = true
                 }
 
-                if (Optional.is(Beans.get(BeanVisuEditorController))) {
-                  Beans.kill(BeanVisuEditorController)
+                if (Optional.is(Beans.get(Visu.modules().editor.controller))) {
+                  Beans.kill(Visu.modules().editor.controller)
                   value = false
                 } else {
-                  Beans.add(Beans.factory(BeanVisuEditorController, GMServiceInstance, 
-                    Beans.get(BeanVisuController).layerId, new VisuEditorController()))
+                  Beans.add(Beans.factory(Visu.modules().editor.controller, GMServiceInstance, 
+                    Beans.get(BeanVisuController).layerId, new editorControllerConstructor()))
                   value = true
-                  var editor = Beans.get(BeanVisuEditorController)
+                  var editor = Beans.get(Visu.modules().editor.controller)
                   if (Optional.is(editor)) {
                     editor.send(new Event("open"))
                   }
@@ -2177,30 +2340,34 @@ function VisuMenu(_config = null) constructor {
             input: {
               label: { text: "" },
               updateCustom: function() {
-                this.label.text = Optional.is(Beans.get(BeanVisuEditorController)) ? "Enabled" : "Disabled"
+                this.label.text = Optional.is(Beans.get(Visu.modules().editor.controller)) ? "Enabled" : "Disabled"
                 this.label.alpha = this.label.text == "Enabled" ? 1.0 : 0.3
               },
               callback: function() {
                 Beans.get(BeanVisuController).sfxService.play("menu-use-entry")
                 var value = false
 
-                if (Optional.is(Beans.get(BeanVisuEditorIO))) {
-                  Beans.kill(BeanVisuEditorIO)
-                  value = false
-                } else {
-                  Beans.add(Beans.factory(BeanVisuEditorIO, GMServiceInstance, 
-                    Beans.get(BeanVisuController).layerId, new VisuEditorIO()))
-                  value = true
+                var editorIOConstructor = Core.getConstructor("VisuEditorIO")
+                if (Optional.is(editorIOConstructor)) {
+                  if (Optional.is(Beans.get(Visu.modules().editor.io))) {
+                    Beans.kill(Visu.modules().editor.io)
+                    value = false
+                  } else {
+                    Beans.add(Beans.factory(Visu.modules().editor.io, GMServiceInstance, 
+                      Beans.get(BeanVisuController).layerId, new editorIOConstructor()))
+                    value = true
+                  }
                 }
 
-                if (Optional.is(Beans.get(BeanVisuEditorController))) {
-                  Beans.kill(BeanVisuEditorController)
+                var editorConstructor = Core.getConstructor("VisuEditorController")
+                if (Optional.is(Beans.get(Visu.modules().editor.controller))) {
+                  Beans.kill(Visu.modules().editor.controller)
                   value = false
                 } else {
-                  Beans.add(Beans.factory(BeanVisuEditorController, GMServiceInstance, 
-                    Beans.get(BeanVisuController).layerId, new VisuEditorController()))
+                  Beans.add(Beans.factory(Visu.modules().editor.controller, GMServiceInstance, 
+                    Beans.get(BeanVisuController).layerId, new editorConstructor()))
                   value = true
-                  var editor = Beans.get(BeanVisuEditorController)
+                  var editor = Beans.get(Visu.modules().editor.controller)
                   if (Optional.is(editor)) {
                     editor.send(new Event("open"))
                   }
@@ -2369,7 +2536,7 @@ function VisuMenu(_config = null) constructor {
               onMouseReleasedLeft: function() {
                 this.callback()
               },
-              colorHoverOut: VETheme.color.deny,
+              colorHoverOut: VisuTheme.color.deny,
             },
           }
         }
@@ -2448,7 +2615,7 @@ function VisuMenu(_config = null) constructor {
         layout: layout,
         state: new Map(String, any, {
           "background-alpha": 0.5,
-          "background-color": ColorUtil.fromHex(VETheme.color.sideDark).toGMColor(),
+          "background-color": ColorUtil.fromHex(VisuTheme.color.sideDark).toGMColor(),
           "title": title,
           "uiAlpha": 0.0,
           "uiAlphaFactor": 0.05,
@@ -2494,7 +2661,7 @@ function VisuMenu(_config = null) constructor {
           //this.renderDefault()
         },
         onInit: function() {
-          this.items.clear()
+          this.items.forEach(function(item) { item.free() }).clear()
           this.addUIComponents(new Array(UIComponent, [ 
             new UIComponent(this.state.get("title"))
           ]),
@@ -2516,7 +2683,7 @@ function VisuMenu(_config = null) constructor {
         previousIndex: 0,
         state: new Map(String, any, {
           "background-alpha": 0.33,
-          "background-color": ColorUtil.fromHex(VETheme.color.accentShadow).toGMColor(),
+          "background-color": ColorUtil.fromHex(VisuTheme.color.accentShadow).toGMColor(),
           "content": content,
           "isKeyboardEvent": true,
           "initPress": false,
@@ -2967,7 +3134,7 @@ function VisuMenu(_config = null) constructor {
   ///@type {EventPump}
   dispatcher = new EventPump(this, new Map(String, Callable, {
     "open": function(event) {
-      var editor = Beans.get(BeanVisuEditorController)
+      var editor = Beans.get(Visu.modules().editor.controller)
       if (Optional.is(editor) && editor.renderUI) {
         return
       }

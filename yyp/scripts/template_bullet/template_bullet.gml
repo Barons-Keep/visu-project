@@ -82,8 +82,8 @@ function template_bullet(json = null) {
         value: new NumberTransformer(Struct.getDefault(json, "angleOffset", {
           value: 0.0,
           target: 0.0,
-          factor: 0.1,
-          increase: 0.0
+          duration: 0.0,
+          ease: EaseType.LINEAR,
         })),
         passthrough: UIUtil.passthrough.getClampedNumberTransformer(),
         data: new Vector2(-360.0, 360.0),
@@ -109,8 +109,8 @@ function template_bullet(json = null) {
         value: new NumberTransformer(Struct.getIfType(json, "speedOffset", Struct, { 
           value: 0.0, 
           target: 0.0,
-          factor: 0.0,
-          increase: 0.0,
+          duration: 0.0,
+          ease: EaseType.LINEAR,
         })),
       },
       "bullet_change-speed-offset": {
@@ -1330,6 +1330,10 @@ function template_bullet(json = null) {
                 this.preRender()
               }
               this.renderBackgroundColor()
+
+              if (!Optional.is(this.store) || this.store.getStore() == null) {
+                return
+              }
 
               var store = this.store.getStore()
               var amount = store.getValue("bullet_on-death-amount")

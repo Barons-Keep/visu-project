@@ -20,6 +20,8 @@ global.__GRID_ITEM_FRUSTUM_RANGE = 8
 global.__GRID_ITEM_CHUNK_SERVICE_SIZE = 0.5
 #macro GRID_ITEM_CHUNK_SERVICE_SIZE global.__GRID_ITEM_CHUNK_SERVICE_SIZE
 
+///@type {Number}
+#macro VISU_FADE_FACTOR 0.025
 
 ///@param {Number} {_size}
 function GridItemChunkService(_size) constructor {
@@ -310,8 +312,18 @@ function GridService(_config = null) constructor {
   ///@type {Struct}
   movement = {
     enable: false,
-    angle: new NumberTransformer({ value: 90.0, target: 1.0, factor: 0.01, increase: 0.0 }),
-    speed: new NumberTransformer({ value: 0.0, target: 1.0, factor: 0.01, increase: 0.0 }),
+    angle: new NumberTransformer({
+      value: 90.0,
+      target: 1.0,
+      duration: 148.333333,
+      ease: EaseType.LINEAR,
+    }),
+    speed: new NumberTransformer({
+      value: 0.0,
+      target: 1.0,
+      duration: 1.666667,
+      ease: EaseType.LINEAR,
+    }),
   }
   
   avgCircular = {

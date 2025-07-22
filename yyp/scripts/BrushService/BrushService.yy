@@ -1,0 +1,13 @@
+{
+  "$GMScript":"v1",
+  "%Name":"BrushService",
+  "isCompatibility":false,
+  "isDnD":false,
+  "name":"BrushService",
+  "parent":{
+    "name":"brush",
+    "path":"folders/io.alkapivo.visu/src/service/brush.yy",
+  },
+  "resourceType":"GMScript",
+  "resourceVersion":"2.0",
+}

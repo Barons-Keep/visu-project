@@ -24,8 +24,8 @@ function brush_entity_coin(json) {
         value: Struct.get(json, "en-coin_x"),
         passthrough: UIUtil.passthrough.getClampedStringNumber(),
         data: new Vector2(
-          -1.0 * (SHROOM_SPAWN_CHANNEL_AMOUNT / 2.0),
-          SHROOM_SPAWN_CHANNEL_AMOUNT / 2.0
+          -1.0 * (SHROOM_SPAWN_AMOUNT / 2.0),
+          SHROOM_SPAWN_AMOUNT / 2.0
         ),
       },
       "en-coin_snap-x": {
@@ -40,15 +40,15 @@ function brush_entity_coin(json) {
         type: Number,
         value: Struct.get(json, "en-coin_rng-x"),
         passthrough: UIUtil.passthrough.getClampedStringNumber(),
-        data: new Vector2(0.0, SHROOM_SPAWN_CHANNEL_AMOUNT),
+        data: new Vector2(0.0, SHROOM_SPAWN_AMOUNT),
       },
       "en-coin_y": {
         type: Number,
         value: Struct.get(json, "en-coin_y"),
         passthrough: UIUtil.passthrough.getClampedStringNumber(),
         data: new Vector2(
-          -1.0 * (SHROOM_SPAWN_ROW_AMOUNT / 2.0),
-          SHROOM_SPAWN_ROW_AMOUNT / 2.0
+          -1.0 * (SHROOM_SPAWN_AMOUNT / 2.0),
+          SHROOM_SPAWN_AMOUNT / 2.0
         ),
       },
       "en-coin_snap-y": {
@@ -63,7 +63,7 @@ function brush_entity_coin(json) {
         type: Number,
         value: Struct.get(json, "en-coin_rng-y"),
         passthrough: UIUtil.passthrough.getClampedStringNumber(),
-        data: new Vector2(0.0, SHROOM_SPAWN_ROW_AMOUNT),
+        data: new Vector2(0.0, SHROOM_SPAWN_AMOUNT),
       },
       "en-coin_hide": {
         type: Boolean,
@@ -197,9 +197,9 @@ function brush_entity_coin(json) {
                 }))
               }
 
-              var _x = store.getValue("en-coin_x") * (SHROOM_SPAWN_CHANNEL_SIZE / SHROOM_SPAWN_CHANNEL_AMOUNT) + 0.5
+              var _x = store.getValue("en-coin_x") * (SHROOM_SPAWN_SIZE / SHROOM_SPAWN_AMOUNT) + 0.5
               if (store.getValue("en-coin_use-rng-x")) {
-                _x += sin(this.spawnerXTimer.update().time) * (store.getValue("en-coin_rng-x") * (SHROOM_SPAWN_CHANNEL_SIZE / SHROOM_SPAWN_CHANNEL_AMOUNT) / 2.0)
+                _x += sin(this.spawnerXTimer.update().time) * (store.getValue("en-coin_rng-x") * (SHROOM_SPAWN_SIZE / SHROOM_SPAWN_AMOUNT) / 2.0)
               }
 
               if (store.getValue("en-coin_snap-x")) {
@@ -214,9 +214,9 @@ function brush_entity_coin(json) {
                 }))
               }
 
-              var _y = store.getValue("en-coin_y") * (SHROOM_SPAWN_ROW_SIZE / SHROOM_SPAWN_ROW_AMOUNT) - 0.5
+              var _y = store.getValue("en-coin_y") * (SHROOM_SPAWN_SIZE / SHROOM_SPAWN_AMOUNT) - 0.5
               if (store.getValue("en-coin_use-rng-y")) {
-                _y += sin(this.spawnerYTimer.update().time) * (store.getValue("en-coin_rng-y") * (SHROOM_SPAWN_ROW_SIZE / SHROOM_SPAWN_ROW_AMOUNT) / 2.0)
+                _y += sin(this.spawnerYTimer.update().time) * (store.getValue("en-coin_rng-y") * (SHROOM_SPAWN_SIZE / SHROOM_SPAWN_AMOUNT) / 2.0)
               }
 
               if (store.getValue("en-coin_snap-y")) {
@@ -273,8 +273,8 @@ function brush_entity_coin(json) {
             hidden: { key: "en-coin_hide-spawn" },
           }, 
           slider: {
-            minValue: -1.0 * (SHROOM_SPAWN_CHANNEL_AMOUNT / 2),
-            maxValue: SHROOM_SPAWN_CHANNEL_AMOUNT / 2,
+            minValue: -1.0 * (SHROOM_SPAWN_AMOUNT / 2),
+            maxValue: SHROOM_SPAWN_AMOUNT / 2,
             snapValue: 0.1,
             store: { key: "en-coin_x" },
             hidden: { key: "en-coin_hide-spawn" },
@@ -394,8 +394,8 @@ function brush_entity_coin(json) {
             hidden: { key: "en-coin_hide-spawn" },
           },  
           slider: {
-            minValue: -1.0 * (SHROOM_SPAWN_ROW_AMOUNT / 2),
-            maxValue: SHROOM_SPAWN_ROW_AMOUNT / 2,
+            minValue: -1.0 * (SHROOM_SPAWN_AMOUNT / 2),
+            maxValue: SHROOM_SPAWN_AMOUNT / 2,
             snapValue: 0.1,
             store: { key: "en-coin_y" },
             hidden: { key: "en-coin_hide-spawn" },

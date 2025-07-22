@@ -1,5 +1,14 @@
 ///@package io.alkapivo.visu.editor
 
+///@return {Struct}
+function VisuEditorModule() {
+  return {
+    controller: BeanVisuEditorController,
+    io: BeanVisuEditorIO,
+  }
+}
+
+
 #macro BeanVisuEditorController "VisuEditorController"
 function VisuEditorController() constructor {
 
@@ -76,6 +85,13 @@ function VisuEditorController() constructor {
         return round(clamp(value, 1, 16))
       }
     },
+    "bpm-shift": {
+      type: Number,
+      value: Assert.isType(Visu.settings.getValue("visu.editor.bpm-shift", 0), Number),
+      passthrough: function(value) {
+        return clamp(value, 0.0, 9999.9)
+      }
+    },
     "tool": {
       type: String,
       value: ToolType.SELECT,
@@ -141,12 +157,19 @@ function VisuEditorController() constructor {
     },
     "channel-settings-config": {
       type: String,
-      value: "{}",
+      value: JSON.stringify({
+        difficulty: {
+          EASY: true,
+          NORMAL: true,
+          HARD: true,
+          LUNATIC: true,
+        },
+      }, { pretty: true }),
       serialize: function() {
         return JSON.parse(this.get())
       },
       validate: function(value) {
-        Assert.isType(JSON.parse(value), Struct)
+        Assert.isType(JSON.parse(value), Struct, "channel-settings-config must be type of String->Struct")
       },
     },
     "selected-event": {
@@ -163,6 +186,10 @@ function VisuEditorController() constructor {
       passthrough: function(value) {
         return clamp(value, 5, 30)
       },
+    },
+    "timeline-follow": {
+      type: Boolean,
+      value: Assert.isType(Visu.settings.getValue("visu.editor.timeline-follow", false), Boolean),
     },
   })
 
@@ -479,6 +506,14 @@ function VisuEditorController() constructor {
   ///@private
   ///@return {VisuEditorController}
   init = function() {
+    if (Core.getProperty("visu.editor.edit-theme")) {
+      Struct.forEach(this.settings.getValue("visu.editor.theme"), function(hex, name) {
+        Struct.set(VETheme, name, hex)
+      })
+
+      VEStyles = generateVEStyles()
+    }
+
     this.store.get("bpm").addSubscriber(Visu.generateSettingsSubscriber("visu.editor.bpm"))
     this.store.get("bpm-count").addSubscriber(Visu.generateSettingsSubscriber("visu.editor.bpm-count"))
     this.store.get("bpm-sub").addSubscriber(Visu.generateSettingsSubscriber("visu.editor.bpm-sub"))
@@ -492,8 +527,9 @@ function VisuEditorController() constructor {
     
     this.layout = this.factoryLayout()
 
-    if (this.renderUI) {
-      this.renderUI = Beans.get(BeanVisuController).menu.containers.size() == 0
+    var controller = Beans.get(BeanVisuController)
+    if (this.renderUI && controller != null) {
+      this.renderUI = controller.menu.containers.size() == 0
     }
     
     return this
@@ -549,7 +585,7 @@ function VisuEditorController() constructor {
           name: "visu-editor.track-control",
           percentageHeight: 1.0,
           width: function() { return Struct.get(this.context.nodes, "preview").width() },
-          height: function() { return round(90 * this.percentageHeight) },
+          height: function() { return round(72 * this.percentageHeight) },
           x: function() { return this.context.nodes.preview.x() },
           y: function() {
             return min(
@@ -722,8 +758,8 @@ function VisuEditorController() constructor {
     var renderTrackControl = this.store.getValue("render-trackControl")
     var trackControlNode = Struct.get(this.layout.nodes, "track-control")
     trackControlNode.percentageHeight = clamp(renderTrackControl
-      ? lerp(trackControlNode.percentageHeight, 1.0, lerpFactor * 1.0)
-      : lerp(trackControlNode.percentageHeight, 0.0, lerpFactor * 1.0), 0, 1.0)
+      ? lerp(trackControlNode.percentageHeight, 1.0, lerpFactor * 2.0)
+      : lerp(trackControlNode.percentageHeight, 0.0, lerpFactor * 2.0), 0, 1.0)
     if (!renderTrackControl && trackControlNode.percentageHeight < 0.1) {
       trackControlNode.percentageHeight = 0.0
     }
@@ -845,6 +881,8 @@ function VisuEditorController() constructor {
     this.updateUIService()
     this.services.forEach(this.updateService, this)
     this.updateLayout()
+
+    this.store.get("selected-event").resolveLazyNotify()
     this.updateDebugTimer.finish()
     return this
   }

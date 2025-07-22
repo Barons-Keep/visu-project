@@ -1,0 +1,13 @@
+{
+  "$GMScript":"v1",
+  "%Name":"VisuMenuTest",
+  "isCompatibility":false,
+  "isDnD":false,
+  "name":"VisuMenuTest",
+  "parent":{
+    "name":"controller",
+    "path":"folders/io.alkapivo.visu/test/ui/controller.yy",
+  },
+  "resourceType":"GMScript",
+  "resourceVersion":"2.0",
+}

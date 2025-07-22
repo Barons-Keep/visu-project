@@ -149,7 +149,12 @@ function brush_view_config(json = null) {
             text: "Render",
             backgroundColor: VETheme.color.accentShadow,
           },
-          checkbox: { backgroundColor: VETheme.color.accentShadow },
+          checkbox: {
+            spriteOn: { name: "visu_texture_checkbox_show" },
+            spriteOff: { name: "visu_texture_checkbox_hide" },
+            store: { key: "vw-cfg_hide-render" },
+            backgroundColor: VETheme.color.accentShadow
+          },
           input: { backgroundColor: VETheme.color.accentShadow },
         },
       },
@@ -162,17 +167,20 @@ function brush_view_config(json = null) {
           label: { 
             text: "HUD",
             enable: { key: "vw-cfg_use-render-hud" },
+            hidden: { key: "vw-cfg_hide-render" },
           },
           checkbox: { 
             spriteOn: { name: "visu_texture_checkbox_on" },
             spriteOff: { name: "visu_texture_checkbox_off" },
             store: { key: "vw-cfg_use-render-hud" },
+            hidden: { key: "vw-cfg_hide-render" },
           },
           input: {
             spriteOn: { name: "visu_texture_checkbox_switch_on" },
             spriteOff: { name: "visu_texture_checkbox_switch_off" },
             store: { key: "vw-cfg_render-hud" },
             enable: { key: "vw-cfg_use-render-hud" },
+            hidden: { key: "vw-cfg_hide-render" },
           }
         },
       },
@@ -185,17 +193,20 @@ function brush_view_config(json = null) {
           label: { 
             text: "Subtitle",
             enable: { key: "vw-cfg_use-render-subtitle" },
+            hidden: { key: "vw-cfg_hide-render" },
           },
           checkbox: { 
             spriteOn: { name: "visu_texture_checkbox_on" },
             spriteOff: { name: "visu_texture_checkbox_off" },
             store: { key: "vw-cfg_use-render-subtitle" },
+            hidden: { key: "vw-cfg_hide-render" },
           },
           input: {
             spriteOn: { name: "visu_texture_checkbox_switch_on" },
             spriteOff: { name: "visu_texture_checkbox_switch_off" },
             store: { key: "vw-cfg_render-subtitle" },
             enable: { key: "vw-cfg_use-render-subtitle" },
+            hidden: { key: "vw-cfg_hide-render" },
           }
         },
       },
@@ -208,17 +219,20 @@ function brush_view_config(json = null) {
           label: { 
             text: "Video",
             enable: { key: "vw-cfg_use-render-video" },
+            hidden: { key: "vw-cfg_hide-render" },
           },
           checkbox: { 
             spriteOn: { name: "visu_texture_checkbox_on" },
             spriteOff: { name: "visu_texture_checkbox_off" },
             store: { key: "vw-cfg_use-render-video" },
+            hidden: { key: "vw-cfg_hide-render" },
           },
           input: {
             spriteOn: { name: "visu_texture_checkbox_switch_on" },
             spriteOff: { name: "visu_texture_checkbox_switch_off" },
             store: { key: "vw-cfg_render-video" },
             enable: { key: "vw-cfg_use-render-video" },
+            hidden: { key: "vw-cfg_hide-render" },
           }
         },
       },
@@ -226,7 +240,10 @@ function brush_view_config(json = null) {
         name: "vw-cfg_use-render-video-line-h",
         template: VEComponents.get("line-h"),
         layout: VELayouts.get("line-h"),
-        config: { layout: { type: UILayoutType.VERTICAL } },
+        config: {
+          layout: { type: UILayoutType.VERTICAL },
+          image: { hidden: { key: "vw-cfg_hide-render" } },
+        },
       },
       {
         name: "vw-cfg_cls",
@@ -238,7 +255,12 @@ function brush_view_config(json = null) {
             text: "Clear",
             backgroundColor: VETheme.color.accentShadow,
           },
-          checkbox: { backgroundColor: VETheme.color.accentShadow },
+          checkbox: {
+            spriteOn: { name: "visu_texture_checkbox_show" },
+            spriteOff: { name: "visu_texture_checkbox_hide" },
+            store: { key: "vw-cfg_hide-cls" },
+            backgroundColor: VETheme.color.accentShadow,
+          },
           input: { backgroundColor: VETheme.color.accentShadow },
         },
       },
@@ -251,11 +273,13 @@ function brush_view_config(json = null) {
           label: { 
             text: "Subtitle",
             enable: { key: "vw-cfg_cls-subtitle" },
+            hidden: { key: "vw-cfg_hide-cls" },
           },
           checkbox: { 
             spriteOn: { name: "visu_texture_checkbox_on" },
             spriteOff: { name: "visu_texture_checkbox_off" },
             store: { key: "vw-cfg_cls-subtitle" },
+            hidden: { key: "vw-cfg_hide-cls" },
           }
         },
       },
@@ -268,11 +292,13 @@ function brush_view_config(json = null) {
           label: { 
             text: "Background texture",
             enable: { key: "vw-cfg_cls-bkg-texture" },
+            hidden: { key: "vw-cfg_hide-cls" },
           },
           checkbox: { 
             spriteOn: { name: "visu_texture_checkbox_on" },
             spriteOff: { name: "visu_texture_checkbox_off" },
             store: { key: "vw-cfg_cls-bkg-texture" },
+            hidden: { key: "vw-cfg_hide-cls" },
           }
         },
       },
@@ -285,11 +311,13 @@ function brush_view_config(json = null) {
           label: { 
             text: "Background color",
             enable: { key: "vw-cfg_cls-bkg-col" },
+            hidden: { key: "vw-cfg_hide-cls" },
           },
           checkbox: { 
             spriteOn: { name: "visu_texture_checkbox_on" },
             spriteOff: { name: "visu_texture_checkbox_off" },
             store: { key: "vw-cfg_cls-bkg-col" },
+            hidden: { key: "vw-cfg_hide-cls" },
           }
         },
       },
@@ -302,11 +330,13 @@ function brush_view_config(json = null) {
           label: { 
             text: "Foreground texture",
             enable: { key: "vw-cfg_cls-frg-texture" },
+            hidden: { key: "vw-cfg_hide-cls" },
           },
           checkbox: { 
             spriteOn: { name: "visu_texture_checkbox_on" },
             spriteOff: { name: "visu_texture_checkbox_off" },
             store: { key: "vw-cfg_cls-frg-texture" },
+            hidden: { key: "vw-cfg_hide-cls" },
           }
         },
       },
@@ -319,11 +349,13 @@ function brush_view_config(json = null) {
           label: { 
             text: "Foreground color",
             enable: { key: "vw-cfg_cls-frg-col" },
+            hidden: { key: "vw-cfg_hide-cls" },
           },
           checkbox: { 
             spriteOn: { name: "visu_texture_checkbox_on" },
             spriteOff: { name: "visu_texture_checkbox_off" },
             store: { key: "vw-cfg_cls-frg-col" },
+            hidden: { key: "vw-cfg_hide-cls" },
           }
         },
       },
@@ -331,7 +363,10 @@ function brush_view_config(json = null) {
         name: "vw-cfg_cls-frg-col-line-h",
         template: VEComponents.get("line-h"),
         layout: VELayouts.get("line-h"),
-        config: { layout: { type: UILayoutType.VERTICAL } },
+        config: {
+          layout: { type: UILayoutType.VERTICAL },
+          image: { hidden: { key: "vw-cfg_hide-cls" } },
+        },
       },
       {
         name: "vw-cfg_video-config-title",
@@ -343,7 +378,12 @@ function brush_view_config(json = null) {
             text: "Video config",
             backgroundColor: VETheme.color.accentShadow,
           },
-          checkbox: { backgroundColor: VETheme.color.accentShadow },
+          checkbox: {
+            backgroundColor: VETheme.color.accentShadow,
+            spriteOn: { name: "visu_texture_checkbox_show" },
+            spriteOff: { name: "visu_texture_checkbox_hide" },
+            store: { key: "vw-cfg_hide-video" },
+          },
           input: { backgroundColor: VETheme.color.accentShadow },
         },
       },
@@ -356,17 +396,20 @@ function brush_view_config(json = null) {
           label: { 
             text: "Render after background",
             enable: { key: "vw-cfg_use-render-video-after" },
+            hidden: { key: "vw-cfg_hide-video" },
           },
           checkbox: { 
             spriteOn: { name: "visu_texture_checkbox_on" },
             spriteOff: { name: "visu_texture_checkbox_off" },
             store: { key: "vw-cfg_use-render-video-after" },
+            hidden: { key: "vw-cfg_hide-video" },
           },
           input: {
             spriteOn: { name: "visu_texture_checkbox_switch_on" },
             spriteOff: { name: "visu_texture_checkbox_switch_off" },
             store: { key: "vw-cfg_render-video-after" },
             enable: { key: "vw-cfg_use-render-video-after" },
+            hidden: { key: "vw-cfg_hide-video" },
           }
         },
       },
@@ -380,12 +423,20 @@ function brush_view_config(json = null) {
             text: "Blend mode",
             //backgroundColor: VETheme.color.accentShadow,
             enable: { key: "vw-cfg_video-use-blend" },
+            hidden: { key: "vw-cfg_hide-video" },
           },
           //input: { backgroundColor: VETheme.color.accentShadow },
-          checkbox: { 
-            spriteOn: { name: "visu_texture_checkbox_on" },
-            spriteOff: { name: "visu_texture_checkbox_off" },
+          input: {
+            spriteOn: { name: "visu_texture_checkbox_switch_on" },
+            spriteOff: { name: "visu_texture_checkbox_switch_off" },
             store: { key: "vw-cfg_video-use-blend" },
+            hidden: { key: "vw-cfg_hide-video" }
+          },
+          checkbox: { 
+            spriteOn: { name: "visu_texture_checkbox_show" },
+            spriteOff: { name: "visu_texture_checkbox_hide" },
+            store: { key: "vw-cfg_hide-video-blend" },
+            hidden: { key: "vw-cfg_hide-video" },
             //backgroundColor: VETheme.color.accentShadow,
           },
         },
@@ -399,14 +450,32 @@ function brush_view_config(json = null) {
           label: { 
             text: "Source",
             enable: { key: "vw-cfg_video-use-blend" },
+            hidden: {
+              keys: [
+                { key: "vw-cfg_hide-video" },
+                { key: "vw-cfg_hide-video-blend" }
+              ]
+            },
           },
           previous: {
             store: { key: "vw-cfg_video-blend-src" },
             enable: { key: "vw-cfg_video-use-blend" },
+            hidden: {
+              keys: [
+                { key: "vw-cfg_hide-video" },
+                { key: "vw-cfg_hide-video-blend" }
+              ]
+            },
           },
           preview: Struct.appendRecursive({ 
             store: { key: "vw-cfg_video-blend-src" },
             enable: { key: "vw-cfg_video-use-blend" },
+            hidden: {
+              keys: [
+                { key: "vw-cfg_hide-video" },
+                { key: "vw-cfg_hide-video-blend" }
+              ]
+            },
             preRender: function() { 
               Struct.set(this, "_text", this.label.text)
               this.label.text = String.toUpperCase(String.replaceAll(this.label.text, "_", " "))
@@ -418,6 +487,12 @@ function brush_view_config(json = null) {
           next: { 
             store: { key: "vw-cfg_video-blend-src" },
             enable: { key: "vw-cfg_video-use-blend" },
+            hidden: {
+              keys: [
+                { key: "vw-cfg_hide-video" },
+                { key: "vw-cfg_hide-video-blend" }
+              ]
+            },
           },
         },
       },
@@ -430,14 +505,32 @@ function brush_view_config(json = null) {
           label: { 
             text: "Target",
             enable: { key: "vw-cfg_video-use-blend" },
+            hidden: {
+              keys: [
+                { key: "vw-cfg_hide-video" },
+                { key: "vw-cfg_hide-video-blend" }
+              ]
+            },
           },
           previous: {
             store: { key: "vw-cfg_video-blend-dest" },
             enable: { key: "vw-cfg_video-use-blend" },
+            hidden: {
+              keys: [
+                { key: "vw-cfg_hide-video" },
+                { key: "vw-cfg_hide-video-blend" }
+              ]
+            },
           },
           preview: Struct.appendRecursive({ 
             store: { key: "vw-cfg_video-blend-dest" },
             enable: { key: "vw-cfg_video-use-blend" },
+            hidden: {
+              keys: [
+                { key: "vw-cfg_hide-video" },
+                { key: "vw-cfg_hide-video-blend" }
+              ]
+            },
             preRender: function() { 
               Struct.set(this, "_text", this.label.text)
               this.label.text = String.toUpperCase(String.replaceAll(this.label.text, "_", " "))
@@ -449,6 +542,12 @@ function brush_view_config(json = null) {
           next: { 
             store: { key: "vw-cfg_video-blend-dest" },
             enable: { key: "vw-cfg_video-use-blend" },
+            hidden: {
+              keys: [
+                { key: "vw-cfg_hide-video" },
+                { key: "vw-cfg_hide-video-blend" }
+              ]
+            },
           },
         },
       },
@@ -461,14 +560,32 @@ function brush_view_config(json = null) {
           label: { 
             text: "Equation",
             enable: { key: "vw-cfg_video-use-blend" },
+            hidden: {
+              keys: [
+                { key: "vw-cfg_hide-video" },
+                { key: "vw-cfg_hide-video-blend" }
+              ]
+            },
           },
           previous: {
             store: { key: "vw-cfg_video-blend-eq" },
             enable: { key: "vw-cfg_video-use-blend" },
+            hidden: {
+              keys: [
+                { key: "vw-cfg_hide-video" },
+                { key: "vw-cfg_hide-video-blend" }
+              ]
+            },
           },
           preview: Struct.appendRecursive({ 
             store: { key: "vw-cfg_video-blend-eq" },
             enable: { key: "vw-cfg_video-use-blend" },
+            hidden: {
+              keys: [
+                { key: "vw-cfg_hide-video" },
+                { key: "vw-cfg_hide-video-blend" }
+              ]
+            },
             preRender: function() { 
               Struct.set(this, "_text", this.label.text)
               this.label.text = String.toUpperCase(String.replaceAll(this.label.text, "_", " "))
@@ -480,6 +597,12 @@ function brush_view_config(json = null) {
           next: {
             store: { key: "vw-cfg_video-blend-eq" },
             enable: { key: "vw-cfg_video-use-blend" },
+            hidden: {
+              keys: [
+                { key: "vw-cfg_hide-video" },
+                { key: "vw-cfg_hide-video-blend" }
+              ]
+            },
           },
         },
       },
@@ -492,14 +615,32 @@ function brush_view_config(json = null) {
           label: { 
             text: "Eq. alpha",
             enable: { key: "vw-cfg_video-use-blend" },
+            hidden: {
+              keys: [
+                { key: "vw-cfg_hide-video" },
+                { key: "vw-cfg_hide-video-blend" }
+              ]
+            },
           },
           previous: {
             store: { key: "vw-cfg_video-blend-eq-alpha" },
             enable: { key: "vw-cfg_video-use-blend" },
+            hidden: {
+              keys: [
+                { key: "vw-cfg_hide-video" },
+                { key: "vw-cfg_hide-video-blend" }
+              ]
+            },
           },
           preview: Struct.appendRecursive({ 
             store: { key: "vw-cfg_video-blend-eq-alpha" },
             enable: { key: "vw-cfg_video-use-blend" },
+            hidden: {
+              keys: [
+                { key: "vw-cfg_hide-video" },
+                { key: "vw-cfg_hide-video-blend" }
+              ]
+            },
             preRender: function() { 
               Struct.set(this, "_text", this.label.text)
               this.label.text = String.toUpperCase(String.replaceAll(this.label.text, "_", " "))
@@ -511,7 +652,57 @@ function brush_view_config(json = null) {
           next: {
             store: { key: "vw-cfg_video-blend-eq-alpha" },
             enable: { key: "vw-cfg_video-use-blend" },
+            hidden: {
+              keys: [
+                { key: "vw-cfg_hide-video" },
+                { key: "vw-cfg_hide-video-blend" }
+              ]
+            },
           },
+        },
+      },
+      {
+        name: "vw-cfg_video-blend-eq-alpha-line-h",
+        template: VEComponents.get("line-h"),
+        layout: VELayouts.get("line-h"),
+        config: {
+          layout: { type: UILayoutType.VERTICAL },
+          image: {
+            hidden: {
+              keys: [
+                { key: "vw-cfg_hide-video" },
+                { key: "vw-cfg_hide-video-blend" }
+              ]
+            },
+          },
+        },
+      },
+      {
+        name: "vw-cfg_video-blend-col-title",
+        template: VEComponents.get("property"),
+        layout: VELayouts.get("property"),
+        config: { 
+          layout: { type: UILayoutType.VERTICAL },
+          label: {
+            text: "Blend color",
+            enable: { key: "vw-cfg_video-use-blend-col" },
+            hidden: { key: "vw-cfg_hide-video" },
+            //backgroundColor: VETheme.color.side,
+          },
+          checkbox: { 
+            spriteOn: { name: "visu_texture_checkbox_show" },
+            spriteOff: { name: "visu_texture_checkbox_hide" },
+            store: { key: "vw-cfg_hide-video-col" },
+            hidden: { key: "vw-cfg_hide-video" },
+            //backgroundColor: VETheme.color.side,
+          },
+          input: {
+            spriteOn: { name: "visu_texture_checkbox_switch_on" },
+            spriteOff: { name: "visu_texture_checkbox_switch_off" },
+            store: { key: "vw-cfg_video-use-blend-col" },
+            hidden: { key: "vw-cfg_hide-video" },
+            //backgroundColor: VETheme.color.side,
+          }
         },
       },
       {
@@ -519,78 +710,123 @@ function brush_view_config(json = null) {
         template: VEComponents.get("color-picker"),
         layout: VELayouts.get("color-picker"),
         config: {
-          layout: { 
-            type: UILayoutType.VERTICAL,
-            hex: { margin: { top: 0 } },
-          },
-          title: { 
-            label: {
-              text: "Blend color",
-              enable: { key: "vw-cfg_video-use-blend-col" },
-              backgroundColor: VETheme.color.side,
-            },
-            checkbox: { 
-              spriteOn: { name: "visu_texture_checkbox_on" },
-              spriteOff: { name: "visu_texture_checkbox_off" },
-              store: { key: "vw-cfg_video-use-blend-col" },
-              backgroundColor: VETheme.color.side,
-            },
-            input: {
-              store: { key: "vw-cfg_video-blend-col" },
-              enable: { key: "vw-cfg_video-use-blend-col" },
-              backgroundColor: VETheme.color.side,
-            }
-          },
+          layout: { type: UILayoutType.VERTICAL },
           red: {
             label: {
               text: "Red",
               enable: { key: "vw-cfg_video-use-blend-col" },
+              hidden: {
+                keys: [
+                  { key: "vw-cfg_hide-video" },
+                  { key: "vw-cfg_hide-video-col" }
+                ]
+              },
             },
             field: {
               store: { key: "vw-cfg_video-blend-col" },
               enable: { key: "vw-cfg_video-use-blend-col" },
+              hidden: {
+                keys: [
+                  { key: "vw-cfg_hide-video" },
+                  { key: "vw-cfg_hide-video-col" }
+                ]
+              },
             },
             slider: {
               store: { key: "vw-cfg_video-blend-col" },
               enable: { key: "vw-cfg_video-use-blend-col" },
+              hidden: {
+                keys: [
+                  { key: "vw-cfg_hide-video" },
+                  { key: "vw-cfg_hide-video-col" }
+                ]
+              },
             },
           },
           green: {
             label: {
               text: "Green",
               enable: { key: "vw-cfg_video-use-blend-col" },
+              hidden: {
+                keys: [
+                  { key: "vw-cfg_hide-video" },
+                  { key: "vw-cfg_hide-video-col" }
+                ]
+              },
             },
             field: {
               store: { key: "vw-cfg_video-blend-col" },
               enable: { key: "vw-cfg_video-use-blend-col" },
+              hidden: {
+                keys: [
+                  { key: "vw-cfg_hide-video" },
+                  { key: "vw-cfg_hide-video-col" }
+                ]
+              },
             },
             slider: {
               store: { key: "vw-cfg_video-blend-col" },
               enable: { key: "vw-cfg_video-use-blend-col" },
+              hidden: {
+                keys: [
+                  { key: "vw-cfg_hide-video" },
+                  { key: "vw-cfg_hide-video-col" }
+                ]
+              },
             },
           },
           blue: {
             label: {
               text: "Blue",
               enable: { key: "vw-cfg_video-use-blend-col" },
+              hidden: {
+                keys: [
+                  { key: "vw-cfg_hide-video" },
+                  { key: "vw-cfg_hide-video-col" }
+                ]
+              },
             },
             field: {
               store: { key: "vw-cfg_video-blend-col" },
               enable: { key: "vw-cfg_video-use-blend-col" },
+              hidden: {
+                keys: [
+                  { key: "vw-cfg_hide-video" },
+                  { key: "vw-cfg_hide-video-col" }
+                ]
+              },
             },
             slider: {
               store: { key: "vw-cfg_video-blend-col" },
               enable: { key: "vw-cfg_video-use-blend-col" },
+              hidden: {
+                keys: [
+                  { key: "vw-cfg_hide-video" },
+                  { key: "vw-cfg_hide-video-col" }
+                ]
+              },
             },
           },
           hex: { 
             label: {
               text: "Hex",
               enable: { key: "vw-cfg_video-use-blend-col" },
+              hidden: {
+                keys: [
+                  { key: "vw-cfg_hide-video" },
+                  { key: "vw-cfg_hide-video-col" }
+                ]
+              },
             },
             field: {
               store: { key: "vw-cfg_video-blend-col" },
               enable: { key: "vw-cfg_video-use-blend-col" },
+              hidden: {
+                keys: [
+                  { key: "vw-cfg_hide-video" },
+                  { key: "vw-cfg_hide-video-col" }
+                ]
+              },
             },
           },
         },
@@ -604,34 +840,109 @@ function brush_view_config(json = null) {
           label: { 
             text: "Duration",
             enable: { key: "vw-cfg_video-use-blend-col" },
+            hidden: {
+              keys: [
+                { key: "vw-cfg_hide-video" },
+                { key: "vw-cfg_hide-video-col" }
+              ]
+            },
           },  
           field: { 
             store: { key: "vw-cfg_video-blend-col-spd" },
             enable: { key: "vw-cfg_video-use-blend-col" },
+            hidden: {
+              keys: [
+                { key: "vw-cfg_hide-video" },
+                { key: "vw-cfg_hide-video-col" }
+              ]
+            },
           },
           decrease: {
             store: { key: "vw-cfg_video-blend-col-spd" },
             enable: { key: "vw-cfg_video-use-blend-col" },
+            hidden: {
+              keys: [
+                { key: "vw-cfg_hide-video" },
+                { key: "vw-cfg_hide-video-col" }
+              ]
+            },
             factor: -0.1,
           },
           increase: {
             store: { key: "vw-cfg_video-blend-col-spd" },
             enable: { key: "vw-cfg_video-use-blend-col" },
+            hidden: {
+              keys: [
+                { key: "vw-cfg_hide-video" },
+                { key: "vw-cfg_hide-video-col" }
+              ]
+            },
             factor: 0.1,
           },
           stick: {
             store: { key: "vw-cfg_video-blend-col-spd" },
             enable: { key: "vw-cfg_video-use-blend-col" },
+            hidden: {
+              keys: [
+                { key: "vw-cfg_hide-video" },
+                { key: "vw-cfg_hide-video-col" }
+              ]
+            },
             factor: 0.01,
           },
-          checkbox: { },
+          checkbox: {
+            hidden: {
+              keys: [
+                { key: "vw-cfg_hide-video" },
+                { key: "vw-cfg_hide-video-col" }
+              ]
+            },
+          },
         },
       },
       {
         name: "vw-cfg_video-blend-col-spd-line-h",
         template: VEComponents.get("line-h"),
         layout: VELayouts.get("line-h"),
-        config: { layout: { type: UILayoutType.VERTICAL } },
+        config: {
+          layout: { type: UILayoutType.VERTICAL },
+          image: {
+            hidden: {
+              keys: [
+                { key: "vw-cfg_hide-video" },
+                { key: "vw-cfg_hide-video-col" }
+              ]
+            },
+          },
+        },
+      },
+      {
+        name: "vw-cfg_video-alpha-title",
+        template: VEComponents.get("property"),
+        layout: VELayouts.get("property"),
+        config: { 
+          layout: { type: UILayoutType.VERTICAL },
+          label: {
+            text: "Alpha",
+            //enable: { key: "vw-cfg_use-video-alpha" },
+            hidden: { key: "vw-cfg_hide-video" },
+            //backgroundColor: VETheme.color.side,
+          },
+          checkbox: { 
+            spriteOn: { name: "visu_texture_checkbox_show" },
+            spriteOff: { name: "visu_texture_checkbox_hide" },
+            store: { key: "vw-cfg_hide-video-alpha" },
+            hidden: { key: "vw-cfg_hide-video" },
+            //backgroundColor: VETheme.color.side,
+          },
+          input: {
+            //spriteOn: { name: "visu_texture_checkbox_switch_on" },
+            //spriteOff: { name: "visu_texture_checkbox_switch_off" },
+            //store: { key: "vw-cfg_use-video-alpha" },
+            hidden: { key: "vw-cfg_hide-video" },
+            //backgroundColor: VETheme.color.side,
+          }
+        },
       },
       {
         name: "vw-cfg_video-alpha",
@@ -644,102 +955,211 @@ function brush_view_config(json = null) {
           },
           value: {
             label: {
-              text: "Alpha",
-              font: "font_inter_10_bold",
-              color: VETheme.color.textShadow,
-              //enable: { key: "vw-cfg_use-video-alpha" },
+              text: "Value",
+              //font: "font_inter_10_bold",
+              //color: VETheme.color.textShadow,
+              enable: { key: "vw-cfg_use-video-alpha" },
+              hidden: {
+                keys: [
+                  { key: "vw-cfg_hide-video" },
+                  { key: "vw-cfg_hide-video-alpha" }
+                ]
+              },
             },
             field: {
               store: { key: "vw-cfg_video-alpha" },
               enable: { key: "vw-cfg_use-video-alpha" },
+              hidden: {
+                keys: [
+                  { key: "vw-cfg_hide-video" },
+                  { key: "vw-cfg_hide-video-alpha" }
+                ]
+              },
             },
             decrease: { 
               store: { key: "vw-cfg_video-alpha" },
               enable: { key: "vw-cfg_use-video-alpha" },
+              hidden: {
+                keys: [
+                  { key: "vw-cfg_hide-video" },
+                  { key: "vw-cfg_hide-video-alpha" }
+                ]
+              },
               factor: -0.01,
             },
             increase: { 
               store: { key: "vw-cfg_video-alpha" },
               enable: { key: "vw-cfg_use-video-alpha" },
+              hidden: {
+                keys: [
+                  { key: "vw-cfg_hide-video" },
+                  { key: "vw-cfg_hide-video-alpha" }
+                ]
+              },
               factor: 0.01,
             },
             checkbox: { 
               spriteOn: { name: "visu_texture_checkbox_on" },
               spriteOff: { name: "visu_texture_checkbox_off" },
               store: { key: "vw-cfg_use-video-alpha" },
+              hidden: {
+                keys: [
+                  { key: "vw-cfg_hide-video" },
+                  { key: "vw-cfg_hide-video-alpha" }
+                ]
+              },
             },
             title: { 
               text: "Override",
               enable: { key: "vw-cfg_use-video-alpha" },
+              hidden: {
+                keys: [
+                  { key: "vw-cfg_hide-video" },
+                  { key: "vw-cfg_hide-video-alpha" }
+                ]
+              },
+            },
+            stick: {
+              store: { key: "vw-cfg_video-alpha" },
+              enable: { key: "vw-cfg_use-video-alpha" },
+              hidden: {
+                keys: [
+                  { key: "vw-cfg_hide-video" },
+                  { key: "vw-cfg_hide-video-alpha" }
+                ]
+              },
+              factor: 0.01,
             },
           },
           target: {
             label: {
               text: "Target",
               enable: { key: "vw-cfg_change-video-alpha" },
+              hidden: {
+                keys: [
+                  { key: "vw-cfg_hide-video" },
+                  { key: "vw-cfg_hide-video-alpha" }
+                ]
+              },
             },
             field: {
               store: { key: "vw-cfg_video-alpha" },
               enable: { key: "vw-cfg_change-video-alpha" },
+              hidden: {
+                keys: [
+                  { key: "vw-cfg_hide-video" },
+                  { key: "vw-cfg_hide-video-alpha" }
+                ]
+              },
             },
             decrease: { 
               store: { key: "vw-cfg_video-alpha" },
               enable: { key: "vw-cfg_change-video-alpha" },
+              hidden: {
+                keys: [
+                  { key: "vw-cfg_hide-video" },
+                  { key: "vw-cfg_hide-video-alpha" }
+                ]
+              },
               factor: -0.01,
             },
             increase: { 
               store: { key: "vw-cfg_video-alpha" },
               enable: { key: "vw-cfg_change-video-alpha" },
+              hidden: {
+                keys: [
+                  { key: "vw-cfg_hide-video" },
+                  { key: "vw-cfg_hide-video-alpha" }
+                ]
+              },
               factor: 0.01,
             },
             checkbox: { 
               spriteOn: { name: "visu_texture_checkbox_on" },
               spriteOff: { name: "visu_texture_checkbox_off" },
               store: { key: "vw-cfg_change-video-alpha" },
+              hidden: {
+                keys: [
+                  { key: "vw-cfg_hide-video" },
+                  { key: "vw-cfg_hide-video-alpha" }
+                ]
+              },
             },
             title: { 
               text: "Change",
               enable: { key: "vw-cfg_change-video-alpha" },
+              hidden: {
+                keys: [
+                  { key: "vw-cfg_hide-video" },
+                  { key: "vw-cfg_hide-video-alpha" }
+                ]
+              },
+            },
+            stick: {
+              store: { key: "vw-cfg_video-alpha" },
+              enable: { key: "vw-cfg_change-video-alpha" },
+              hidden: {
+                keys: [
+                  { key: "vw-cfg_hide-video" },
+                  { key: "vw-cfg_hide-video-alpha" }
+                ]
+              },
+              factor: 0.01,
             },
           },
-          factor: {
+          duration: {
             label: {
-              text: "Factor",
+              text: "Duration",
               enable: { key: "vw-cfg_change-video-alpha" },
+              hidden: {
+                keys: [
+                  { key: "vw-cfg_hide-video" },
+                  { key: "vw-cfg_hide-video-alpha" }
+                ]
+              },
             },
             field: {
               store: { key: "vw-cfg_video-alpha" },
               enable: { key: "vw-cfg_change-video-alpha" },
+              hidden: {
+                keys: [
+                  { key: "vw-cfg_hide-video" },
+                  { key: "vw-cfg_hide-video-alpha" }
+                ]
+              },
             },
             decrease: { 
               store: { key: "vw-cfg_video-alpha" },
               enable: { key: "vw-cfg_change-video-alpha" },
-              factor: -0.001,
+              hidden: {
+                keys: [
+                  { key: "vw-cfg_hide-video" },
+                  { key: "vw-cfg_hide-video-alpha" }
+                ]
+              },
+              factor: -0.01,
             },
             increase: { 
               store: { key: "vw-cfg_video-alpha" },
               enable: { key: "vw-cfg_change-video-alpha" },
-              factor: 0.001,
+              hidden: {
+                keys: [
+                  { key: "vw-cfg_hide-video" },
+                  { key: "vw-cfg_hide-video-alpha" }
+                ]
+              },
+              factor: 0.01,
             },
-          },
-          increase: {
-            label: {
-              text: "Increase",
-              enable: { key: "vw-cfg_change-video-alpha" },
-            },
-            field: {
+            stick: {
               store: { key: "vw-cfg_video-alpha" },
               enable: { key: "vw-cfg_change-video-alpha" },
-            },
-            decrease: { 
-              store: { key: "vw-cfg_video-alpha" },
-              enable: { key: "vw-cfg_change-video-alpha" },
-              factor: -0.0001,
-            },
-            increase: { 
-              store: { key: "vw-cfg_video-alpha" },
-              enable: { key: "vw-cfg_change-video-alpha" },
-              factor: 0.0001,
+              hidden: {
+                keys: [
+                  { key: "vw-cfg_hide-video" },
+                  { key: "vw-cfg_hide-video-alpha" }
+                ]
+              },
+              factor: 0.01,
             },
           },
         },

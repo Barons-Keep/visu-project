@@ -230,6 +230,50 @@ function brush_grid_config(json) {
         type: Boolean,
         value: Struct.get(json, "gr-cfg_hide-cls-alpha"),
       },
+      "gr-cfg_hide-bpm": {
+        type: Boolean,
+        value: Struct.get(json, "gr-cfg_hide-bpm"),
+      },
+      "gr-cfg_use-bpm": {
+        type: Boolean,
+        value: Struct.get(json, "gr-cfg_use-bpm"),
+      },
+      "gr-cfg_bpm": {
+        type: Number,
+        value: Struct.get(json, "gr-cfg_bpm"),
+        passthrough: UIUtil.passthrough.getClampedStringInteger(),
+        data: new Vector2(0, 999),
+      },
+      "gr-cfg_use-bpm-count": {
+        type: Boolean,
+        value: Struct.get(json, "gr-cfg_use-bpm-count"),
+      },
+      "gr-cfg_bpm-count": {
+        type: Number,
+        value: Struct.get(json, "gr-cfg_bpm-count"),
+        passthrough: UIUtil.passthrough.getClampedStringInteger(),
+        data: new Vector2(0, 64),
+      },
+      "gr-cfg_use-bpm-sub": {
+        type: Boolean,
+        value: Struct.get(json, "gr-cfg_use-bpm-sub"),
+      },
+      "gr-cfg_bpm-sub": {
+        type: Number,
+        value: Struct.get(json, "gr-cfg_bpm-sub"),
+        passthrough: UIUtil.passthrough.getClampedStringInteger(),
+        data: new Vector2(0, 16),
+      },
+      "gr-cfg_use-bpm-shift": {
+        type: Boolean,
+        value: Struct.get(json, "gr-cfg_use-bpm-shift"),
+      },
+      "gr-cfg_bpm-shift": {
+        type: Number,
+        value: Struct.get(json, "gr-cfg_bpm-shift"),
+        passthrough: UIUtil.passthrough.getClampedStringNumber(),
+        data: new Vector2(0.0, 999.9),
+      }
     }),
     components: new Array(Struct, [
       {
@@ -2702,6 +2746,232 @@ function brush_grid_config(json) {
           },
         },
       },
+      {
+        name: "gr-cfg_grid-timeline",
+        template: VEComponents.get("property"),
+        layout: VELayouts.get("property"),
+        config: { 
+          layout: { type: UILayoutType.VERTICAL },
+          label: { 
+            text: "Timeline",
+            backgroundColor: VETheme.color.accentShadow,
+          },
+          checkbox: {
+            spriteOn: { name: "visu_texture_checkbox_show" },
+            spriteOff: { name: "visu_texture_checkbox_hide" },
+            store: { key: "gr-cfg_hide-bpm" },
+            backgroundColor: VETheme.color.accentShadow,
+          },
+          input: {
+            backgroundColor: VETheme.color.accentShadow,
+          },
+        },
+      },
+      {
+      name: "gr-cfg_grid-bpm",
+        template: VEComponents.get("numeric-input"),
+        layout: VELayouts.get("div"),
+        config: { 
+          layout: { type: UILayoutType.VERTICAL },
+          label: { 
+            text: "BPM",
+            enable: { key: "gr-cfg_use-bpm" },
+            hidden: { key: "gr-cfg_hide-bpm" },
+          },  
+          field: { 
+            store: { key: "gr-cfg_bpm" },
+            enable: { key: "gr-cfg_use-bpm" },
+            hidden: { key: "gr-cfg_hide-bpm" },
+            GMTF_DECIMAL: 0,
+          },
+          decrease: {
+            store: { key: "gr-cfg_bpm" },
+            enable: { key: "gr-cfg_use-bpm" },
+            factor: -1,
+            hidden: { key: "gr-cfg_hide-bpm" },
+          },
+          increase: {
+            store: { key: "gr-cfg_bpm" },
+            enable: { key: "gr-cfg_use-bpm" },
+            factor: 1,
+            hidden: { key: "gr-cfg_hide-bpm" },
+          },
+          stick: {
+            store: { key: "gr-cfg_bpm" },
+            enable: { key: "gr-cfg_use-bpm" },
+            factor: 1,
+            step: 10.0,
+            hidden: { key: "gr-cfg_hide-bpm" },
+          },
+          checkbox: {
+            store: { key: "gr-cfg_use-bpm" },
+            spriteOn: { name: "visu_texture_checkbox_on" },
+            spriteOff: { name: "visu_texture_checkbox_off" },
+            hidden: { key: "gr-cfg_hide-bpm" },
+          },
+          title: {
+            text: "Override",
+            enable: { key: "gr-cfg_use-bpm" },
+            hidden: { key: "gr-cfg_hide-bpm" },
+          }
+        },
+      },
+      {
+        name: "gr-cfg_grid-bpm-count",
+        template: VEComponents.get("numeric-input"),
+        layout: VELayouts.get("div"),
+        config: { 
+          layout: { type: UILayoutType.VERTICAL },
+          label: { 
+            text: "Count",
+            enable: { key: "gr-cfg_use-bpm-count" },
+            hidden: { key: "gr-cfg_hide-bpm" },
+          },  
+          field: { 
+            store: { key: "gr-cfg_bpm-count" },
+            enable: { key: "gr-cfg_use-bpm-count" },
+            hidden: { key: "gr-cfg_hide-bpm" },
+            GMTF_DECIMAL: 0,
+          },
+          decrease: {
+            store: { key: "gr-cfg_bpm-count" },
+            enable: { key: "gr-cfg_use-bpm-count" },
+            factor: -1,
+            hidden: { key: "gr-cfg_hide-bpm" },
+          },
+          increase: {
+            store: { key: "gr-cfg_bpm-count" },
+            enable: { key: "gr-cfg_use-bpm-count" },
+            factor: 1,
+            hidden: { key: "gr-cfg_hide-bpm" },
+          },
+          stick: {
+            store: { key: "gr-cfg_bpm-count" },
+            enable: { key: "gr-cfg_use-bpm-count" },
+            factor: 1,
+            step: 10.0,
+            hidden: { key: "gr-cfg_hide-bpm" },
+          },
+          checkbox: {
+            store: { key: "gr-cfg_use-bpm-count" },
+            spriteOn: { name: "visu_texture_checkbox_on" },
+            spriteOff: { name: "visu_texture_checkbox_off" },
+            hidden: { key: "gr-cfg_hide-bpm" },
+          },
+          title: {
+            text: "Override",
+            enable: { key: "gr-cfg_use-bpm-count" },
+            hidden: { key: "gr-cfg_hide-bpm" },
+          }
+        },
+      },
+      {
+        name: "gr-cfg_grid-bpm-sub",
+        template: VEComponents.get("numeric-input"),
+        layout: VELayouts.get("div"),
+        config: { 
+          layout: { type: UILayoutType.VERTICAL },
+          label: { 
+            text: "Sub",
+            enable: { key: "gr-cfg_use-bpm-sub" },
+            hidden: { key: "gr-cfg_hide-bpm" },
+          },  
+          field: { 
+            store: { key: "gr-cfg_bpm-sub" },
+            enable: { key: "gr-cfg_use-bpm-sub" },
+            hidden: { key: "gr-cfg_hide-bpm" },
+            GMTF_DECIMAL: 0,
+          },
+          decrease: {
+            store: { key: "gr-cfg_bpm-sub" },
+            enable: { key: "gr-cfg_use-bpm-sub" },
+            factor: -1,
+            hidden: { key: "gr-cfg_hide-bpm" },
+          },
+          increase: {
+            store: { key: "gr-cfg_bpm-sub" },
+            enable: { key: "gr-cfg_use-bpm-sub" },
+            factor: 1,
+            hidden: { key: "gr-cfg_hide-bpm" },
+          },
+          stick: {
+            store: { key: "gr-cfg_bpm-sub" },
+            enable: { key: "gr-cfg_use-bpm-sub" },
+            factor: 1,
+            step: 10.0,
+            hidden: { key: "gr-cfg_hide-bpm" },
+          },
+          checkbox: {
+            store: { key: "gr-cfg_use-bpm-sub" },
+            spriteOn: { name: "visu_texture_checkbox_on" },
+            spriteOff: { name: "visu_texture_checkbox_off" },
+            hidden: { key: "gr-cfg_hide-bpm" },
+          },
+          title: {
+            text: "Override",
+            enable: { key: "gr-cfg_use-bpm-sub" },
+            hidden: { key: "gr-cfg_hide-bpm" },
+          }
+        },
+      },
+      {
+        name: "gr-cfg_grid-bpm-shift",
+        template: VEComponents.get("numeric-input"),
+        layout: VELayouts.get("div"),
+        config: { 
+          layout: { type: UILayoutType.VERTICAL },
+          label: { 
+            text: "Shift",
+            enable: { key: "gr-cfg_use-bpm-shift" },
+            hidden: { key: "gr-cfg_hide-bpm" },
+          },  
+          field: { 
+            store: { key: "gr-cfg_bpm-shift" },
+            enable: { key: "gr-cfg_use-bpm-shift" },
+            hidden: { key: "gr-cfg_hide-bpm" },
+          },
+          decrease: {
+            store: { key: "gr-cfg_bpm-shift" },
+            enable: { key: "gr-cfg_use-bpm-shift" },
+            factor: -1.0,
+            hidden: { key: "gr-cfg_hide-bpm" },
+          },
+          increase: {
+            store: { key: "gr-cfg_bpm-shift" },
+            enable: { key: "gr-cfg_use-bpm-shift" },
+            factor: 1.0,
+            hidden: { key: "gr-cfg_hide-bpm" },
+          },
+          stick: {
+            store: { key: "gr-cfg_bpm-shift" },
+            enable: { key: "gr-cfg_use-bpm-shift" },
+            factor: 1.0,
+            step: 10.0,
+            hidden: { key: "gr-cfg_hide-bpm" },
+          },
+          checkbox: {
+            store: { key: "gr-cfg_use-bpm-shift" },
+            spriteOn: { name: "visu_texture_checkbox_on" },
+            spriteOff: { name: "visu_texture_checkbox_off" },
+            hidden: { key: "gr-cfg_hide-bpm" },
+          },
+          title: {
+            text: "Override",
+            enable: { key: "gr-cfg_use-bpm-shift" },
+            hidden: { key: "gr-cfg_hide-bpm" },
+          }
+        },
+      }/*,
+      {
+        name: "gr-cfg_grid-bpm-timeline-line-h",
+        template: VEComponents.get("line-h"),
+        layout: VELayouts.get("line-h"),
+        config: {
+          layout: { type: UILayoutType.VERTICAL },
+          image: { hidden: { key: "gr-cfg_hide-bpm" } },
+        },
+      },
+      */
     ]),
   }
     

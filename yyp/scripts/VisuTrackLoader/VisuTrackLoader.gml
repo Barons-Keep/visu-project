@@ -37,8 +37,8 @@ function VisuTrackLoader(_controller): Service() constructor {
       "idle": {
         actions: {
           onStart: function(fsm, fsmState, data) {
-            var editor = Beans.get(BeanVisuEditorController)
-            if (Core.isType(editor, VisuEditorController)) {
+            var editor = Beans.get(Visu.modules().editor.controller)
+            if (Optional.is(editor)) {
               editor.send(new Event("open"))
             }
             
@@ -60,19 +60,19 @@ function VisuTrackLoader(_controller): Service() constructor {
             fsmState.state.set("clearQueue", new Queue(Callable, [
               function() { Beans.get(BeanVisuController).displayService.setCaption(game_display_name) },
               function() { Beans.get(BeanVisuController).brushService.clearTemplates() },
-              function() { Beans.get(BeanVisuController).visuRenderer.gridRenderer.clear() },
               function() { Beans.get(BeanVisuController).visuRenderer.executor.tasks.forEach(TaskUtil.fullfill).clear() },
+              function() { Beans.get(BeanVisuController).visuRenderer.gridRenderer.clear() },
               function() {
-                var editor = Beans.get(BeanVisuEditorController)
-                if (Core.isType(editor, VisuEditorController)) {
+                var editor = Beans.get(Visu.modules().editor.controller)
+                if (Optional.is(editor)) {
                   editor.popupQueue.dispatcher.execute(new Event("clear"))
                   editor.dispatcher.execute(new Event("close"))
                 }
               },
               function() { Beans.get(BeanVisuController).trackService.dispatcher.execute(new Event("close-track")) },
-              function() { Beans.get(BeanVisuController).videoService.dispatcher.execute(new Event("close-video")) },
-              function() { Beans.get(BeanVisuController).gridService.dispatcher.execute(new Event("clear-grid")) },
+              function() { Beans.get(BeanVisuController).videoService.dispatcher.execute(new Event("close-video")) },              
               function() { Beans.get(BeanVisuController).gridService.executor.tasks.forEach(TaskUtil.fullfill).clear() },
+              function() { Beans.get(BeanVisuController).gridService.dispatcher.execute(new Event("clear-grid")) },
               function() { Beans.get(BeanVisuController).gridService.loadingScreen() },
               function() { Beans.get(BeanVisuController).playerService.dispatcher.execute(new Event("clear-player")) },
               function() { Beans.get(BeanVisuController).shroomService.dispatcher.execute(new Event("clear-shrooms")).execute(new Event("reset-templates")) },
@@ -115,7 +115,7 @@ function VisuTrackLoader(_controller): Service() constructor {
         actions: {
           onStart: function(fsm, fsmState, path) {
             var controller = Beans.get(BeanVisuController)
-            var editor = Beans.get(BeanVisuEditorController)
+            var editor = Beans.get(Visu.modules().editor.controller)
             fsmState.state.set("promise", Beans.get(BeanFileService).send(
               new Event("fetch-file")
                 .setData({ path: path })
@@ -132,8 +132,8 @@ function VisuTrackLoader(_controller): Service() constructor {
                       },
                     }).update()
                     
-                    var editor = Beans.get(BeanVisuEditorController)
-                    if (Core.isType(editor, VisuEditorController)) {
+                    var editor = Beans.get(Visu.modules().editor.controller)
+                    if (Optional.is(editor)) {
                       var item = editor.store.get("bpm")
                       item.set(this.response.bpm)
   
@@ -142,6 +142,11 @@ function VisuTrackLoader(_controller): Service() constructor {
 
                       item = editor.store.get("bpm-sub")
                       item.set(this.response.bpmSub)
+
+                      //if (Struct.get(this.response, "bpmShift") != null) {
+                      //  item = editor.store.get("bpm-shift")
+                      //  item.set(this.response.bpmShift)
+                      //}
                     }
                     
                     return {
@@ -988,8 +993,8 @@ function VisuTrackLoader(_controller): Service() constructor {
               transformer: new NumberTransformer({
                 value: properties.channelsPrimaryAlpha,
                 target: 0.0,
-                factor: 0.01,
-                increase: 0.0,
+                duration: 2.0,
+                ease: EaseType.LINEAR,
               })
             }))
             
@@ -1000,8 +1005,8 @@ function VisuTrackLoader(_controller): Service() constructor {
               transformer: new NumberTransformer({
                 value: properties.channelsSecondaryAlpha,
                 target: 0.0,
-                factor: 0.01,
-                increase: 0.0,
+                duration: 2.0,
+                ease: EaseType.LINEAR,
               })
             }))
             
@@ -1012,8 +1017,8 @@ function VisuTrackLoader(_controller): Service() constructor {
               transformer: new NumberTransformer({
                 value: properties.separatorsPrimaryAlpha,
                 target: 0.0,
-                factor: 0.01,
-                increase: 0.0,
+                duration: 2.0,
+                ease: EaseType.LINEAR,
               })
             }))
             
@@ -1024,8 +1029,8 @@ function VisuTrackLoader(_controller): Service() constructor {
               transformer: new NumberTransformer({
                 value: properties.separatorsSecondaryAlpha,
                 target: 0.0,
-                factor: 0.01,
-                increase: 0.0,
+                duration: 2.0,
+                ease: EaseType.LINEAR,
               })
             }))
           },
@@ -1039,14 +1044,14 @@ function VisuTrackLoader(_controller): Service() constructor {
             Assert.isTrue(textureLoadTask.promise.status != PromiseStatus.REJECTED, "textureLoadTask.promise.status must be fullfilled")
             
             var timer = this.state.get("cooldown-timer")
-            var editorIO = Beans.get(BeanVisuEditorIO)
+            var editorIO = Beans.get(Visu.modules().editor.io)
             if (timer.update().finished) {
               fsm.dispatcher.send(new Event("transition", { name: "loaded" }))
-            } else if (Optional.is(editorIO) && editorIO.keyboard.keys.renderUI.pressed) {
+            } else if (editorIO != null && editorIO.keyboard.keys.renderUI.pressed) {
               fsm.dispatcher.send(new Event("transition", { name: "loaded" }))
 
               var controller = Beans.get(BeanVisuController)
-              var editor = Beans.get(BeanVisuEditorController)
+              var editor = Beans.get(Visu.modules().editor.controller)
               if (Optional.is(editor)) {
                 editor.renderUI = !editor.renderUI
                 var fsmState = controller.fsm.currentState
@@ -1074,8 +1079,8 @@ function VisuTrackLoader(_controller): Service() constructor {
             controller.displayService.setCaption($"{game_display_name} | {fsm.context.controller.trackService.track.name} | {fsm.context.controller.track.path}")
             controller.gridService.avgTime.reset()
 
-            var editor = Beans.get(BeanVisuEditorController)
-            if (Core.isType(editor, VisuEditorController)) {
+            var editor = Beans.get(Visu.modules().editor.controller)
+            if (Optional.is(editor)) {
               editor.send(new Event("open"))
             }
 

@@ -5,8 +5,8 @@
   "kind":1,
   "name":"test_path",
   "parent":{
-    "name":"visu-project",
-    "path":"visu-project.yyp",
+    "name":"resource",
+    "path":"folders/io.alkapivo.visu/resource.yy",
   },
   "points":[
     {"speed":0.0,"x":-8.0,"y":-1.0,},

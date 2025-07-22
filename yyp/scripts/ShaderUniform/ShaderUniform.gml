@@ -28,7 +28,7 @@ function ShaderUniform(_asset, _name, _type) constructor {
   type = Assert.isEnumKey(_type, ShaderUniformType)
 
   ///@type {GMShaderUniform}
-  asset = Assert.isType(shader_get_uniform(_asset, this.name), GMShaderUniform)
+  asset = Assert.isType(shader_get_uniform(_asset, this.name), GMShaderUniform, $"Cannot parse uniform {name}")
 
   ///@param {any} value
   static set = function(value) { }

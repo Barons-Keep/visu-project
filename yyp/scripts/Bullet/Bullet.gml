@@ -1,6 +1,11 @@
 ///@package io.alkapivo.visu.service.bullet
 
-#macro TAU 6.28318530
+///@type {Number}
+#macro BULLET_FADE_IN_TIME 0.125
+
+///@type {Number}
+#macro BULLET_FADE_OUT_TIME 0.33
+
 
 ///@param {String}
 ///@param {Struct} json
@@ -143,8 +148,10 @@ function BulletTemplate(_name, json) constructor {
   ///@param {?Boolean} [sumAngleOffset]
   ///@param {?Number|?Struct} [speedOffset]
   ///@param {?Boolean} [sumSpeedOffset]
+  ///@param {?Number} [lifespan]
+  ///@param {?Number} [damage]
   ///@return {Struct}
-  serializeSpawn = function(uid, producer, x, y, angle, speed, angleOffset = null, angleOffsetRng = null, sumAngleOffset = null, speedOffset = null, sumSpeedOffset = null) {
+  serializeSpawn = function(uid, producer, x, y, angle, speed, angleOffset = null, angleOffsetRng = null, sumAngleOffset = null, speedOffset = null, sumSpeedOffset = null, lifespan = null, damage = null) {
     return {
       uid: uid,
       producer: producer,
@@ -162,8 +169,8 @@ function BulletTemplate(_name, json) constructor {
       changeSpeedOffset: speedOffset != null ? true : this.changeSpeedOffset,
       sumSpeedOffset: sumSpeedOffset != null ? sumSpeedOffset : this.sumSpeedOffset,
 
-      damage: this.damage,
-      lifespanMax: this.lifespanMax,
+      damage: damage != null ? damage : this.damage,
+      lifespanMax: lifespan != null ? lifespan : this.lifespanMax,
       sprite: this.sprite,
       mask: this.mask,
       wiggle: this.wiggle,
@@ -282,9 +289,6 @@ function Bullet(template): GridItem(template) constructor {
   ///@type {?Number}
   onDeathRngSpeed = Struct.get(template, "onDeathRngSpeed")
 
-  ///@type {Number}
-  fadeOut = 0.5
-
   ///@param {VisuController} controller
   ///@return {Bullet}
   static update = function(controller) {
@@ -300,10 +304,12 @@ function Bullet(template): GridItem(template) constructor {
     #endregion
 
     #region @Implement component Fade
-    if (this.fadeIn < 1.0 && this.lifespan < this.lifespanMax - this.fadeOut) {
-      this.fadeIn = clamp(this.fadeIn + this.fadeInFactor, 0.0, 1.0)
-    } else {
-      this.fadeIn = clamp(this.lifespanMax - this.lifespan, 0.0, 1.0)
+    if (this.lifespan < this.lifespanMax - BULLET_FADE_OUT_TIME) {
+      if (this.fadeIn < 1.0) {
+        this.fadeIn = clamp(this.lifespan / BULLET_FADE_IN_TIME, 0.0, 1.0)
+      }
+    } else if (this.onDeath == null) {
+      this.fadeIn = clamp((this.lifespanMax - this.lifespan) / BULLET_FADE_OUT_TIME, 0.0, 1.0)
     }
     #endregion
 
@@ -331,7 +337,7 @@ function Bullet(template): GridItem(template) constructor {
     #region @Implement component Speed
     var componentSpeed = 0.0
     if (this.speedOffset != null) {
-      componentSpeed = this.speedOffset.update().value / 1000.0
+      componentSpeed = this.speedOffset.update().value / GRID_ITEM_SPEED_SCALE
     }
 
     this.speed = this.sumSpeedOffset

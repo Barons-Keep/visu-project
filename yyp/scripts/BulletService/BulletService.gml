@@ -1,31 +1,5 @@
 ///@package io.alkapivo.visu.service.bullet.BulletService
 
-///@type {Number}
-#macro BULLET_MAX_DISTANCE 3.0
-
-global.BULLET_TEMPLATE = {
-  name: "bullet_default",
-  sprite: {
-    name: "texture_test",
-  },
-  "gameModes": {
-    "bulletHell": {
-      "features": [
-        {
-          "feature": "AngleFeature",
-          "value": {
-            "value": 0.0,
-            "target": 360.0,
-            "factor": 1.0,
-            "increase": 0.0
-          }
-        }
-      ]
-    }
-  }
-}
-
-
 ///@param {VisuController} _controller
 ///@param {Struct} [config]
 function BulletService(_controller, config = {}): Service() constructor {
@@ -97,6 +71,17 @@ function BulletService(_controller, config = {}): Service() constructor {
     },
   }))
 
+  ///@type {TaskExecutor}
+  executor = new TaskExecutor(this, { 
+    loggerPrefix: "BulletServiceExecutor",
+    enableLogger: true,
+    catchException: true,
+    exceptionCallback: function(task, exception) {
+      Beans.get(BeanVisuController).exceptionDebugHandler(
+        $"'BulletService::executor' (task.name: {task.name}), fatal error: {exception.message}")
+    },
+  })
+
   ///@param {String} name
   ///@param {Shroom|Player} producer
   ///@param {Number} x
@@ -108,21 +93,26 @@ function BulletService(_controller, config = {}): Service() constructor {
   ///@param {?Boolean} [sumAngleOffset]
   ///@param {?Number|?Struct} [speedOffset]
   ///@param {?Boolean} [sumSpeedOffset]
-  static spawnBullet = function(name, producer, x, y, angle, speed, angleOffset = null, angleOffsetRng = null, sumAngleOffset = null, speedOffset = null, sumSpeedOffset = null) {
+  ///@param {?Number} [lifespan]
+  ///@param {?Number} [damage]
+  ///@param {Boolean} [onDeath]
+  static spawnBullet = function(name, producer, x, y, angle, speed, angleOffset = null, angleOffsetRng = null, sumAngleOffset = null, speedOffset = null, sumSpeedOffset = null, lifespan = null, damage = null, onDeath = false) {
     var template = this.getTemplate(name).serializeSpawn(
       this.controller.gridService.generateUID(),
       producer,
       x,
       y,
       angle,
-      speed / 1000.0,
+      speed / GRID_ITEM_SPEED_SCALE,
       angleOffset,
       angleOffsetRng,
       sumAngleOffset,
       speedOffset,
-      sumSpeedOffset
+      sumSpeedOffset,
+      lifespan,
+      damage
     )
-    if (producer == Shroom) {
+    if (producer == Shroom && !onDeath) {
       controller.sfxService.play("shroom-shoot")
     }
     
@@ -137,6 +127,61 @@ function BulletService(_controller, config = {}): Service() constructor {
     if (this.optimalizationSortEntitiesByTxGroup) {
       this.controller.gridService.textureGroups.sortItems(this.bullets)
     }
+
+    if (onDeath) {
+      bullet.fadeIn = 1.0
+    }
+  }
+
+  ///@param {Struct} item
+  ///@param {Struct} emitter
+  ///@return {BulletService}
+  static spawnBulletEmitter = function(item, emitter) {
+    var task = new Task("bullet-emitter")
+      .setTimeout(60.0)
+      .setState({
+        item: item,
+        emitter: new GridItemEmitter(Struct.appendRecursive({
+          callback: function(item, controller, emitter, idx, arrIdx, x, y, angle, speed) {
+            var view = controller.gridService.view
+            var locked = controller.gridService.targetLocked
+            var viewX = item.snapH ? locked.snapH : view.x
+            var viewY = item.snapV ? locked.snapV : view.y
+            var angleOffset = item.angleOffset
+            var angleOffsetRng = item.angleOffsetRng
+            var sumAngleOffset = item.sumAngleOffset
+            var speedOffset = item.speedOffset
+            var sumSpeedOffset = item.sumSpeedOffset
+            var lifespan = item.lifespan
+            var damage = item.damage
+            controller.bulletService.spawnBullet(
+              item.name,
+              Shroom,
+              viewX + item.spawnX + x,
+              viewY + item.spawnY + y,
+              angle,
+              speed,
+              angleOffset,
+              angleOffsetRng,
+              sumAngleOffset,
+              speedOffset,
+              sumSpeedOffset,
+              lifespan,
+              damage
+            )
+          }
+        }, emitter, false)),
+      })
+      .whenUpdate(function() {
+        if (this.state.emitter.finished()) {
+          this.fullfill()
+          return
+        }
+
+        this.state.emitter.update(this.state.item, Beans.get(BeanVisuController))
+      })
+    this.executor.add(task)
+    return this
   }
 
   ///@param {Event} event
@@ -174,16 +219,32 @@ function BulletService(_controller, config = {}): Service() constructor {
         + (rngDir * idx * bullet.onDeathAngleStep * Math.pow(bullet.onDeathAngleIncrease, clamp(idx - 1, 1, bullet.onDeathAmount))) 
         + (rngDir * (random(2.0 * bullet.onDeathRngStep) - bullet.onDeathRngStep))
       var spd = clamp(abs(bullet.onDeathSpeedMerge 
-        ? (rngSpd + (bullet.speed * 1000.0) + bullet.onDeathSpeed) 
+        ? (rngSpd + (bullet.speed * GRID_ITEM_SPEED_SCALE) + bullet.onDeathSpeed) 
         : (rngSpd + bullet.onDeathSpeed)), 0.1, 99.9)
 
+      var angleOffset = null
+      var angleOffsetRng = null
+      var sumAngleOffset = null
+      var speedOffset = null
+      var sumSpeedOffset = null
+      var lifespan = null
+      var damage = null
+      var onDeath = true
       context.spawnBullet(
         bullet.onDeath, 
         bullet.producer,
         bullet.x, 
         bullet.y,
         dir,
-        spd
+        spd,
+        angleOffset,
+        angleOffsetRng,
+        sumAngleOffset,
+        speedOffset,
+        sumSpeedOffset,
+        lifespan,
+        damage,
+        onDeath
       )        
       //context.send(new Event("spawn-bullet", {
       //  template: bullet.onDeath,
@@ -205,6 +266,7 @@ function BulletService(_controller, config = {}): Service() constructor {
     }
 
     this.dispatcher.update()
+    this.executor.update()
     this.bullets.forEach(this.updateBullet, this).runGC()
     return this
   }

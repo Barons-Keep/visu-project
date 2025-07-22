@@ -1,0 +1,12 @@
+{
+  "$GMShader":"",
+  "%Name":"shader_wavy_spectrum",
+  "name":"shader_wavy_spectrum",
+  "parent":{
+    "name":"shader_wavy_spectrum",
+    "path":"folders/io.alkapivo.core/resource/shader/screen/shader_wavy_spectrum.yy",
+  },
+  "resourceType":"GMShader",
+  "resourceVersion":"2.0",
+  "type":1,
+}

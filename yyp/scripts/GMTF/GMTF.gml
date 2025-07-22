@@ -52,18 +52,18 @@ function _GMTFContext(config = {}) constructor {
 			if (this.timer == null) {
 				this.timer = new Timer(3.0, { loop: Infinity })
 			}
-			
-			if (this.current != null 
+
+      if (this.current != null 
 					&& this.current.uiItem != null 
 					&& mouse_check_button_pressed(mb_left) 
-					&& current.has_focus 
+					&& this.current.has_focus 
 					&& !point_in_rectangle(
-						device_mouse_x_to_gui(0) - this.current.surface.x, 
-						device_mouse_y_to_gui(0) - this.current.surface.y, 
-						this.current.atx, 
-						this.current.aty, 
-						this.current.atx + this.current.style.w, 
-						this.current.aty + this.current.style.h)) {
+            this.current.mx,
+            this.current.my,
+            this.current.atx + this.current.uiItem.context.offset.x,
+            this.current.aty + this.current.uiItem.context.offset.y,
+            this.current.atx + this.current.uiItem.context.offset.x + this.current.style.w,
+            this.current.aty + this.current.uiItem.context.offset.y + this.current.style.h)) {
 				this.current.unfocus()
 			}
 
@@ -87,27 +87,19 @@ function _GMTFContext(config = {}) constructor {
 						}
 		
 						// vertical offset
-						var itemY = uiTextField.area.getY() + this.current.cursor1.cy
-						var itemHeight = mouse_check_button(mb_any)
-              ? uiTextField.area.getHeight() - this.current.cursor1.cy 
-              : this.current.style.lh
-						var offsetY = abs(uiTextField.context.offset.y)
-						var areaHeight = uiTextField.context.area.getHeight()
-						var itemBottom = itemY + itemHeight
-						var scrollYBug = Math.rectangleOverlaps(
-							0, offsetY, 10, offsetY + areaHeight, 
-							0, itemY, 10, itemBottom
-						)
-					
-						if (!scrollYBug && (itemY < offsetY || itemBottom > offsetY + areaHeight)) {
-							var newY = (itemY < offsetY) ? itemY : itemBottom - areaHeight
-							uiTextField.context.offset.y = -1 * clamp(newY, 0.0, abs(uiTextField.context.offsetMax.y))
-						}
+            var yy = uiTextField.area.getY() + this.current.cursor1.cy
+            var yyTop = abs(uiTextField.context.offset.y) + 48
+            var yyBottom = yyTop + uiTextField.context.area.getHeight() - 64
+            if (yy < yyTop) {
+              uiTextField.context.offset.y = -1.0 * clamp(yy - 48, 0, uiTextField.context.offsetMax.y)
+            } else if (yy > yyBottom) {
+              uiTextField.context.offset.y = -1.0 * clamp(yy + 64 - uiTextField.context.area.getHeight(), 0, uiTextField.context.offsetMax.y)
+            }
 					}
 					this.uiWasScrolled = true
 				}
 
-				if (uiTextField.context.surface != null) {
+        if (uiTextField.context.surface != null) {
 					uiTextField.textField.update(
 						uiTextField.context.area.getX(), 
 						uiTextField.context.area.getY()
@@ -244,11 +236,11 @@ function GMTF(style_struct = null) constructor {
 	
 	///@return {GMTF}
 	focus = function() {
-		if (Core.isType(GMTFContext.get(), GMTF)) {
+		if (Core.isType(GMTFContext.get(), GMTF) && GMTFContext.get() != this) {
 			GMTFContext.get().unfocus()
 		}
 
-		GMTFContext.set(this).uiWasScrolled = false
+		GMTFContext.set(this).uiWasScrolled = mouse_check_button_pressed(mb_any)
 
 		if (Optional.is(this.uiItem) && Optional.is(this.uiItem.context)) {
 			this.uiItem.context.finishUpdateTimer()
@@ -1109,7 +1101,7 @@ function GMTF(style_struct = null) constructor {
 		if (mouse_check_button_pressed(mb_left)) {
 			if (point_in_rectangle(mx, my, atx, aty, atx + style.w, aty + style.h)) {
 				this.focus()
-			} else if (has_focus) {
+			} else if (this.has_focus) {
 				this.unfocus()
 			}
 

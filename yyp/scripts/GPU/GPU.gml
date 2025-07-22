@@ -551,7 +551,7 @@ function _GPU() constructor {
 
     ///@return {GPU}
     blendEquation: function() {
-      gpu_set_blendequation(BlendEquation.ADD)
+      gpu_set_blendequation_sepalpha(BlendEquation.ADD, BlendEquation.ADD)
       return GPU
     },
   }

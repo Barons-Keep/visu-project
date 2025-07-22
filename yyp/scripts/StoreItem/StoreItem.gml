@@ -16,8 +16,11 @@ function StoreItem(_name, json) constructor {
   ///@type {any}
   data = Struct.get(json, "data")
 
-  ///@type {Array<StoreItemSubscriber>}
-  subscribers = new Array(StoreItemSubscriber)
+  ///@type {Map<String, StoreItemSubscriber>}
+  subscribers = new Map(String, StoreItemSubscriber)
+
+  ///@type {Boolean}
+  lazyNotify = false
 
   ///@return {any}
   get = method(this, Assert.isType(Struct.getDefault(json, "get", function() {
@@ -26,14 +29,17 @@ function StoreItem(_name, json) constructor {
 
   ///@param {any} value
   ///@return {StoreItem}
-  set = method(this, Assert.isType(Struct.getDefault(json, "set", function(value) {
+  set = method(this, Assert.isType(Struct.getDefault(json, "set", function(value, lazyNotify = false) {
     var _value = Assert.isType(this.passthrough(value), this.type, $"Store item name: {this.name}")
     this.validate(_value)
     this.value = _value
-    this.subscribers.forEach(function(subscriber, index, value) {
-      subscriber.callback(value, subscriber.data)
-    }, _value)
-    
+    if (lazyNotify) {
+      this.lazyNotify = true
+    } else {
+      this.subscribers.forEach(function(subscriber, iterator, value) {
+        subscriber.callback(value, subscriber.data)
+      }, _value)
+    }
     return this
   }), Callable))
 
@@ -96,10 +102,12 @@ function StoreItem(_name, json) constructor {
         throw new Exception($"Subscriber '{subscriber.name}' for store item '{this.name}' already exists")
       }
     }
-    this.subscribers.add(subscriber)
+    this.subscribers.add(subscriber, subscriber.name)
 
     ///@description Notify all subscribers
-    this.set(this.get())
+    if (Struct.get(subscriber.data, "notify") == true) {
+      this.set(this.get())
+    }
     return this
   }
 
@@ -107,18 +115,20 @@ function StoreItem(_name, json) constructor {
   ///@return {?StoreItemSubscriber}
   static getSubscriber = function(name) {
     gml_pragma("forceinline")
-    return this.subscribers.find(this.findSubscriberByName, name)
+    //return this.subscribers.find(this.findSubscriberByName, name)
+    return this.subscribers.get(name)
   }
 
   ///@param {String} name
   ///@return {?StoreItemSubscriber}
   static removeSubscriber = function(name) {
     gml_pragma("forceinline")
-    var index = this.subscribers.findIndex(this.findSubscriberByName, name)
-    if (Core.isType(index, Number)) {
-      subscribers.remove(index)
-      //Logger.debug("Store", $"Remove subscriber: \{ \"key\": \"{this.name}\", \"subscriber\": \"{name}\" \}")
-    }
+    //var index = this.subscribers.findIndex(this.findSubscriberByName, name)
+    //if (Core.isType(index, Number)) {
+    //  subscribers.remove(index)
+    //  //Logger.debug("Store", $"Remove subscriber: \{ \"key\": \"{this.name}\", \"subscriber\": \"{name}\" \}")
+    //}
+    this.subscribers.remove(name)
     return this
   }
 
@@ -126,7 +136,22 @@ function StoreItem(_name, json) constructor {
   ///@return {Boolean}
   static containsSubscriber = function(name) {
     gml_pragma("forceinline")
-    return Core.isType(this.subscribers
-      .find(this.findSubscriberByName, name), StoreItemSubscriber)
+    //return Core.isType(this.subscribers.find(this.findSubscriberByName, name), StoreItemSubscriber)
+    return this.subscribers.contains(name)
+  }
+
+  ///@param {String}
+  ///@return {StoreItem}
+  static resolveLazyNotify = function(lazyNotify = false) {
+    gml_pragma("forceinline")
+    if (!this.lazyNotify && !lazyNotify) {
+      return this
+    }
+
+    this.lazyNotify = false
+    this.subscribers.forEach(function(subscriber, iterator, value) {
+      subscriber.callback(value, subscriber.data)
+    }, this.value)
+    return this
   }
 }

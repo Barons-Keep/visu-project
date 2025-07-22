@@ -61,6 +61,101 @@ function GridRenderer() constructor {
   combinedGlitchService = new BKTGlitchService()
 
   ///@private
+  ///@return {VisuHUDRenderer}
+  setGlitchServiceConfig = function(glitchService, factor = 0.0, useConfig = true) {
+    var config = {
+      lineSpeed: {
+        defValue: 0.01,
+        minValue: 0.0,
+        maxValue: 0.5,
+      },
+      lineShift: {
+        defValue: 0.0,
+        minValue: 0.0,
+        maxValue: 0.05,
+      },
+      lineResolution: {
+        defValue: 0.0,
+        minValue: 0.0,
+        maxValue: 3.0,
+      },
+      lineVertShift: {
+        defValue: 0.0,
+        minValue: 0.0,
+        maxValue: 1.0,
+      },
+      lineDrift: {
+        defValue: 0.0,
+        minValue: 0.0,
+        maxValue: 1.0,
+      },
+      jumbleSpeed: {
+        defValue: 4.5,
+        minValue: 0.0,
+        maxValue: 25.0,
+      },
+      jumbleShift: {
+        defValue: 0.059999999999999998,
+        minValue: 0.0,
+        maxValue: 1.0,
+      },
+      jumbleResolution: {
+        defValue: 0.25,
+        minValue: 0.0,
+        maxValue: 1.0,
+      },
+      jumbleness: {
+        defValue: 0.10000000000000001,
+        minValue: 0.0,
+        maxValue: 1.0,
+      },
+      dispersion: {
+        defValue: 0.002,
+        minValue: 0.0,
+        maxValue: 0.5,
+      },
+      channelShift: {
+        defValue: 0.00050000000000000001,
+        minValue: 0.0,
+        maxValue: 0.05,
+      },
+      noiseLevel: {
+        defValue: 0.10000000000000001,
+        minValue: 0.0,
+        maxValue: 1.0,
+      },
+      shakiness: {
+        defValue: 0.5,
+        minValue: 0.0,
+        maxValue: 10.0,
+      },
+      rngSeed: {
+        defValue: 0.66600000000000004,
+        minValue: 0.0,
+        maxValue: 1.0,
+      },
+      intensity: {
+        defValue: 0.40000000000000002,
+        minValue: 0.0,
+        maxValue: 5.0,
+      },
+    }
+
+    if (useConfig) {
+      glitchService.dispatcher
+        .execute(new Event("load-config", config))
+    }
+
+    glitchService.dispatcher
+      .execute(new Event("spawn-glitch", { 
+        factor: factor, 
+        rng: !useConfig
+      }))
+    
+      return this
+  }
+
+  ///@private
   ///@type {Timer}
   ///@description Z demo
   playerZTimer = new Timer(pi * 2, { loop: Infinity }) 
@@ -181,6 +276,12 @@ function GridRenderer() constructor {
     //gpu_set_alphatestref(0)
     gpu_set_cullmode(cull_counterclockwise)
 
+    this.setGlitchServiceConfig(this.backgroundGlitchService)
+    this.setGlitchServiceConfig(this.gridGlitchService)
+    this.setGlitchServiceConfig(this.combinedGlitchService)
+
+    GPU.reset.blendMode()
+    GPU.reset.blendEquation()
     return this
   }
 
@@ -931,7 +1032,7 @@ function GridRenderer() constructor {
       var view = gridService.view
       var horizontal = gridService.properties.borderHorizontalLength / 2.0
       var beginX = (lockX + (view.width / 2.0) + horizontal - view.x) * GRID_SERVICE_PIXEL_WIDTH
-      var beginY = -3.0 * GRID_SERVICE_PIXEL_HEIGHT
+      var beginY = -6.0 * GRID_SERVICE_PIXEL_HEIGHT
       var endX = beginX
       var endY = (5.0 + view.height) * GRID_SERVICE_PIXEL_HEIGHT
 
@@ -955,7 +1056,7 @@ function GridRenderer() constructor {
       var view = gridService.view
       var horizontal = gridService.properties.borderHorizontalLength / 2.0
       var beginX = (lockX + (view.width / 2.0) - horizontal - view.x) * GRID_SERVICE_PIXEL_WIDTH
-      var beginY = -3.0 * GRID_SERVICE_PIXEL_HEIGHT
+      var beginY = -6.0 * GRID_SERVICE_PIXEL_HEIGHT
       var endX = beginX
       var endY = (5.0 + view.height) * GRID_SERVICE_PIXEL_HEIGHT
 
@@ -1035,7 +1136,7 @@ function GridRenderer() constructor {
       var _scaleX = ((player.sprite.getWidth() * player.sprite.getScaleX()) / sprite_get_width(texture_player_shadow)) * (3.0 + (1.5 * focusFactor)) * (scaleFactor + _swing)
       var _scaleY = ((player.sprite.getHeight() * player.sprite.getScaleY()) / sprite_get_height(texture_player_shadow)) * (3.0 + (1.5 * focusFactor)) * (scaleFactor + _swing)
       var _alpha = alpha * player.fadeIn * 0.75
-      if (_alpha > 0 && player.sprite.texture.asset != texture_empty) {
+      if (gridService.properties.playerShadowEnable && _alpha > 0 && player.sprite.texture.asset != texture_empty) {
         draw_sprite_ext(texture_player_shadow, 0, _x, _y, _scaleX, _scaleY, 0.0, this.playerShadowColor.toGMColor(), _alpha)
       }
       
@@ -1086,12 +1187,15 @@ function GridRenderer() constructor {
   ///@return {GridRenderer}
   entityRenderBullets = function(gridService, bulletService) {
     static renderBullet = function(bullet, index, gridService) {
+      var alpha = bullet.sprite.getAlpha()
       bullet.sprite
+        .setAlpha(alpha * bullet.fadeIn)
         .setAngle(bullet.angle - 90.0)
         .render(
           (bullet.x - ((bullet.sprite.texture.width * bullet.sprite.scaleX) / (2.0 * GRID_SERVICE_PIXEL_WIDTH)) + ((bullet.sprite.texture.offsetX * bullet.sprite.scaleX) / GRID_SERVICE_PIXEL_WIDTH) - gridService.view.x) * GRID_SERVICE_PIXEL_WIDTH,
           (bullet.y - ((bullet.sprite.texture.height * bullet.sprite.scaleY) / (2.0 * GRID_SERVICE_PIXEL_HEIGHT)) + ((bullet.sprite.texture.offsetY * bullet.sprite.scaleY) / GRID_SERVICE_PIXEL_HEIGHT) - gridService.view.y) * GRID_SERVICE_PIXEL_HEIGHT
         )
+        .setAlpha(alpha)
     }
     
     if (!gridService.properties.renderElements
@@ -1179,7 +1283,7 @@ function GridRenderer() constructor {
       1, 1, 1
     ))
     
-    var editor = Beans.get(BeanVisuEditorController)
+    var editor = Beans.get(Visu.modules().editor.controller)
     if (Optional.is(editor) && editor.renderUI) {
       this.editorRenderParticleArea(gridService, shroomService, layout)
     }
@@ -1233,7 +1337,7 @@ function GridRenderer() constructor {
         1, 1, 1
       ))
       
-      var editor = Beans.get(BeanVisuEditorController)
+      var editor = Beans.get(Visu.modules().editor.controller)
       if (Optional.is(editor) && editor.renderUI) {
         context.editorRenderParticleArea(gridService, shroomService, layout)
       }
@@ -1251,7 +1355,8 @@ function GridRenderer() constructor {
     var width = layout.width()
     var height = layout.height()
 
-    GPU.render.clear(properties.gridClearColor, 0.0)
+    //GPU.render.clear(properties.gridClearColor.toGMColor(), 0.0)
+    GPU.render.clear(properties.gridClearColor.toGMColor(), properties.gridClearFrameAlpha)
 
     if (properties.renderVideoAfter) {
       if (properties.renderBackground) {
@@ -1309,10 +1414,7 @@ function GridRenderer() constructor {
     var particleService = controller.particleService
 
     if (properties.gridClearFrame) {
-      var tempAlpha = properties.gridClearColor.alpha
-      properties.gridClearColor.alpha = properties.gridClearFrameAlpha
-      GPU.render.clear(properties.gridClearColor)
-      properties.gridClearColor.alpha = tempAlpha
+      GPU.render.clear(properties.gridClearColor.toGMColor(), properties.gridClearFrameAlpha)
     } else {
       GPU.set.blendMode(BlendMode.SUBTRACT)
         .render.fillColor(
@@ -1391,7 +1493,7 @@ function GridRenderer() constructor {
     //    1, 1, 1
     //  ))
     //
-    //  var editor = Beans.get(BeanVisuEditorController)
+    //  var editor = Beans.get(Visu.modules().editor.controller)
     //  if (Optional.is(editor) && editor.renderUI) {
     //    this.editorRenderParticleArea(gridService, shroomService, layout)
     //  }
@@ -1500,7 +1602,8 @@ function GridRenderer() constructor {
         : 0)
     )
 
-    GPU.render.clear(properties.gridClearColor, 0.0)
+    GPU.render.clear(properties.gridClearColor.toGMColor(), 0.0)
+    //GPU.render.clear(properties.gridClearColor.toGMColor(), properties.gridClearFrameAlpha)
 
     if (!properties.renderSupportGrid || properties.supportGridTreshold > size) {
       return this
@@ -1531,7 +1634,8 @@ function GridRenderer() constructor {
   ///@param {UILayout} layout
   ///@return {GridRenderer}
   renderGridGlitch = function(layout) {
-    this.gridSurface.renderStretched(layout.width(), layout.height())
+    var blendConfig = Beans.get(BeanVisuController).gridService.properties.gridBlendConfig
+    this.gridSurface.renderStretched(layout.width(), layout.height(), 0.0, 0.0, 1.0, c_white, blendConfig)
     return this
   }
 
@@ -1555,7 +1659,8 @@ function GridRenderer() constructor {
     var height = layout.height()
     var enableGlitch = Visu.settings.getValue("visu.graphics.bkt-glitch")
 
-    GPU.render.clear(properties.gridClearColor)
+    GPU.render.clear(properties.gridClearColor.toGMColor(), 0.0)
+    //GPU.render.clear(properties.gridClearColor.toGMColor(), properties.gridClearFrameAlpha)
 
     if (enableGlitch && properties.renderBackgroundGlitch) {
       this.backgroundGlitchService.renderOn(this.renderBackgroundGlitch, layout)
@@ -1599,7 +1704,7 @@ function GridRenderer() constructor {
         gridRenderer.backgroundSurface.height, 
         0, 
         0,
-        1.0
+        task.state.getDefault("alpha", 1.0)
       )
       GPU.reset.surface()
     }
@@ -1616,7 +1721,8 @@ function GridRenderer() constructor {
     var shaderPipeline = controller.shaderBackgroundPipeline
 
     GPU.set.surface(this.shaderBackgroundSurface)
-    GPU.render.clear(properties.gridClearColor, 0.0)
+    //GPU.render.clear(properties.shaderClearColor.toGMColor(), 0.0)
+    GPU.render.clear(properties.shaderClearColor.toGMColor(), properties.shaderClearFrameAlpha)
     GPU.reset.surface()
 
     shaderPipeline
@@ -1650,7 +1756,7 @@ function GridRenderer() constructor {
         gridRenderer.gridSurface.height, 
         0, 
         0,
-        1.0
+        task.state.getDefault("alpha", 1.0)
       )
       GPU.reset.surface()
     }
@@ -1666,11 +1772,9 @@ function GridRenderer() constructor {
     var height = this.shaderSurface.height
     var shaderPipeline = controller.shaderPipeline
 
+    GPU.set.surface(this.shaderSurface)
     if (properties.shaderClearFrame) {
-      var tempAlpha = properties.shaderClearColor.alpha
-      properties.shaderClearColor.alpha = properties.shaderClearFrameAlpha
-      GPU.render.clear(properties.shaderClearColor)
-      properties.shaderClearColor.alpha = tempAlpha
+      GPU.render.clear(properties.shaderClearColor.toGMColor(), properties.shaderClearFrameAlpha)
     } else {
       GPU.set.blendMode(BlendMode.SUBTRACT)
       GPU.render.fillColor(
@@ -1681,6 +1785,7 @@ function GridRenderer() constructor {
       )
       GPU.reset.blendMode()
     }
+    GPU.reset.surface()
 
     shaderPipeline
       .setWidth(width)
@@ -1713,7 +1818,7 @@ function GridRenderer() constructor {
         gridRenderer.gameSurface.height, 
         0, 
         0,
-        1.0
+        task.state.getDefault("alpha", 1.0)
       )
       GPU.reset.surface()
     }
@@ -1729,7 +1834,10 @@ function GridRenderer() constructor {
     var height = this.shaderCombinedSurface.height
     var shaderPipeline = controller.shaderCombinedPipeline
 
-    GPU.render.clear(properties.shaderClearColor, 0.0)
+    GPU.set.surface(this.shaderCombinedSurface)
+    //GPU.render.clear(properties.shaderClearColor.toGMColor(), 0.0)
+    GPU.render.clear(properties.shaderClearColor.toGMColor(), properties.shaderClearFrameAlpha)
+    GPU.reset.surface()
 
     shaderPipeline
       .setWidth(width)
@@ -1824,6 +1932,10 @@ function GridRenderer() constructor {
     this.camera.free()
     this.camera = new GridCamera()
     this.overlayRenderer.clear()
+    this.gridGlitchService.dispatcher.send(new Event("clear-glitch"))
+    this.backgroundGlitchService.dispatcher.send(new Event("clear-glitch"))
+    this.combinedGlitchService.dispatcher.send(new Event("clear-glitch"))
+    this.init()
     return this
   }
 
@@ -1983,7 +2095,7 @@ function GridRenderer() constructor {
       this.renderPlayerHint(controller.playerService, layout)
     }
 
-    var editor = Beans.get(BeanVisuEditorController)
+    var editor = Beans.get(Visu.modules().editor.controller)
     if (Optional.is(editor) && editor.renderUI) {
       this.editorRenderSubtitlesArea(controller.gridService, controller.shroomService, layout)
     }

@@ -22,6 +22,10 @@ function brush_entity_player(json = null) {
         type: Boolean,
         value: Struct.get(json, "en-pl_reset-pos"),
       },
+      "en-pl_shadow": {
+        type: Boolean,
+        value: Struct.get(json, "en-pl_shadow"),
+      },
       "en-pl_use-stats": {
         type: Boolean,
         value: Struct.get(json, "en-pl_use-stats"),
@@ -102,6 +106,31 @@ function brush_entity_player(json = null) {
             store: { key: "en-pl_hide" },
             spriteOn: { name: "visu_texture_checkbox_show" },
             spriteOff: { name: "visu_texture_checkbox_hide" },
+          },
+        },
+      },
+      {
+        name: "en-pl_shadow",
+        template: VEComponents.get("property"),
+        layout: VELayouts.get("property"),
+        config: { 
+          layout: { type: UILayoutType.VERTICAL },
+          label: { 
+            text: "Render shadow",
+            enable: { key: "en-pl_shadow" },
+            hidden: { key: "en-pl_hide" },
+            backgroundColor: VETheme.color.side,
+          },
+          input: {
+            backgroundColor: VETheme.color.side,
+            hidden: { key: "en-pl_hide" },
+          },
+          checkbox: { 
+            spriteOn: { name: "visu_texture_checkbox_on" },
+            spriteOff: { name: "visu_texture_checkbox_off" },
+            store: { key: "en-pl_shadow" },
+            hidden: { key: "en-pl_hide" },
+            backgroundColor: VETheme.color.side,
           },
         },
       },

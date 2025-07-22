@@ -82,7 +82,7 @@ function VisuModal(_config = null) constructor {
       "visu-modal": new UI({
         name: "visu-modal",
         state: new Map(String, any, {
-          "background-color": ColorUtil.fromHex(VETheme.color.primary).toGMColor(),
+          "background-color": ColorUtil.fromHex(VisuTheme.color.primary).toGMColor(),
         }),
         modal: modal,
         layout: layout,
@@ -106,8 +106,8 @@ function VisuModal(_config = null) constructor {
               label: { text: modal.config.accept.text },
               updateArea: Callable.run(UIUtil.updateAreaTemplates.get("applyLayout")),
               onMouseReleasedLeft: modal.config.accept.callback,
-              colorHoverOver: VETheme.color.accept,
-              colorHoverOut: VETheme.color.acceptShadow,
+              colorHoverOver: VisuTheme.color.accept,
+              colorHoverOut: VisuTheme.color.acceptShadow,
               onMouseHoverOver: function(event) {
                 this.backgroundColor = ColorUtil.fromHex(this.colorHoverOver).toGMColor()
               },
@@ -125,8 +125,8 @@ function VisuModal(_config = null) constructor {
               label: { text: modal.config.deny.text },
               updateArea: Callable.run(UIUtil.updateAreaTemplates.get("applyLayout")),
               onMouseReleasedLeft: modal.config.deny.callback,
-              colorHoverOver: VETheme.color.deny,
-              colorHoverOut: VETheme.color.denyShadow,
+              colorHoverOver: VisuTheme.color.deny,
+              colorHoverOut: VisuTheme.color.denyShadow,
               onMouseHoverOver: function(event) {
                 this.backgroundColor = ColorUtil.fromHex(this.colorHoverOver).toGMColor()
               },
@@ -145,6 +145,9 @@ function VisuModal(_config = null) constructor {
   ///@type {EventPump}
   dispatcher = new EventPump(this, new Map(String, Callable, {
     "open": function(event) {
+      var controller = Beans.get(BeanVisuController)
+      var editor = Beans.get(Visu.modules().editor.controller)
+      var uiService = Optional.is(editor) ? editor.uiService : controller.uiService
       this.dispatcher.execute(new Event("close"))
       this.containers = this.factoryContainers(event.data.layout)
       containers.forEach(function(container, key, uiService) {
@@ -152,16 +155,19 @@ function VisuModal(_config = null) constructor {
           container: container,
           replace: true,
         }))
-      }, Beans.get(BeanVisuEditorController).uiService)
+      }, uiService)
     },
     "close": function(event) {
       var context = this
+      var controller = Beans.get(BeanVisuController)
+      var editor = Beans.get(Visu.modules().editor.controller)
+      var uiService = Optional.is(editor) ? editor.uiService : controller.uiService
       this.containers.forEach(function(container, key, uiService) {
         uiService.send(new Event("remove", { 
           name: key, 
           quiet: true,
         }))
-      }, Beans.get(BeanVisuEditorController).uiService).clear()
+      }, uiService).clear()
     },
   }))
 

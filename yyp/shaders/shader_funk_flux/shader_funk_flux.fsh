@@ -2,12 +2,27 @@
 ///@description shader_funk_flux
 
 // Base constants
-#define RADIANS 0.017453292519943295
 #define PI 3.14159265359
+#define TAU 6.28318530718
 #define DEG_TO_RAD 0.01745329251
+#define SQRT_3 1.732050807568877
 
 // Shader specific constatns
-#define BRIGHTNESS 0.975
+#define OCTAVES 20.0
+#define PERIOD 500.0
+
+const mat3 rgb2yiq = mat3(
+  0.299, 0.587, 0.114, 
+  0.595716, -0.274453, -0.321263, 
+  0.211456, -0.522591, 0.311135
+);
+
+const mat3 yiq2rgb = mat3(
+  1.0, 0.9563, 0.6210, 
+  1.0, -0.2721, -0.6474, 
+  1.0, -1.1070, 1.7046
+);
+
 
 // Varying Outputs
 varying vec2 v_texcoord;
@@ -15,15 +30,23 @@ varying vec4 v_color;
 
 // Uniforms
 uniform float u_angle;      // Default: 0.0
-uniform float u_factor;     // Default: 3.0
-uniform float u_mix;        // Default: 0.0
+uniform float u_density;    // Default: 1.0
+uniform float u_sat;        // Default: 1.0
+uniform float u_hue;        // Default: 0.0
+uniform float u_scale;      // Default: 1.0
+uniform float u_seed;       // Default: 0.0
+uniform float u_sharp;      // Default: 0.25
+uniform float u_speed;      // Default: 10.0
 uniform float u_time;       // Default: 0.0, where 1.0=1sec
+uniform float u_treshold;   // Default: 1.0
 uniform vec2 u_offset;			// Default: (0.5, 0.5)
-uniform vec2 u_res;         // Default: (1.0, 1.0)
-uniform vec3 u_tint;        // Default: (1.0, 1.0, 1.0)
+uniform vec2 u_resolution;  // Default: vec2(GuiWith(), GuiHeight())
+
+
 
 // Base methods
 vec2 rotated_uv_resolution(vec2 v_texcoord, vec2 resolution, vec2 origin, float angle_deg) {
+  v_texcoord *= resolution;
   float angle_rad = angle_deg * DEG_TO_RAD;
   float cos_a = cos(angle_rad);
   float sin_a = sin(angle_rad);
@@ -59,48 +82,57 @@ float get_alpha_from_pixel(vec3 pixel) {
   return dot(pixel, vec3(0.2126, 0.7152, 0.0722)); // Luma (ITU-R BT.709)
 }
 
+vec3 apply_saturation(vec3 color, float saturation) {
+  float luma = get_alpha_from_pixel(color);
+  return mix(vec3(luma), color, saturation);
+}
+
+vec3 apply_hue(vec3 color, float hue) {
+  vec3 y_color = color * rgb2yiq;
+  float original_hue = atan(y_color.b, y_color.g);
+  float final_hue = original_hue + (hue * TAU);
+  float chroma = sqrt(y_color.b * y_color.b + y_color.g * y_color.g);
+  return vec3(y_color.r, chroma * cos(final_hue), chroma * sin(final_hue)) * yiq2rgb;
+}
+
 vec4 mix_pixel(vec3 pixel, vec4 texture, vec4 color) {
   float alpha = get_alpha_from_pixel(pixel);
   return vec4(mix(texture.rgb, pixel * color.rgb, color.a * alpha), alpha * color.a * texture.a);
 }
 
 // Shader methods
-float cosRange(float degrees, float range, float minimum) {
-	return (((1.0 + cos(degrees * RADIANS)) * 0.5) * range) + minimum;
+float get_cos_range(float degrees, float range) {
+	return (((1.0 + cos(degrees * DEG_TO_RAD)) * 0.5) * range);
+}
+
+float loop_time(float time) {
+  return cos((time - (PI * (PERIOD / 2.0))) / PERIOD) * PERIOD + PERIOD;
 }
 
 void main() {
-	vec2 uv = v_texcoord.xy / u_res.xy;
-	vec2 pixel  = rotated_uv_resolution(v_texcoord, u_res, u_offset, u_angle);
-	float ct = cosRange(u_time * 5.0, 3.0, 1.1);
-	float xBoost = cosRange(u_time * 0.2, 5.0, 5.0);
-	float yBoost = cosRange(u_time * 0.1, 15.0, 5.0);
-	float fScale = cosRange(u_time * 15.5, 1.25, 0.5);
-	for (float idx = 1.0; idx < 40.0; idx += 1.0) {
-		vec2 new_pixel = pixel;
-		new_pixel.x += 0.25 / idx * sin(idx * pixel.y + u_time * cos(ct) * 0.5 / 20.0 + 0.005 * idx) * fScale + xBoost;		
-		new_pixel.y += 0.25 / idx * sin(idx * pixel.x + u_time * ct * 0.3 / 40.0 + 0.03 * (idx + 15.0)) * fScale + yBoost;
-		pixel = new_pixel;
-	}
-	
-	vec3 col = vec3(
-		0.5 * sin(3.0 * pixel.x) + 0.5,
-		0.5 * sin(((u_factor / 100.0) + 3.0) * pixel.y) + 0.5,
-		sin(pixel.x + pixel.y)
-	);
-	col *= BRIGHTNESS;
-    
-  // Add border
-  float vigAmt = 1.0;
-  float vignette = (1.0 - vigAmt * (uv.y - .5) * (uv.y - 0.5)) * (1.0 - vigAmt * (uv.x - 0.5) * (uv.x - 0.5));
-	float extrusion = (col.x + col.y + col.z) / 4.0;
-  extrusion *= 1.5;
-  extrusion *= vignette;
-  
-  col = mix(col, u_tint, u_mix);
-  vec4 texture = texture2D(gm_BaseTexture, uv);
+	vec2 uv = rotated_uv_resolution(v_texcoord * u_scale, u_resolution, u_offset, u_angle);
+  vec4 texture = texture2D(gm_BaseTexture, v_texcoord);
 
-  float alpha = get_alpha_from_pixel(col);
-  col = mix(col, texture.rgb, 1.0 - alpha);
-  gl_FragColor = vec4(col.r, col.g, col.b, (texture.a + (extrusion * alpha)) * v_color.a);
+  float angle_rad = u_angle * DEG_TO_RAD;
+  float len_x = cos(angle_rad);
+  float len_y = sin(angle_rad);
+  float x_scale = get_cos_range(u_time + u_seed, len_x * u_speed);
+  float y_scale = get_cos_range(u_time + u_seed, len_y * u_speed);
+  float f_scale = get_cos_range(u_time + u_seed, u_density) + 1.0;
+  float time = loop_time(u_time + u_seed);
+  for (float idx = 1.0; idx < OCTAVES; idx += 1.0) {
+    uv.x += u_sharp / idx * sin(idx * uv.y + time) * f_scale + x_scale;		
+    uv.y += u_sharp / idx * cos(idx * uv.x + time) * f_scale + y_scale;
+  }
+
+  vec3 pixel = apply_hue(apply_saturation(vec3(
+    sin(uv.x) * 0.5 + 0.5,
+    cos(uv.y) * 0.5 + 0.5,
+    sin(uv.x + uv.y) * 0.5 + 0.5
+  ), u_sat), u_hue);
+
+  float alpha = get_alpha_from_pixel(pixel);
+  pixel = mix(pixel, vec3(0.0), 1.0 - alpha);
+  pixel = mix(pixel, texture.a * texture.rgb, (1.0 - alpha) * (1.0 - u_treshold));
+  gl_FragColor = vec4(pixel, v_color.a * (alpha + u_treshold));
 }

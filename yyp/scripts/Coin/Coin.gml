@@ -109,7 +109,12 @@ function Coin(config) constructor {
   ///@type {NumberTransformer}
   speed = new NumberTransformer(Optional.is(Struct.getIfType(config, "speed", Struct))
     ? config.speed
-    : { value: -3.0, target: 1.0, factor: 0.1, increase: 0.0 })
+    : {
+        value: -3.0,
+        target: 1.0,
+        duration: 0.6666667,
+        ease: EaseType.LINEAR,
+      })
 
   ///@type {Number}
   angle = Optional.is(Struct.getIfType(config, "angle", Number))

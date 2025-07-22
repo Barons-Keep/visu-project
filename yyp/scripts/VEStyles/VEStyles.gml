@@ -267,6 +267,22 @@ function generateVEStyles() {
         align: { v: VAlign.CENTER, h: HAlign.CENTER },
       },
     },
+    "context-menu-button": {
+      backgroundColor: VETheme.color.sideDark,
+      backgroundMargin: { top: 1, bottom: 1, left: 1, right: 1 },
+      colorHoverOver: VETheme.color.primaryShadow,
+      colorHoverOut: VETheme.color.primaryDark,
+      label: {
+        font: "font_inter_10_bold",
+        color: VETheme.color.textFocus,
+        align: { v: VAlign.CENTER, h: HAlign.LEFT },
+      },
+      shortcut: {
+        font: "font_inter_10_bold",
+        color: VETheme.color.textShadow,
+        align: { v: VAlign.CENTER, h: HAlign.RIGHT },
+      },
+    },
     "channel-entry": {
       label: {
         backgroundColor: VETheme.color.primaryDark,
@@ -352,17 +368,17 @@ function generateVEStyles() {
       },
       remove: {
         backgroundColor: VETheme.color.primaryDark,
-        colorHoverOver: VETheme.color.deny,
+        colorHoverOver: VETheme.color.primaryShadow,
         colorHoverOut: VETheme.color.primaryDark,
         label: {
           align: { v: VAlign.CENTER, h: HAlign.CENTER },
           font: "font_inter_10_regular",
           color: VETheme.color.textShadow,
         },
-        sprite: {
-          name: "texture_ve_icon_trash",
-          blend: VETheme.color.textShadow,
-        },
+        //sprite: {
+        //  name: "texture_ve_icon_trash",
+        //  blend: VETheme.color.textShadow,
+        //},
       },
       label: {
         backgroundColor: VETheme.color.primaryDark,

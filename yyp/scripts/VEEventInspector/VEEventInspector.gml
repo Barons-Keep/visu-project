@@ -1,8 +1,5 @@
 ///@package io.alkapivo.visu.editor.ui.controller
 
-#macro EVENT_INSPECTOR_ENTRY_STEP 1
-
-
 ///@param {VisuEditorController} _editor
 function VEEventInspector(_editor) constructor {
 
@@ -137,7 +134,7 @@ function VEEventInspector(_editor) constructor {
                 if (percentage == current) {
                   return
                 }
-    
+
                 Struct.set(store, "events-percentage", percentage)
                 accordion.containers.forEach(accordion.resetUpdateTimer)
                 accordion.templateToolbar.containers.forEach(accordion.resetUpdateTimer)
@@ -174,7 +171,7 @@ function VEEventInspector(_editor) constructor {
               if (percentage == current) {
                 return
               }
-  
+
               Struct.set(store, "events-percentage", percentage)
               accordion.containers.forEach(accordion.resetUpdateTimer)
               accordion.templateToolbar.containers.forEach(accordion.resetUpdateTimer)
@@ -210,6 +207,7 @@ function VEEventInspector(_editor) constructor {
       "ve-event-inspector-properties": {
         name: "ve-event-inspector-properties",
         state: new Map(String, any, {
+          "background-alpha": 1.0,
           "background-color": ColorUtil.fromHex(VETheme.color.side).toGMColor(),
           "empty-label": new UILabel({
             text: "Click on\ntimeline\nevent",
@@ -219,10 +217,12 @@ function VEEventInspector(_editor) constructor {
           }),
           "inspectorType": VEEventInspector,
           "updateTrackEvent": false,
+          "surface-alpha": 1.0,
         }),
         updateTimer: new Timer(FRAME_MS * Core.getProperty("visu.editor.ui.event-inspector.properties.updateTimer", 60), { loop: Infinity, shuffle: true }),
         eventInspector: eventInspector,
         layout: layout.nodes.view,
+        instantSubscribe: false,
         _updateTrackEvent: new BindIntent(function() {
           if (!this.state.get("updateTrackEvent")) {
             return
@@ -259,13 +259,22 @@ function VEEventInspector(_editor) constructor {
         }),
         updateArea: Callable.run(UIUtil.updateAreaTemplates.get("scrollableY")),
         renderItem: Callable.run(UIUtil.renderTemplates.get("renderItemDefaultScrollable")),
-        renderDefaultScrollable: new BindIntent(Callable.run(UIUtil.renderTemplates.get("renderDefaultScrollable"))),
+        renderDefaultScrollable: new BindIntent(Callable.run(UIUtil.renderTemplates.get("renderDefaultScrollableAlpha"))),
         render: function() {
           if (this.executor != null) {
             this.executor.update()
           }
 
           this._updateTrackEvent()
+
+          var surfaceAlpha = this.state.getIfType("surface-alpha", Number, 1.0)
+          //if (this.executor.tasks.size() > 0) {
+          //  //this.state.set("surface-alpha", clamp(surfaceAlpha - DeltaTime.apply(0.066), 0.5, 1.0))
+          //} else 
+          if (surfaceAlpha < 1.0) {
+            this.state.set("surface-alpha", clamp(surfaceAlpha + DeltaTime.apply(0.066), 0.0, 1.0))
+          }
+
           this.renderDefaultScrollable()
           if (!Optional.is(this.state.get("selectedEvent"))) {
             this.state.get("empty-label").render(
@@ -275,6 +284,8 @@ function VEEventInspector(_editor) constructor {
               this.area.getHeight()
             )
           }
+
+          return this
         },
         executor: null,
         scrollbarY: { align: HAlign.LEFT },
@@ -294,16 +305,11 @@ function VEEventInspector(_editor) constructor {
               name: container.name,
               overrideSubscriber: true,
               callback: function(selectedEvent, data) { 
-                data.executor.tasks.forEach(function(task, iterator, name) {
-                  if (task.name == name) {
-                    task.fullfill()
-                  }
-                }, "init-ui-components")
-
-                if (!Optional.is(selectedEvent)) {
+                var track = Beans.get(BeanVisuController).trackService.track
+                if (!Optional.is(selectedEvent) || !track.channels.contains(Struct.get(selectedEvent, "channel"))) {
                   data.items.forEach(function(item) { item.free() }).clear() ///@todo replace with remove lambda
                   data.collection.components.clear() ///@todo replace with remove lambda
-                  data.items.clear() ///@todo replace with remove lambda
+                  data.eventInspector.store.get("event").set(null)
                   data.state
                     .set("selectedEvent", null)
                     .set("event", null)
@@ -321,81 +327,163 @@ function VEEventInspector(_editor) constructor {
                   "type": trackEvent.callableName,
                   "properties": Struct.remove(JSON.clone(trackEvent.data), "icon")
                 })
-                data.items.forEach(function(item) { item.free() }).clear() ///@todo replace with remove lambda
-                data.collection.components.clear() ///@todo replace with remove lambda
-                data.items.clear() ///@todo replace with remove lambda
+
+                var oldEvent = data.state.get("event")
                 data.eventInspector.store.get("event").set(event)
                 data.state
                   .set("selectedEvent", selectedEvent)
                   .set("event", event)
                   .set("store", event.store)
 
-               
-                var task = new Task("init-ui-components")
-                  .setTimeout(60)
-                  .setState({
-                    stage: "load-components",
-                    context: data,
-                    components: event.components,
-                    componentsQueue: new Queue(String, GMArray
-                      .map(event.components.container, function(component, index) { 
-                        return index 
-                      })),
-                    componentsConfig: {
+                if (1 == 2 && Struct.get(oldEvent, "type") == trackEvent.callableName) {
+                  data.executor.tasks
+                    .forEach(TaskUtil.fullfillByName, "sync-ui-store")
+                    .forEach(TaskUtil.fullfillByName, "init-ui-components")
+
+                  var task = new Task("sync-ui-store")
+                    .setTimeout(60.0)
+                    .setState({
                       context: data,
-                      layout: new UILayout({
-                        area: data.area,
-                        width: function() { return this.area.getWidth() },
-                      }),
-                      textField: null,
-                    },
-                    subscribers: event.store.container,
-                    subscribersQueue: new Queue(String, event.store.container
-                      .keys()
-                      .map(function(key) { return key }).container),
-                    subscribersConfig: {
-                      name: data.name,
-                      overrideSubscriber: true,
-                      callback: function(value, data) { 
-                        data.state.set("updateTrackEvent", true)
+                      event: event,
+                      itemKeys: new Queue(String, data.items.keys().getContainer()),
+                      storeKeys: new Queue(String, event.store.container.keys().getContainer()),
+                      subscribersConfig: {
+                        name: data.name,
+                        data: data,
+                        overrideSubscriber: true,
+                        callback: function(value, data) { 
+                          data.state.set("updateTrackEvent", true)
+                        },
                       },
-                      data: data,
-                    },
-                    "load-components": function(task) {
-                      repeat (EVENT_INSPECTOR_ENTRY_STEP) {
-                        var index = task.state.componentsQueue.pop()
-                        if (!Optional.is(index)) {
-                          task.state.stage = "set-subscribers"
-                          task.state.context.finishUpdateTimer()
+                      stage: "update-store",
+                      stages: {
+                        "update-store": function(task) {
+                          if (task.state.itemKeys.size() == 0) {
+                            task.state.stage = "add-subscriber"
+                            return
+                          }
+
+                          var key = task.state.itemKeys.pop()
+                          var item = task.state.context.items.get(key)
+                          if (item != null) {
+                            item.updateStore()
+                          }
+                        },
+                        "add-subscriber": function(task) {
+                          if (task.state.storeKeys.size() == 0) {
+                            task.fullfill()
+                            task.state.context.finishUpdateTimer()
+                            task.state.context.areaWatchdog.signal()
+                            return
+                          }
+
+                          var key = task.state.storeKeys.pop()
+                          var item = task.state.event.store.get(key)
+                          if (item != null) {
+                            item.addSubscriber(task.state.subscribersConfig)
+                          }
+                        },
+                      }
+                    })
+                    .whenUpdate(function() {
+                      repeat (SYNC_UI_STORE_STEP) {
+                        var stage = Struct.get(this.state.stages, this.state.stage)
+                        stage(this)
+
+                        if (this.status == TaskStatus.FULLFILLED) {
                           break
                         }
-      
-                        var component = new UIComponent(task.state.components.get(index))
-                        task.state.context.addUIComponent(component, index, task.state.componentsConfig)
                       }
-                    },
-                    "set-subscribers": function(task) {
-                      var key = task.state.subscribersQueue.pop()
-                      if (Optional.is(key)) {
-                        var item = task.state.subscribers.get(key)
-                        item.addSubscriber(task.state.subscribersConfig)
-                        return
-                      }
+                      return this
+                    })
+                    
+                  data.executor.add(task)
+                } else {
+                  data.items.forEach(function(item) { item.free() }).clear()
+                  data.collection.components.clear()
 
-                      if (Optional.is(task.state.context.updateTimer)) {
-                        task.state.context.updateTimer.time = task.state.context.updateTimer.duration + random(task.state.context.updateTimer.duration / 2.0)
-                      }
+                  data.executor.tasks
+                    .forEach(TaskUtil.fullfillByName, "sync-ui-store")
+                    .forEach(TaskUtil.fullfillByName, "init-ui-components")
 
-                      task.fullfill()
-                    }
-                  })
-                  .whenUpdate(function() {
-                    var stage = Struct.get(this.state, this.state.stage)
-                    stage(this)
-                    return this
-                  })
-                
-                data.executor.add(task)
+                  var task = new Task("init-ui-components")
+                    .setTimeout(60)
+                    .setState({
+                      stage: "intro-cooldown",//"load-components",
+                      flip: FLIP_VALUE,
+                      context: data,
+                      components: event.components,
+                      componentsQueue: new Queue(String, GMArray
+                        .map(event.components.container, function(component, index) { 
+                          return index 
+                        })),
+                      componentsConfig: {
+                        context: data,
+                        layout: new UILayout({
+                          area: data.area,
+                          width: function() { return this.area.getWidth() },
+                        }),
+                        textField: null,
+                        updateArea: Core.getProperty("visu.editor.ui.event-inspector.inspector-view.init-ui-contanier.updateArea", true),
+                      },
+                      subscribers: event.store.container,
+                      subscribersQueue: new Queue(String, event.store.container
+                        .keys()
+                        .map(Lambda.passthrough).getContainer()),
+                      subscribersConfig: {
+                        name: data.name,
+                        overrideSubscriber: true,
+                        callback: function(value, data) { 
+                          data.state.set("updateTrackEvent", true)
+                        },
+                        data: data,
+                      },
+                      cooldown: new Timer(FRAME_MS * Core.getProperty("visu.editor.ui.event-inspector.inspector-view.init-ui-contanier.cooldown", 8)),
+                      "intro-cooldown": function(task) {
+                        if (task.state.cooldown.update().finished) {
+                          task.state.stage = "load-components"
+                        }
+                      },
+                      "load-components": function(task) {
+                        repeat (EVENT_INSPECTOR_ENTRY_STEP) {
+                          if (task.state.flip > 0) {
+                            task.state.flip -= 1
+                            break
+                          } else {
+                            task.state.flip = FLIP_VALUE
+                          }
+                          
+                          var index = task.state.componentsQueue.pop()
+                          if (!Optional.is(index)) {
+                            task.state.stage = "set-subscribers"
+                            break
+                          }
+        
+                          var component = new UIComponent(task.state.components.get(index))
+                          task.state.context.addUIComponent(component, index, task.state.componentsConfig)
+                        }
+                      },
+                      "set-subscribers": function(task) {
+                        var key = task.state.subscribersQueue.pop()
+                        if (Optional.is(key)) {
+                          var item = task.state.subscribers.get(key)
+                          item.addSubscriber(task.state.subscribersConfig)
+                          return
+                        }
+
+                        task.fullfill()
+                        task.state.context.finishUpdateTimer()
+                        task.state.context.areaWatchdog.signal()
+                      }
+                    })
+                    .whenUpdate(function() {
+                      var stage = Struct.get(this.state, this.state.stage)
+                      stage(this)
+                      return this
+                    })
+                    
+                  data.executor.add(task)
+                }
               },
               data: container,
             })

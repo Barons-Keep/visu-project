@@ -230,11 +230,13 @@ function TestEvent_VisuController_rewind(json = {}) {
           controller.send(new Event("pause"))
           task.state.stage = "rewind"
 
-          var editor = Beans.get(BeanVisuEditorController)
-          editor.renderUI = true
-          editor.send(new Event("open"))
-          if (!editor.store.getValue("_render-trackControl")) {
-            editor.store.get("_render-trackControl").set(true)
+          var editor = Beans.get(Visu.modules().editor.controller)
+          if (Optional.is(editor)) {
+            editor.renderUI = true
+            editor.send(new Event("open"))
+            if (!editor.store.getValue("_render-trackControl")) {
+              editor.store.get("_render-trackControl").set(true)
+            }
           }
         },
         rewind: function(task) {
@@ -277,10 +279,12 @@ function TestEvent_VisuController_rewind(json = {}) {
           if (task.state.cooldown.update().finished) {
             task.fullfill("success")
 
-            var editor = Beans.get(BeanVisuEditorController)
-            editor.send(new Event("close"))
-            if (editor.store.getValue("render-trackControl")) {
-              editor.store.get("render-trackControl").set(false)
+            var editor = Beans.get(Visu.modules().editor.controller)
+            if (Optional.is(editor)) {
+              editor.send(new Event("close"))
+              if (editor.store.getValue("render-trackControl")) {
+                editor.store.get("render-trackControl").set(false)
+              }
             }
           }
         }

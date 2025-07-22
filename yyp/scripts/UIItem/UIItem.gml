@@ -71,6 +71,9 @@ function UIItem(_name, config = {}) constructor {
   ///@type {Event}
   hoverEvent = new Event("MouseHoverOut", { x: 0, y: 0 })
 
+  ///@type {Boolean}
+  notify = Struct.getIfType(config, "notify", Boolean, false)
+
   ///@param {Event} event
   ///@return {Boolean}
   support = method(this, Struct.getIfType(config, "support", Callable, function(event, key, name) {
@@ -170,11 +173,11 @@ function UIItem(_name, config = {}) constructor {
     }
   }
 
-  updateStore = function() {
+  _updateStore = function() {
     if (Optional.is(this.store)) {
       this.store.subscribe()
     }
-
+    
     if (!Core.isType(Struct.get(this.context, "state"), Map)) {
       return
     }
@@ -235,6 +238,111 @@ function UIItem(_name, config = {}) constructor {
     }
   }
 
+  updateStore = function() {
+    if (Optional.is(this.store)) {
+      this.context.subscribersPipeline.push({
+        name: this.name,
+        callback: function(data) { data.subscribe() },
+        data: this.store,
+      })
+    }
+
+    if (!Core.isType(Struct.get(this.context, "state"), Map)) {
+      return
+    }
+
+    var store = this.context.state.get("store")
+    if (!Optional.is(store)) {
+      return
+    }
+
+    if (Core.isType(this.hidden.keys, GMArray)) {
+      for (var index = 0; index < GMArray.size(this.hidden.keys); index++) {
+        var entry = this.hidden.keys[index]
+        var item = store.get(entry.key)
+        if (Optional.is(item)) {
+          this.context.subscribersPipeline.push({
+            name: this.name,
+            callback: function(data) {
+              data.item.addSubscriber(data.config)
+            },
+            data: {
+              item: item,
+              config: {
+                name: $"{this.name}",
+                overrideSubscriber: true,
+                callback: this.updateHidden,
+                data: this
+              }
+            }
+          })
+        }
+      }
+    } else if (Core.isType(this.hidden.key, String)) {
+      var item = store.get(this.hidden.key)
+      if (Optional.is(item)) {
+        this.context.subscribersPipeline.push({
+          name: this.name,
+          callback: function(data) {
+            data.item.addSubscriber(data.config)
+          },
+          data: {
+            item: item,
+            config: {
+              name: $"{this.name}",
+              overrideSubscriber: true,
+              callback: this.updateHidden,
+              data: this
+            }
+          }
+        })
+      }
+    }
+
+    if (this.updateEnable != null && Core.isType(this.enable.keys, GMArray)) {
+      for (var index = 0; index < GMArray.size(this.enable.keys); index++) {
+        var entry = this.enable.keys[index]
+        var item = store.get(entry.key)
+        if (Optional.is(item)) {
+          this.context.subscribersPipeline.push({
+            name: this.name,
+            callback: function(data) {
+              data.item.addSubscriber(data.config)
+            },
+            data: {
+              item: item,
+              config: {
+                name: $"{this.name}",
+                overrideSubscriber: true,
+                callback: this.updateEnable,
+                data: this
+              }
+            }
+          })
+        }
+      }
+    } else if (this.updateEnable != null && Core.isType(this.enable.key, String)) {
+      var item = store.get(this.enable.key)
+      if (Optional.is(item)) {
+        this.context.subscribersPipeline.push({
+          name: this.name,
+          callback: function(data) {
+            data.item.addSubscriber(data.config)
+          },
+          data: {
+            item: item,
+            config: {
+              name: $"{this.name}",
+              overrideSubscriber: true,
+              callback: this.updateEnable,
+              data: this
+            }
+          }
+        })
+      }
+    }
+  }
+
   ///@param {Boolean} [_updateArea]
   ///@return {UIItem}
   update = Struct.contains(config, "update")
@@ -256,7 +364,7 @@ function UIItem(_name, config = {}) constructor {
         this.updateCustom()
       }
 
-      if (!storeSubscribed) {
+      if (!this.storeSubscribed) {
         this.storeSubscribed = true
         this.updateStore()
       }
@@ -441,9 +549,9 @@ function _UIItemUtils() constructor {
         if (!Struct.contains(this, "__colors")) {
           Struct.set(this, "__colors", {
             unfocusedValid: this.textField.style.c_bkg_unfocused.c,
-            unfocusedInvalid: ColorUtil.fromHex(VETheme.color.denyShadow).toGMColor(),
+            unfocusedInvalid: ColorUtil.fromHex("#6d3c54").toGMColor(),
             focusedValid: this.textField.style.c_bkg_focused.c,
-            focusedInvalid: ColorUtil.fromHex(VETheme.color.deny).toGMColor(),
+            focusedInvalid: ColorUtil.fromHex("#9e3d54").toGMColor(),
           })
         }
 

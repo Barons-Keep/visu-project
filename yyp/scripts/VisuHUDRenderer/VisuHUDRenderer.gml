@@ -24,9 +24,6 @@ function VisuHUDRenderer() constructor {
   ///@type {Number}
   fadeIn = 0.0
 
-  ///@type {Number}
-  fadeInFactor = 0.03
-
   ///@private
   ///@return {VisuHUDRenderer}
   setGlitchServiceConfig = function(factor = 0.0, useConfig = true) {
@@ -247,11 +244,11 @@ function VisuHUDRenderer() constructor {
 
     if (this.enabled) {
       if (this.fadeIn < 1.0) {
-        this.fadeIn = clamp(this.fadeIn + this.fadeInFactor, 0.0, 1.0)
+        this.fadeIn = clamp(this.fadeIn + VISU_FADE_FACTOR, 0.0, 1.0)
       }
     } else {
       if (this.fadeIn > 0.0) {
-        this.fadeIn = clamp(this.fadeIn - this.fadeInFactor, 0.0, 1.0)
+        this.fadeIn = clamp(this.fadeIn - VISU_FADE_FACTOR, 0.0, 1.0)
       }
     }
     

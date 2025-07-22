@@ -1,5 +1,79 @@
 ///@package io.alkapivo.visu.editor.ui.controller
 
+function factoryVEContextMenu(root, anchor, json) {
+  static factoryComponent = function(config, index, size) {
+    var bottom = index == size - 1 ? 2 : 1
+    return Struct.appendRecursiveUnique(config, {
+      template: VEComponents.get("context-menu-button"),
+      layout: VELayouts.get("vertical-item"),
+      config: {
+        label: { text: "" },
+        backgroundMargin: { top: 1, bottom: bottom, left: 1, right: 2 },
+      }
+    })
+  }
+
+  var arr = Struct.getIfType(json, "components", GMArray, [])
+  var components = GMArray.map(arr, factoryComponent, GMArray.size(arr))
+
+  return new UI({
+    name: Assert.isType(Struct.get(json, "name"), String, "json.name must be type of String"),
+    layout: new UILayout(Struct.appendRecursiveUnique(Struct.get(json, "layout"), {
+      type: UILayoutType.VERTICAL,
+      anchor: anchor,
+      x: function() { return this.anchor.x },
+      y: function() { return this.anchor.y },
+      width: function() { return 320 },
+      height: function() { return 28 * this.collection.getSize() },
+      collection: { size: GMArray.size(components) },
+    })),
+    state: new Map(String, any, {
+      "background-color": ColorUtil.fromHex(VETheme.color.primaryShadow).toGMColor(),
+      "components": new Array(Struct, components),
+      "timer": new Timer(0.25),
+      "root": root,
+    }),
+    propagate: false,
+    scrollbarY: { align: HAlign.RIGHT },
+    updateArea: Callable.run(UIUtil.updateAreaTemplates.get("scrollableY")),
+    updateCustom: function() {
+      this.enableScrollbarY = this.offsetMax.y > 0 
+      var mouseX = MouseUtil.getMouseX()
+      var mouseY = MouseUtil.getMouseY()
+      var colide = this.area.collide(mouseX, mouseY)
+          || this.state.get("root").collide(mouseX, mouseY)
+      if (!colide) {
+        if (this.state.get("timer").update().finished) {
+          var uiService = Beans.get(BeanVisuEditorController).uiService
+          uiService.send(new Event("remove", { 
+            name: this.name, 
+            quiet: true,
+          }))
+        }
+      } else {
+        this.state.get("timer").reset()
+      }
+    },
+    renderItem: Callable.run(UIUtil.renderTemplates.get("renderItemDefaultScrollable")),
+    renderDefaultScrollable: new BindIntent(Callable.run(UIUtil.renderTemplates.get("renderDefaultScrollableAlpha"))),
+    render: function() {
+      this.renderDefaultScrollable()
+      return this
+    },
+    onMouseWheelUp: Callable.run(UIUtil.mouseEventTemplates.get("scrollableOnMouseWheelUpY")),
+    onMouseWheelDown: Callable.run(UIUtil.mouseEventTemplates.get("scrollableOnMouseWheelDownY")),
+    onInit: function() {
+      var container = this
+      this.collection = new UICollection(this, { layout: this.layout })
+      this.items.forEach(function(item) { item.free() }).clear()
+      this.updateArea()
+      this.state.get("components").forEach(function(component, index, collection) {
+        collection.add(new UIComponent(component))
+      }, this.collection)
+    },
+  })
+}
+
 ///@param {VisuEditorController} _editor
 function VETitleBar(_editor) constructor {
 
@@ -37,23 +111,23 @@ function VETitleBar(_editor) constructor {
             y: function() { return 0 },
             width: function() { return 48 },
           },
-          open: {
+          view: {
             name: "title-bar.open",
             x: function() { return this.context.nodes.edit.right()
               + this.__margin.left },
             y: function() { return 0 },
             width: function() { return 48 },
           },
-          save: {
-            name: "title-bar.save",
-            x: function() { return this.context.nodes.open.right()
+          grid: {
+            name: "title-bar.grid",
+            x: function() { return this.context.nodes.view.right()
               + this.__margin.left },
             y: function() { return 0 },
             width: function() { return 48 },
           },
           help: {
             name: "title-bar.help",
-            x: function() { return this.context.nodes.save.right()
+            x: function() { return this.context.nodes.grid.right()
               + this.__margin.left },
             y: function() { return 0 },
             width: function() { return 48 },
@@ -122,12 +196,13 @@ function VETitleBar(_editor) constructor {
           layout: json.layout,
           backgroundMargin: { top: 2, bottom: 2, left: 2, right: 2 },
           label: { text: json.text },
-          options: json.options,
           callback: Struct.getDefault(json, "callback", function() { }),
           updateArea: Callable.run(UIUtil.updateAreaTemplates.get("applyLayout")),
-          onMouseHoverOver: function(event) {
-            this.backgroundColor = ColorUtil.fromHex(this.backgroundColorSelected).toGMColor()
-          },
+          onMouseHoverOver: Optional.is(Struct.getIfType(json, "onMouseHoverOver", Callable))
+            ? json.onMouseHoverOver
+            : function(event) {
+              this.backgroundColor = ColorUtil.fromHex(this.backgroundColorSelected).toGMColor()
+            },
           onMouseHoverOut: function(event) {
             var item = this
             var controller = Beans.get(BeanVisuController)
@@ -240,151 +315,784 @@ function VETitleBar(_editor) constructor {
         render: Callable.run(UIUtil.renderTemplates.get("renderDefault")),
         items: {
           "button_ve-title-bar_file": factoryTextButton({
-            text: "New",
+            text: "File",
             layout: layout.nodes.file,
-            options: new Array(),
+            onMouseHoverOver: function() {
+              this.backgroundColor = ColorUtil.fromHex(this.backgroundColorSelected).toGMColor()
+              if (Beans.get(BeanVisuEditorController).uiService
+                  .find("ve-title-bar_file_context-menu") == null) {
+                this.callback()
+              }
+            },
             callback: function() {
-              if (Core.getRuntimeType() == RuntimeType.GXGAMES) {
-                Beans.get(BeanVisuController).send(new Event("spawn-popup", 
-                  { message: $"Feature 'visu.title-bar.new' is not available on wasm-yyc target" }))
-                return
+              var root = this.area
+              var anchor = {
+                x: this.layout.left(),
+                y: this.layout.bottom(),
               }
 
-              var editor = Beans.get(BeanVisuEditorController)
-              if (Core.isType(editor.uiService.find("visu-project-modal"), UI)) {
-                editor.projectModal.send(new Event("close"))
-              }
-        
-              if (Core.isType(editor.uiService.find("visu-modal"), UI)) {
-                editor.exitModal.send(new Event("close"))
-              }
+              var contextMenu = factoryVEContextMenu(root, anchor, {
+                name: "ve-title-bar_file_context-menu",
+                components: [
+                  {
+                    name: "file_new-level",
+                    config: {
+                      label: { text: "New level" },
+                      shortcut: { text: "CTRL + N" },
+                      callback: function() {
+                        if (Core.getRuntimeType() == RuntimeType.GXGAMES) {
+                          Beans.get(BeanVisuController).send(new Event("spawn-popup", 
+                            { message: $"Feature 'visu.title-bar.new' is not available on wasm-yyc target" }))
+                          return
+                        }
 
-              editor.newProjectModal
-                .send(new Event("open").setData({
-                  layout: new UILayout({
-                    name: "display",
-                    x: function() { return 0 },
-                    y: function() { return 0 },
-                    width: function() { return GuiWidth() },
-                    height: function() { return GuiHeight() },
-                  }),
+                        var editor = Beans.get(BeanVisuEditorController)
+                        if (Core.isType(editor.uiService.find("visu-project-modal"), UI)) {
+                          editor.projectModal.send(new Event("close"))
+                        }
+                  
+                        if (Core.isType(editor.uiService.find("visu-modal"), UI)) {
+                          editor.exitModal.send(new Event("close"))
+                        }
+
+                        editor.newProjectModal
+                          .send(new Event("open").setData({
+                            layout: new UILayout({
+                              name: "display",
+                              x: function() { return 0 },
+                              y: function() { return 0 },
+                              width: function() { return GuiWidth() },
+                              height: function() { return GuiHeight() },
+                            }),
+                          }))
+                        
+                        editor.uiService.send(new Event("remove", { 
+                          name: this.context.name, 
+                          quiet: true,
+                        }))
+                      },
+                    },
+                  },
+                  {
+                    name: "file_open-level",
+                    config: {
+                      label: { text: "Open level" },
+                      shortcut: { text: "CTRL + O" },
+                      callback: function() {
+                        try {
+                          if (Core.getRuntimeType() == RuntimeType.GXGAMES) {
+                            Beans.get(BeanVisuController).send(new Event("spawn-popup", 
+                              { message: $"Feature 'visu.title-bar.open' is not available on wasm-yyc target" }))
+                            return
+                          }
+
+                          var manifest = FileUtil.getPathToOpenWithDialog({ 
+                            description: "Visu track file",
+                            filename: "manifest", 
+                            extension: "visu"
+                          })
+            
+                          if (!FileUtil.fileExists(manifest)) {
+                            return
+                          }
+
+                          Beans.get(BeanVisuController).send(new Event("load", {
+                            manifest: manifest,
+                            autoplay: false
+                          }))
+
+                          var uiService = Beans.get(BeanVisuEditorController).uiService
+                          uiService.send(new Event("remove", { 
+                            name: this.context.name, 
+                            quiet: true,
+                          }))
+                        } catch (exception) {
+                          Beans.get(BeanVisuController).send(new Event("spawn-popup", 
+                            { message: $"Cannot load the project: {exception.message}" }))
+                        }
+                      }
+                    },
+                  },
+                  {
+                    name: "file_save-level",
+                    config: {
+                      label: { text: "Save level" },
+                      shortcut: { text: "CTRL + S" },
+                      callback: function() {
+                        var controller = Beans.get(BeanVisuController)
+                        var editor = Beans.get(BeanVisuEditorController)
+                        try {
+                          if (Core.getRuntimeType() == RuntimeType.GXGAMES) {
+                            editor.send(new Event("spawn-popup", 
+                              { message: $"Feature 'visu.editor.save' is not available on wasm-yyc target" }))
+                            return this
+                          }
+
+                          if (!controller.trackService.isTrackLoaded()) {
+                            return this
+                          }
+
+                          var path = $"{controller.track.path}manifest.visu"
+
+                          if (!Core.isType(path, String) || String.isEmpty(path)) {
+                            return this
+                          }
+
+                          controller.track.saveProject(path)
+                          controller.send(new Event("spawn-popup", 
+                            { message: $"Project '{controller.trackService.track.name}' saved successfully at: '{path}'" }))
+
+                          editor.uiService.send(new Event("remove", { 
+                            name: this.context.name, 
+                            quiet: true,
+                          }))
+                        } catch (exception) {
+                          var message = $"Cannot save the project: {exception.message}"
+                          controller.send(new Event("spawn-popup", { message: message }))
+                          Logger.error("VETitleBar", message)
+                        }
+                      },
+                      preRender: function() {
+                        var value = Beans.get(BeanVisuController).trackService.isTrackLoaded()
+                        if (this.updateEnable != null && value != this.enable.value) {
+                          Struct.set(this.enable, "value", value)
+                          this.updateEnable()
+                        }
+                      },
+                    },
+                  },
+                  {
+                    name: "file_save-level-as",
+                    config: {
+                      label: { text: "Save level as" },
+                      shortcut: { text: "CTRL + SHIFT + S" },
+                      callback: function() {
+                        var controller = Beans.get(BeanVisuController)
+                        var editor = Beans.get(BeanVisuEditorController)
+                        try {
+                          if (Core.getRuntimeType() == RuntimeType.GXGAMES) {
+                            editor.send(new Event("spawn-popup", 
+                              { message: $"Feature 'visu.editor.save' is not available on wasm-yyc target" }))
+                            return this
+                          }
+
+                          if (!controller.trackService.isTrackLoaded()) {
+                            return this
+                          }
+
+                          var path = FileUtil.getPathToSaveWithDialog({ 
+                            description: "Visu track file",
+                            filename: "manifest", 
+                            extension: "visu",
+                          })
+
+                          if (!Core.isType(path, String) || String.isEmpty(path)) {
+                            return this
+                          }
+
+                          controller.track.saveProject(path)
+                          controller.send(new Event("spawn-popup", 
+                            { message: $"Project '{controller.trackService.track.name}' saved successfully at: '{path}'" }))
+
+                          editor.uiService.send(new Event("remove", { 
+                            name: this.context.name, 
+                            quiet: true,
+                          }))
+                        } catch (exception) {
+                          var message = $"Cannot save the project: {exception.message}"
+                          controller.send(new Event("spawn-popup", { message: message }))
+                          Logger.error("VETitleBar", message)
+                        }
+                      },
+                      preRender: function() {
+                        var value = Beans.get(BeanVisuController).trackService.isTrackLoaded()
+                        if (this.updateEnable != null && value != this.enable.value) {
+                          Struct.set(this.enable, "value", value)
+                          this.updateEnable()
+                        }
+                      },
+                    },
+                  },
+                  {
+                    name: "file_exit",
+                    config: {
+                      label: { text: "Exit" },
+                      callback: function() {
+                        if (Optional.is(Beans.get(Visu.modules().editor.io))) {
+                          Beans.kill(Visu.modules().editor.io)
+                        }
+
+                        if (Optional.is(Beans.get(Visu.modules().editor.controller))) {
+                          Beans.kill(Visu.modules().editor.controller)
+                        }
+                      }
+                    },
+                  }
+                ],
+              })
+
+              var uiService = Beans.get(BeanVisuEditorController).uiService
+              var ui = uiService.find("_context-menu", function(container, key, name) {
+                return String.contains(container.name, name)
+              })
+
+              if (Optional.is(ui)) {
+                uiService.send(new Event("remove", {
+                  name: ui.name,
+                  quiet: true,
                 }))
+              }
+
+              uiService.send(new Event("add", {
+                container: contextMenu,
+                replace: true,
+              }))
             },
           }),
           "button_ve-title-bar_edit": factoryTextButton({
             text: "Edit",
             layout: layout.nodes.edit,
-            options: new Array(),
+            onMouseHoverOver: function() {
+              this.backgroundColor = ColorUtil.fromHex(this.backgroundColorSelected).toGMColor()
+              if (Beans.get(BeanVisuEditorController).uiService
+                  .find("ve-title-bar_edit_context-menu") == null) {
+                this.callback()
+              }
+            },
             callback: function() {
-              if (Core.getRuntimeType() == RuntimeType.GXGAMES) {
-                Beans.get(BeanVisuController).send(new Event("spawn-popup", 
-                  { message: $"Feature 'visu.title-bar.edit' is not available on wasm-yyc target" }))
-                return
+              var root = this.area
+              var anchor = {
+                x: this.layout.left(),
+                y: this.layout.bottom(),
               }
 
-              var editor = Beans.get(BeanVisuEditorController)
-              if (Core.isType(editor.uiService.find("visu-new-project-modal"), UI)) {
-                editor.newProjectModal.send(new Event("close"))
-              }
-        
-              if (Core.isType(editor.uiService.find("visu-modal"), UI)) {
-                editor.exitModal.send(new Event("close"))
-              }
+              var contextMenu = factoryVEContextMenu(root, anchor, {
+                name: "ve-title-bar_edit_context-menu",
+                components: [
+                  {
+                    name: "edit_undo",
+                    config: {
+                      label: { text: "Undo" },
+                      shortcut: { text: "CTRL + Z" },
+                      callback: function() { 
+                        if (Struct.get(this.enable, "value") == false) {
+                          return
+                        }
 
-              editor.projectModal
-                .send(new Event("open").setData({
-                  layout: new UILayout({
-                    name: "display",
-                    x: function() { return 0 },
-                    y: function() { return 0 },
-                    width: function() { return GuiWidth() },
-                    height: function() { return GuiHeight() },
-                  }),
+                        Beans.get(BeanVisuEditorIO).keyboard.keys.controlLeft.on = true ///@hack
+                        
+                        var editor = Beans.get(BeanVisuEditorController)
+                        editor.store.get("selected-event").set(null, true)
+                        editor.store.getValue("selected-events").clear()
+                        editor.timeline.transactionService.undo()
+                      },
+                      preRender: function() {
+                        var value = Beans.get(BeanVisuEditorController).timeline.transactionService.applied.size() > 0
+                        if (this.updateEnable != null && value != this.enable.value) {
+                          Struct.set(this.enable, "value", value)
+                          this.updateEnable()
+                        }
+                      }
+                    },
+                  },
+                  {
+                    name: "edit_redo",
+                    config: {
+                      label: { text: "Redo" },
+                      shortcut: { text: "CTRL + SHIFT + Z" },
+                      callback: function() { 
+                        if (Struct.get(this.enable, "value") == false) {
+                          return
+                        }
+                        
+                        Beans.get(BeanVisuEditorIO).keyboard.keys.controlLeft.on = true ///@hack
+
+                        var editor = Beans.get(BeanVisuEditorController)
+                        editor.store.get("selected-event").set(null, true)
+                        editor.store.getValue("selected-events").clear()
+                        editor.timeline.transactionService.redo()
+                      },
+                      preRender: function() {
+                        var value = Beans.get(BeanVisuEditorController).timeline.transactionService.reverted.size() > 0
+                        if (this.updateEnable != null && value != this.enable.value) {
+                          Struct.set(this.enable, "value", value)
+                          this.updateEnable()
+                        }
+                      },
+                    },
+                  },
+                  {
+                    name: "edit_level-settings",
+                    config: {
+                      label: { text: "Level settings" },
+                      shortcut: { text: "" },
+                      callback: function() {
+                        if (Core.getRuntimeType() == RuntimeType.GXGAMES) {
+                          Beans.get(BeanVisuController).send(new Event("spawn-popup", 
+                            { message: $"Feature 'visu.title-bar.edit' is not available on wasm-yyc target" }))
+                          return
+                        }
+
+                        var editor = Beans.get(BeanVisuEditorController)
+                        if (Core.isType(editor.uiService.find("visu-new-project-modal"), UI)) {
+                          editor.newProjectModal.send(new Event("close"))
+                        }
+                  
+                        if (Core.isType(editor.uiService.find("visu-modal"), UI)) {
+                          editor.exitModal.send(new Event("close"))
+                        }
+
+                        editor.projectModal
+                          .send(new Event("open").setData({
+                            layout: new UILayout({
+                              name: "display",
+                              x: function() { return 0 },
+                              y: function() { return 0 },
+                              width: function() { return GuiWidth() },
+                              height: function() { return GuiHeight() },
+                            }),
+                          }))
+
+                        editor.uiService.send(new Event("remove", { 
+                          name: this.context.name, 
+                          quiet: true,
+                        }))
+                      },
+                      preRender: function() {
+                        var value = Beans.get(BeanVisuController).trackService.isTrackLoaded()
+                        if (this.updateEnable != null && value != this.enable.value) {
+                          Struct.set(this.enable, "value", value)
+                          this.updateEnable()
+                        }
+                      },
+                    },
+                  }
+                ],
+              })
+
+              var uiService = Beans.get(BeanVisuEditorController).uiService
+              var ui = uiService.find("_context-menu", function(container, key, name) {
+                return String.contains(container.name, name)
+              })
+
+              if (Optional.is(ui)) {
+                uiService.send(new Event("remove", {
+                  name: ui.name,
+                  quiet: true,
                 }))
-            }
+              }
+
+              uiService.send(new Event("add", {
+                container: contextMenu,
+                replace: true,
+              }))
+            },
           }),
-          "button_ve-title-bar_open": factoryTextButton({
-            text: "Open",
-            layout: layout.nodes.open,
-            options: new Array(),
+          "button_ve-title-bar_view": factoryTextButton({
+            text: "View",
+            layout: layout.nodes.view,
+            onMouseHoverOver: function() {
+              this.backgroundColor = ColorUtil.fromHex(this.backgroundColorSelected).toGMColor()
+              if (Beans.get(BeanVisuEditorController).uiService
+                  .find("ve-title-bar_view_context-menu") == null) {
+                this.callback()
+              }
+            },
             callback: function() {
-              try {
-                if (Core.getRuntimeType() == RuntimeType.GXGAMES) {
-                  Beans.get(BeanVisuController).send(new Event("spawn-popup", 
-                    { message: $"Feature 'visu.title-bar.open' is not available on wasm-yyc target" }))
-                  return
-                }
+              var root = this.area
+              var anchor = {
+                x: this.layout.left(),
+                y: this.layout.bottom(),
+              }
 
-                var manifest = FileUtil.getPathToOpenWithDialog({ 
-                  description: "Visu track file",
-                  filename: "manifest", 
-                  extension: "visu"
-                })
-  
-                if (!FileUtil.fileExists(manifest)) {
-                  return
-                }
+              var contextMenu = factoryVEContextMenu(root, anchor, {
+                name: "ve-title-bar_view_context-menu",
+                components: [
+                  {
+                    name: "view_controls",
+                    config: {
+                      label: { text: "Controls" },
+                      shortcut: { text: "F1" },
+                      callback: function() {
+                        var editor = Beans.get(BeanVisuEditorController)
+                        var key = "render-trackControl"
+                        editor.store.get(key).set(!editor.store.getValue(key))
+                      },
+                    },
+                  },
+                  {
+                    name: "view_inspector",
+                    config: {
+                      label: { text: "Inspectors" },
+                      shortcut: { text: "F2" },
+                      callback: function() {
+                        var editor = Beans.get(BeanVisuEditorController)
+                        var key = "render-event"
+                        editor.store.get(key).set(!editor.store.getValue(key))
+                      },
+                    },
+                  },
+                  {
+                    name: "view_timeline",
+                    config: {
+                      label: { text: "Timeline" },
+                      shortcut: { text: "F3" },
+                      callback: function() {
+                        var editor = Beans.get(BeanVisuEditorController)
+                        var key = "render-timeline"
+                        editor.store.get(key).set(!editor.store.getValue(key))
+                      },
+                    },
+                  },
+                  {
+                    name: "view_brushes",
+                    config: {
+                      label: { text: "Brushes" },
+                      shortcut: { text: "F4" },
+                      callback: function() {
+                        var editor = Beans.get(BeanVisuEditorController)
+                        var key = "render-brush"
+                        editor.store.get(key).set(!editor.store.getValue(key))
+                      },
+                    },
+                  },
+                  {
+                    name: "view_hide",
+                    config: {
+                      label: { text: "Hide" },
+                      shortcut: { text: "F5" },
+                      callback: function() {
+                        var controller = Beans.get(BeanVisuController)
+                        var editor = Beans.get(BeanVisuEditorController)
+                        var loaderState = controller.loader.fsm.getStateName()
+                        if (loaderState == "idle" || loaderState == "loaded") {
+                          editor.renderUI = false
+                        }
+                      },
+                    },
+                  },
+                  {
+                    name: "view_move-camera",
+                    config: {
+                      label: { text: "Move camera" },
+                      shortcut: { text: "F8" },
+                      callback: function() {
+                        var controller = Beans.get(BeanVisuController)
+                        var camera = controller.visuRenderer.gridRenderer.camera
+                        camera.enableKeyboardLook = !camera.enableKeyboardLook
+                      },
+                    },
+                  },
+                  {
+                    name: "view_mouse-look",
+                    config: {
+                      label: { text: "Mouse look" },
+                      shortcut: { text: "F9" },
+                      callback: function() {
+                        var controller = Beans.get(BeanVisuController)
+                        var camera = controller.visuRenderer.gridRenderer.camera
+                        camera.enableMouseLook = !camera.enableMouseLook
+                      },
+                    },
+                  },
+                  {
+                    name: "view_fullscreen",
+                    config: {
+                      label: { text: "Fullscreen" },
+                      shortcut: { text: "F11" },
+                      callback: function() {
+                        var controller = Beans.get(BeanVisuController)
+                        var fullscreen = controller.displayService.getFullscreen()
+                        Logger.debug("VisuIO", String.join("Set fullscreen to", fullscreen ? "'false'" : "'true'", "."))
+                        controller.displayService.setFullscreen(!fullscreen)
+                        Visu.settings.setValue("visu.fullscreen", !fullscreen).save()
+                      }
+                    },
+                  },
+                  {
+                    name: "view_scene-config",
+                    config: {
+                      label: { text: "Scene config" },
+                      shortcut: { text: "F12" },
+                      callback: function() {
+                        var editor = Beans.get(BeanVisuEditorController)
+                        var key = "render-sceneConfigPreview"
+                        editor.store.get(key).set(!editor.store.getValue(key))
+                      },
+                    },
+                  },
+                ],
+              })
 
-                Beans.get(BeanVisuController).send(new Event("load", {
-                  manifest: manifest,
-                  autoplay: false
+              var uiService = Beans.get(BeanVisuEditorController).uiService
+              var ui = uiService.find("_context-menu", function(container, key, name) {
+                return String.contains(container.name, name)
+              })
+
+              if (Optional.is(ui)) {
+                uiService.send(new Event("remove", {
+                  name: ui.name,
+                  quiet: true,
                 }))
-              } catch (exception) {
-                Beans.get(BeanVisuController).send(new Event("spawn-popup", 
-                  { message: $"Cannot load the project: {exception.message}" }))
               }
-            }
+
+              uiService.send(new Event("add", {
+                container: contextMenu,
+                replace: true,
+              }))
+            },
           }),
-          "button_ve-title-bar_save": factoryTextButton({
-            text: "Save",
-            layout: layout.nodes.save,
-            options: new Array(),
-            callback: function() {
-              try {
-                if (Core.getRuntimeType() == RuntimeType.GXGAMES) {
-                  Beans.get(BeanVisuController).send(new Event("spawn-popup", 
-                    { message: $"Feature 'visu.title-bar.save' is not available on wasm-yyc target" }))
-                  return
-                }
-
-                var path = FileUtil.getPathToSaveWithDialog({ 
-                  description: "Visu track file",
-                  filename: "manifest", 
-                  extension: "visu",
-                })
-
-                if (!Core.isType(path, String) || String.isEmpty(path)) {
-                  return
-                }
-
-                if (!Beans.get(BeanVisuController).trackService.isTrackLoaded()) {
-                  return
-                }
-
-                var controller = Beans.get(BeanVisuController)
-                controller.track.saveProject(path)
-                controller.send(new Event("spawn-popup", 
-                  { message: $"Project '{controller.trackService.track.name}' saved successfully at: '{path}'" }))
-              } catch (exception) {
-                var message = $"Cannot save the project: {exception.message}"
-                Beans.get(BeanVisuController).send(new Event("spawn-popup", { message: message }))
-                Logger.error("VETitleBar", message)
+          "button_ve-title-bar_grid": factoryTextButton({
+            text: "Grid",
+            layout: layout.nodes.grid,
+            onMouseHoverOver: function() {
+              this.backgroundColor = ColorUtil.fromHex(this.backgroundColorSelected).toGMColor()
+              if (Beans.get(BeanVisuEditorController).uiService
+                  .find("ve-title-bar_grid_context-menu") == null) {
+                this.callback()
               }
-            }
+            },
+            callback: function() {
+              var root = this.area
+              var anchor = {
+                x: this.layout.left(),
+                y: this.layout.bottom(),
+              }
+
+              var contextMenu = factoryVEContextMenu(root, anchor, {
+                name: "ve-title-bar_grid_context-menu",
+                components: [
+                  {
+                    name: "reset_grid",
+                    config: {
+                      label: { text: "Reset grid" },
+                      shortcut: { text: "" },
+                      callback: function() {
+                        Beans.get(BeanVisuController).gridService.send(new Event("clear-grid"))
+                      },
+                    },
+                  },
+                  {
+                    name: "clear_gr-shd",
+                    config: {
+                      label: { text: "Clear grid shaders" },
+                      shortcut: { text: "CTRL + 1" },
+                      callback: function() { 
+                        Beans.get(BeanVisuController).shaderPipeline.send(new Event("clear-shaders"))
+                      },
+                    },
+                  },
+                  {
+                    name: "clear_bkg-shd",
+                    config: {
+                      label: { text: "Clear background shaders" },
+                      shortcut: { text: "CTRL + 2" },
+                      callback: function() { 
+                        Beans.get(BeanVisuController).shaderBackgroundPipeline.send(new Event("clear-shaders"))
+                      },
+                    },
+                  },
+                  {
+                    name: "clear_combined-shd",
+                    config: {
+                      label: { text: "Clear combined shaders" },
+                      shortcut: { text: "CTRL + 3" },
+                      callback: function() { 
+                        Beans.get(BeanVisuController).shaderCombinedPipeline.send(new Event("clear-shaders"))
+                      },
+                    },
+                  },
+                  {
+                    name: "clear_bkg-l",
+                    config: {
+                      label: { text: "Clear background layers" },
+                      shortcut: { text: "CTRL + 4" },
+                      callback: function() { 
+                        Beans.get(BeanVisuController).visuRenderer.gridRenderer.overlayRenderer.backgrounds.clear()
+                      },
+                    },
+                  },
+                  {
+                    name: "clear_frg-l",
+                    config: {
+                      label: { text: "Clear foreground layers" },
+                      shortcut: { text: "CTRL + 5" },
+                      callback: function() { 
+                        Beans.get(BeanVisuController).visuRenderer.gridRenderer.overlayRenderer.foregrounds.clear()
+                      },
+                    },
+                  },
+                  {
+                    name: "clear_shrooms",
+                    config: {
+                      label: { text: "Clear shrooms" },
+                      shortcut: { text: "CTRL + 6" },
+                      callback: function() { 
+                        Beans.get(BeanVisuController).shroomService.send(new Event("clear-shrooms"))
+                      },
+                    },
+                  },
+                  {
+                    name: "clear_bullets",
+                    config: {
+                      label: { text: "Clear bullets" },
+                      shortcut: { text: "" },
+                      callback: function() { 
+                        Beans.get(BeanVisuController).bulletService.send(new Event("clear-bullets"))
+                      },
+                    },
+                  },
+                  {
+                    name: "clear_player",
+                    config: {
+                      label: { text: "Clear player" },
+                      shortcut: { text: "" },
+                      callback: function() { 
+                        Beans.get(BeanVisuController).playerService.send(new Event("clear-player"))
+                      },
+                    },
+                  },
+                  {
+                    name: "clear_coins",
+                    config: {
+                      label: { text: "Clear coins" },
+                      shortcut: { text: "" },
+                      callback: function() { 
+                        Beans.get(BeanVisuController).coinService.send(new Event("clear-coins"))
+                      },
+                    },
+                  },
+                  {
+                    name: "clear_subtitles",
+                    config: {
+                      label: { text: "Clear subtitles" },
+                      callback: function() { 
+                        Beans.get(BeanVisuController).subtitleService.send(new Event("clear-subtitle"))
+                      },
+                    },
+                  },
+                  {
+                    name: "clear_particles",
+                    config: {
+                      label: { text: "Clear particles" },
+                      shortcut: { text: "" },
+                      callback: function() { 
+                        Beans.get(BeanVisuController).particleService.send(new Event("clear-particles"))
+                      },
+                    },
+                  },
+                  {
+                    name: "clear_grid-gl",
+                    config: {
+                      label: { text: "Clear grid glitches" },
+                      shortcut: { text: "" },
+                      callback: function() {
+                        Beans.get(BeanVisuController).visuRenderer.gridRenderer.gridGlitchService.dispatcher.send(new Event("clear-glitch"))
+                      }
+                    },
+                  },
+                  {
+                    name: "clear_bkg-gl",
+                    config: {
+                      label: { text: "Clear background glitches" },
+                      shortcut: { text: "" },
+                      callback: function() {
+                        Beans.get(BeanVisuController).visuRenderer.gridRenderer.backgroundGlitchService.dispatcher.send(new Event("clear-glitch"))
+                      }
+                    },
+                  },
+                  {
+                    name: "clear_combined-gl",
+                    config: {
+                      label: { text: "Clear combined glitches" },
+                      shortcut: { text: "" },
+                      callback: function() {
+                        Beans.get(BeanVisuController).visuRenderer.gridRenderer.combinedGlitchService.dispatcher.send(new Event("clear-glitch"))
+                      }
+                    },
+                  }
+                ],
+              })
+
+              var uiService = Beans.get(BeanVisuEditorController).uiService
+              var ui = uiService.find("_context-menu", function(container, key, name) {
+                return String.contains(container.name, name)
+              })
+
+              if (Optional.is(ui)) {
+                uiService.send(new Event("remove", {
+                  name: ui.name,
+                  quiet: true,
+                }))
+              }
+
+              uiService.send(new Event("add", {
+                container: contextMenu,
+                replace: true,
+              }))
+            },
           }),
           "button_ve-title-bar_help": factoryTextButton({
             text: "Help",
             layout: layout.nodes.help,
-            options: new Array(),
-            callback: function() {
-              try {
-                url_open("https://github.com/Alkapivo/visu-project/wiki/1.-UI-overview")
-              } catch (exception) {
-                var message = $"Cannot open URL: {exception.message}"
-                Beans.get(BeanVisuController).send(new Event("spawn-popup", { message: message }))
-                Logger.error("VETitleBar", message)
+            onMouseHoverOver: function() {
+              this.backgroundColor = ColorUtil.fromHex(this.backgroundColorSelected).toGMColor()
+              if (Beans.get(BeanVisuEditorController).uiService
+                  .find("ve-title-bar_help_context-menu") == null) {
+                this.callback()
               }
-            }
+            },
+            callback: function() {
+              var root = this.area
+              var anchor = {
+                x: this.layout.left(),
+                y: this.layout.bottom(),
+              }
+
+              var contextMenu = factoryVEContextMenu(root, anchor, {
+                name: "ve-title-bar_help_context-menu",
+                components: [
+                  {
+                    name: "help_about",
+                    config: {
+                      label: { text: "About" },
+                      shortcut: { text: "" },
+                      callback: function() {
+                        try {
+                          url_open("https://github.com/Alkapivo/visu-project/wiki/1.-UI-overview")
+                          var uiService = Beans.get(BeanVisuEditorController).uiService
+                          uiService.send(new Event("remove", { 
+                            name: this.context.name, 
+                            quiet: true,
+                          }))
+                        } catch (exception) {
+                          var message = $"Cannot open URL: {exception.message}"
+                          Beans.get(BeanVisuController).send(new Event("spawn-popup", { message: message }))
+                          Logger.error("VETitleBar", message)
+                        }
+                      }
+                    },
+                  }
+                ],
+              })
+
+              var uiService = Beans.get(BeanVisuEditorController).uiService
+              var ui = uiService.find("_context-menu", function(container, key, name) {
+                return String.contains(container.name, name)
+              })
+
+              if (Optional.is(ui)) {
+                uiService.send(new Event("remove", {
+                  name: ui.name,
+                  quiet: true,
+                }))
+              }
+
+              uiService.send(new Event("add", {
+                container: contextMenu,
+                replace: true,
+              }))
+            },
           }),
           "text_ve-title-bar_version": Struct.appendRecursiveUnique(
             {

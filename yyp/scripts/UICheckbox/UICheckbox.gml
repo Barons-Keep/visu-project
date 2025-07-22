@@ -29,7 +29,10 @@ function UICheckbox(name, json = null) {
     scaleToFillStretched: Struct.contains(json, "scaleToFillStretched")
       ? Assert.isType(json.scaleToFillStretched, Boolean)
       : true,
-    
+      
+    ///@type {Boolean}
+    notify: Struct.getIfType(json, "notify", Boolean, true),
+
     ///@param {any} value
     updateValue: new BindIntent(Assert.isType(Struct.getDefault(json, "updateValue", function(value) {
       if (!Core.isType(value, Boolean)) {

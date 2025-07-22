@@ -55,6 +55,9 @@ function UITextField(name, json = null) {
     ///@type {Boolean}
     enableColorWrite: Core.getProperty("core.ui-service.use-surface-optimalization", false),
 
+    ///@type {Boolean}
+    notify: Struct.getIfType(json, "notify", Boolean, true),
+
     ///@param {any} value
     updateValue: new BindIntent(Assert.isType(Struct.getDefault(json, "updateValue", function(value) {
       this.value = value
@@ -85,7 +88,7 @@ function UITextField(name, json = null) {
         this.updateCustom()
       }
 
-      if (!storeSubscribed) {
+      if (!this.storeSubscribed) {
         this.storeSubscribed = true
         this.updateStore()
       }
@@ -115,7 +118,7 @@ function UITextField(name, json = null) {
       
       var _w = this.textField.style.w
       var _h = this.textField.style.h
-      this.textField.style.w = !this.hidden.value ? this.area.getWidth() : this.textField.style.w
+      this.textField.style.w = this.area.getWidth();//!this.hidden.value ? this.area.getWidth() : this.textField.style.w // will not work with horizontal layout
       if (!this.hidden.value && this.textField.style.v_grow) {
         if (this.area.getHeight() != this.textField.style.h) {
           this.area.setHeight(this.textField.style.h)

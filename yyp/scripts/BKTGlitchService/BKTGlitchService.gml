@@ -86,6 +86,23 @@ function BKTGlitchService() constructor {
 
   ///@type {Map<String, Struct>}
   configs = new Map(String, Struct, {
+    "clear": {
+      lineSpeed: { minValue: 0.0, maxValue: 0.07, defValue: 0.0 },
+      lineShift: { minValue: 0.0, maxValue: 0.03, defValue: 0.0 },
+      lineResolution: { minValue: 0.0, maxValue: 3.0, defValue: 0 },
+      lineVertShift: { minValue: 0.0, maxValue: 1.0, defValue: 0.0 },
+      lineDrift: { minValue: 0.0, maxValue: 0.1, defValue: 0 },
+      jumbleSpeed: { minValue: 0, maxValue: 0.1, defValue: 0 },
+      jumbleShift: { minValue: 0, maxValue: 0.2, defValue: 0 },
+      jumbleResolution: { minValue: 0, maxValue: 0.16, defValue: 0 },
+      jumbleness: { minValue: 0, maxValue: 0, defValue: 0 },
+      dispersion: { minValue: 0, maxValue: 0, defValue: 0 },
+      channelShift: { minValue: 0, maxValue: 0, defValue: 0 },
+      noiseLevel: { minValue: 0, maxValue: 0, defValue: 0 },
+      shakiness: { minValue: 0, maxValue: 0, defValue: 0 },
+      rngSeed: { minValue: 0, maxValue: 0, defValue: 0 },
+      intensity: { minValue: 0.0, maxValue: 0.1, defValue: 0.0 },
+    },
     "easy": {
       lineSpeed: { minValue: 0.0, maxValue: 0.07, defValue: 0.0 },
       lineShift: { minValue: 0.0, maxValue: 0.03, defValue: 0.0 },
@@ -129,6 +146,7 @@ function BKTGlitchService() constructor {
       this.rng = Struct.getIfType(event.data, "rng", Boolean, this.rng)
     },
     "load-config": function(event) {
+      bktglitch_activate(this.width, this.height)
       var keys = Struct.keys(event.data)
       var size = GMArray.size(keys)
       for (var index = 0; index < size; index++) {
@@ -137,9 +155,21 @@ function BKTGlitchService() constructor {
         var item = Struct.get(BKTGlitchFields, key)
         __bktgtlich_setup_property(item.field, property.defValue, name, item.setter, property.minValue, property.maxValue)
       }
+      bktglitch_deactivate()
     },
     "clear-glitch": function(event) {
-      bktglitch_config_zero()
+      this.factor = 1.0
+      bktglitch_activate(this.width, this.height)
+      var config = this.configs.get("clear")
+      var keys = Struct.keys(config)
+      var size = GMArray.size(keys)
+      for (var index = 0; index < size; index++) {
+        var key = keys[index]
+        var property = Struct.get(config, key)
+        var item = Struct.get(BKTGlitchFields, key)
+        __bktgtlich_setup_property(item.field, property.defValue, name, item.setter, property.minValue, property.maxValue)
+      }
+      bktglitch_deactivate()
     }
   }))
 

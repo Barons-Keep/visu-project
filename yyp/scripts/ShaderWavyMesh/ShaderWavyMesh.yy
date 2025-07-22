@@ -1,0 +1,13 @@
+{
+  "$GMScript":"v1",
+  "%Name":"ShaderWavyMesh",
+  "isCompatibility":false,
+  "isDnD":false,
+  "name":"ShaderWavyMesh",
+  "parent":{
+    "name":"shader_wavy_mesh",
+    "path":"folders/io.alkapivo.core/resource/shader/screen/shader_wavy_mesh.yy",
+  },
+  "resourceType":"GMScript",
+  "resourceVersion":"2.0",
+}

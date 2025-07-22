@@ -452,6 +452,16 @@ global.__grid_track_event = {
         "gr-cfg_focus-grid-use-blend-col": Struct.parse.boolean(data, "gr-cfg_focus-grid-use-blend-col"),
         "gr-cfg_focus-grid-blend-col": Struct.parse.color(data, "gr-cfg_focus-grid-blend-col", "#ffffff"),
         "gr-cfg_focus-grid-blend-col-spd": Struct.parse.number(data, "gr-cfg_focus-grid-blend-col-spd", 1.0, 0.0, 999.9),
+
+        "gr-cfg_hide-bpm": Struct.parse.boolean(data, "gr-cfg_hide-bpm", TRACK_EVENT_DEFAULT_HIDDEN_VALUE),
+        "gr-cfg_use-bpm": Struct.parse.boolean(data, "gr-cfg_use-bpm"),
+        "gr-cfg_bpm": Struct.parse.number(data, "gr-cfg_bpm"),
+        "gr-cfg_use-bpm-count": Struct.parse.boolean(data, "gr-cfg_use-bpm-count"),
+        "gr-cfg_bpm-count": Struct.parse.number(data, "gr-cfg_bpm-count"),
+        "gr-cfg_use-bpm-sub": Struct.parse.boolean(data, "gr-cfg_use-bpm-sub"),
+        "gr-cfg_bpm-sub": Struct.parse.number(data, "gr-cfg_bpm-sub"),
+        "gr-cfg_use-bpm-shift": Struct.parse.boolean(data, "gr-cfg_use-bpm-shift"),
+        "gr-cfg_bpm-shift": Struct.parse.number(data, "gr-cfg_bpm-shift"),
       }
     },
     run: function(data, channel) {
@@ -560,6 +570,28 @@ global.__grid_track_event = {
         "gr-cfg_focus-grid-blend-eq",
         properties.supportGridBlendConfig,
         "gr-cfg_focus-grid-blend-eq-alpha")
+
+      var editor = Beans.get(Visu.modules().editor.controller)
+      if (editor == null) {
+        return
+      }
+      
+      if (Struct.get(data, "gr-cfg_use-bpm")) {
+        editor.store.get("bpm").set(Struct.get(data, "gr-cfg_bpm"))
+      }
+
+      if (Struct.get(data, "gr-cfg_use-bpm-count")) {
+        editor.store.get("bpm-count").set(Struct.get(data, "gr-cfg_bpm-count"))
+      }
+
+      if (Struct.get(data, "gr-cfg_use-bpm-sub")) {
+        editor.store.get("bpm-sub").set(Struct.get(data, "gr-cfg_bpm-sub"))
+      }
+
+      if (Struct.get(data, "gr-cfg_use-bpm-shift")) {
+        editor.store.get("bpm-shift").set(Struct.get(data, "gr-cfg_bpm-shift"))
+      }
+
     },
   },
 }

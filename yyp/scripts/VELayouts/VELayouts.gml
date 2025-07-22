@@ -788,26 +788,16 @@ global.__VELayouts = new Map(String, Callable, {
           name: "text-field-increase-stick-checkbox.field",
           x: function() { return this.context.nodes.label.right() + this.__margin.left },
           width: function() { return ((this.context.width() - this.context.nodes.label.right()) / 2.0)
-            - 14 - 10 - 7 - this.__margin.left - this.__margin.right },
+            - this.context.nodes.increase.width() - 10 - 7 - this.__margin.left - this.__margin.right },
           margin: { top: 2.0000, bottom: 2.0000, left: 5, right: 2 },
           propagateHidden: Struct.getIfType(Struct.get(config, "field"), "propagateHidden", Boolean, true),
         },
-        //increase: {
-        //  name: "text-field-increase-stick-checkbox.increase",
-        //  x: function() { return this.context.nodes.field.right() },
-        //  width: function() { return 10 },
-        //  margin: { top: 2.0000, bottom: 2.0000, left: 0, right: 0 },
-        //},
-        //decrease: {
-        //  name: "text-field-increase-stick-checkbox.decrease",
-        //  x: function() { return this.context.nodes.increase.right() + this.__margin.left },
-        //  width: function() { return 10 },
-        //  margin: { top: 2.0000, bottom: 2.0000, left: 2, right: 5 },
-        //},
         increase: {
           name: "text-field-increase-stick-checkbox.increase",
           x: function() { return this.context.nodes.field.right() },
-          width: function() { return 14 },
+          width: Core.getProperty("visu.editor.ui.components.numeric-button")
+            ? function() { return 14 }
+            : function() { return 0 },
           height: function() { return round(this.context.height() / 2.0) - this.__margin.top - this.__margin.bottom },
           margin: { top: 2.0000, bottom: 1.0000, left: 0, right: 5 },
         },
@@ -815,15 +805,21 @@ global.__VELayouts = new Map(String, Callable, {
           name: "text-field-increase-stick-checkbox.decrease",
           x: function() { return this.context.nodes.field.right() },
           y: function() { return this.context.nodes.increase.bottom() + this.__margin.top },
-          width: function() { return 14 },
+          width: Core.getProperty("visu.editor.ui.components.numeric-button")
+            ? function() { return 14 }
+            : function() { return 0 },
           height: function() { return round(this.context.height() / 2.0) - this.__margin.top - this.__margin.bottom },
           margin: { top: 1.0000, bottom: 2.0000, left: 0, right: 5 },
         },
         stick: {
           name: "text-field-increase-stick-checkbox.stick",
           x: function() { return this.context.nodes.decrease.right() + this.__margin.left },
-          width: function() { return 14 },
-          margin: { top: 0, bottom: 0, left: 5, right: 7 },
+          width: Core.getProperty("visu.editor.ui.components.numeric-stick")
+            ? function() { return 14 }
+            : function() { return 0 },
+          margin: Core.getProperty("visu.editor.ui.components.numeric-stick")
+            ? { top: 0, bottom: 0, left: 5, right: 7 }
+            : { top: 0, bottom: 0, left: 0, right: 0 },
         },
         checkbox: {
           name: "text-field-increase-stick-checkbox.checkbox",
@@ -860,26 +856,16 @@ global.__VELayouts = new Map(String, Callable, {
           name: "text-field-increase-slider-checkbox.field",
           x: function() { return this.context.nodes.label.right() + this.__margin.left },
           width: function() { return ((this.context.width() - this.context.nodes.label.right()) / 2.0)
-            - 14 - 10 - 7 - this.__margin.left - this.__margin.right },
+            - this.context.nodes.increase.width() - 10 - 7 - this.__margin.left - this.__margin.right },
           margin: { top: 2.0000, bottom: 2.0000, left: 5, right: 2 },
           propagateHidden: Struct.getIfType(Struct.get(config, "field"), "propagateHidden", Boolean, true),
         },
-        //increase: {
-        //  name: "text-field-increase-slider-checkbox.increase",
-        //  x: function() { return this.context.nodes.field.right() },
-        //  width: function() { return 10 },
-        //  margin: { top: 2.0000, bottom: 2.0000, left: 0, right: 0 },
-        //},
-        //decrease: {
-        //  name: "text-field-increase-slider-checkbox.decrease",
-        //  x: function() { return this.context.nodes.increase.right() + this.__margin.left },
-        //  width: function() { return 10 },
-        //  margin: { top: 2.0000, bottom: 2.0000, left: 2, right: 5 },
-        //},
         increase: {
           name: "text-field-increase-slider-checkbox.increase",
           x: function() { return this.context.nodes.field.right() },
-          width: function() { return 14 },
+          width: Core.getProperty("visu.editor.ui.components.numeric-button")
+            ? function() { return 14 }
+            : function() { return 0 },
           height: function() { return round(this.context.height() / 2.0) - this.__margin.top - this.__margin.bottom },
           margin: { top: 2.0000, bottom: 1.0000, left: 0, right: 5 },
         },
@@ -887,7 +873,9 @@ global.__VELayouts = new Map(String, Callable, {
           name: "text-field-increase-slider-checkbox.decrease",
           x: function() { return this.context.nodes.field.right() },
           y: function() { return this.context.nodes.increase.bottom() + this.__margin.top },
-          width: function() { return 14 },
+          width: Core.getProperty("visu.editor.ui.components.numeric-button")
+            ? function() { return 14 }
+            : function() { return 0 },
           height: function() { return round(this.context.height() / 2.0) - this.__margin.top - this.__margin.bottom },
           margin: { top: 1.0000, bottom: 2.0000, left: 0, right: 5 },
         },
@@ -1137,26 +1125,16 @@ global.__VELayouts = new Map(String, Callable, {
           name: "numeric-slider-increase-field.field",
           x: function() { return this.context.nodes.label.right() + this.__margin.left },
           width: function() { return ((this.context.width() - this.context.nodes.label.right()) / 2.0)
-            - 14 - 10 - 7 - this.__margin.left - this.__margin.right },
+            - this.context.nodes.increase.width() - 10 - 7 - this.__margin.left - this.__margin.right },
           margin: { top: 2.0000, bottom: 2.0000, left: 5, right: 2 },
           propagateHidden: Struct.getIfType(Struct.get(config, "field"), "propagateHidden", Boolean, true),
         },
-        //increase: {
-        //  name: "numeric-slider-increase-field.increase",
-        //  x: function() { return this.context.nodes.field.right() },
-        //  width: function() { return 10 },
-        //  margin: { top: 2.0000, bottom: 2.0000, left: 0, right: 0 },
-        //},
-        //decrease: {
-        //  name: "numeric-slider-increase-field.decrease",
-        //  x: function() { return this.context.nodes.increase.right() + this.__margin.left },
-        //  width: function() { return 10 },
-        //  margin: { top: 2.0000, bottom: 2.0000, left: 2, right: 5 },
-        //},
         increase: {
           name: "numeric-slider-increase-field.increase",
           x: function() { return this.context.nodes.field.right() },
-          width: function() { return 14 },
+          width: Core.getProperty("visu.editor.ui.components.numeric-button")
+            ? function() { return 14 }
+            : function() { return 0 },
           height: function() { return round(this.context.height() / 2.0) - this.__margin.top - this.__margin.bottom },
           margin: { top: 2.0000, bottom: 1.0000, left: 0, right: 5 },
         },
@@ -1164,7 +1142,9 @@ global.__VELayouts = new Map(String, Callable, {
           name: "numeric-slider-increase-field.decrease",
           x: function() { return this.context.nodes.field.right() },
           y: function() { return this.context.nodes.increase.bottom() + this.__margin.top },
-          width: function() { return 14 },
+          width: Core.getProperty("visu.editor.ui.components.numeric-button")
+            ? function() { return 14 }
+            : function() { return 0 },
           height: function() { return round(this.context.height() / 2.0) - this.__margin.top - this.__margin.bottom },
           margin: { top: 1.0000, bottom: 2.0000, left: 0, right: 5 },
         },
@@ -1197,26 +1177,16 @@ global.__VELayouts = new Map(String, Callable, {
           name: "numeric-stick-increase-field.field",
           x: function() { return this.context.nodes.label.right() + this.__margin.left },
           width: function() { return this.context.width() - this.context.nodes.label.right()
-            - 14 - 32 - this.__margin.left - this.__margin.right },
+            - this.context.nodes.increase.width() - 32 - this.__margin.left - this.__margin.right },
           margin: { top: 2.0000, bottom: 2.0000, left: 5, right: 2 },
           propagateHidden: Struct.getIfType(Struct.get(config, "field"), "propagateHidden", Boolean, true),
         },
-        //increase: {
-        //  name: "numeric-stick-increase-field.increase",
-        //  x: function() { return this.context.nodes.field.right() },
-        //  width: function() { return 10 },
-        //  margin: { top: 2.0000, bottom: 2.0000, left: 0, right: 0 },
-        //},
-        //decrease: {
-        //  name: "numeric-stick-increase-field.decrease",
-        //  x: function() { return this.context.nodes.increase.right() + this.__margin.left },
-        //  width: function() { return 10 },
-        //  margin: { top: 2.0000, bottom: 2.0000, left: 2, right: 5 },
-        //},
         increase: {
           name: "numeric-stick-increase-field.increase",
           x: function() { return this.context.nodes.field.right() },
-          width: function() { return 14 },
+          width: Core.getProperty("visu.editor.ui.components.numeric-button")
+            ? function() { return 14 }
+            : function() { return 0 },
           height: function() { return round(this.context.height() / 2.0) - this.__margin.top - this.__margin.bottom },
           margin: { top: 2.0000, bottom: 1.0000, left: 0, right: 5 },
         },
@@ -1224,7 +1194,9 @@ global.__VELayouts = new Map(String, Callable, {
           name: "numeric-stick-increase-field.decrease",
           x: function() { return this.context.nodes.field.right() },
           y: function() { return this.context.nodes.increase.bottom() + this.__margin.top },
-          width: function() { return 14 },
+          width: Core.getProperty("visu.editor.ui.components.numeric-button")
+            ? function() { return 14 }
+            : function() { return 0 },
           height: function() { return round(this.context.height() / 2.0) - this.__margin.top - this.__margin.bottom },
           margin: { top: 1.0000, bottom: 2.0000, left: 0, right: 5 },
         },

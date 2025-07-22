@@ -9,7 +9,10 @@ function SpeedFeature(json): GridItemFeature(json) constructor {
   type = "SpeedFeature"
 
   ///@type {Boolean}
-  initTransformValue = Core.getIfType(GMArray.resolveRandom(Struct.get(data, "initTransformValue")), Boolean)
+  isRelative = Core.getIfType(GMArray.resolveRandom(Struct.get(data, "isRelative")), Boolean, true)
+
+  ///@type {Boolean}
+  isSpeedSet = false
 
   ///@type {?NumberTransformer}
   transform = Struct.contains(data, "transform")
@@ -18,6 +21,8 @@ function SpeedFeature(json): GridItemFeature(json) constructor {
       factor: Core.getIfType(GMArray.resolveRandom(Struct.get(data.transform, "factor")), Number, 1.0),
       target: Core.getIfType(GMArray.resolveRandom(Struct.get(data.transform, "target")), Number, 0.0),
       increase: Core.getIfType(GMArray.resolveRandom(Struct.get(data.transform, "increase")), Number, 0.0),
+      duration: Core.getIfType(GMArray.resolveRandom(Struct.get(data.transform, "duration")), Number, 0.0),
+      ease: Core.getIfType(GMArray.resolveRandom(Struct.get(data.transform, "ease")), String, EaseType.LEGACY), // todo migrate
     })
     : null
 
@@ -28,6 +33,8 @@ function SpeedFeature(json): GridItemFeature(json) constructor {
       factor: Core.getIfType(GMArray.resolveRandom(Struct.get(data.add, "factor")), Number, 1.0),
       target: Core.getIfType(GMArray.resolveRandom(Struct.get(data.add, "target")), Number, 0.0),
       increase: Core.getIfType(GMArray.resolveRandom(Struct.get(data.add, "increase")), Number, 0.0),
+      duration: Core.getIfType(GMArray.resolveRandom(Struct.get(data.add, "duration")), Number, 0.0),
+      ease: Core.getIfType(GMArray.resolveRandom(Struct.get(data.add, "ease")), String, EaseType.LEGACY), // todo migrate
     })
     : null
 
@@ -36,16 +43,22 @@ function SpeedFeature(json): GridItemFeature(json) constructor {
   ///@param {VisuController} controller
   static update = function(item, controller) {
     if (this.transform != null) {
-      if (this.initTransformValue == null) {
-        this.transform.value = item.speed * 1000.0
+      if (!this.isSpeedSet) {
+        this.transform.value = (this.isRelative
+          ? this.transform.value + (item.speed * GRID_ITEM_SPEED_SCALE) 
+          : this.transform.value)
         this.transform.startValue = this.transform.value
-        this.initTransformValue = this.transform.value
+        this.transform.target = this.transform.target + (this.isRelative
+          ? item.speed * GRID_ITEM_SPEED_SCALE
+          : 0.0)
+        this.transform.reset()
+        this.isSpeedSet = true
       }
-      item.setSpeed(this.transform.update().value / 1000.0)
+      item.setSpeed(this.transform.update().value / GRID_ITEM_SPEED_SCALE)
     }
 
     if (this.add != null) {
-      item.setSpeed(item.speed + (this.add.update().value / 1000.0))
+      item.setSpeed(item.speed + (this.add.update().value / GRID_ITEM_SPEED_SCALE))
     }
   }
 }
@@ -90,15 +103,15 @@ function _SpeedFeature(json) {
     update: function(item, controller) {
       if (this.transform != null) {
         if (this.initTransformValue == null) {
-          this.transform.value = item.speed * 1000.0
+          this.transform.value = item.speed * GRID_ITEM_SPEED_SCALE
           this.transform.startValue = this.transform.value
           this.initTransformValue = this.transform.value
         }
-        item.setSpeed(this.transform.update().value / 1000.0)
+        item.setSpeed(this.transform.update().value / GRID_ITEM_SPEED_SCALE)
       }
 
       if (this.add != null) {
-        item.setSpeed(item.speed + (this.add.update().value / 1000.0))
+        item.setSpeed(item.speed + (this.add.update().value / GRID_ITEM_SPEED_SCALE))
       }
     },
   }))

@@ -1,9 +1,29 @@
 ///@package io.alkapivo.visu
 
 ///@type {Number}
-global.__MAGIC_NUMBER_TASK = 10
+global.__MAGIC_NUMBER_TASK = 12
 #macro MAGIC_NUMBER_TASK global.__MAGIC_NUMBER_TASK
 
+///@type {Number}
+global.__SYNC_UI_STORE_STEP = 12
+#macro SYNC_UI_STORE_STEP global.__SYNC_UI_STORE_STEP
+
+///@type {Number}
+global.__BRUSH_ENTRY_STEP = 1
+#macro BRUSH_ENTRY_STEP global.__BRUSH_ENTRY_STEP
+
+///@type {Number}
+global.__BRUSH_TOOLBAR_ENTRY_STEP = 1
+#macro BRUSH_TOOLBAR_ENTRY_STEP global.__BRUSH_TOOLBAR_ENTRY_STEP
+
+///@type {Number}
+global.__FLIP_VALUE = 1
+#macro FLIP_VALUE global.__FLIP_VALUE
+
+///@hack
+#macro TEMPLATE_ENTRY_STEP global.__BRUSH_ENTRY_STEP
+#macro TEMPLATE_TOOLBAR_ENTRY_STEP global.__BRUSH_TOOLBAR_ENTRY_STEP
+#macro EVENT_INSPECTOR_ENTRY_STEP global.__BRUSH_TOOLBAR_ENTRY_STEP
 
 ///@enum
 function _GameMode(): Enum() constructor {
@@ -24,6 +44,10 @@ function _Visu() constructor {
   ///@private
   ///@type {?Struct}
   _assets = null
+
+  ///@private
+  ///@type {?Struct}
+  _modules = null
 
   ///@private
   ///@type {?String}
@@ -745,6 +769,20 @@ function _Visu() constructor {
     },
   } 
 
+  static modules = function() {
+    if (this._modules == null) {
+      var editor = Callable.run("VisuEditorModule")
+      this._modules = {
+        editor: Core.isType(editor, Struct) ? editor : {
+          controller: "VisuEditorController",
+          io: "VisuEditorIO",
+        },
+      }
+    }
+    
+    return this._modules
+  }
+
   ///@return {Struct}
   static assets = function() {
     if (this._assets == null) {
@@ -1004,6 +1042,15 @@ function _Visu() constructor {
     Struct.set(container, containerKey, Struct.get(data, valueKey))
   }
 
+  ///@return {Visu}
+  static initShaders = function() {
+    ShaderArcRunner.install(SHADERS, SHADER_CONFIGS)
+    ShaderFunkFlux.install(SHADERS, SHADER_CONFIGS)
+    ShaderWavyMesh.install(SHADERS, SHADER_CONFIGS)
+    ShaderWavySpectrum.install(SHADERS, SHADER_CONFIGS)
+    return this
+  }
+  
   ///@param {String} [layerName]
   ///@param {Number} [layerDefaultDepth]
   ///@return {Visu}
@@ -1012,9 +1059,17 @@ function _Visu() constructor {
     initBeans()
     initGPU()
     initGMTF()
+    this.initShaders()
     
     Core.loadProperties(FileUtil.get($"{working_directory}core-properties.json"))
     Core.loadProperties(FileUtil.get($"{working_directory}visu-properties.json"))
+
+    MAGIC_NUMBER_TASK = Core.getProperty("visu.const.MAGIC_NUMBER_TASK", MAGIC_NUMBER_TASK)
+    SYNC_UI_STORE_STEP = Core.getProperty("visu.const.SYNC_UI_STORE_STEP", SYNC_UI_STORE_STEP)
+    BRUSH_ENTRY_STEP = Core.getProperty("visu.const.BRUSH_ENTRY_STEP", BRUSH_ENTRY_STEP)
+    BRUSH_TOOLBAR_ENTRY_STEP = Core.getProperty("visu.const.BRUSH_TOOLBAR_ENTRY_STEP", BRUSH_TOOLBAR_ENTRY_STEP)
+    FLIP_VALUE = Core.getProperty("visu.const.FLIP_VALUE", FLIP_VALUE)
+
 
     this.settings.set(new SettingEntry({ name: "visu.editor.autosave", type: SettingTypes.BOOLEAN, defaultValue: false }))
       .set(new SettingEntry({ name: "visu.language", type: SettingTypes.STRING, defaultValue: LanguageType.en_EN }))
@@ -1059,6 +1114,7 @@ function _Visu() constructor {
       .set(new SettingEntry({ name: "visu.editor.accordion.render-event-inspector", type: SettingTypes.BOOLEAN, defaultValue: false }))
       .set(new SettingEntry({ name: "visu.editor.accordion.render-template-toolbar", type: SettingTypes.BOOLEAN, defaultValue: false }))
       .set(new SettingEntry({ name: "visu.editor.timeline-zoom", type: SettingTypes.NUMBER, defaultValue: 10 }))
+      .set(new SettingEntry({ name: "visu.editor.timeline-follow", type: SettingTypes.BOOLEAN, defaultValue: false }))
       .set(new SettingEntry({ name: "visu.keyboard.player.up", type: SettingTypes.NUMBER, defaultValue: KeyboardKeyType.ARROW_UP }))
       .set(new SettingEntry({ name: "visu.keyboard.player.down", type: SettingTypes.NUMBER, defaultValue: KeyboardKeyType.ARROW_DOWN }))
       .set(new SettingEntry({ name: "visu.keyboard.player.left", type: SettingTypes.NUMBER, defaultValue: KeyboardKeyType.ARROW_LEFT }))
@@ -1108,13 +1164,6 @@ function _Visu() constructor {
     display_reset(this.settings.getValue("visu.graphics.aa"), this.settings.getValue("visu.graphics.vsync"))
     
     Language.load(this.settings.getValue("visu.language", LanguageType.en_EN))
-    if (Core.getProperty("visu.editor.edit-theme")) {
-      Struct.forEach(this.settings.getValue("visu.editor.theme"), function(hex, name) {
-        Struct.set(VETheme, name, hex)
-      })
-
-      VEStyles = generateVEStyles()
-    }
 
     var layerId = Scene.fetchLayer(layerName, layerDefaultDepth)
 
@@ -1184,14 +1233,20 @@ function _Visu() constructor {
     }
 
     var enableEditor = this.settings.getValue("visu.editor.enable", false)
-    if (!Beans.exists(BeanVisuEditorIO) && enableEditor) {
-      Beans.add(Beans.factory(BeanVisuEditorIO, GMServiceInstance, layerId,
-        new VisuEditorIO()))
+    var editorIOConstructor = Core.getConstructor("VisuEditorIO")
+    if (Optional.is(editorIOConstructor)) {
+      if (!Beans.exists(Visu.modules().editor.io) && enableEditor) {
+        Beans.add(Beans.factory(Visu.modules().editor.io, GMServiceInstance, layerId,
+          new editorIOConstructor()))
+      }
     }
 
-    if (!Beans.exists(BeanVisuEditorController) && enableEditor) {
-      Beans.add(Beans.factory(BeanVisuEditorController, GMServiceInstance, layerId,
-        new VisuEditorController()))
+    var editorConstructor = Core.getConstructor("VisuEditorController")
+    if (Optional.is(editorConstructor)) {
+      if (!Beans.exists(Visu.modules().editor.controller) && enableEditor) {
+        Beans.add(Beans.factory(Visu.modules().editor.controller, GMServiceInstance, layerId,
+          new editorConstructor()))
+      }
     }
 
     if (!Beans.exists(BeanVisuIO)) {

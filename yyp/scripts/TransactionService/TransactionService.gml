@@ -27,7 +27,10 @@ function TransactionService(config = null) constructor {
   add = function(transaction) {
     if (Core.isType(transaction, Transaction)) {
       this.reverted.clear()
-      this.applied.push(transaction.apply())
+      var result = transaction.apply()
+      if (Optional.is(result)) {
+        this.applied.push(result)
+      }
     }
 
     return this
@@ -37,7 +40,10 @@ function TransactionService(config = null) constructor {
   undo = function() {
     var transaction = this.applied.pop()
     if (Core.isType(transaction, Transaction)) {
-      this.reverted.push(transaction.rollback())
+      var result = transaction.rollback()
+      if (Optional.is(result)) {
+        this.reverted.push(result)
+      }
     }
 
     return this
@@ -47,7 +53,10 @@ function TransactionService(config = null) constructor {
   redo = function() {
     var transaction = this.reverted.pop()
     if (Core.isType(transaction, Transaction)) {
-      this.applied.push(transaction.apply())
+      var result = transaction.apply()
+      if (Optional.is(result)) {
+        this.applied.push(result)
+      }
     }
     
     return this

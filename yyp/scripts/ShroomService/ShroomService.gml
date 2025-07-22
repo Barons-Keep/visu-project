@@ -97,7 +97,7 @@ function ShroomService(_controller, config = {}): Service() constructor {
       var viewY = event.data.snapV ? locked.snapV : view.y
       Struct.set(template, "x", viewX + spawnX)
       Struct.set(template, "y", viewY + spawnY)
-      Struct.set(template, "speed", spd / 1000.0)
+      Struct.set(template, "speed", spd / GRID_ITEM_SPEED_SCALE)
       Struct.set(template, "angle", angle)
       Struct.set(template, "uid", this.controller.gridService.generateUID())
       if (Optional.is(Struct.get(event.data, "lifespan"))) {
@@ -200,7 +200,7 @@ function ShroomService(_controller, config = {}): Service() constructor {
     var locked = this.controller.gridService.targetLocked
     var viewX = snapH ? locked.snapH : view.x
     var viewY = snapV ? locked.snapV : view.y
-    var template = this.getTemplate(name).serializeSpawn(viewX + spawnX, viewY + spawnY, spd / 1000.0, angle, this.controller.gridService.generateUID(), lifespan, hp)
+    var template = this.getTemplate(name).serializeSpawn(viewX + spawnX, viewY + spawnY, spd / GRID_ITEM_SPEED_SCALE, angle, this.controller.gridService.generateUID(), lifespan, hp)
 
     var inheritSize = inherit != null ? GMArray.size(inherit) : 0
     var templateInheritSize = template.inherit != null ? GMArray.size(template.inherit) : 0
