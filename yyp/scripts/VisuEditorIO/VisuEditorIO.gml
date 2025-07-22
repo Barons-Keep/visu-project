@@ -28,7 +28,7 @@ function VisuEditorIO() constructor {
     eraseTool: "E",
     brushTool: "B",
     cloneTool: "C",
-    snapToGrid: "Q", // + shift
+    snapToGrid: "Q",
     zoomIn: KeyboardKeyType.PLUS,
     zoomOut: KeyboardKeyType.MINUS,
     numZoomIn: KeyboardKeyType.NUM_PLUS,
@@ -51,6 +51,13 @@ function VisuEditorIO() constructor {
     renderTemplateToolbar: KeyboardKeyType.F7,
     cameraKeyboardLook: KeyboardKeyType.F8,
     cameraMouseLook: KeyboardKeyType.F9,
+
+    clearGridShaders:  "1", // + ctrl
+    clearBackgroundShaders:  "2", // + ctrl
+    clearCombinedShaders:  "3", // + ctrl
+    clearBackgroundTextures:  "4", // + ctrl
+    clearForegroundTextures:  "5", // + ctrl
+    clearShrooms: "6", // + ctrl
   })
 
   ///@type {Mouse}
@@ -141,14 +148,11 @@ function VisuEditorIO() constructor {
       editor.store.get("tool").set("tool_select")
     }
 
-    if (!this.keyboard.keys.controlLeft.on
-      && !this.keyboard.keys.controlLeft.released
-      && this.keyboard.keys.eraseTool.pressed) {
+    if (this.keyboard.keys.eraseTool.pressed) {
       editor.store.get("tool").set("tool_erase")
     }
 
-    if (!this.keyboard.keys.controlLeft.on 
-      && this.keyboard.keys.brushTool.pressed) {
+    if (this.keyboard.keys.brushTool.pressed) {
       editor.store.get("tool").set("tool_brush")
     }
 
@@ -160,7 +164,7 @@ function VisuEditorIO() constructor {
       || this.keyboard.keys.numZoomIn.pressed) {
 
       var item = editor.store.get("timeline-zoom")
-      item.set(clamp(item.get() - 1, 5, 30))
+      item.set(clamp(item.get() + 1, 5, 30))
 
       var ruler = editor.uiService.find("ve-timeline-ruler")
       if (Optional.is(ruler)) {
@@ -177,7 +181,7 @@ function VisuEditorIO() constructor {
       || this.keyboard.keys.numZoomOut.pressed) {
 
       var item = editor.store.get("timeline-zoom")
-      item.set(clamp(item.get() + 1, 5, 30))
+      item.set(clamp(item.get() - 1, 5, 30))
 
       var ruler = editor.uiService.find("ve-timeline-ruler")
       if (Optional.is(ruler)) {
@@ -190,8 +194,7 @@ function VisuEditorIO() constructor {
       }
     }
 
-    if (this.keyboard.keys.shiftLeft.on
-        && this.keyboard.keys.snapToGrid.pressed) {
+    if (this.keyboard.keys.snapToGrid.pressed) {
       var item = editor.store.get("snap")
       item.set(!item.get())
     }
@@ -378,12 +381,11 @@ function VisuEditorIO() constructor {
   ///@param {VisuEditorController} editor
   ///@return {VisuEditorIO}
   titleBarKeyboardEvent = function(controller, editor) {
-    if (GMTFContext.isFocused() || !editor.renderUI) {
+    if (GMTFContext.isFocused() || !editor.renderUI || !this.keyboard.keys.controlLeft.on) {
       return this
     }
 
-    if (this.keyboard.keys.controlLeft.on 
-      && this.keyboard.keys.saveProject.pressed) {
+    if (this.keyboard.keys.saveProject.pressed) {
       try {
         if (Core.getRuntimeType() == RuntimeType.GXGAMES) {
           editor.send(new Event("spawn-popup", 
@@ -391,17 +393,19 @@ function VisuEditorIO() constructor {
           return this
         }
 
-        var path = FileUtil.getPathToSaveWithDialog({ 
-          description: "Visu track file",
-          filename: "manifest", 
-          extension: "visu",
-        })
-
-        if (!Core.isType(path, String) || String.isEmpty(path)) {
+        if (!controller.trackService.isTrackLoaded()) {
           return this
         }
 
-        if (!Beans.get(BeanVisuController).trackService.isTrackLoaded()) {
+        var path = this.keyboard.keys.shiftLeft.on
+          ? FileUtil.getPathToSaveWithDialog({ 
+            description: "Visu track file",
+            filename: "manifest", 
+            extension: "visu",
+          })
+          :  $"{controller.track.path}manifest.visu"
+
+        if (!Core.isType(path, String) || String.isEmpty(path)) {
           return this
         }
 
@@ -413,6 +417,30 @@ function VisuEditorIO() constructor {
         controller.send(new Event("spawn-popup", { message: message }))
         Logger.error("VETitleBar", message)
       }
+    }
+
+    if (this.keyboard.keys.clearGridShaders.pressed) {
+      controller.shaderPipeline.send(new Event("clear-shaders"))
+    }
+
+    if (this.keyboard.keys.clearBackgroundShaders.pressed) {
+      controller.shaderBackgroundPipeline.send(new Event("clear-shaders"))
+    }
+
+    if (this.keyboard.keys.clearCombinedShaders.pressed) {
+      controller.shaderCombinedPipeline.send(new Event("clear-shaders"))
+    }
+
+    if (this.keyboard.keys.clearBackgroundTextures.pressed) {
+      controller.visuRenderer.gridRenderer.overlayRenderer.backgrounds.clear()
+    }
+
+    if (this.keyboard.keys.clearForegroundTextures.pressed) {
+      controller.visuRenderer.gridRenderer.overlayRenderer.foregrounds.clear()
+    }
+
+    if (this.keyboard.keys.clearShrooms.pressed) {
+      controller.shroomService.send(new Event("clear-shrooms"))
     }
 
     return this
@@ -566,7 +594,7 @@ function VisuEditorIO() constructor {
     if (this.keyboard.keys.controlLeft.on 
         && this.keyboard.keys.undo.pressed) {
       
-      editor.store.get("selected-event").set(null)
+      editor.store.get("selected-event").set(null, true)
       editor.store.getValue("selected-events").clear()
       
       var transactionService = editor.timeline.transactionService

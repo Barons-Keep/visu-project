@@ -231,6 +231,9 @@ function GridProperties(config = null) constructor {
   ///@type {BlendConfig}
   videoBlendConfig = new BlendConfig(Struct.getIfType(config, "properties.videoBlendConfig", Struct))
 
+  ///@type {Boolean}
+  playerShadowEnable = Struct.getIfType(config, "properties.playerShadowEnable", Boolean, true)
+
   ///@type {Struct}
   depths = {
     gridZ: 2045,
@@ -243,7 +246,7 @@ function GridProperties(config = null) constructor {
   
   ///@private
   ///@type {Timer}
-  separatorTimer = new Timer(FRAME_MS, { amount: this.speed / 1000.0, loop: Infinity })
+  separatorTimer = new Timer(FRAME_MS, { amount: this.speed / GRID_ITEM_SPEED_SCALE, loop: Infinity })
 
   ///@param {Struct} context
   ///@return {GridProperties}
@@ -304,7 +307,7 @@ function GridProperties(config = null) constructor {
   update = function(gridService) {
     this.separatorTimer.duration = ((gridService.view.height * 2.0) / this.separators)
     this.separatorTimer.update()
-    this.separatorTimer.amount = (this.speed / 1000.0) - DeltaTime.apply(gridService.view.derivativeY)
+    this.separatorTimer.amount = (this.speed / GRID_ITEM_SPEED_SCALE) - DeltaTime.apply(gridService.view.derivativeY)
 
     this.gridClearColor.alpha = this.gridClearFrameAlpha
     this.shaderClearColor.alpha = this.shaderClearFrameAlpha

@@ -105,7 +105,7 @@ function UISliderHorizontal(name, json = null) {
         this.updateHover()
       }
 
-      if (!storeSubscribed) {
+      if (!this.storeSubscribed) {
         this.storeSubscribed = true
         this.updateStore()
       }

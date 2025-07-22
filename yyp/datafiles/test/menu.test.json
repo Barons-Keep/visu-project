@@ -1,0 +1,17 @@
+{
+  "version": "1",
+  "model": "io.alkapivo.visu.TestSuite",
+  "data":{
+    "name": "Test VisuMenu",
+    "stopAfterFailure": false,
+    "tests": [
+      {
+        "handler": "TestEvent_VisuMenu_select_track",
+        "description": "Test VisuMenu select track functionality",
+        "data": {
+          "timeout": 10.0
+        }
+      }
+    ]
+  }
+}

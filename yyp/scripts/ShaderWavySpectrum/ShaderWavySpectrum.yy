@@ -1,0 +1,13 @@
+{
+  "$GMScript":"v1",
+  "%Name":"ShaderWavySpectrum",
+  "isCompatibility":false,
+  "isDnD":false,
+  "name":"ShaderWavySpectrum",
+  "parent":{
+    "name":"shader_wavy_spectrum",
+    "path":"folders/io.alkapivo.core/resource/shader/screen/shader_wavy_spectrum.yy",
+  },
+  "resourceType":"GMScript",
+  "resourceVersion":"2.0",
+}

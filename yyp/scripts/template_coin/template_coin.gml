@@ -48,8 +48,8 @@ function template_coin(json = null) {
         value: new NumberTransformer(Struct.getDefault(json, "speed", {
           value: -3.0,
           target: 1.0,
-          factor: 0.1,
-          increase: 0.0
+          duration: 0.6666667,
+          ease: EaseType.LINEAR,
         })),
         passthrough: UIUtil.passthrough.getClampedNumberTransformer(),
         data: new Vector2(-99.9, 99.9),

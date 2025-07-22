@@ -1,5 +1,12 @@
 ///@package io.alkapivo.visu.service.shroom
 
+///@type {Number}
+#macro SHROOM_FADE_IN_TIME 0.25
+
+///@type {Number}
+#macro SHROOM_FADE_OUT_TIME 0.33
+
+
 ///@param {String} _name
 ///@param {Struct} json
 function ShroomTemplate(_name, json) constructor {
@@ -39,19 +46,35 @@ function ShroomTemplate(_name, json) constructor {
     racing: {}
   }
 
-  //@return {Struct}
-  _serialize = function() {
-    return {
-      name: this.name,
-      sprite: JSON.clone(this.sprite),
-      mask: Optional.is(this.mask) ? JSON.clone(this.mask) : null,
-      lifespanMax: this.lifespanMax,
-      healthPoints: this.healthPoints,
-      hostile: this.hostile,
-      gameModes: JSON.clone(this.gameModes),
-      inherit: GMArray.clone(this.inherit),
-    }
-  }
+  ///@type {Boolean}
+  use_shroom_mask = Struct.getIfType(json, "use_shroom_mask", Boolean, this.mask != null)
+
+  ///@type {Boolean}
+  use_shroom_lifespan = Struct.getIfType(json, "use_shroom_lifespan", Boolean, false)
+
+  ///@type {Boolean}
+  use_shroom_healthPoints = Struct.getIfType(json, "use_shroom_healthPoints", Boolean, false)
+
+  ///@type {Boolean}
+  use_shroom_inherit = Struct.getIfType(json, "use_shroom_inherit", Boolean, true)
+
+  ///@type {Boolean}
+  use_shroom_features = Struct.getIfType(json, "use_shroom_features", Boolean, true)
+
+  ///@type {Boolean}
+  shroom_hide = Struct.getIfType(json, "shroom_hide", Boolean, true)
+
+  ///@type {Boolean}
+  shroom_hide_texture = Struct.getIfType(json, "shroom_hide_texture", Boolean, true)
+
+  ///@type {Boolean}
+  shroom_hide_mask = Struct.getIfType(json, "shroom_hide_mask", Boolean, true)
+
+  ///@type {Boolean}
+  shroom_hide_inherit = Struct.getIfType(json, "shroom_hide_inherit", Boolean, true)
+
+  ///@type {Boolean}
+  shroom_hide_features = Struct.getIfType(json, "shroom_hide_features", Boolean, true)
 
   //@return {Struct}
   serialize = function() {
@@ -64,6 +87,16 @@ function ShroomTemplate(_name, json) constructor {
       hostile: this.hostile,
       gameModes: this.serializeGameModes(),
       inherit: this.inherit,
+      use_shroom_mask: this.use_shroom_mask,
+      use_shroom_lifespan: this.use_shroom_lifespan,
+      use_shroom_healthPoints: this.use_shroom_healthPoints,
+      use_shroom_inherit: this.use_shroom_inherit,
+      use_shroom_features: this.use_shroom_features,
+      shroom_hide: this.shroom_hide,
+      shroom_hide_texture: this.shroom_hide_texture,
+      shroom_hide_mask: this.shroom_hide_mask,
+      shroom_hide_inherit: this.shroom_hide_inherit,
+      shroom_hide_features: this.shroom_hide_features,
     }
   }
 
@@ -75,12 +108,12 @@ function ShroomTemplate(_name, json) constructor {
     return {
       name: this.name,
       sprite: this.sprite,
-      mask: this.mask,
-      lifespanMax: Optional.is(lifespan) ? lifespan : this.lifespanMax,
-      healthPoints: Optional.is(hp) ? hp : this.healthPoints,
+      mask: this.use_shroom_mask ? this.mask : null,
+      lifespanMax: lifespan != null ? lifespan : (this.use_shroom_lifespan ? this.lifespanMax : 15),
+      healthPoints: hp != null ? hp : (this.use_shroom_healthPoints ? this.healthPoints : 1),
       hostile: this.hostile,
-      gameModes: JSON.clone(this.gameModes),
-      inherit: GMArray.clone(this.inherit),
+      gameModes: this.use_shroom_features ? JSON.clone(this.gameModes) : { bulletHell: {} },
+      inherit: this.use_shroom_inherit ? GMArray.clone(this.inherit) : [],
       x: x,
       y: y,
       speed: speed,
@@ -111,16 +144,25 @@ function Shroom(template): GridItem(template) constructor {
       gameMode.update(this, controller)
     }
 
-    if (this.fadeIn < 1.0) {
-      this.fadeIn = clamp(this.fadeIn + this.fadeInFactor, 0.0, 1.0)
-    }
-
+    #region @Implement component Lifespan
     this.lifespan += DeltaTime.apply(FRAME_MS)
-    if (this.lifespan >= this.lifespanMax - 0.5) {
-      this.fadeIn = clamp((this.lifespanMax - this.lifespan) / 0.5, 0.0, 1.0)
-      if (this.lifespan >= this.lifespanMax) {
-        this.signal("kill")
+    if (this.lifespan >= this.lifespanMax) {
+      this.signal("kill")
+    }
+    #endregion
+    
+    #region @Implement component Fade
+    if (this.lifespan < this.lifespanMax - SHROOM_FADE_OUT_TIME) {
+      if (this.fadeIn < 1.0) {
+        this.fadeIn = clamp(this.lifespan / SHROOM_FADE_IN_TIME, 0.0, 1.0)
       }
+    } else {
+      this.fadeIn = clamp((this.lifespanMax - this.lifespan) / SHROOM_FADE_OUT_TIME, 0.0, 1.0)
+    }
+    #endregion
+
+    if (this.lifespan >= this.lifespanMax) {
+      this.signal("kill")
     }
 
     return this

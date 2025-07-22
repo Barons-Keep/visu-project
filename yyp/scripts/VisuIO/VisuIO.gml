@@ -82,7 +82,7 @@ function VisuIO() constructor {
             break
           }
 
-          var editor = Beans.get(BeanVisuEditorController)
+          var editor = Beans.get(Visu.modules().editor.controller)
           if (Optional.is(editor) && editor.renderUI) {
             break
           }

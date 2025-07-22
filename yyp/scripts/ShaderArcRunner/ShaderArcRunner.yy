@@ -1,0 +1,13 @@
+{
+  "$GMScript":"v1",
+  "%Name":"ShaderArcRunner",
+  "isCompatibility":false,
+  "isDnD":false,
+  "name":"ShaderArcRunner",
+  "parent":{
+    "name":"shader_arc_runner",
+    "path":"folders/io.alkapivo.core/resource/shader/screen/shader_arc_runner.yy",
+  },
+  "resourceType":"GMScript",
+  "resourceVersion":"2.0",
+}

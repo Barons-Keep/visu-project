@@ -82,13 +82,14 @@ function UIService(_context, config = {}): Service(config) constructor {
   }))
 
   ///@param {String} name
+  ///@param {?Callable} [callback]
   ///@return {?UI}
-  find = function(name) {
+  find = function(name, callback = null) {
     static findContainer = function(container, key, name) {
       return container.name == name
     }
 
-    return this.containers.find(findContainer, name)
+    return this.containers.find((callback != null ? callback : findContainer), name)
   }
   
   ///@param {Event} event

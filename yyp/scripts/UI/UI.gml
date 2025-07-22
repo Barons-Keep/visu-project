@@ -49,6 +49,46 @@ function UI(config = {}) constructor {
 
   ///@type {Margin}
   margin = new Margin(Struct.get(config, "margin"))
+
+  subscribersPipeline = {
+    instantSubscribe: Struct.getIfType(config, "instantSubscribe", Boolean, true),
+    step: Struct.getIfType(config, "subscribersPipelineStep", Number, 32),
+    container: new Queue(Struct),
+    push: function(config) {
+      if (config == null) {
+        return this
+      }
+
+      if (this.instantSubscribe) {
+        //Callable.run(Struct.get(config, "callback"), Struct.get(config, "data"))
+        config.callback(config.data)
+      } else {
+        this.container.push(config)
+      }
+      return this
+    },
+    update: function(ui) {
+      if (this.container.size() == 0) {
+        return this
+      }
+      
+      repeat (this.step) {
+        var config = this.container.pop()
+        if (config == null) {
+          break
+        }
+
+        if (!ui.items.contains(config.name)) {
+          Logger.warn("UI", $"Found non-existing subscribe intent: {config.name}")
+          continue
+        }
+
+        config.callback(config.data)
+      }
+
+      return this
+    },
+  }
   
   ///@return {Number}
   fetchViewWidth = Struct.contains(config, "fetchViewWidth")
@@ -248,15 +288,22 @@ function UI(config = {}) constructor {
     }
 
   ///@param {UIItem} item
+  ///@param {?Boolean} [updateArea]
   ///@return {UI} 
   add = Struct.contains(config, "add")
     ? Assert.isType(method(this, config.add), Callable)
-    : function(item) {
+    : function(item, updateArea = true) {
       item.context = this //@todo item context constructor
       //this.areaWatchdog.signal()
       this.items.add(item, item.name)
-      if (Optional.is(item.updateArea)) {
-        item.updateArea()
+      if (((item.type == UITextField && item.textField.style.v_grow == true) || updateArea == true)
+          && Optional.is(item.updateArea)) {
+        this.subscribersPipeline.push({
+          name: item.name,
+          callback: function(data) { data.updateArea() },
+          data: item,
+        })
+        //item.updateArea()
       }
       return this
     }
@@ -318,6 +365,7 @@ function UI(config = {}) constructor {
         }
       }
       
+      this.subscribersPipeline.update(this)
       return this
     }
 
@@ -401,13 +449,19 @@ function UI(config = {}) constructor {
       Struct.set(data, "textField", item.textField)
     }
 
-    this.add(item, item.name)
+    this.add(item, Struct.getIfType(data, "updateArea", Boolean, true))
     //if (Optional.is(item.updateArea)) {
     //  item.updateArea()
     //}
 
-    if (!item.storeSubscribed && Optional.is(item.store)) {
-      item.store.subscribe()
+    if (item.store != null && !item.storeSubscribed) {
+      this.subscribersPipeline.push({
+        name: item.name,
+        callback: function(data) {
+          data.subscribe()
+        },
+        data: item.store,
+      })
       item.storeSubscribed = true
     }
   }
@@ -450,7 +504,7 @@ function UI(config = {}) constructor {
       return this
     }
 
-    this.updateTimer.time = this.updateTimer.duration;// + random(this.updateTimer.duration / 2.0)
+    this.updateTimer.time = this.updateTimer.duration + random(this.updateTimer.duration / 2.0)
     return this
   }))
 
@@ -472,7 +526,7 @@ function UI(config = {}) constructor {
       align: HAlign.LEFT,
       width: 10,
       thickness: 3,
-      color: ColorUtil.fromHex(VETheme.color.primaryShadow).toGMColor(),
+      color: ColorUtil.fromHex("#2B2B35").toGMColor(),
       alpha: 1.0,
       render: function(context) {
         var x1 = 0, y1 = 0, x2 = 0, y2 = 0
@@ -522,7 +576,7 @@ function UI(config = {}) constructor {
 
   if (Struct.contains(config, "items")) {
     Struct.forEach(Struct.get(config, "items"), function(json, name, container) {
-      container.add(json.type(name, json), name)
+      container.add(json.type(name, json), json)
     }, this)
   }
   
@@ -1064,9 +1118,15 @@ function _UIUtil() constructor {
           ? (_x <= 0)
           : (_x >= this.area.getWidth())
         var scrollbarY = Struct.get(this, "scrollbarY")
-        if (collide) || (Struct.get(scrollbarY, "isDragEvent") == true) {
-          var ratio = _y / this.area.getHeight() 
-          this.offset.y = clamp(-1 * (this.offsetMax.y * ratio), -1 * this.offsetMax.y, 0)
+        var isDragEvent = Struct.get(scrollbarY, "isDragEvent") == true 
+
+        var gmtf = GMTFContext.get()
+        if (gmtf != null && gmtf.bugDelay) {
+          return
+        }
+
+        if (collide || isDragEvent) {
+          this.offset.y = clamp(-1 * (this.offsetMax.y * (_y / this.area.getHeight())), -1 * this.offsetMax.y, 0)
           Struct.set(scrollbarY, "isDragEvent", true)
         }
       }

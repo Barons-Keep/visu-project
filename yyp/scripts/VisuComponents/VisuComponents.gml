@@ -190,7 +190,7 @@ global.__VisuComponents = new Map(String, Callable, {
                 this.sprite.setBlend(ColorUtil.fromHex("#ffffff").toGMColor())
               },
               onMouseHoverOut: function(event) {
-                this.sprite.setBlend(ColorUtil.fromHex(VETheme.color.textFocus).toGMColor())
+                this.sprite.setBlend(ColorUtil.fromHex(VisuTheme.color.textFocus).toGMColor())
               },            
             },
             Struct.get(config, "previous"), 
@@ -220,7 +220,7 @@ global.__VisuComponents = new Map(String, Callable, {
                 this.sprite.setBlend(ColorUtil.fromHex("#ffffff").toGMColor())
               },
               onMouseHoverOut: function(event) {
-                this.sprite.setBlend(ColorUtil.fromHex(VETheme.color.textFocus).toGMColor())
+                this.sprite.setBlend(ColorUtil.fromHex(VisuTheme.color.textFocus).toGMColor())
               },            
             },
             Struct.get(config, "next"),
@@ -546,7 +546,7 @@ global.__VisuComponents = new Map(String, Callable, {
                 var to = abs(from)
                 var beginX = round(this.context.area.getX() + this.area.getX() + (this.area.getWidth() / 2.0) - (width / 2.0))
                 var beginY = this.context.area.getY() + this.area.getY(),
-                var color = ColorUtil.parse(VETheme.color.primaryLight).toGMColor()
+                var color = ColorUtil.parse(VisuTheme.color.primaryLight).toGMColor()
                 var color2 = ColorUtil.parse("#d1a1ff").toGMColor()
                 var enableFactor = Struct.get(this.enable, "value") == false ? 0.5 : 1.0
                 for (var idx = from; idx <= to; idx += 1.0) {
@@ -610,10 +610,10 @@ global.__VisuComponents = new Map(String, Callable, {
                   label = new UILabel({
                     text: "",
                     align: { v: VAlign.TOP, h: HAlign.CENTER },
-                    color: VETheme.color.text,
+                    color: VisuTheme.color.text,
                     useScale: false,
                     outline: true,
-                    outlineColor: VETheme.color.sideDark,
+                    outlineColor: VisuTheme.color.sideDark,
                     font: "font_inter_8_bold",
                   })
                   Struct.set(this, "_label", label)
@@ -801,7 +801,7 @@ global.__VisuComponents = new Map(String, Callable, {
         {
           label: {
             text: "Duration",
-            color: VETheme.color.textShadow,
+            color: VisuTheme.color.textShadow,
             enable: JSON.clone(Struct.getIfType(Struct.get(Struct.get(config, "target"), "field"), "enable", Struct, { })),
           },
           field: {

@@ -3,32 +3,39 @@
 
 // Base constants
 #define PI 3.14159265359
+#define TAU 6.28318530718
 #define DEG_TO_RAD 0.01745329251
+#define SQRT_3 1.732050807568877
 
 // Shader specific constatns
 #define NOISE_DISTORTION_SCALE 1000000.0
-#define BEND_INTENSITY 0.15
-#define LIGHTNING_BIAS 0.5
-#define FBM_OCTAVES 6
+#define OCTAVES 6
 
 // Varying Outputs
 varying vec2 v_texcoord;
 varying vec4 v_color;
 
 // Uniforms
-uniform vec3 u_tint;        // Default: (0.31, 0.5, 0.89)
-uniform vec2 u_offset;			// Default: (0.5, 0.5)
-uniform float u_time;				// Default: 0.0, where 1.0=1sec
 uniform float u_angle;      // Default: 0.0
-uniform float u_jumpiness;  // Default: 2.9
-uniform float u_distortion; // Default: 0.01
-uniform float u_scale;      // Default: 1.5
-uniform float u_curves;     // Default: 2.0
+uniform float u_bend;       // Default: 0.15
 uniform float u_brightness; // Default: 1.5
+uniform float u_curves;     // Default: 2.0
+uniform float u_distortion; // Default: 0.01
+uniform float u_frequency;  // Default: 1.0
+uniform float u_glow;       // Default: 1.0
+uniform float u_jumpiness;  // Default: 2.9
+uniform float u_scale;      // Default: 1.5
+uniform float u_speed;      // Default: 1.0
+uniform float u_time;				// Default: 0.0, where 1.0=1sec
 uniform float u_wiggle;     // Default: 2.0
+uniform vec2 u_offset;			// Default: (0.5, 0.5)
+uniform vec2 u_resolution;	// Default: (GuiWidth(), GuiHeight())
+uniform vec3 u_tint;        // Default: (0.31, 0.5, 0.89)
+
 
 // Base methods
 vec2 rotated_uv_resolution(vec2 v_texcoord, vec2 resolution, vec2 origin, float angle_deg) {
+  v_texcoord *= resolution;
   float angle_rad = angle_deg * DEG_TO_RAD;
   float cos_a = cos(angle_rad);
   float sin_a = sin(angle_rad);
@@ -106,7 +113,7 @@ float fbm(vec2 p, float distortion) {
   float max_amp = 0.0;
   float amplitude = 1.0;
 
-  for (int i = 0; i < FBM_OCTAVES; ++i) {
+  for (int i = 0; i < OCTAVES; ++i) {
     sum += amplitude * noise_2d(p, distortion);
     max_amp += amplitude;
     amplitude *= 0.5;
@@ -119,12 +126,9 @@ float fbm(vec2 p, float distortion) {
 float lightning_path(vec2 uv, float seed, float jumpiness, float distortion, float scale, float curve_freq, float wiggle) {
   float j = 1.0 + abs(jumpiness);
   float noise_val = fract(noise_1d(seed * (1.0 + wiggle)) * j) * (j / 2.0) - 1.0;
-  float bend = noise_val * BEND_INTENSITY;
-
-  bend *= smoothstep(10.0, j, abs(LIGHTNING_BIAS - gl_FragCoord.x) * 1.6);
+  float bend = noise_val * u_bend;
   uv.y += (j - uv.x * uv.x) * bend;
-
-  uv.x -=u_time * 0.2;
+  uv.x -= u_time * (0.2 * u_speed);
 
   float displacement = fbm(uv * vec2(curve_freq, curve_freq * 0.66) - vec2(0.0, seed), distortion);
   displacement = (displacement * (scale * 2.0) - scale) * 0.5;
@@ -133,26 +137,23 @@ float lightning_path(vec2 uv, float seed, float jumpiness, float distortion, flo
 }
 
 vec3 lightning_field(vec2 uv, float jumpiness, float distortion, float scale, float curve_freq, float brightness, float wiggle, vec3 tint) {
-  float time_offset = u_time * 0.08;
+  float time_offset = u_time * (0.08 * u_frequency);
 
   float d1 = lightning_path(uv, 100.0 + time_offset * 1.0, jumpiness, distortion, scale, curve_freq, wiggle);
-  float d2 = lightning_path(uv, 400.0 + time_offset * 1.5, jumpiness, distortion, scale, curve_freq, wiggle);
-  float d3 = lightning_path(uv, 300.0 + time_offset * 2.0, jumpiness, distortion, scale, curve_freq, wiggle);
-  float d4 = lightning_path(uv, 700.0 + time_offset * 4.0, jumpiness, distortion, scale, curve_freq, wiggle);
+  float d2 = lightning_path(uv, 300.0 + time_offset * 1.5, jumpiness, distortion, scale, curve_freq, wiggle);
+  float d3 = lightning_path(uv, 600.0 + time_offset * 2.0, jumpiness, distortion, scale, curve_freq, wiggle);
+  float d4 = lightning_path(uv, 900.0 + time_offset * 4.0, jumpiness, distortion, scale, curve_freq, wiggle);
 
   float inverse_sqrt = max(0.0, 1.0 - sqrt(d1 + d2 * d3 + d3 + d4 * d1) * brightness);
-  float glow = 0.07 / sqrt(d1 * d2 * d3 * d4);
+  float glow = (u_glow * 0.01) / sqrt(d1 * d2 * d3 * d4);
 
   vec3 base_color = tint * sqrt(glow);
   float mid_val = 1.0 - inverse_sqrt;
   return base_color * mid_val;
-  //vec3 electric_color = base_color * 0.7 + 0.7 * vec3(0.1 * mid_val, 0.3, 0.6) * mid_val * glow;
-  //electric_color = mix(electric_color, electric_color * electric_color, min(1.0, pow(inverse_sqrt, 4.0)));
-  //return electric_color;
 }
 
 void main() {
-  vec2 uv = rotated_uv(v_texcoord, u_offset, u_angle);
+  vec2 uv = rotated_uv_resolution(v_texcoord, u_resolution, u_offset, u_angle);
   vec3 pixel = lightning_field(uv, u_jumpiness, u_distortion, u_scale, u_curves, u_brightness, u_wiggle, u_tint);
   vec4 texture = texture2D(gm_BaseTexture, uv);
   gl_FragColor = mix_pixel(pixel, texture, v_color);

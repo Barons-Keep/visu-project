@@ -1,33 +1,196 @@
 
 ///@type {Number}
-#macro SHROOM_SPAWN_CHANNEL_AMOUNT 50
+#macro SHROOM_SPAWN_AMOUNT 50
 
 ///@type {Number}
-#macro SHROOM_SPAWN_CHANNEL_SIZE 8
-
-///@type {Number}
-#macro SHROOM_SPAWN_ROW_AMOUNT 50
-
-///@type {Number}
-#macro SHROOM_SPAWN_ROW_SIZE 8
+#macro SHROOM_SPAWN_SIZE 8
 
 ///@type {Struct}
 global.__entity_track_event = {
   "brush_entity_shroom": {
     parse: function(data) {
-      return {
+      var emitterConfig = Struct.getIfType(data, "en-shr_em-cfg", Struct)
+      if (emitterConfig == null) {
+        emitterConfig = {
+          amount: 1,
+          duration: 0,
+          //arrays: 1,
+          arrays: {
+            value: 1,
+            target: 1,
+            duration: 0,
+            ease: "LINEAR",
+          },
+          //perArray: 1,
+          perArray: {
+            value: 1,
+            target: 1,
+            duration: 0,
+            ease: "LINEAR",
+          },
+          angle: {
+            value: 0,
+            target: 0,
+            duration: 0,
+            ease: "LINEAR",
+          },
+          angleRng: 0,
+          //angleRng: {
+          //  value: 0,
+          //  target: 0,
+          //  duration: 0,
+          //  ease: "LINEAR",
+          //},
+          //angleStep: 0,
+          angleStep: {
+            value: 0,
+            target: 0,
+            duration: 0,
+            ease: "LINEAR",
+          },
+          //anglePerArray: 0,
+          anglePerArray: {
+            value: 0,
+            target: 0,
+            duration: 0,
+            ease: "LINEAR",
+          },
+          anglePerArrayRng: 0,
+          //anglePerArrayRng: {
+          //  value: 0,
+          //  target: 0,
+          //  duration: 0,
+          //  ease: "LINEAR",
+          //},
+          //anglePerArrayStep: 0,
+          anglePerArrayStep: {
+            value: 0,
+            target: 0,
+            duration: 0,
+            ease: "LINEAR",
+          },
+          speed: {
+            value: 0,
+            target: 0,
+            duration: 0,
+            ease: "LINEAR",
+          },
+          speedRng: 0,
+          //speedRng: {
+          //  value: 0,
+          //  target: 0,
+          //  duration: 0,
+          //  ease: "LINEAR",
+          //},
+          offset: {
+            value: 0,
+            target: 0,
+            duration: 0,
+            ease: "LINEAR",
+          },
+          offsetX: {
+            value: 0,
+            target: 0,
+            duration: 0,
+            ease: "LINEAR",
+          },
+          offsetY: {
+            value: 0,
+            target: 0,
+            duration: 0,
+            ease: "LINEAR",
+          },
+          wiggleFrequency: {
+            value: 0,
+            target: 0,
+            duration: 0,
+            ease: "LINEAR",
+          },
+          wiggleAmplitude: {
+            value: 0,
+            target: 0,
+            duration: 0,
+            ease: "LINEAR",
+          },
+        }
+      }
+
+      var oldEmitter = null
+      if (Struct.get(data, "en-shr_em-use-cfg") == false) {
+        oldEmitter = {
+          "en-shr_em-amount": Struct.parse.number(data, "en-shr_em-amount", 1.0),
+          "en-shr_em-arrays": Struct.parse.number(data, "en-shr_em-arrays", 1.0),
+          "en-shr_em-angle": Struct.parse.numberTransformer(data, "en-shr_em-angle", {
+            clampValue: { from: -99999.9, to: 99999.9 },
+            clampTarget: { from: -99999.9, to: 99999.9 },
+          }),
+          "en-shr_em-use-angle": Struct.parse.boolean(data, "en-shr_em-use-angle"),
+          "en-shr_em-change-angle": Struct.parse.boolean(data, "en-shr_em-change-angle"),
+          "en-shr_em-angle-rng": Struct.parse.number(data, "en-shr_em-angle-rng"),
+          "en-shr_em-use-angle-rng": Struct.parse.boolean(data, "en-shr_em-use-angle-rng"),
+          "en-shr_em-angle-step": Struct.parse.number(data, "en-shr_em-angle-step"),
+          "en-shr_em-per-array": Struct.parse.number(data, "en-shr_em-per-array", 1.0),
+          "en-shr_em-per-array-dir": Struct.parse.numberTransformer(data, "en-shr_em-per-array-dir", {
+            clampValue: { from: -99999.9, to: 99999.9 },
+            clampTarget: { from: -99999.9, to: 99999.9 },
+          }),
+          "en-shr_em-use-per-array-dir": Struct.parse.boolean(data, "en-shr_em-use-per-array-dir"),
+          "en-shr_em-change-per-array-dir": Struct.parse.boolean(data, "en-shr_em-change-per-array-dir"),
+          "en-shr_em-use-per-array-rng": Struct.parse.boolean(data, "en-shr_em-use-per-array-rng"),
+          "en-shr_em-per-array-rng": Struct.parse.number(data, "en-shr_em-per-array-rng"),
+          "en-shr_em-per-array-step": Struct.parse.number(data, "en-shr_em-per-array-step"),
+          "en-shr_em-spd": Struct.parse.numberTransformer(data, "en-shr_em-spd", {
+            clampValue: { from: 0, to: 99.9 },
+            clampTarget: { from: 0, to: 99.9 },
+          }),
+          "en-shr_em-use-spd": Struct.parse.boolean(data, "en-shr_em-use-spd"),
+          "en-shr_em-change-spd": Struct.parse.boolean(data, "en-shr_em-change-spd"),
+          "en-shr_em-use-spd-rng": Struct.parse.boolean(data, "en-shr_em-use-spd-rng"),
+          "en-shr_em-spd-rng": Struct.parse.number(data, "en-shr_em-spd-rng", 0.0),
+          "en-shr_em-duration": Struct.parse.number(data, "en-shr_em-duration", 0.0),
+          "en-shr_em-offset-x": Struct.parse.numberTransformer(data, "en-shr_em-offset-x", {
+            clampValue: { from: -99999.9, to: 99999.9 },
+            clampTarget: { from: -99999.9, to: 99999.9 },
+          }),
+          "en-shr_em-use-offset-x": Struct.parse.boolean(data, "en-shr_em-use-offset-x"),
+          "en-shr_em-change-offset-x": Struct.parse.boolean(data, "en-shr_em-change-offset-x"),
+          "en-shr_em-offset-y": Struct.parse.numberTransformer(data, "en-shr_em-offset-y", {
+            clampValue: { from: -99999.9, to: 99999.9 },
+            clampTarget: { from: -99999.9, to: 99999.9 },
+          }),
+          "en-shr_em-use-offset-y": Struct.parse.boolean(data, "en-shr_em-use-offset-y"),
+          "en-shr_em-change-offset-y": Struct.parse.boolean(data, "en-shr_em-change-offset-y"),
+          "en-shr_em-wiggle-freq": Struct.parse.numberTransformer(data, "en-shr_em-wiggle-freq", {
+            clampValue: { from: -99999.9, to: 99999.9 },
+            clampTarget: { from: -99999.9, to: 99999.9 },
+          }),
+          "en-shr_em-use-wiggle-freq": Struct.parse.boolean(data, "en-shr_em-use-wiggle-freq"),
+          "en-shr_em-change-wiggle-freq": Struct.parse.boolean(data, "en-shr_em-change-wiggle-freq"),
+          "en-shr_em-wiggle-amp": Struct.parse.numberTransformer(data, "en-shr_em-wiggle-amp", {
+            clampValue: { from: -99999.9, to: 99999.9 },
+            clampTarget: { from: -99999.9, to: 99999.9 },
+          }),
+          "en-shr_em-use-wiggle-amp": Struct.parse.boolean(data, "en-shr_em-use-wiggle-amp"),
+          "en-shr_em-change-wiggle-amp": Struct.parse.boolean(data, "en-shr_em-change-wiggle-amp"),
+        }
+      }
+
+      return Struct.append({
         "icon": Struct.parse.sprite(data, "icon"),
         "en-shr_hide": Struct.parse.boolean(data, "en-shr_hide", TRACK_EVENT_DEFAULT_HIDDEN_VALUE),
         "en-shr_hide-spawn": Struct.parse.boolean(data, "en-shr_hide-spawn", TRACK_EVENT_DEFAULT_HIDDEN_VALUE),
         "en-shr_hide-inherit": Struct.parse.boolean(data, "en-shr_hide-inherit", TRACK_EVENT_DEFAULT_HIDDEN_VALUE),
-        "en-shr_hide-emitter": Struct.parse.boolean(data, "en-shr_hide-emitter", TRACK_EVENT_DEFAULT_HIDDEN_VALUE),
         "en-shr_hide-em": Struct.parse.boolean(data, "en-shr_hide-em", TRACK_EVENT_DEFAULT_HIDDEN_VALUE),
+
         "en-shr_hide-em-cfg": Struct.parse.boolean(data, "en-shr_hide-em-cfg", TRACK_EVENT_DEFAULT_HIDDEN_VALUE),
         "en-shr_hide-em-angle": Struct.parse.boolean(data, "en-shr_hide-em-angle", TRACK_EVENT_DEFAULT_HIDDEN_VALUE),
         "en-shr_hide-em-per-array": Struct.parse.boolean(data, "en-shr_hide-em-per-array", TRACK_EVENT_DEFAULT_HIDDEN_VALUE),
         "en-shr_hide-em-spd": Struct.parse.boolean(data, "en-shr_hide-em-spd", TRACK_EVENT_DEFAULT_HIDDEN_VALUE),
         "en-shr_hide-em-offset-x": Struct.parse.boolean(data, "en-shr_hide-em-offset-x", TRACK_EVENT_DEFAULT_HIDDEN_VALUE),
         "en-shr_hide-em-offset-y": Struct.parse.boolean(data, "en-shr_hide-em-offset-y", TRACK_EVENT_DEFAULT_HIDDEN_VALUE),
+        "en-shr_hide-em-wiggle-freq": Struct.parse.boolean(data, "en-shr_hide-em-wiggle-freq", TRACK_EVENT_DEFAULT_HIDDEN_VALUE),
+        "en-shr_hide-em-wiggle-amp": Struct.parse.boolean(data, "en-shr_hide-em-wiggle-amp", TRACK_EVENT_DEFAULT_HIDDEN_VALUE),
+
         "en-shr_preview": Struct.parse.boolean(data, "en-shr_preview"),
         "en-shr_template": Struct.parse.text(data, "en-shr_template", "shroom-default"),
         "en-shr_use-lifespan": Struct.parse.boolean(data, "en-shr_use-lifespan", false),
@@ -42,21 +205,21 @@ global.__entity_track_event = {
         "en-shr_use-dir-rng": Struct.parse.boolean(data, "en-shr_use-dir-rng"),
         "en-shr_dir-rng": Struct.parse.number(data, "en-shr_dir-rng", 0.0, 0.0, 360.0),
         "en-shr_x": Struct.parse.number(data, "en-shr_x", 0.0, 
-          -1.0 * (SHROOM_SPAWN_CHANNEL_AMOUNT / 2.0), 
-          SHROOM_SPAWN_CHANNEL_AMOUNT / 2.0),
+          -1.0 * (SHROOM_SPAWN_AMOUNT / 2.0), 
+          SHROOM_SPAWN_AMOUNT / 2.0),
         "en-shr_snap-x": Struct.parse.boolean(data, "en-shr_snap-x"),
         "en-shr_use-rng-x": Struct.parse.boolean(data, "en-shr_use-rng-x"),
         "en-shr_rng-x": Struct.parse.number(data, "en-shr_rng-x", 0.0, 
           0.0,
-          SHROOM_SPAWN_CHANNEL_AMOUNT),
+          SHROOM_SPAWN_AMOUNT),
         "en-shr_y": Struct.parse.number(data, "en-shr_y", 0.0,
-          -1.0 * (SHROOM_SPAWN_ROW_AMOUNT / 2.0),
-          SHROOM_SPAWN_ROW_AMOUNT / 2.0),
+          -1.0 * (SHROOM_SPAWN_AMOUNT / 2.0),
+          SHROOM_SPAWN_AMOUNT / 2.0),
         "en-shr_snap-y": Struct.parse.boolean(data, "en-shr_snap-y"),
         "en-shr_use-rng-y": Struct.parse.boolean(data, "en-shr_use-rng-y"),
         "en-shr_rng-y": Struct.parse.number(data, "en-shr_rng-y", 0.0,
           0.0,
-          SHROOM_SPAWN_ROW_AMOUNT),
+          SHROOM_SPAWN_AMOUNT),
         "en-shr_use-inherit": Struct.parse.boolean(data, "en-shr_use-inherit"),
         "en-shr_inherit": Struct.getIfType(data, "en-shr_inherit", GMArray, [ ]),
         "en-shr_use-texture": Struct.parse.boolean(data, "en-shr_use-texture"),
@@ -64,49 +227,9 @@ global.__entity_track_event = {
         "en-shr_use-mask": Struct.parse.boolean(data, "en-shr_use-mask"),
         "en-shr_mask": Struct.parse.rectangle(data, "en-shr_mask"),
         "en-shr_use-em": Struct.parse.boolean(data, "en-shr_use-em"),
-        "en-shr_em-amount": Struct.parse.number(data, "en-shr_em-amount", 1.0),
-        "en-shr_em-arrays": Struct.parse.number(data, "en-shr_em-arrays", 1.0),
-        "en-shr_em-angle": Struct.parse.numberTransformer(data, "en-shr_em-angle", {
-          clampValue: { from: -99999.9, to: 99999.9 },
-          clampTarget: { from: -99999.9, to: 99999.9 },
-        }),
-        "en-shr_em-use-angle": Struct.parse.boolean(data, "en-shr_em-use-angle"),
-        "en-shr_em-change-angle": Struct.parse.boolean(data, "en-shr_em-change-angle"),
-        "en-shr_em-angle-rng": Struct.parse.number(data, "en-shr_em-angle-rng"),
-        "en-shr_em-use-angle-rng": Struct.parse.boolean(data, "en-shr_em-use-angle-rng"),
-        "en-shr_em-angle-step": Struct.parse.number(data, "en-shr_em-angle-step"),
-        "en-shr_em-per-array": Struct.parse.number(data, "en-shr_em-per-array"),
-        "en-shr_em-per-array-dir": Struct.parse.numberTransformer(data, "en-shr_em-per-array-dir", {
-          clampValue: { from: -99999.9, to: 99999.9 },
-          clampTarget: { from: -99999.9, to: 99999.9 },
-        }),
-        "en-shr_em-use-per-array-dir": Struct.parse.boolean(data, "en-shr_em-use-per-array-dir"),
-        "en-shr_em-change-per-array-dir": Struct.parse.boolean(data, "en-shr_em-change-per-array-dir"),
-        "en-shr_em-use-per-array-rng": Struct.parse.boolean(data, "en-shr_em-use-per-array-rng"),
-        "en-shr_em-per-array-rng": Struct.parse.number(data, "en-shr_em-per-array-rng"),
-        "en-shr_em-per-array-step": Struct.parse.number(data, "en-shr_em-per-array-step"),
-        "en-shr_em-spd": Struct.parse.numberTransformer(data, "en-shr_em-spd", {
-          clampValue: { from: 0, to: 99.9 },
-          clampTarget: { from: 0, to: 99.9 },
-        }),
-        "en-shr_em-use-spd": Struct.parse.boolean(data, "en-shr_em-use-spd"),
-        "en-shr_em-change-spd": Struct.parse.boolean(data, "en-shr_em-change-spd"),
-        "en-shr_em-use-spd-rng": Struct.parse.boolean(data, "en-shr_em-use-spd-rng"),
-        "en-shr_em-spd-rng": Struct.parse.number(data, "en-shr_em-spd-rng", 0.0),
-        "en-shr_em-duration": Struct.parse.number(data, "en-shr_em-duration", 0.0),
-        "en-shr_em-offset-x": Struct.parse.numberTransformer(data, "en-shr_em-offset-x", {
-          clampValue: { from: -99999.9, to: 99999.9 },
-          clampTarget: { from: -99999.9, to: 99999.9 },
-        }),
-        "en-shr_em-use-offset-x": Struct.parse.boolean(data, "en-shr_em-use-offset-x"),
-        "en-shr_em-change-offset-x": Struct.parse.boolean(data, "en-shr_em-change-offset-x"),
-        "en-shr_em-offset-y": Struct.parse.numberTransformer(data, "en-shr_em-offset-y", {
-          clampValue: { from: -99999.9, to: 99999.9 },
-          clampTarget: { from: -99999.9, to: 99999.9 },
-        }),
-        "en-shr_em-use-offset-y": Struct.parse.boolean(data, "en-shr_em-use-offset-y"),
-        "en-shr_em-change-offset-y": Struct.parse.boolean(data, "en-shr_em-change-offset-y"),
-      }
+        "en-shr_em-cfg": emitterConfig,
+        "en-shr_em-use-cfg": Struct.parse.boolean(data, "en-shr_em-use-cfg", true),
+      }, oldEmitter, false)
     },
     run: function(data, channel) {
       var controller = Beans.get(BeanVisuController)
@@ -128,20 +251,20 @@ global.__entity_track_event = {
           * choose(1.0, -1.0))
         : 0.0)),
       var spawnX = Struct.get(data, "en-shr_x")
-        * (SHROOM_SPAWN_CHANNEL_SIZE / SHROOM_SPAWN_CHANNEL_AMOUNT)
+        * (SHROOM_SPAWN_SIZE / SHROOM_SPAWN_AMOUNT)
         + 0.5
         + (Struct.get(data, "en-shr_use-rng-x")
           ? (random(Struct.get(data, "en-shr_rng-x") / 2.0)
-            * (SHROOM_SPAWN_CHANNEL_SIZE / SHROOM_SPAWN_CHANNEL_AMOUNT)
+            * (SHROOM_SPAWN_SIZE / SHROOM_SPAWN_AMOUNT)
             * choose(1.0, -1.0))
           : 0.0)
       var snapH = Struct.getDefault(data, "en-shr_snap-x", false)
       var spawnY = Struct.get(data, "en-shr_y")
-        * (SHROOM_SPAWN_ROW_SIZE / SHROOM_SPAWN_ROW_AMOUNT)
+        * (SHROOM_SPAWN_SIZE / SHROOM_SPAWN_AMOUNT)
         - 0.5
         + (Struct.get(data, "en-shr_use-rng-y")
           ? (random(Struct.get(data, "en-shr_rng-y") / 2.0)
-            * (SHROOM_SPAWN_ROW_SIZE / SHROOM_SPAWN_ROW_AMOUNT)
+            * (SHROOM_SPAWN_SIZE / SHROOM_SPAWN_AMOUNT)
             * choose(1.0, -1.0))
           : 0.0)
       var snapV = Struct.getDefault(data, "en-shr_snap-y", false)
@@ -150,6 +273,60 @@ global.__entity_track_event = {
       var inherit = Struct.get(data, "en-shr_use-inherit") ? Struct.get(data, "en-shr_inherit") : null
       var template = Struct.get(data, "en-shr_template")
       if (Struct.get(data, "en-shr_use-em")) {
+        var emitterConfig = (Struct.get(data, "en-shr_em-use-cfg") == false)
+          ? {
+            amount: Struct.get(data, "en-shr_em-amount"),
+            arrays: Struct.get(data, "en-shr_em-arrays"),
+            angle: Struct.get(data, "en-shr_em-use-angle")
+              ? (Struct.get(data, "en-shr_em-change-angle")
+                ? Struct.get(data, "en-shr_em-angle").serialize()
+                : Struct.get(Struct.get(data, "en-shr_em-angle").serialize(), "value"))
+              : 0.0,
+            angleRng: Struct.get(data, "en-shr_em-use-angle-rng")
+              ? Struct.get(data, "en-shr_em-angle-rng")
+              : 0.0,
+            angleStep: Struct.get(data, "en-shr_em-angle-step"),
+            perArray: Struct.get(data, "en-shr_em-per-array"),
+            anglePerArray: Struct.get(data, "en-shr_em-use-per-array-dir")
+              ? (Struct.get(data, "en-shr_em-change-per-array-dir")
+                ? Struct.get(data, "en-shr_em-per-array-dir").serialize()
+                : Struct.get(Struct.get(data, "en-shr_em-per-array-dir").serialize(), "value"))
+              : 0.0,
+            anglePerArrayRng: Struct.get(data, "en-shr_em-use-per-array-rng")
+              ? Struct.get(data, "en-shr_em-per-array-rng")
+              : 0.0,
+            anglePerArrayStep: Struct.get(data, "en-shr_em-per-array-step"),
+            speed: Struct.get(data, "en-shr_em-use-spd")
+              ? (Struct.get(data, "en-shr_em-change-spd")
+                ? Struct.get(data, "en-shr_em-spd").serialize()
+                : Struct.get(Struct.get(data, "en-shr_em-spd").serialize(), "value"))
+              : 0.0,
+            speedRng: Struct.get(data, "en-shr_em-use-spd-rng")
+              ? Struct.get(data, "en-shr_em-spd-rng")
+              : 0.0,
+            duration: Struct.get(data, "en-shr_em-duration"),
+            offsetX: Struct.get(data, "en-shr_em-use-offset-x")
+              ? (Struct.get(data, "en-shr_em-change-offset-x")
+                ? Struct.get(data, "en-shr_em-offset-x").serialize()
+                : Struct.get(Struct.get(data, "en-shr_em-offset-x").serialize(), "value"))
+              : 0.0,
+            offsetY: Struct.get(data, "en-shr_em-use-offset-y")
+              ? (Struct.get(data, "en-shr_em-change-offset-y")
+                ? Struct.get(data, "en-shr_em-offset-y").serialize()
+                : Struct.get(Struct.get(data, "en-shr_em-offset-y").serialize(), "value"))
+              : 0.0,
+            wiggleFrequency: Struct.get(data, "en-shr_em-use-wiggle-freq")
+              ? (Struct.get(data, "en-shr_em-change-wiggle-freq")
+                ? Struct.get(data, "en-shr_em-wiggle-freq").serialize()
+                : Struct.get(Struct.get(data, "en-shr_em-wiggle-freq").serialize(), "value"))
+              : 0.0,
+            wiggleAmplitude: Struct.get(data, "en-shr_em-use-wiggle-amp")
+              ? (Struct.get(data, "en-shr_em-change-wiggle-amp")
+                ? Struct.get(data, "en-shr_em-wiggle-amp").serialize()
+                : Struct.get(Struct.get(data, "en-shr_em-wiggle-amp").serialize(), "value"))
+              : 0.0,
+          } : Struct.get(data, "en-shr_em-cfg")
+
         controller.shroomService.spawnShroomEmitter({
           name: template,
           spawnX: spawnX,
@@ -161,48 +338,7 @@ global.__entity_track_event = {
           lifespan: lifespan,
           hp: hp,
           inherit: inherit
-        }, {
-          amount: Struct.get(data, "en-shr_em-amount"),
-          arrays: Struct.get(data, "en-shr_em-arrays"),
-          angle: Struct.get(data, "en-shr_em-use-angle")
-            ? (Struct.get(data, "en-shr_em-change-angle")
-              ? Struct.get(data, "en-shr_em-angle").serialize()
-              : Struct.get(Struct.get(data, "en-shr_em-angle").serialize(), "value"))
-            : 0.0,
-          angleRng: Struct.get(data, "en-shr_em-use-angle-rng")
-            ? Struct.get(data, "en-shr_em-angle-rng")
-            : 0.0,
-          angleStep: Struct.get(data, "en-shr_em-angle-step"),
-          perArray: Struct.get(data, "en-shr_em-per-array"),
-          anglePerArray: Struct.get(data, "en-shr_em-use-per-array-dir")
-            ? (Struct.get(data, "en-shr_em-change-per-array-dir")
-              ? Struct.get(data, "en-shr_em-per-array-dir").serialize()
-              : Struct.get(Struct.get(data, "en-shr_em-per-array-dir").serialize(), "value"))
-            : 0.0,
-          anglePerArrayRng: Struct.get(data, "en-shr_em-use-per-array-rng")
-            ? Struct.get(data, "en-shr_em-per-array-rng")
-            : 0.0,
-          anglePerArrayStep: Struct.get(data, "en-shr_em-per-array-step"),
-          speed: Struct.get(data, "en-shr_em-use-spd")
-            ? (Struct.get(data, "en-shr_em-change-spd")
-              ? Struct.get(data, "en-shr_em-spd").serialize()
-              : Struct.get(Struct.get(data, "en-shr_em-spd").serialize(), "value"))
-            : 0.0,
-          speedRng: Struct.get(data, "en-shr_em-use-spd-rng")
-            ? Struct.get(data, "en-shr_em-spd-rng")
-            : 0.0,
-          duration: Struct.get(data, "en-shr_em-duration"),
-          offsetX: Struct.get(data, "en-shr_em-use-offset-x")
-            ? (Struct.get(data, "en-shr_em-change-offset-x")
-              ? Struct.get(data, "en-shr_em-offset-x").serialize()
-              : Struct.get(Struct.get(data, "en-shr_em-offset-x").serialize(), "value"))
-            : 0.0,
-          offsetY: Struct.get(data, "en-shr_em-use-offset-y")
-            ? (Struct.get(data, "en-shr_em-change-offset-y")
-              ? Struct.get(data, "en-shr_em-offset-y").serialize()
-              : Struct.get(Struct.get(data, "en-shr_em-offset-y").serialize(), "value"))
-            : 0.0,
-        })
+        }, emitterConfig)
       } else {
         controller.shroomService.spawnShroom(
           template,
@@ -227,16 +363,399 @@ global.__entity_track_event = {
         position: { 
           x: controller.gridService.view.x
             + (Struct.get(data, "en-shr_x") 
-              * (SHROOM_SPAWN_CHANNEL_SIZE / SHROOM_SPAWN_CHANNEL_AMOUNT) 
+              * (SHROOM_SPAWN_SIZE / SHROOM_SPAWN_AMOUNT) 
               + 0.5),
           y: controller.gridService.view.y
             + (Struct.get(data, "en-shr_y") 
-              * (SHROOM_SPAWN_ROW_SIZE / SHROOM_SPAWN_ROW_AMOUNT) 
+              * (SHROOM_SPAWN_SIZE / SHROOM_SPAWN_AMOUNT) 
               - 0.5),
         },
         velocity: { 
           speed: Struct.get(data, "en-shr_spd") / 1000, 
           angle: Struct.get(data, "en-shr_dir"),
+        },
+        renderSprite: { name: "texture_baron" },
+      }))
+      */
+    },
+  },
+  "brush_entity_bullet": {
+    parse: function(data) {
+      var emitterConfig = Struct.getIfType(data, "en-blt_em-cfg", Struct)
+      if (emitterConfig == null) {
+        emitterConfig = {
+          amount: 1,
+          duration: 0,
+          //arrays: 1,
+          arrays: {
+            value: 1,
+            target: 1,
+            duration: 0,
+            ease: "LINEAR",
+          },
+          //perArray: 1,
+          perArray: {
+            value: 1,
+            target: 1,
+            duration: 0,
+            ease: "LINEAR",
+          },
+          angle: {
+            value: 0,
+            target: 0,
+            duration: 0,
+            ease: "LINEAR",
+          },
+          angleRng: 0,
+          //angleRng: {
+          //  value: 0,
+          //  target: 0,
+          //  duration: 0,
+          //  ease: "LINEAR",
+          //},
+          //angleStep: 0,
+          angleStep: {
+            value: 0,
+            target: 0,
+            duration: 0,
+            ease: "LINEAR",
+          },
+          //anglePerArray: 0,
+          anglePerArray: {
+            value: 0,
+            target: 0,
+            duration: 0,
+            ease: "LINEAR",
+          },
+          anglePerArrayRng: 0,
+          //anglePerArrayRng: {
+          //  value: 0,
+          //  target: 0,
+          //  duration: 0,
+          //  ease: "LINEAR",
+          //},
+          //anglePerArrayStep: 0,
+          anglePerArrayStep: {
+            value: 0,
+            target: 0,
+            duration: 0,
+            ease: "LINEAR",
+          },
+          speed: {
+            value: 0,
+            target: 0,
+            duration: 0,
+            ease: "LINEAR",
+          },
+          speedRng: 0,
+          //speedRng: {
+          //  value: 0,
+          //  target: 0,
+          //  duration: 0,
+          //  ease: "LINEAR",
+          //},
+          offset: {
+            value: 0,
+            target: 0,
+            duration: 0,
+            ease: "LINEAR",
+          },
+          offsetX: {
+            value: 0,
+            target: 0,
+            duration: 0,
+            ease: "LINEAR",
+          },
+          offsetY: {
+            value: 0,
+            target: 0,
+            duration: 0,
+            ease: "LINEAR",
+          },
+          wiggleFrequency: {
+            value: 0,
+            target: 0,
+            duration: 0,
+            ease: "LINEAR",
+          },
+          wiggleAmplitude: {
+            value: 0,
+            target: 0,
+            duration: 0,
+            ease: "LINEAR",
+          },
+        }
+      }
+
+      var oldEmitter = null
+      if (Struct.get(data, "en-blt_em-use-cfg") == false) {
+        oldEmitter = {
+          "en-blt_em-amount": Struct.parse.number(data, "en-blt_em-amount", 1.0),
+          "en-blt_em-arrays": Struct.parse.number(data, "en-blt_em-arrays", 1.0),
+          "en-blt_em-angle": Struct.parse.numberTransformer(data, "en-blt_em-angle", {
+            clampValue: { from: -99999.9, to: 99999.9 },
+            clampTarget: { from: -99999.9, to: 99999.9 },
+          }),
+          "en-blt_em-use-angle": Struct.parse.boolean(data, "en-blt_em-use-angle"),
+          "en-blt_em-change-angle": Struct.parse.boolean(data, "en-blt_em-change-angle"),
+          "en-blt_em-angle-rng": Struct.parse.number(data, "en-blt_em-angle-rng"),
+          "en-blt_em-use-angle-rng": Struct.parse.boolean(data, "en-blt_em-use-angle-rng"),
+          "en-blt_em-angle-step": Struct.parse.number(data, "en-blt_em-angle-step"),
+          "en-blt_em-per-array": Struct.parse.number(data, "en-blt_em-per-array", 1.0),
+          "en-blt_em-per-array-dir": Struct.parse.numberTransformer(data, "en-blt_em-per-array-dir", {
+            clampValue: { from: -99999.9, to: 99999.9 },
+            clampTarget: { from: -99999.9, to: 99999.9 },
+          }),
+          "en-blt_em-use-per-array-dir": Struct.parse.boolean(data, "en-blt_em-use-per-array-dir"),
+          "en-blt_em-change-per-array-dir": Struct.parse.boolean(data, "en-blt_em-change-per-array-dir"),
+          "en-blt_em-use-per-array-rng": Struct.parse.boolean(data, "en-blt_em-use-per-array-rng"),
+          "en-blt_em-per-array-rng": Struct.parse.number(data, "en-blt_em-per-array-rng"),
+          "en-blt_em-per-array-step": Struct.parse.number(data, "en-blt_em-per-array-step"),
+          "en-blt_em-spd": Struct.parse.numberTransformer(data, "en-blt_em-spd", {
+            clampValue: { from: 0, to: 99.9 },
+            clampTarget: { from: 0, to: 99.9 },
+          }),
+          "en-blt_em-use-spd": Struct.parse.boolean(data, "en-blt_em-use-spd"),
+          "en-blt_em-change-spd": Struct.parse.boolean(data, "en-blt_em-change-spd"),
+          "en-blt_em-use-spd-rng": Struct.parse.boolean(data, "en-blt_em-use-spd-rng"),
+          "en-blt_em-spd-rng": Struct.parse.number(data, "en-blt_em-spd-rng", 0.0),
+          "en-blt_em-duration": Struct.parse.number(data, "en-blt_em-duration", 0.0),
+          "en-blt_em-offset-x": Struct.parse.numberTransformer(data, "en-blt_em-offset-x", {
+            clampValue: { from: -99999.9, to: 99999.9 },
+            clampTarget: { from: -99999.9, to: 99999.9 },
+          }),
+          "en-blt_em-use-offset-x": Struct.parse.boolean(data, "en-blt_em-use-offset-x"),
+          "en-blt_em-change-offset-x": Struct.parse.boolean(data, "en-blt_em-change-offset-x"),
+          "en-blt_em-offset-y": Struct.parse.numberTransformer(data, "en-blt_em-offset-y", {
+            clampValue: { from: -99999.9, to: 99999.9 },
+            clampTarget: { from: -99999.9, to: 99999.9 },
+          }),
+          "en-blt_em-use-offset-y": Struct.parse.boolean(data, "en-blt_em-use-offset-y"),
+          "en-blt_em-change-offset-y": Struct.parse.boolean(data, "en-blt_em-change-offset-y"),
+          "en-blt_em-wiggle-freq": Struct.parse.numberTransformer(data, "en-blt_em-wiggle-freq", {
+            clampValue: { from: -99999.9, to: 99999.9 },
+            clampTarget: { from: -99999.9, to: 99999.9 },
+          }),
+          "en-blt_em-use-wiggle-freq": Struct.parse.boolean(data, "en-blt_em-use-wiggle-freq"),
+          "en-blt_em-change-wiggle-freq": Struct.parse.boolean(data, "en-blt_em-change-wiggle-freq"),
+          "en-blt_em-wiggle-amp": Struct.parse.numberTransformer(data, "en-blt_em-wiggle-amp", {
+            clampValue: { from: -99999.9, to: 99999.9 },
+            clampTarget: { from: -99999.9, to: 99999.9 },
+          }),
+          "en-blt_em-use-wiggle-amp": Struct.parse.boolean(data, "en-blt_em-use-wiggle-amp"),
+          "en-blt_em-change-wiggle-amp": Struct.parse.boolean(data, "en-blt_em-change-wiggle-amp"),
+        }
+      }
+
+      return Struct.append({
+        "icon": Struct.parse.sprite(data, "icon"),
+        "en-blt_hide": Struct.parse.boolean(data, "en-blt_hide", TRACK_EVENT_DEFAULT_HIDDEN_VALUE),
+        "en-blt_hide-spawn": Struct.parse.boolean(data, "en-blt_hide-spawn", TRACK_EVENT_DEFAULT_HIDDEN_VALUE),
+        "en-blt_hide-em": Struct.parse.boolean(data, "en-blt_hide-em", TRACK_EVENT_DEFAULT_HIDDEN_VALUE),
+
+        "en-blt_hide-em-cfg": Struct.parse.boolean(data, "en-blt_hide-em-cfg", TRACK_EVENT_DEFAULT_HIDDEN_VALUE),
+        "en-blt_hide-em-angle": Struct.parse.boolean(data, "en-blt_hide-em-angle", TRACK_EVENT_DEFAULT_HIDDEN_VALUE),
+        "en-blt_hide-em-per-array": Struct.parse.boolean(data, "en-blt_hide-em-per-array", TRACK_EVENT_DEFAULT_HIDDEN_VALUE),
+        "en-blt_hide-em-spd": Struct.parse.boolean(data, "en-blt_hide-em-spd", TRACK_EVENT_DEFAULT_HIDDEN_VALUE),
+        "en-blt_hide-em-offset-x": Struct.parse.boolean(data, "en-blt_hide-em-offset-x", TRACK_EVENT_DEFAULT_HIDDEN_VALUE),
+        "en-blt_hide-em-offset-y": Struct.parse.boolean(data, "en-blt_hide-em-offset-y", TRACK_EVENT_DEFAULT_HIDDEN_VALUE),
+        "en-blt_hide-em-wiggle-freq": Struct.parse.boolean(data, "en-blt_hide-em-wiggle-freq", TRACK_EVENT_DEFAULT_HIDDEN_VALUE),
+        "en-blt_hide-em-wiggle-amp": Struct.parse.boolean(data, "en-blt_hide-em-wiggle-amp", TRACK_EVENT_DEFAULT_HIDDEN_VALUE),
+
+        "en-blt_preview": Struct.parse.boolean(data, "en-blt_preview"),
+        "en-blt_template": Struct.parse.text(data, "en-blt_template", "bullet-default"),
+        "en-blt_use-lifespan": Struct.parse.boolean(data, "en-blt_use-lifespan", false),
+        "en-blt_lifespan": Struct.parse.number(data, "en-blt_lifespan", 15.0),
+        "en-blt_use-dmg": Struct.parse.boolean(data, "en-blt_use-dmg", false),
+        "en-blt_dmg": Struct.parse.number(data, "en-blt_dmg", 1.0),
+        "en-blt_spd": Struct.parse.number(data, "en-blt_spd", 10.0, 0.0, 99.9),
+        "en-blt_spd-grid": Struct.parse.boolean(data, "en-blt_spd-grid"),
+        "en-blt_use-spd-rng": Struct.parse.boolean(data, "en-blt_use-spd-rng"),
+        "en-blt_spd-rng": Struct.parse.number(data, "en-blt_spd-rng", 0.0, 0.0, 99.9),
+        "en-blt_dir": Struct.parse.number(data, "en-blt_dir", 270.0, 0.0, 360.0),
+        "en-blt_use-dir-rng": Struct.parse.boolean(data, "en-blt_use-dir-rng"),
+        "en-blt_dir-rng": Struct.parse.number(data, "en-blt_dir-rng", 0.0, 0.0, 360.0),
+        "en-blt_x": Struct.parse.number(data, "en-blt_x", 0.0, 
+          -1.0 * (SHROOM_SPAWN_AMOUNT / 2.0), 
+          SHROOM_SPAWN_AMOUNT / 2.0),
+        "en-blt_snap-x": Struct.parse.boolean(data, "en-blt_snap-x"),
+        "en-blt_use-rng-x": Struct.parse.boolean(data, "en-blt_use-rng-x"),
+        "en-blt_rng-x": Struct.parse.number(data, "en-blt_rng-x", 0.0, 
+          0.0,
+          SHROOM_SPAWN_AMOUNT),
+        "en-blt_y": Struct.parse.number(data, "en-blt_y", 0.0,
+          -1.0 * (SHROOM_SPAWN_AMOUNT / 2.0),
+          SHROOM_SPAWN_AMOUNT / 2.0),
+        "en-blt_snap-y": Struct.parse.boolean(data, "en-blt_snap-y"),
+        "en-blt_use-rng-y": Struct.parse.boolean(data, "en-blt_use-rng-y"),
+        "en-blt_rng-y": Struct.parse.number(data, "en-blt_rng-y", 0.0,
+          0.0,
+          SHROOM_SPAWN_AMOUNT),
+        "en-blt_use-texture": Struct.parse.boolean(data, "en-blt_use-texture"),
+        "en-blt_texture": Struct.parse.sprite(data, "en-blt_texture"),
+        "en-blt_use-mask": Struct.parse.boolean(data, "en-blt_use-mask"),
+        "en-blt_mask": Struct.parse.rectangle(data, "en-blt_mask"),
+        "en-blt_use-em": Struct.parse.boolean(data, "en-blt_use-em"),
+        "en-blt_em-cfg": emitterConfig,
+        "en-blt_em-use-cfg": Struct.parse.boolean(data, "en-blt_em-use-cfg", true),
+      }, oldEmitter, false)
+    },
+    run: function(data, channel) {
+      var controller = Beans.get(BeanVisuController)
+      if (!controller.isChannelDifficultyValid(channel)) {
+        return
+      }
+
+      var spd = abs(Struct.get(data, "en-blt_spd")
+        + (Struct.get(data, "en-blt_use-spd-rng")
+          ? (random(Struct.get(data, "en-blt_spd-rng") / 2.0)
+            * choose(1.0, -1.0))
+          : 0.01))
+        + (Struct.get(data, "en-blt_spd-grid")
+          ? controller.gridService.properties.speed
+          : 0.0)
+      var angle = Math.normalizeAngle(Struct.get(data, "en-blt_dir")
+        + (Struct.get(data, "en-blt_use-dir-rng")
+          ? (random(Struct.get(data, "en-blt_dir-rng") / 2.0)
+          * choose(1.0, -1.0))
+        : 0.0)),
+      var spawnX = Struct.get(data, "en-blt_x")
+        * (SHROOM_SPAWN_SIZE / SHROOM_SPAWN_AMOUNT)
+        + 0.5
+        + (Struct.get(data, "en-blt_use-rng-x")
+          ? (random(Struct.get(data, "en-blt_rng-x") / 2.0)
+            * (SHROOM_SPAWN_SIZE / SHROOM_SPAWN_AMOUNT)
+            * choose(1.0, -1.0))
+          : 0.0)
+      var snapH = Struct.getDefault(data, "en-blt_snap-x", false)
+      var spawnY = Struct.get(data, "en-blt_y")
+        * (SHROOM_SPAWN_SIZE / SHROOM_SPAWN_AMOUNT)
+        - 0.5
+        + (Struct.get(data, "en-blt_use-rng-y")
+          ? (random(Struct.get(data, "en-blt_rng-y") / 2.0)
+            * (SHROOM_SPAWN_SIZE / SHROOM_SPAWN_AMOUNT)
+            * choose(1.0, -1.0))
+          : 0.0)
+      var snapV = Struct.getDefault(data, "en-blt_snap-y", false)
+      var lifespan = Struct.get(data, "en-blt_use-lifespan") ? Struct.get(data, "en-blt_lifespan") : null
+      var damage = Struct.get(data, "en-blt_use-dmg") ? Struct.get(data, "en-blt_dmg") : null
+      var template = Struct.get(data, "en-blt_template")
+      var angleOffset = null
+      var angleOffsetRng = null
+      var sumAngleOffset = null
+      var speedOffset = null
+      var sumSpeedOffset = null
+      if (Struct.get(data, "en-blt_use-em")) {
+        var emitterConfig = (Struct.get(data, "en-blt_em-use-cfg") == false)
+          ? {
+            amount: Struct.get(data, "en-blt_em-amount"),
+            arrays: Struct.get(data, "en-blt_em-arrays"),
+            angle: Struct.get(data, "en-blt_em-use-angle")
+              ? (Struct.get(data, "en-blt_em-change-angle")
+                ? Struct.get(data, "en-blt_em-angle").serialize()
+                : Struct.get(Struct.get(data, "en-blt_em-angle").serialize(), "value"))
+              : 0.0,
+            angleRng: Struct.get(data, "en-blt_em-use-angle-rng")
+              ? Struct.get(data, "en-blt_em-angle-rng")
+              : 0.0,
+            angleStep: Struct.get(data, "en-blt_em-angle-step"),
+            perArray: Struct.get(data, "en-blt_em-per-array"),
+            anglePerArray: Struct.get(data, "en-blt_em-use-per-array-dir")
+              ? (Struct.get(data, "en-blt_em-change-per-array-dir")
+                ? Struct.get(data, "en-blt_em-per-array-dir").serialize()
+                : Struct.get(Struct.get(data, "en-blt_em-per-array-dir").serialize(), "value"))
+              : 0.0,
+            anglePerArrayRng: Struct.get(data, "en-blt_em-use-per-array-rng")
+              ? Struct.get(data, "en-blt_em-per-array-rng")
+              : 0.0,
+            anglePerArrayStep: Struct.get(data, "en-blt_em-per-array-step"),
+            speed: Struct.get(data, "en-blt_em-use-spd")
+              ? (Struct.get(data, "en-blt_em-change-spd")
+                ? Struct.get(data, "en-blt_em-spd").serialize()
+                : Struct.get(Struct.get(data, "en-blt_em-spd").serialize(), "value"))
+              : 0.0,
+            speedRng: Struct.get(data, "en-blt_em-use-spd-rng")
+              ? Struct.get(data, "en-blt_em-spd-rng")
+              : 0.0,
+            duration: Struct.get(data, "en-blt_em-duration"),
+            offsetX: Struct.get(data, "en-blt_em-use-offset-x")
+              ? (Struct.get(data, "en-blt_em-change-offset-x")
+                ? Struct.get(data, "en-blt_em-offset-x").serialize()
+                : Struct.get(Struct.get(data, "en-blt_em-offset-x").serialize(), "value"))
+              : 0.0,
+            offsetY: Struct.get(data, "en-blt_em-use-offset-y")
+              ? (Struct.get(data, "en-blt_em-change-offset-y")
+                ? Struct.get(data, "en-blt_em-offset-y").serialize()
+                : Struct.get(Struct.get(data, "en-blt_em-offset-y").serialize(), "value"))
+              : 0.0,
+            wiggleFrequency: Struct.get(data, "en-blt_em-use-wiggle-freq")
+              ? (Struct.get(data, "en-blt_em-change-wiggle-freq")
+                ? Struct.get(data, "en-blt_em-wiggle-freq").serialize()
+                : Struct.get(Struct.get(data, "en-blt_em-wiggle-freq").serialize(), "value"))
+              : 0.0,
+            wiggleAmplitude: Struct.get(data, "en-blt_em-use-wiggle-amp")
+              ? (Struct.get(data, "en-blt_em-change-wiggle-amp")
+                ? Struct.get(data, "en-blt_em-wiggle-amp").serialize()
+                : Struct.get(Struct.get(data, "en-blt_em-wiggle-amp").serialize(), "value"))
+              : 0.0,
+          } : Struct.get(data, "en-blt_em-cfg")
+
+        controller.bulletService.spawnBulletEmitter({
+          name: template,
+          spawnX: spawnX,
+          spawnY: spawnY,
+          angle: angle,
+          speed: spd,
+          snapH: snapH,
+          snapV: snapV,
+          lifespan: lifespan,
+          damage: damage,
+          angleOffset: angleOffset,
+          angleOffsetRng: angleOffsetRng,
+          sumAngleOffset: sumAngleOffset,
+          speedOffset: speedOffset,
+          sumSpeedOffset: sumSpeedOffset,
+        }, emitterConfig)
+      } else {
+        var view = controller.gridService.view
+        var locked = controller.gridService.targetLocked
+        var viewX = snapH ? locked.snapH : view.x
+        var viewY = snapV ? locked.snapV : view.y
+        controller.bulletService.spawnBullet(
+          template,
+          Shroom,
+          viewX + spawnX,
+          viewY + spawnY,
+          angle,
+          spd,
+          angleOffset,
+          angleOffsetRng,
+          sumAngleOffset,
+          speedOffset,
+          sumSpeedOffset,
+          lifespan,
+          damage
+        )
+      }
+
+      ///@description ecs
+      /*
+      var controller = Beans.get(BeanVisuController)
+      controller.gridECS.add(new GridEntity({
+        type: GridEntityType.ENEMY,
+        position: { 
+          x: controller.gridService.view.x
+            + (Struct.get(data, "en-blt_x") 
+              * (SHROOM_SPAWN_SIZE / SHROOM_SPAWN_AMOUNT) 
+              + 0.5),
+          y: controller.gridService.view.y
+            + (Struct.get(data, "en-blt_y") 
+              * (SHROOM_SPAWN_SIZE / SHROOM_SPAWN_AMOUNT) 
+              - 0.5),
+        },
+        velocity: { 
+          speed: Struct.get(data, "en-blt_spd") / 1000, 
+          angle: Struct.get(data, "en-blt_dir"),
         },
         renderSprite: { name: "texture_baron" },
       }))
@@ -252,21 +771,21 @@ global.__entity_track_event = {
         "en-coin_preview": Struct.parse.boolean(data, "en-coin_preview"),
         "en-coin_template": Struct.parse.text(data, "en-coin_template", "coin-default"),
         "en-coin_x": Struct.parse.number(data, "en-coin_x", 0.0,
-          -1.0 * (SHROOM_SPAWN_CHANNEL_AMOUNT / 2.0),
-          SHROOM_SPAWN_CHANNEL_AMOUNT / 2.0),
+          -1.0 * (SHROOM_SPAWN_AMOUNT / 2.0),
+          SHROOM_SPAWN_AMOUNT / 2.0),
         "en-coin_snap-x": Struct.parse.boolean(data, "en-coin_snap-x"),
         "en-coin_use-rng-x": Struct.parse.boolean(data, "en-coin_use-rng-x"),
         "en-coin_rng-x": Struct.parse.number(data, "en-coin_rng-x", 0.0,
           0.0,
-          SHROOM_SPAWN_CHANNEL_AMOUNT),
+          SHROOM_SPAWN_AMOUNT),
         "en-coin_y": Struct.parse.number(data, "en-coin_y", 0.0,
-          -1.0 * (SHROOM_SPAWN_ROW_AMOUNT / 2.0),
-          SHROOM_SPAWN_ROW_AMOUNT / 2.0),
+          -1.0 * (SHROOM_SPAWN_AMOUNT / 2.0),
+          SHROOM_SPAWN_AMOUNT / 2.0),
         "en-coin_snap-y": Struct.parse.boolean(data, "en-coin_snap-y"),
         "en-coin_use-rng-y": Struct.parse.boolean(data, "en-coin_use-rng-y"),
         "en-coin_rng-y": Struct.parse.number(data, "en-coin_rng-y", 0.0,
           0.0, 
-          SHROOM_SPAWN_ROW_AMOUNT),
+          SHROOM_SPAWN_AMOUNT),
       }
     },
     run: function(data, channel) {
@@ -287,19 +806,19 @@ global.__entity_track_event = {
       controller.coinService.send(new Event("spawn-coin", {
         template: Struct.get(data, "en-coin_template"),
         x: viewX + Struct.get(data, "en-coin_x")
-          * (SHROOM_SPAWN_CHANNEL_SIZE / SHROOM_SPAWN_CHANNEL_AMOUNT)
+          * (SHROOM_SPAWN_SIZE / SHROOM_SPAWN_AMOUNT)
           + 0.5
           + (Struct.get(data, "en-coin_use-rng-x")
             ? (random(Struct.get(data, "en-coin_rng-x") / 2.0)
-              * (SHROOM_SPAWN_CHANNEL_SIZE / SHROOM_SPAWN_CHANNEL_AMOUNT)
+              * (SHROOM_SPAWN_SIZE / SHROOM_SPAWN_AMOUNT)
               * choose(1.0, -1.0))
             : 0.0),
         y: viewY + Struct.get(data, "en-coin_y")
-          * (SHROOM_SPAWN_ROW_SIZE / SHROOM_SPAWN_ROW_AMOUNT)
+          * (SHROOM_SPAWN_SIZE / SHROOM_SPAWN_AMOUNT)
           - 0.5
           + (Struct.get(data, "en-coin_use-rng-y")
             ? (random(Struct.get(data, "en-coin_rng-y") / 2.0)
-              * (SHROOM_SPAWN_ROW_SIZE / SHROOM_SPAWN_ROW_AMOUNT)
+              * (SHROOM_SPAWN_SIZE / SHROOM_SPAWN_AMOUNT)
               * choose(1.0, -1.0))
             : 0.0),
       }))
@@ -309,7 +828,7 @@ global.__entity_track_event = {
     parse: function(data) {
       return {
         "icon": Struct.parse.sprite(data, "icon"),
-        "en-pl_hide": Struct.parse.boolean(data, "en-pl_texture-hide", TRACK_EVENT_DEFAULT_HIDDEN_VALUE),
+        "en-pl_hide": Struct.parse.boolean(data, "en-pl_hide", TRACK_EVENT_DEFAULT_HIDDEN_VALUE),
         "en-pl_hide-texture": Struct.parse.boolean(data, "en-pl_hide-texture", TRACK_EVENT_DEFAULT_HIDDEN_VALUE),
         "en-pl_hide-mask": Struct.parse.boolean(data, "en-pl_hide-mask", TRACK_EVENT_DEFAULT_HIDDEN_VALUE),
         "en-pl_hide-stats": Struct.parse.boolean(data, "en-pl_hide-stats", TRACK_EVENT_DEFAULT_HIDDEN_VALUE),
@@ -318,6 +837,7 @@ global.__entity_track_event = {
         "en-pl_use-mask": Struct.parse.boolean(data, "en-pl_use-mask"),
         "en-pl_mask": Struct.parse.rectangle(data, "en-pl_mask"),
         "en-pl_reset-pos": Struct.parse.boolean(data, "en-pl_reset-pos"),
+        "en-pl_shadow": Struct.parse.boolean(data, "en-pl_shadow"),
         "en-pl_use-stats": Struct.parse.boolean(data, "en-pl_use-stats"),
         "en-pl_stats": Struct.getIfType(data, "en-pl_stats", Struct, {
           force: { value: 0 },
@@ -394,6 +914,9 @@ global.__entity_track_event = {
           ? Struct.get(data, "en-pl_racing")
           : null,
       }))
+
+      ///@description feature TODO grid.player.shadow
+      Struct.set(controller.gridService.properties, "playerShadowEnable", Struct.get(data, "en-pl_shadow"))
     },
   },
   "brush_entity_config": {

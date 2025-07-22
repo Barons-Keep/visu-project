@@ -349,14 +349,14 @@ function PlayerStats(_player, json) constructor {
               angleTransformer: new NumberTransformer({
                 value: 270.0,
                 target: 270.0,
-                factor: 0.1,
-                increase: 0.0,
+                duration: 0.0,
+                ease: EaseType.LINEAR,
               }),
               speedTransformer: new NumberTransformer({
                 value: 0.0,
                 target: 128.0,
-                factor: 0.03,
-                increase: 0.0003,
+                duration: 13.88333,
+                ease: EaseType.IN_SINE,
               }),
               fadeIn: 0.5,
               fadeOut: 0.5,
@@ -435,14 +435,14 @@ function PlayerStats(_player, json) constructor {
           angleTransformer: new NumberTransformer({
             value: 270.0,
             target: 270.0,
-            factor: 0.1,
-            increase: 0.0,
+            duration: 0.0,
+            ease: EaseType.LINEAR,
           }),
           speedTransformer: new NumberTransformer({
             value: 0.0,
             target: 128.0,
-            factor: 0.03,
-            increase: 0.0003,
+            duration: 13.88333,
+            ease: EaseType.IN_SINE,
           }),
           fadeIn: 0.5,
           fadeOut: 0.5,
@@ -551,11 +551,14 @@ function PlayerStats(_player, json) constructor {
       return this
     },
     onMinValueExceed: function() { 
-      if (Visu.settings.getValue("visu.god-mode")) {
+
+      var editor = Beans.get(Visu.modules().editor.controller)
+      if (Visu.settings.getValue("visu.god-mode")
+          || (Optional.is(editor) && editor.renderUI)) {
         this.value = 3
         Beans.get(BeanVisuController)
           .send(new Event("spawn-popup", { 
-            message: "God-mode is active, respawning player"
+            message: "GOD-MODE: respawning player"
           }))
       } else {
         var controller = Beans.get(BeanVisuController)
@@ -671,7 +674,7 @@ function Player(template): GridItem(template) constructor {
     }
 
     if (this.fadeIn < 1.0) {
-      this.fadeIn = clamp(this.fadeIn + this.fadeInFactor, 0.0, 1.0)
+      this.fadeIn = clamp(this.fadeIn + VISU_FADE_FACTOR, 0.0, 1.0)
     }
 
     this.stats.update()

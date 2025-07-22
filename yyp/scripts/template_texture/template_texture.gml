@@ -100,7 +100,12 @@ function template_texture(json = null) {
         name: "texture-preview-line-h",
         template: VEComponents.get("line-h"),
         layout: VELayouts.get("line-h"),
-        config: { layout: { type: UILayoutType.VERTICAL } },
+        config: {
+          layout: {
+            type: UILayoutType.VERTICAL,
+            margin: { top: 24, bottom: 4 },
+          },
+        },
       },
       {
         name: "texture-origin-x",

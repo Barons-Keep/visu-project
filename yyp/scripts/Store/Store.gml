@@ -4,28 +4,15 @@
 function Store(json) constructor {
 
   ///@type {Map<String, any>}
-  container = Struct.toMap(
-    json, 
-    String, 
-    StoreItem,
-    function(item, key) { return new StoreItem(key, item) }
-  )
-
-  ///@private
-  ///@param {StoreItem} item
-  ///@param {Number} index
-  ///@param {String} name
-  ///@return {Boolean}
-  static findStoreItemByName = function(item, index, name) {
-    gml_pragma("forceinline")
-    return item.name == name
-  }
+  container = Struct.toMap(json, String, StoreItem, function(item, key) {
+    return new StoreItem(key, item)
+  })
 
   ///@param {String} name
   ///@return {?StoreItem}
   static get = function(name) {
     gml_pragma("forceinline")
-    return this.container.find(this.findStoreItemByName, name)
+    return this.container.get(name)
   }
 
   ///@type {String} name
@@ -34,7 +21,7 @@ function Store(json) constructor {
   static getValue = function(name, defaultValue = null) {
     gml_pragma("forceinline")
     var item = this.get(name)
-    return Core.isType(item, StoreItem) ? item.get() : defaultValue
+    return item != null ? item.get() : defaultValue
   }
 
   ///@param {StoreItem} item
@@ -49,26 +36,15 @@ function Store(json) constructor {
   ///@return {Boolean}
   static contains = function(name) {
     gml_pragma("forceinline")
-    return Core.isType(this.container.find(this.findStoreItemByName, name), StoreItem)
+    return this.container.contains(name)
   }
 
   ///@param {String} name
   ///@return {Store}
   static remove = function(name) {
     gml_pragma("forceinline")
-    var key = this.container.findKey(this.findStoreItemByName, name)
-    if (Core.isType(key, String)) {
-      this.container.remove(key)
-    }
+    this.container.remove(key)
     return this
-  }
-
-  ///@return {Struct}
-  static stringify = function() {
-    gml_pragma("forceinline")
-    return this.container.toStruct(function(item) { 
-      return item.serialize()
-    })
   }
 
   ///@param {Struct} json

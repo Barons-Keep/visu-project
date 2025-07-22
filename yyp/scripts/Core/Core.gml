@@ -26,6 +26,8 @@ gml_pragma("optimise", "js_check_index", "push off")
 #macro GMLayer "GMLayer"
 #macro any "any"
 
+#macro TAU 6.28318530
+
 ///@enum
 function _RuntimeType(): Enum() constructor {
   WINDOWS = "Windows"

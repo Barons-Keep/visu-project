@@ -600,7 +600,7 @@ function VENewProjectModal(_config = null) constructor {
         x: function() { return (GuiWidth() - this.width()) / 2 },
         y: function() { return this.context.y() + 24},
         width: function() { return 480 },
-        height: function() { return 374 },
+        height: function() { return 382 },
       },
       parent
     )

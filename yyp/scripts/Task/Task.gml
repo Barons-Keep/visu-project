@@ -331,6 +331,17 @@ function _TaskUtil() constructor {
         })
     },
   }
+
+  ///@param {Task}
+  ///@param {Number|String} iterator
+  ///@param {String} name
+  ///@return {Task}
+  fullfillByName = function(task, iterator, name) {
+    if (task.name == name) {
+      task.fullfill()
+    }
+    return task
+  }
 }
 
 global.__TaskUtil = new _TaskUtil()
