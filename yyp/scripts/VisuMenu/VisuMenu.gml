@@ -994,7 +994,7 @@ function VisuMenu(_config = null) constructor {
         factoryCreditsEntry("Zvsi4gtq", "\nPurple Hearts In Her Eyes\n@Sewerslvt"),
         factoryCreditsEntry("4Ht9Ewl1", "\ndigitalshadow\n@zoogies"),
         factoryCreditsTitle("qQwqRmsT", "Programming"),
-        factoryCreditsEntry("Bimj4rUU", "\nvisu-project\n@Alkapivo (github.com/Alkapivo/visu-project)"),
+        factoryCreditsEntry("Bimj4rUU", "\nvisu-project\n@Alkapivo (github.com/Barons-Keep/visu-project)"),
         factoryCreditsEntry("4MnGw7O7", "\nvisu-gml\n@Alkapivo (github.com/Alkapivo/visu-gml)"),
         factoryCreditsEntry("Ubngnmgi", "\ncore-gml\n@Alkapivo (github.com/Alkapivo/core-gml)"),
         factoryCreditsEntry("YnO6tbvb", "\nmh-cz.gmtf-gml\n@maras_cz, @Alkapivo (github.com/Alkapivo/mh-cz.gmtf-gml)"),
@@ -3105,7 +3105,7 @@ function VisuMenu(_config = null) constructor {
             config: {
               label: { 
                 //text: $"github.com/Alkapivo | v.{GM_build_date} | {date_datetime_string(GM_build_date)}",
-                text: $"v{Visu.version()} | Baron's Keep 2025 (c)\n\ngithub.com/Alkapivo/visu-project\n",
+                text: $"v{Visu.version()} | Baron's Keep 2025 (c)\n\ngithub.com/Barons-Keep/visu-project\n",
                 updateCustom: function() {
                   var serverVersion = Visu.serverVersion()
                   if (!Optional.is(serverVersion)) {
@@ -3114,7 +3114,7 @@ function VisuMenu(_config = null) constructor {
 
                   var version = Visu.version()
                   this.label.text = version == serverVersion 
-                    ? $"v{version} | Baron's Keep 2025 (c)\n\ngithub.com/Alkapivo/visu-project\n"
+                    ? $"v{version} | Baron's Keep 2025 (c)\n\ngithub.com/Barons-Keep/visu-project\n"
                     : $"v{version} (itch.io version: v{serverVersion}) | Baron's Keep 2025 (c)\n\ngithub.com/Barons-Keep/visu-project\n"
 
                 },

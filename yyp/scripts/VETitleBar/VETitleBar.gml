@@ -1059,7 +1059,7 @@ function VETitleBar(_editor) constructor {
                       shortcut: { text: "" },
                       callback: function() {
                         try {
-                          url_open("https://github.com/Alkapivo/visu-project/wiki/1.-UI-overview")
+                          url_open("https://github.com/Barons-Keep/visu-project/wiki/1.-UI-overview")
                           var uiService = Beans.get(BeanVisuEditorController).uiService
                           uiService.send(new Event("remove", { 
                             name: this.context.name, 
