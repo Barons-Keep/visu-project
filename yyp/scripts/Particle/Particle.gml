@@ -253,6 +253,16 @@ function ParticleTemplate(_name, json) constructor {
 
     return json
   }
+
+  ///@return {ParticleTemplate}
+  free = function() {
+    if (this.particle != null) {
+      this.particle.free()
+    }
+
+    this.particle = null
+    return this
+  }
 }
 
 
@@ -320,7 +330,10 @@ function Particle(json) constructor {
   
   ///@return {Particle}
   free = function() {
-    part_type_destroy(this.asset)
+    if (this.asset != null && part_type_exists(this.asset)) {
+      part_type_destroy(this.asset)
+    }
+
     return this
   }
 }

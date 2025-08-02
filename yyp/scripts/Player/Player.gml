@@ -411,6 +411,7 @@ function PlayerStats(_player, json) constructor {
 
             controller.visuRenderer.hudRenderer.sendGlitchEvent()
             effect_track_event.brush_effect_glitch.run({
+              "ef-glt_glitch": GlitchType.COMBINED,
               "ef-glt_shd-rng-seed":0.26406799999999998,
               "ef-glt_use-fade-out":true,
               "ef-glt_shd-intensity":0.3015499999999999,
