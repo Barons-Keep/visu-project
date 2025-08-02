@@ -11,11 +11,11 @@
   "dependencies": {
     "core": {
       "remote": "https://github.com/Alkapivo/core-gml.git",
-      "revision": "25.07.22"
+      "revision": "25.08.02"
     },
     "visu": {
       "remote": "https://github.com/Barons-Keep/visu-gml.git",
-      "revision": "25.07.28"
+      "revision": "25.08.02"
     },
     "gmtf": {
       "remote": "https://github.com/Alkapivo/mh-cz.gmtf-gml.git",
@@ -27,7 +27,7 @@
     },
     "track": {
       "remote": "https://github.com/Barons-Keep/visu-track.git",
-      "revision": "25.07.28"
+      "revision": "25.08.02"
     }
   }
 }

@@ -14,8 +14,11 @@ global.__ShaderArcRunner = {
         u_distortion: "FLOAT",
         u_frequency: "FLOAT",
         u_glow: "FLOAT",
+        u_hue: "FLOAT",
         u_jumpiness: "FLOAT",
+        u_sat: "FLOAT",
         u_scale: "FLOAT",
+        u_seed: "CONST_FLOAT",
         u_speed: "FLOAT",
         u_time: "FLOAT",
         u_wiggle: "FLOAT",
@@ -90,7 +93,25 @@ global.__ShaderArcRunner = {
         },
         components: { }
       },
+      u_hue: {
+        store: {
+          value: 0.0,
+          target: 0.0,
+          duration: 0.0,
+          ease: "LINEAR"
+        },
+        components: { }
+      },
       u_jumpiness: {
+        store: {
+          value: 1.0,
+          target: 1.0,
+          duration: 0.0,
+          ease: "LINEAR"
+        },
+        components: { }
+      },
+      u_sat: {
         store: {
           value: 1.0,
           target: 1.0,
@@ -106,6 +127,10 @@ global.__ShaderArcRunner = {
           duration: 0.0,
           ease: "LINEAR"
         },
+        components: { }
+      },
+      u_seed: {
+        store: { value: 0.0 },
         components: { }
       },
       u_speed: {

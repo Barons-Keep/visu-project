@@ -505,7 +505,7 @@ global.__VisuBrushContainers = new Map(String, Callable, {
               var type = this.context.brushToolbar.store.getValue("type")
               var saveTemplate = Beans.get(BeanVisuController).brushService.saveTemplate
               var promise = Beans.get(BeanFileService).send(
-                new Event("fetch-file-dialog")
+                new Event("open-file-dialog")
                   .setData({
                     description: "JSON file",
                     filename: "brush", 
@@ -601,7 +601,7 @@ global.__VisuBrushContainers = new Map(String, Callable, {
                 "data": templates.getContainer(),
               }, { pretty: true })
 
-              Beans.get(BeanFileService).send(new Event("save-file-sync")
+              Beans.get(BeanFileService).send(new Event("save-file")
                 .setData(new File({
                   path: path,
                   data: data

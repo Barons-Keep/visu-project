@@ -1012,11 +1012,13 @@ function VisuController(layerName) constructor {
     this.displayService.setCaption(game_display_name)
     Core.debugOverlay(Assert.isType(Visu.settings.getValue("visu.debug", false), Boolean))
     var fullscreen = Assert.isType(Visu.settings.getValue("visu.fullscreen", false), Boolean)
+    var borderlessWindow = Assert.isType(Visu.settings.getValue("visu.borderless-window", fullscreen), Boolean)
     this.displayService
       .resize(
         Assert.isType(Visu.settings.getValue("visu.window.width", 1280), Number),
         Assert.isType(Visu.settings.getValue("visu.window.height", 720), Number)
       )
+      .setBorderlessWindow(borderlessWindow)
       .setFullscreen(fullscreen)
       .setCursor(Cursor.DEFAULT)
       .center()
@@ -1192,9 +1194,23 @@ function VisuController(layerName) constructor {
     return this.dispatcher.send(event)
   }
 
+  ///@type {Number}
+  gcFrameTime = Core.getProperty("core.gc.frame-time", 100)
+
+  ///@return {VisuController}
+  updateGCFrameTime = function() {
+    if (gc_get_target_frame_time() != this.gcFrameTime) {
+      Logger.info(BeanVisuController, $"updateGCFrameTime: {this.gcFrameTime}")
+      gc_target_frame_time(this.gcFrameTime)
+    }
+
+    return this
+  }
+
   ///@return {VisuController}
   update = function() {
     this.updateDebugTimer.start()
+    this.updateGCFrameTime()
     var state = this.fsm.getStateName()
     if (state != "splashscreen") {
       this.updateUIService()

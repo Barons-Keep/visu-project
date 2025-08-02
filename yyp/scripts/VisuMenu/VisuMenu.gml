@@ -1158,6 +1158,7 @@ function VisuMenu(_config = null) constructor {
                 var controller = Beans.get(BeanVisuController)
                 var fullscreen = controller.displayService.getFullscreen()
                 controller.displayService.setFullscreen(!fullscreen)
+                Visu.settings.setValue("visu.fullscreen", !fullscreen).save()
                 Beans.get(BeanVisuController).sfxService.play("menu-use-entry")
               }),
               onMouseReleasedLeft: function() {
@@ -1170,10 +1171,49 @@ function VisuMenu(_config = null) constructor {
                 var controller = Beans.get(BeanVisuController)
                 var fullscreen = controller.displayService.getFullscreen()
                 controller.displayService.setFullscreen(!fullscreen)
+                Visu.settings.setValue("visu.fullscreen", !fullscreen).save()
                 Beans.get(BeanVisuController).sfxService.play("menu-use-entry")
               },
               updateCustom: function() {
                 this.label.text = Beans.get(BeanVisuController).displayService.getFullscreen() ? "Enabled" : "Disabled"
+                this.label.alpha = this.label.text == "Enabled" ? 1.0 : 0.3
+              },
+              onMouseReleasedLeft: function() {
+                this.callback()
+              },
+            }
+          }
+        },
+        {
+          name: "graphics_menu-button-input-entry_borderless_window",
+          template: VisuComponents.get("menu-button-input-entry"),
+          layout: VisuLayouts.get("menu-button-input-entry"),
+          config: {
+            layout: { type: UILayoutType.VERTICAL },
+            label: { 
+              text: "Borderless window",
+              callback: new BindIntent(function() {
+                var controller = Beans.get(BeanVisuController)
+                var borderlessWindow = controller.displayService.getBorderlessWindow()
+                controller.displayService.setBorderlessWindow(!borderlessWindow)
+                Visu.settings.setValue("visu.borderless-window", !borderlessWindow).save()
+                Beans.get(BeanVisuController).sfxService.play("menu-use-entry")
+              }),
+              onMouseReleasedLeft: function() {
+                this.callback()
+              },
+            },
+            input: {
+              label: { text: "" },
+              callback: function() {
+                var controller = Beans.get(BeanVisuController)
+                var borderlessWindow = controller.displayService.getBorderlessWindow()
+                controller.displayService.setBorderlessWindow(!borderlessWindow)
+                Visu.settings.setValue("visu.borderless-window", !borderlessWindow).save()
+                Beans.get(BeanVisuController).sfxService.play("menu-use-entry")
+              },
+              updateCustom: function() {
+                this.label.text = Beans.get(BeanVisuController).displayService.getBorderlessWindow() ? "Enabled" : "Disabled"
                 this.label.alpha = this.label.text == "Enabled" ? 1.0 : 0.3
               },
               onMouseReleasedLeft: function() {
@@ -1607,7 +1647,7 @@ function VisuMenu(_config = null) constructor {
             label: { text: "OST volume" },
             previous: { 
               callback: function() {
-                var value = clamp(Visu.settings.getValue("visu.audio.ost-volume") - 0.1, 0.0, 1.0)
+                var value = clamp(Visu.settings.getValue("visu.audio.ost-volume") - 0.05, 0.0, 1.0)
                 Visu.settings.setValue("visu.audio.ost-volume", value).save()
                 Beans.get(BeanVisuController).sfxService.play("menu-use-entry")
               },
@@ -1625,13 +1665,13 @@ function VisuMenu(_config = null) constructor {
                 text: "N/A"
               },
               updateCustom: function() {
-                var value = round(Visu.settings.getValue("visu.audio.ost-volume") * 10)
-                this.label.text = $"{string(int64(value * 10))}%"
+                var value = round(Visu.settings.getValue("visu.audio.ost-volume") * 100)
+                this.label.text = $"{string(int64(value))}%"
               },
             },
             next: { 
               callback: function() {
-                var value = clamp(Visu.settings.getValue("visu.audio.ost-volume") + 0.1, 0.0, 1.0)
+                var value = clamp(Visu.settings.getValue("visu.audio.ost-volume") + 0.05, 0.0, 1.0)
                 Visu.settings.setValue("visu.audio.ost-volume", value).save()
                 Beans.get(BeanVisuController).sfxService.play("menu-use-entry")
               },
@@ -1655,7 +1695,7 @@ function VisuMenu(_config = null) constructor {
             label: { text: "SFX volume" },
             previous: { 
               callback: function() {
-                var value = clamp(Visu.settings.getValue("visu.audio.sfx-volume") - 0.1, 0.0, 1.0)
+                var value = clamp(Visu.settings.getValue("visu.audio.sfx-volume") - 0.05, 0.0, 1.0)
                 Visu.settings.setValue("visu.audio.sfx-volume", value).save()
                 Beans.get(BeanVisuController).sfxService.play("menu-use-entry")
               },
@@ -1673,13 +1713,13 @@ function VisuMenu(_config = null) constructor {
                 text: "N/A"
               },
               updateCustom: function() {
-                var value = round(Visu.settings.getValue("visu.audio.sfx-volume") * 10)
-                this.label.text = $"{string(int64(value * 10))}%"
+                var value = round(Visu.settings.getValue("visu.audio.sfx-volume") * 100)
+                this.label.text = $"{string(int64(value))}%"
               },
             },
             next: { 
               callback: function() {
-                var value = clamp(Visu.settings.getValue("visu.audio.sfx-volume") + 0.1, 0.0, 1.0)
+                var value = clamp(Visu.settings.getValue("visu.audio.sfx-volume") + 0.05, 0.0, 1.0)
                 Visu.settings.setValue("visu.audio.sfx-volume", value).save()
                 Beans.get(BeanVisuController).sfxService.play("menu-use-entry")
               },
@@ -2630,7 +2670,7 @@ function VisuMenu(_config = null) constructor {
           var uiAlpha = clamp(this.state.get("uiAlpha") + DeltaTime.apply(this.state.get("uiAlphaFactor")), 0.0, 1.0)
           this.state.set("uiAlpha", uiAlpha)
           if (this.surface == null) {
-            this.surface = new Surface(this.area.getWidth(), this.area.getHeight())
+            this.surface = new Surface({ width: this.area.getWidth(), height: this.area.getHeight() })
           }
 
           this.surface.update(this.area.getWidth(), this.area.getHeight())

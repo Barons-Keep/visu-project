@@ -2,33 +2,50 @@
 ///@description shader_wavy_spectrum
 
 // Base constants
-#define RADIANS 0.017453292519943295
 #define PI 3.14159265359
+#define TAU 6.28318530718
 #define DEG_TO_RAD 0.01745329251
-
-// Shader specific constants
 #define SQRT_3 1.732050807568877
+
+const mat3 rgb2yiq = mat3(
+  0.299, 0.587, 0.114, 
+  0.595716, -0.274453, -0.321263, 
+  0.211456, -0.522591, 0.311135
+);
+
+const mat3 yiq2rgb = mat3(
+  1.0, 0.9563, 0.6210, 
+  1.0, -0.2721, -0.6474, 
+  1.0, -1.1070, 1.7046
+);
+
 
 // Varying Outputs
 varying vec2 v_texcoord;
 varying vec4 v_color;
 
+
 // Uniforms
 uniform float u_angle;      // Default: 0.0
 uniform float u_brightness; // Default: 1.0
 uniform float u_distort;    // Default: 0.1
+uniform float u_hue;        // Default: 0.0
 uniform float u_noise;      // Default: 3.0
 uniform float u_sat;        // Default: 1.0
+uniform float u_seed;        // Default: 0.0
 uniform float u_scale;      // Default: 3.0
 uniform float u_time;       // Default: 0.0, where 1.0=1sec
 uniform vec2 u_offset;			// Default: (0.5, 0.5)
+uniform vec2 u_resolution;  // Default: vec2(GuiWith(), GuiHeight())
 uniform vec3 u_color_a;     // Default: (1.0, 0.0, 0.0)
 uniform vec3 u_color_b;     // Default: (0.0, 1.0, 0.0)
 uniform vec3 u_color_c;     // Default: (0.0, 0.0, 1.0)
 uniform vec3 u_color_mask;  // Default: (0.0, 0.0, 0.0)
 
+
 // Base methods
 vec2 rotated_uv_resolution(vec2 v_texcoord, vec2 resolution, vec2 origin, float angle_deg) {
+  v_texcoord *= resolution;
   float angle_rad = angle_deg * DEG_TO_RAD;
   float cos_a = cos(angle_rad);
   float sin_a = sin(angle_rad);
@@ -64,10 +81,19 @@ float get_alpha_from_pixel(vec3 pixel) {
   return dot(pixel, vec3(0.2126, 0.7152, 0.0722)); // Luma (ITU-R BT.709)
 }
 
-vec4 mix_pixel(vec3 pixel, vec4 texture, vec4 color) {
-  float alpha = get_alpha_from_pixel(pixel);
-  return vec4(mix(texture.rgb, pixel * color.rgb, color.a * alpha), alpha * color.a * texture.a);
+vec3 apply_saturation(vec3 color, float saturation) {
+  float luma = get_alpha_from_pixel(color);
+  return mix(vec3(luma), color, saturation);
 }
+
+vec3 apply_hue(vec3 color, float hue) {
+  vec3 y_color = color * rgb2yiq;
+  float original_hue = atan(y_color.b, y_color.g);
+  float final_hue = original_hue + (hue * TAU);
+  float chroma = sqrt(y_color.b * y_color.b + y_color.g * y_color.g);
+  return vec3(y_color.r, chroma * cos(final_hue), chroma * sin(final_hue)) * yiq2rgb;
+}
+
 
 // Shader methods
 float hash(vec2 p) {
@@ -118,13 +144,15 @@ float get_color_distance(vec3 color_from, vec3 color_to) {
 }
 
 void main() {
-  vec2 uv = rotated_uv(v_texcoord, u_offset, u_angle);
-  float distortion = fbm(uv * u_noise + vec2(0.0, u_time)) * u_distort;
-  float position = mod(uv.x * u_scale + distortion + u_time, 1.0);
+  vec2 uv = rotated_uv_resolution(v_texcoord * u_scale, u_resolution, u_offset, u_angle);
+  float distortion = fbm(uv * u_noise + vec2(0.0, u_time + u_seed)) * u_distort;
+  float position = mod(uv.x + distortion + u_time + u_seed, 1.0);
+
   vec4 texture = texture2D(gm_BaseTexture, v_texcoord);
   vec3 color = get_spectrum_color(position);
-  float alpha = clamp(get_color_distance(color, u_color_mask) * 2.0, 0.0, 1.0);
-  color = mix(vec3(0.5), color, u_sat) * u_brightness;
-  color = mix(color, texture.rgb, 1.0 - alpha);
-  gl_FragColor = vec4(color, alpha * min(v_color.a, texture.a));
+  vec3 pixel = apply_hue(apply_saturation(color, u_sat), u_hue) * u_brightness;
+  float alpha = clamp(get_color_distance(pixel, u_color_mask), 0.0, 1.0);
+  pixel = mix(pixel, texture.rgb, 1.0 - v_color.a);
+  pixel = mix(pixel, texture.rgb, 1.0 - alpha);
+  gl_FragColor = vec4(pixel, texture.a + (alpha * v_color.a));
 }

@@ -397,30 +397,16 @@ function brush_grid_column(json) {
           },
         },
       },
-      {
-        name: "gr-c_main-size-title",
-        template: VEComponents.get("property"),
-        layout: VELayouts.get("property"),
-        config: { 
-          layout: { type: UILayoutType.VERTICAL },
-          label: { 
-            text: "Thickness",
-            //backgroundColor: VETheme.color.accentShadow,
-            hidden: { key: "gr-c_hide-main" },
-          },
-          input: {
-            //backgroundColor: VETheme.color.accentShadow
-            hidden: { key: "gr-c_hide-main" },
-          },
-          checkbox: {
-            //backgroundColor: VETheme.color.accentShadow,
-            spriteOn: { name: "visu_texture_checkbox_show" },
-            spriteOff: { name: "visu_texture_checkbox_hide" },
-            store: { key: "gr-c_hide-main-size" },
-            hidden: { key: "gr-c_hide-main" },
-          },
+      VETitleComponent("gr-c_main-size-title", {
+        hidden: { key: "gr-c_hide-main" },
+        label: { text: "Thickness" },
+        input: { },
+        checkbox: {
+          spriteOn: { name: "visu_texture_checkbox_show" },
+          spriteOff: { name: "visu_texture_checkbox_hide" },
+          store: { key: "gr-c_hide-main-size" },
         },
-      },
+      }),
       {
         name: "gr-c_main-size",
         template: VEComponents.get("number-transformer-increase-checkbox"),
@@ -1464,30 +1450,16 @@ function brush_grid_column(json) {
           },
         },
       },
-      {
-        name: "gr-c_side-alpha-title",
-        template: VEComponents.get("property"),
-        layout: VELayouts.get("property"),
-        config: { 
-          layout: { type: UILayoutType.VERTICAL },
-          label: { 
-            text: "Alpha",
-            //backgroundColor: VETheme.color.accentShadow,
-            hidden: { key: "gr-c_hide-side" },
-          },
-          input: {
-            //backgroundColor: VETheme.color.accentShadow
-            hidden: { key: "gr-c_hide-side" },
-          },
-          checkbox: {
-            //backgroundColor: VETheme.color.accentShadow,
-            spriteOn: { name: "visu_texture_checkbox_show" },
-            spriteOff: { name: "visu_texture_checkbox_hide" },
-            store: { key: "gr-c_hide-side-alpha" },
-            hidden: { key: "gr-c_hide-side" },
-          },
+      VETitleComponent("gr-c_side-alpha-title", {
+        hidden: { key: "gr-c_hide-side" },
+        label: { text: "Alpha" },
+        input: { },
+        checkbox: {
+          spriteOn: { name: "visu_texture_checkbox_show" },
+          spriteOff: { name: "visu_texture_checkbox_hide" },
+          store: { key: "gr-c_hide-side-alpha" },
         },
-      },
+      }),
       {
         name: "gr-c_side-alpha",
         template: VEComponents.get("number-transformer-increase-checkbox"),
@@ -1732,34 +1704,21 @@ function brush_grid_column(json) {
           },
         },
       },
-      {
-        name: "gr-c_side-col-title",
-        template: VEComponents.get("property"),
-        layout: VELayouts.get("property"),
-        config: { 
-          layout: { type: UILayoutType.VERTICAL },
-          label: { 
-            text: "Color",
-            hidden: { key: "gr-c_hide-side" },
-            enable: { key: "gr-c_use-side-col" },
-            //backgroundColor: VETheme.color.accentShadow,
-          },
-          input: {
-            spriteOn: { name: "visu_texture_checkbox_switch_on" },
-            spriteOff: { name: "visu_texture_checkbox_switch_off" },
-            store: { key: "gr-c_use-side-col" },
-            hidden: { key: "gr-c_hide-side" },
-            //backgroundColor: VETheme.color.accentShadow
-          },
-          checkbox: {
-            spriteOn: { name: "visu_texture_checkbox_show" },
-            spriteOff: { name: "visu_texture_checkbox_hide" },
-            store: { key: "gr-c_hide-side-col" },
-            hidden: { key: "gr-c_hide-side" },
-            //backgroundColor: VETheme.color.accentShadow,
-          },
+      VETitleComponent("gr-c_side-col-title", {
+        hidden: { key: "gr-c_hide-side" },
+        enable: { key: "gr-c_use-side-col" },
+        label: { text: "Color" },
+        input: {
+          spriteOn: { name: "visu_texture_checkbox_switch_on" },
+          spriteOff: { name: "visu_texture_checkbox_switch_off" },
+          store: { key: "gr-c_use-side-col" },
         },
-      },
+        checkbox: {
+          spriteOn: { name: "visu_texture_checkbox_show" },
+          spriteOff: { name: "visu_texture_checkbox_hide" },
+          store: { key: "gr-c_hide-side-col" },
+        },
+      }),
       {
         name: "gr-c_side-col",
         template: VEComponents.get("color-picker"),

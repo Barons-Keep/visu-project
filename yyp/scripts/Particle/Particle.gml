@@ -227,6 +227,9 @@ function ParticleTemplate(_name, json) constructor {
   ///@type {?Struct}
   sprite = Core.isType(Struct.get(json, "sprite"), Struct) ? json.sprite : null
 
+  ///@type {?Particle}
+  particle = null
+
   ///@return {Struct}
   serialize = function() {
     var json = {
@@ -241,6 +244,7 @@ function ParticleTemplate(_name, json) constructor {
       speed: this.speed,
       angle: this.angle,
       gravity: this.gravity,
+      particle: null,
     }
 
     if (Optional.is(this.sprite)) {
@@ -312,5 +316,11 @@ function Particle(json) constructor {
 	part_type_gravity(this.asset, this.gravity.amount, this.gravity.angle)
   if (Core.isType(this.sprite, ParticlePropertySprite)) {
 	  part_type_sprite(this.asset, this.sprite.texture.asset, this.sprite.animate, this.sprite.stretch, this.sprite.randomValue)
+  }
+  
+  ///@return {Particle}
+  free = function() {
+    part_type_destroy(this.asset)
+    return this
   }
 }

@@ -30,22 +30,22 @@ function GridRenderer() constructor {
   ///@private
   ///@type {Surface}
   shaderSurface = new Surface({ 
-    width: ceil(GuiWidth() / Visu.settings.getValue("visu.graphics.shader-quality", 1.0)), 
-    height: ceil(GuiHeight() / Visu.settings.getValue("visu.graphics.shader-quality", 1.0)),
+    width: ceil(GuiWidth() * Visu.settings.getValue("visu.graphics.shader-quality", 1.0)), 
+    height: ceil(GuiHeight() * Visu.settings.getValue("visu.graphics.shader-quality", 1.0)),
   })
 
   ///@private
   ///@type {Surface}
   shaderBackgroundSurface = new Surface({ 
-    width: ceil(GuiWidth() / Visu.settings.getValue("visu.graphics.shader-quality", 1.0)), 
-    height: ceil(GuiHeight() / Visu.settings.getValue("visu.graphics.shader-quality", 1.0)),
+    width: ceil(GuiWidth() * Visu.settings.getValue("visu.graphics.shader-quality", 1.0)), 
+    height: ceil(GuiHeight() * Visu.settings.getValue("visu.graphics.shader-quality", 1.0)),
   })
   
   ///@private
   ///@type {Surface}
   shaderCombinedSurface = new Surface({ 
-    width: ceil(GuiWidth() / Visu.settings.getValue("visu.graphics.shader-quality", 1.0)), 
-    height: ceil(GuiHeight() / Visu.settings.getValue("visu.graphics.shader-quality", 1.0)),
+    width: ceil(GuiWidth() * Visu.settings.getValue("visu.graphics.shader-quality", 1.0)), 
+    height: ceil(GuiHeight() * Visu.settings.getValue("visu.graphics.shader-quality", 1.0)),
   })
 
   ///@private
@@ -1704,7 +1704,7 @@ function GridRenderer() constructor {
         gridRenderer.backgroundSurface.height, 
         0, 
         0,
-        task.state.getDefault("alpha", 1.0)
+        1.0,//task.state.getDefault("alpha", 1.0)
       )
       GPU.reset.surface()
     }
@@ -1756,7 +1756,7 @@ function GridRenderer() constructor {
         gridRenderer.gridSurface.height, 
         0, 
         0,
-        task.state.getDefault("alpha", 1.0)
+        1.0//task.state.getDefault("alpha", 1.0)
       )
       GPU.reset.surface()
     }
@@ -1818,7 +1818,7 @@ function GridRenderer() constructor {
         gridRenderer.gameSurface.height, 
         0, 
         0,
-        task.state.getDefault("alpha", 1.0)
+        1.0//task.state.getDefault("alpha", 1.0)
       )
       GPU.reset.surface()
     }

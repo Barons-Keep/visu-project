@@ -978,7 +978,7 @@ global.__VisuTemplateContainers = new Map(String, Callable, {
                 "data": struct,
               }, { pretty: true })
 
-              Beans.get(BeanFileService).send(new Event("save-file-sync")
+              Beans.get(BeanFileService).send(new Event("save-file")
                 .setData(new File({
                   path: path,
                   data: data
@@ -1171,7 +1171,7 @@ global.__VisuTemplateContainers = new Map(String, Callable, {
             callback: function(_event) {
               var store = this.context.templateToolbar.store
               var type = store.getValue("type")
-              var event = new Event("fetch-file-dialog")
+              var event = new Event("open-file-dialog")
                 .setData({
                   description: "JSON file",
                   filename: "template", 
@@ -3037,6 +3037,18 @@ global.__VisuTemplateContainers = new Map(String, Callable, {
           if (preview) {
             var particleName = template.store.getValue("template-name")
             var particleService = Beans.get(BeanVisuController).particleService
+            particleService.spawnParticleEmitter(
+              "main",
+              particleName,
+              (GuiWidth() / 2) - 32,
+              (GuiHeight() / 2) - 32,
+              (GuiWidth() / 2) + 32,
+              (GuiHeight() / 2) + 32,
+              0.0,
+              10.0
+            )
+
+            /*
             var event = particleService.factoryEventSpawnParticleEmitter({
               particleName: particleName,
               beginX: (GuiWidth() / 2) - 32,
@@ -3046,6 +3058,7 @@ global.__VisuTemplateContainers = new Map(String, Callable, {
               amount: 10,
             })
             particleService.send(event)
+            */
           }
         }
       },

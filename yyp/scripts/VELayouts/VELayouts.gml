@@ -1385,7 +1385,35 @@ global.__VELayouts = new Map(String, Callable, {
           height: function() { return 28 },
         },
         line: {
-          name: "transform-vec-property-uniform.line",
+          name: "transform-numeric-uniform.line",
+          y: function() { return this.context.nodes.duration.bottom() + this.__margin.top },
+          height: function() { return 1 },
+          margin: { top: 4, bottom: 5 },
+        },
+      }
+    }
+  },
+
+    ///@param {?Struct} [config]
+  ///@return {Struct}
+  "transform-numeric-uniform-simple": function(config = null) {
+    return {
+      name: "transform-numeric-uniform-simple",
+      type: Assert.isEnum(Struct.getDefault(config, "type", UILayoutType.NONE), UILayoutType),
+      margin: Struct.get(config, "margin"),
+      propagateHidden: Struct.getIfType(config, "propagateHidden", Boolean, false),
+      //height: function() { return (5 * 28) + 32 + 6 }, //this.nodes.duration.bottom() - this.y() },
+      nodes: {
+        value: {
+          name: "transform-numeric-uniform.value",
+          //y: function() { return this.context.nodes.title.bottom() + this.__margin.top },
+          //y: function() { return this.context.y() + (this.height() * 1) },
+          //margin: { top: 2 },
+          height: function() { return 28 },
+          propagateHidden: Struct.getIfType(Struct.get(config, "value"), "propagateHidden", Boolean, true),
+        },
+        line: {
+          name: "transform-numeric-uniform-simple.line",
           y: function() { return this.context.nodes.duration.bottom() + this.__margin.top },
           height: function() { return 1 },
           margin: { top: 4, bottom: 5 },

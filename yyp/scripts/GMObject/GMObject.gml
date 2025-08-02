@@ -75,6 +75,14 @@ function _GMObjectUtil() constructor {
         }
       }
     },
+    onSaveLoadEvent: {
+      gmObject: "__onSaveLoadEvent",
+      factoryWrapper: function() {
+        return function(event) {
+          this.__context.onSaveLoadEvent(event)
+        }
+      }
+    },
     onSceneEnter: {
       gmObject: "__onSceneEnter",
       factoryWrapper: function() {

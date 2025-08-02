@@ -9,6 +9,7 @@ global.__DEFAULT_SHADER_PIPELINE_LIMIT = 32
 function _ShaderPipelineTaskTransformerType(): Enum() constructor {
   COLOR = ColorTransformer
   FLOAT = NumberTransformer
+  CONST_FLOAT = Transformer
   VECTOR2 = Vector2Transformer
   VECTOR3 = Vector3Transformer
   VECTOR4 = Vector4Transformer

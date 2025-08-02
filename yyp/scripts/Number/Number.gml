@@ -4,11 +4,11 @@
 #macro Infinity infinity
 
 ///@type {Number}
-global.__MIN_INT_64 = int64(-9223372036854775808)
+global.__MIN_INT_64 = int64(-922337203685477588)
 #macro MIN_INT_64 global.__MIN_INT_64
 
 ///@type {Number}
-global.__MAX_INT_64 = int64(9223372036854775807)
+global.__MAX_INT_64 = int64(922337203685477587)
 #macro MAX_INT_64 global.__MAX_INT_64
 
 ///@static

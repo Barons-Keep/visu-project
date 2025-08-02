@@ -4,7 +4,7 @@
 ///@return {Struct}
 function brush_entity_bullet(json) {
   var emitter = {
-    json: Struct.getIfType(json, "en-blt_em-cfg", Struct, {
+    json: Struct.getIfType(json, "en-blt_em-cfg", Struct,  {
       amount: 1,
       duration: 0,
       //arrays: 1,
@@ -14,13 +14,15 @@ function brush_entity_bullet(json) {
         duration: 0,
         ease: "LINEAR",
       },
-      //perArray: 1,
+      perArray: 1,
+      /*
       perArray: {
         value: 1,
         target: 1,
         duration: 0,
         ease: "LINEAR",
       },
+      */
       angle: {
         value: 0,
         target: 0,
@@ -41,13 +43,15 @@ function brush_entity_bullet(json) {
         duration: 0,
         ease: "LINEAR",
       },
-      //anglePerArray: 0,
+      anglePerArray: 0,
+      /*
       anglePerArray: {
         value: 0,
         target: 0,
         duration: 0,
         ease: "LINEAR",
       },
+      */
       anglePerArrayRng: 0,
       //anglePerArrayRng: {
       //  value: 0,
@@ -55,13 +59,15 @@ function brush_entity_bullet(json) {
       //  duration: 0,
       //  ease: "LINEAR",
       //},
-      //anglePerArrayStep: 0,
+      anglePerArrayStep: 0,
+      /*
       anglePerArrayStep: {
         value: 0,
         target: 0,
         duration: 0,
         ease: "LINEAR",
       },
+      */
       speed: {
         value: 0,
         target: 0,
@@ -76,33 +82,36 @@ function brush_entity_bullet(json) {
       //  ease: "LINEAR",
       //},
       offset: {
-        value: 0,
-        target: 0,
-        duration: 0,
+        value: 0.0,
+        target: 0.0,
+        duration: 0.0,
         ease: "LINEAR",
       },
       offsetX: {
-        value: 0,
-        target: 0,
-        duration: 0,
+        value: 0.0,
+        target: 0.0,
+        duration: 0.0,
         ease: "LINEAR",
       },
       offsetY: {
-        value: 0,
-        target: 0,
-        duration: 0,
+        value: 0.0,
+        target: 0.0,
+        duration: 0.0,
         ease: "LINEAR",
       },
+      wiggleFrequency: 0.0,
+      /*
       wiggleFrequency: {
         value: 0,
         target: 0,
         duration: 0,
         ease: "LINEAR",
       },
+      */
       wiggleAmplitude: {
-        value: 0,
-        target: 0,
-        duration: 0,
+        value: 0.0,
+        target: 0.0,
+        duration: 0.0,
         ease: "LINEAR",
       },
     }),

@@ -6,6 +6,7 @@
 function _ShaderUniformType(): Enum() constructor {
   COLOR = ShaderUniformColor
   FLOAT = ShaderUniformFloat
+  CONST_FLOAT = ShaderUniformConstFloat
   VECTOR2 = ShaderUniformVector2
   VECTOR3 = ShaderUniformVector3
   VECTOR4 = ShaderUniformVector4
@@ -52,6 +53,18 @@ function ShaderUniformColor(_asset, _name, _type = ShaderUniformType.COLOR): Sha
 ///@param {String} _name
 ///@param {ShaderUniformType} _type
 function ShaderUniformFloat(_asset, _name, _type = ShaderUniformType.FLOAT): ShaderUniform(_asset, _name, _type) constructor {
+
+  ///@override
+  ///@param {Number} value
+  static set = function(value) {
+    shader_set_uniform_f(this.asset, value)
+  }
+}
+
+///@param {GMShader} _asset
+///@param {String} _name
+///@param {ShaderUniformType} _type
+function ShaderUniformConstFloat(_asset, _name, _type = ShaderUniformType.CONST_FLOAT): ShaderUniform(_asset, _name, _type) constructor {
 
   ///@override
   ///@param {Number} value

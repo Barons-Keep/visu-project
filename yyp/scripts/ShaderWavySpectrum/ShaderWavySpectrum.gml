@@ -14,9 +14,12 @@ global.__ShaderWavySpectrum = {
         u_color_c: "COLOR",
         u_color_mask: "COLOR",
         u_distort: "FLOAT",
+        u_hue: "FLOAT",
         u_noise: "FLOAT",
         u_offset: "VECTOR2",
+        u_resolution: "RESOLUTION",
         u_sat: "FLOAT",
+        u_seed: "CONST_FLOAT",
         u_scale: "FLOAT",
         u_time: "FLOAT",
       },
@@ -37,6 +40,15 @@ global.__ShaderWavySpectrum = {
         store: {
           value: 1.0,
           target: 1.0,
+          duration: 0.0,
+          ease: "LINEAR",
+        },
+        components: { },
+      },
+      u_hue: {
+        store: {
+          value: 0.0,
+          target: 0.0,
           duration: 0.0,
           ease: "LINEAR",
         },
@@ -120,6 +132,10 @@ global.__ShaderWavySpectrum = {
           duration: 0.0,
           ease: "LINEAR",
         },
+        components: { },
+      },
+      u_seed: {
+        store: { value: 0.0 },
         components: { },
       },
       u_scale: {

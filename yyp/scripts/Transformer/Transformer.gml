@@ -5,7 +5,7 @@
 function Transformer(json = null) constructor {
 
   ///@type {any}
-  value = Struct.get(json, "value")
+  value = Core.isType(json, Struct) ? Struct.get(json, "value"): json
 
   ///@type {any}
   startValue = this.value
@@ -51,7 +51,9 @@ function Transformer(json = null) constructor {
 function ColorTransformer(json = null) constructor {
 
   ///@type {String}
-  startValue = Struct.getIfType(json, "value", String, "#ffffff")
+  startValue = Core.isType(json, String)
+    ? json
+    : Struct.getIfType(json, "value", String, "#ffffff")
 
   ///@type {Color}
   value = ColorUtil.fromHex(this.startValue)
@@ -138,6 +140,7 @@ function ColorTransformer(json = null) constructor {
 
   this.setDuration(this.duration)
 }
+
 
 ///@param {?Struct|?Number} [json]
 function NumberTransformer(json = null) constructor {

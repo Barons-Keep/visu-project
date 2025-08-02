@@ -1036,53 +1036,40 @@ global.__VEComponents = new Map(String, Callable, {
   ///@return {Array<UIItem>}
   "property": function(name, layout, config = null) {
     var style = VEStyles.get("property")
-    return new Array(UIItem, [
-      UICheckbox(
-        $"{name}_checkbox", 
-        Struct.appendRecursive(
-          Struct.appendRecursive(
-            { 
-              layout: layout.nodes.checkbox,
-              updateArea: Callable.run(UIUtil.updateAreaTemplates.get("applyLayout")),
-            }, 
-            Struct.get(style, "checkbox"),
-            false
-          ),
-          Struct.get(config, "checkbox"),
-          false
-        )
-      ),
-      UIText(
-        $"{name}_text", 
-        Struct.appendRecursive(
-          Struct.appendRecursive(
-            { 
-              layout: layout.nodes.label,
-              updateArea: Callable.run(UIUtil.updateAreaTemplates.get("applyLayout")),
-            },
-            Struct.get(style, "label"),
-            false
-          ),
-          Struct.get(config, "label"),
-          false
-        )
-      ),
-      UICheckbox(
-        $"{name}_input", 
-        Struct.appendRecursive(
-          Struct.appendRecursive(
-            { 
-              layout: layout.nodes.input,
-              updateArea: Callable.run(UIUtil.updateAreaTemplates.get("applyLayout")),
-            }, 
-            Struct.get(style, "input"),
-            false
-          ),
-          Struct.get(config, "input"),
-          false
-        )
-      ),
-    ])
+    var items = new Array(UIItem)
+    if (Struct.get(config, "checkbox") != null) {
+      items.add(UICheckbox($"{name}_checkbox", Struct.appendRecursive(
+        Struct.appendRecursive({ 
+          layout: layout.nodes.checkbox,
+          updateArea: Callable.run(UIUtil.updateAreaTemplates.get("applyLayout")),
+        }, Struct.get(style, "checkbox"), false),
+        Struct.get(config, "checkbox"), false)
+      ))
+    }
+
+    if (Struct.get(config, "label") != null) {
+      items.add(UIText(
+        $"{name}_text", Struct.appendRecursive(
+          Struct.appendRecursive({ 
+            layout: layout.nodes.label,
+            updateArea: Callable.run(UIUtil.updateAreaTemplates.get("applyLayout")),
+          }, Struct.get(style, "label"), false),
+        Struct.get(config, "label"), false)
+      ))
+    }
+
+    if (Struct.get(config, "input") != null) {
+      items.add(UICheckbox(
+        $"{name}_input", Struct.appendRecursive(
+          Struct.appendRecursive({ 
+            layout: layout.nodes.input,
+            updateArea: Callable.run(UIUtil.updateAreaTemplates.get("applyLayout")),
+          }, Struct.get(style, "input"), false),
+        Struct.get(config, "input"), false)
+      ))
+    }
+
+    return items
   },
 
   ///@param {String} name
@@ -6477,6 +6464,142 @@ global.__VEComponents = new Map(String, Callable, {
     return items
   },
 
+    ///@param {String} name
+  ///@param {UILayout} layout
+  ///@param {?Struct} [config]
+  ///@return {Array<UIItem>}
+  "transform-numeric-uniform-simple": function(name, layout, config = null) {
+    ///@todo move to Lambda util
+    static addItem = function(item, index, items) {
+      items.add(item)
+    }
+
+    ///@param {String} name
+    ///@param {UILayout} layout
+    ///@param {?Struct} [config]
+    ///@return {Array<UIItem>}
+    static factoryTextFieldIncrease = function(name, layout, config) { //factoryNumericSliderIncreaseField
+      return new UIComponent({
+        name: name,
+        template: VEComponents.get("numeric-slider-increase-field"),
+        layout: VELayouts.get("numeric-stick-increase-field"),
+        config: Struct.appendRecursive(
+          {
+            field: {
+              store: {
+                callback: function(value, data) { 
+                  var item = data.store.get()
+                  if (item == null) {
+                    return 
+                  }
+
+                  var key = Struct.get(data, "transformNumericProperty")
+                  var transformer = item.get()
+                  if (!Core.isType(transformer, NumberTransformer) 
+                    || !Struct.contains(transformer, key)
+                    || GMTFContext.get() == data.textField) {
+                    return 
+                  }
+                  data.textField.setText(Struct.get(transformer, key))
+                },
+                set: function(value) {
+                  var item = this.get()
+                  if (item == null) {
+                    return 
+                  }
+
+                  var parsedValue = NumberUtil.parse(value, null)
+                  if (parsedValue == null) {
+                    return
+                  }
+
+                  var key = Struct.get(this.context, "transformNumericProperty")
+                  var transformer = item.get()
+                  if (!Core.isType(transformer, NumberTransformer) 
+                    || !Struct.contains(transformer, key)) {
+                    return 
+                  }
+                  item.set(Struct.set(transformer, key, parsedValue))
+                },
+              },
+            },
+            decrease: VEComponentsUtil.factory.config.decreaseNumericProperty(),
+            increase: VEComponentsUtil.factory.config.increaseNumericProperty(),
+            ///@todo rename to stick
+            slider: VEComponentsUtil.factory.config.numberStick({ 
+              store: {
+                callback: Lambda.passthrough,
+                set: function(value) {
+                  var item = this.get()
+                  if (item == null) {
+                    return 
+                  }
+
+                  var parsedValue = NumberUtil.parse(value, null)
+                  if (parsedValue == null) {
+                    return
+                  }
+
+                  var key = Struct.get(this.context, "transformNumericProperty")
+                  var transformer = item.get()
+                  if (!Core.isType(transformer, NumberTransformer) 
+                    || !Struct.contains(transformer, key)) {
+                    return 
+                  }
+                  item.set(Struct.set(transformer, key, parsedValue))
+                },
+                getValue: function() {
+                  var key = Struct.get(this.context, "transformNumericProperty")
+                  if (!Optional.is(key)) {
+                    return null
+                  }
+
+                  var item = this.get()
+                  if (!Optional.is(item)) {
+                    return null
+                  }
+
+                  var transformer = item.get()
+                  if (!Optional.is(transformer)) {
+                    return null
+                  }
+                  
+                  return Struct.get(transformer, key)
+                },
+              },
+            }),
+          },
+          config,
+          false
+        )
+      }).toUIItems(layout)
+    }
+
+
+    var items = new Array(UIItem)
+
+    factoryTextFieldIncrease(
+      $"{name}_value",
+      layout.nodes.value,
+      Struct.appendRecursive(
+        Struct.get(config, "value"),
+        {
+          layout: { 
+            //type: layout.type,
+            propagateHidden: true,
+          },
+          field: { transformNumericProperty: "value" },
+          decrease: { transformNumericProperty: "value" },
+          increase: { transformNumericProperty: "value" },
+          slider: { transformNumericProperty: "value" },
+        },
+        false
+      )
+    ).forEach(addItem, items)
+
+    return items
+  },
+
   ///@param {String} name
   ///@param {UILayout} layout
   ///@param {?Struct} [config]
@@ -7634,3 +7757,64 @@ global.__EaseTypeMap = {
   "IN_OUT_BOUNCE": "texture_icon_ease_in_out_bounce",
 }
 #macro EASE_TYPE_MAP global.__EaseTypeMap
+
+
+//@param {String} name
+//@param {?Struct} [config]
+function VETitleComponent(name, config = null) {
+  var label = Struct.get(config, "label")
+  var input = Struct.get(config, "input")
+  var checkbox = Struct.get(config, "checkbox")
+
+  var hidden = Struct.get(config, "hidden")
+  if (hidden != null) {
+    Struct.set(label, "hidden", hidden)
+    Struct.set(input, "hidden", hidden)
+    Struct.set(checkbox, "hidden", hidden)
+  }
+  
+  var enable = Struct.get(config, "enable")
+  if (enable != null) {
+    Struct.set(label, "enable", enable)
+  }
+
+  var background = Struct.get(config, "background")
+  if (background != null) {
+    Struct.set(label, "backgroundColor", background)
+    Struct.set(input, "backgroundColor", background)
+    Struct.set(checkbox, "backgroundColor", background)
+  }
+
+  return {
+    name: name,
+    template: VEComponents.get("property"),
+    layout: VELayouts.get("property"),
+    config: { 
+      layout: { type: UILayoutType.VERTICAL },
+      label: label,
+      input: input,
+      checkbox: checkbox,
+    },
+  }
+}
+/** Template
+VETitleComponent("", {
+  hidden: null,
+  enable: null,
+  background: null,
+  label: {
+    text: null,
+    font: null,
+  }
+  input: {
+    spriteOn: null,
+    spriteOff: null,
+    store: null,
+  },
+  checkbox: {
+    spriteOn: null,
+    spriteOff: null,
+    store: null,
+  },
+})
+*/

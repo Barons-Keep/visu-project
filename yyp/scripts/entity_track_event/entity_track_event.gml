@@ -21,13 +21,15 @@ global.__entity_track_event = {
             duration: 0,
             ease: "LINEAR",
           },
-          //perArray: 1,
+          perArray: 1,
+          /*
           perArray: {
             value: 1,
             target: 1,
             duration: 0,
             ease: "LINEAR",
           },
+          */
           angle: {
             value: 0,
             target: 0,
@@ -48,13 +50,15 @@ global.__entity_track_event = {
             duration: 0,
             ease: "LINEAR",
           },
-          //anglePerArray: 0,
+          anglePerArray: 0,
+          /*
           anglePerArray: {
             value: 0,
             target: 0,
             duration: 0,
             ease: "LINEAR",
           },
+          */
           anglePerArrayRng: 0,
           //anglePerArrayRng: {
           //  value: 0,
@@ -62,13 +66,15 @@ global.__entity_track_event = {
           //  duration: 0,
           //  ease: "LINEAR",
           //},
-          //anglePerArrayStep: 0,
+          anglePerArrayStep: 0,
+          /*
           anglePerArrayStep: {
             value: 0,
             target: 0,
             duration: 0,
             ease: "LINEAR",
           },
+          */
           speed: {
             value: 0,
             target: 0,
@@ -83,33 +89,36 @@ global.__entity_track_event = {
           //  ease: "LINEAR",
           //},
           offset: {
-            value: 0,
-            target: 0,
-            duration: 0,
+            value: 0.0,
+            target: 0.0,
+            duration: 0.0,
             ease: "LINEAR",
           },
           offsetX: {
-            value: 0,
-            target: 0,
-            duration: 0,
+            value: 0.0,
+            target: 0.0,
+            duration: 0.0,
             ease: "LINEAR",
           },
           offsetY: {
-            value: 0,
-            target: 0,
-            duration: 0,
+            value: 0.0,
+            target: 0.0,
+            duration: 0.0,
             ease: "LINEAR",
           },
+          wiggleFrequency: 0.0,
+          /*
           wiggleFrequency: {
             value: 0,
             target: 0,
             duration: 0,
             ease: "LINEAR",
           },
+          */
           wiggleAmplitude: {
-            value: 0,
-            target: 0,
-            duration: 0,
+            value: 0.0,
+            target: 0.0,
+            duration: 0.0,
             ease: "LINEAR",
           },
         }
@@ -803,6 +812,26 @@ global.__entity_track_event = {
         : view.y
 
       ///@description feature TODO entity.coin.spawn
+      controller.coinService.spawnCoin(
+        Struct.get(data, "en-coin_template"),
+        viewX + Struct.get(data, "en-coin_x")
+          * (SHROOM_SPAWN_SIZE / SHROOM_SPAWN_AMOUNT)
+          + 0.5
+          + (Struct.get(data, "en-coin_use-rng-x")
+            ? (random(Struct.get(data, "en-coin_rng-x") / 2.0)
+              * (SHROOM_SPAWN_SIZE / SHROOM_SPAWN_AMOUNT)
+              * choose(1.0, -1.0))
+            : 0.0),
+        viewY + Struct.get(data, "en-coin_y")
+          * (SHROOM_SPAWN_SIZE / SHROOM_SPAWN_AMOUNT)
+          - 0.5
+          + (Struct.get(data, "en-coin_use-rng-y")
+            ? (random(Struct.get(data, "en-coin_rng-y") / 2.0)
+              * (SHROOM_SPAWN_SIZE / SHROOM_SPAWN_AMOUNT)
+              * choose(1.0, -1.0))
+            : 0.0))
+
+      /*
       controller.coinService.send(new Event("spawn-coin", {
         template: Struct.get(data, "en-coin_template"),
         x: viewX + Struct.get(data, "en-coin_x")
@@ -822,6 +851,7 @@ global.__entity_track_event = {
               * choose(1.0, -1.0))
             : 0.0),
       }))
+      */
     },
   },
   "brush_entity_player": {

@@ -8,11 +8,12 @@ global.__ShaderFunkFlux = {
       type: "GLSL_ES",
       uniforms: {
         u_angle: "FLOAT",
+        u_brightness: "FLOAT",
         u_density: "FLOAT",
         u_sat: "FLOAT",
         u_hue: "FLOAT",
         u_scale: "FLOAT",
-        u_seed: "FLOAT",
+        u_seed: "CONST_FLOAT",
         u_sharp: "FLOAT",
         u_speed: "FLOAT",
         u_time: "FLOAT",
@@ -28,6 +29,15 @@ global.__ShaderFunkFlux = {
         store: {
           value: 0.0,
           target: 0.0,
+          duration: 0.0,
+          ease: "LINEAR"
+        },
+        components: { }
+      },
+      u_brightness: {
+        store: {
+          value: 1.0,
+          target: 1.0,
           duration: 0.0,
           ease: "LINEAR"
         },
@@ -61,12 +71,7 @@ global.__ShaderFunkFlux = {
         components: { }
       },
       u_seed: {
-        store: {
-          value: 0.0,
-          target: 0.0,
-          duration: 0.0,
-          ease: "LINEAR"
-        },
+        store: { value: 0.0 },
         components: { }
       },
       u_sharp: {

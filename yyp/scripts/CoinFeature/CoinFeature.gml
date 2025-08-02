@@ -42,11 +42,17 @@ function CoinFeature(json): GridItemFeature(json) constructor {
 
       var verticalOffset = choose(1.0, -1.0) * random((item.sprite.getWidth() * item.sprite.getScaleX()) / 2.0)
       var horizontalOffset = -1.0 * random((item.sprite.getHeight() * item.sprite.getScaleY()) / 2.0)
-      controller.coinService.send(new Event("spawn-coin", {
-        template: this.coin,
-        x: item.x + ((verticalOffset + this.offsetX) / GRID_SERVICE_PIXEL_WIDTH),
-        y: item.y + ((horizontalOffset + this.offsetY) / GRID_SERVICE_PIXEL_HEIGHT),
-      }))
+      controller.coinService.spawnCoin(
+        this.coin,
+        item.x + ((verticalOffset + this.offsetX) / GRID_SERVICE_PIXEL_WIDTH),
+        item.y + ((horizontalOffset + this.offsetY) / GRID_SERVICE_PIXEL_HEIGHT)
+      )
+
+      //controller.coinService.send(new Event("spawn-coin", {
+      //  template: this.coin,
+      //  x: item.x + ((verticalOffset + this.offsetX) / GRID_SERVICE_PIXEL_WIDTH),
+      //  y: item.y + ((horizontalOffset + this.offsetY) / GRID_SERVICE_PIXEL_HEIGHT),
+      //}))
     }
   }
 }
@@ -96,11 +102,17 @@ function _CoinFeature(json) {
 
         var verticalOffset = choose(1.0, -1.0) * random((item.sprite.getWidth() * item.sprite.getScaleX()) / 2.0)
         var horizontalOffset = -1.0 * random((item.sprite.getHeight() * item.sprite.getScaleY()) / 2.0)
-        controller.coinService.send(new Event("spawn-coin", {
-          template: this.coin,
-          x: item.x + ((verticalOffset + this.offsetX) / GRID_SERVICE_PIXEL_WIDTH),
-          y: item.y + ((horizontalOffset + this.offsetY) / GRID_SERVICE_PIXEL_HEIGHT),
-        }))
+        controller.coinService.spawnCoin(
+          this.coin,
+          item.x + ((verticalOffset + this.offsetX) / GRID_SERVICE_PIXEL_WIDTH),
+          item.y + ((horizontalOffset + this.offsetY) / GRID_SERVICE_PIXEL_HEIGHT)
+        )
+
+        //controller.coinService.send(new Event("spawn-coin", {
+        //  template: this.coin,
+        //  x: item.x + ((verticalOffset + this.offsetX) / GRID_SERVICE_PIXEL_WIDTH),
+        //  y: item.y + ((horizontalOffset + this.offsetY) / GRID_SERVICE_PIXEL_HEIGHT),
+        //}))
       }
     },
   }))

@@ -252,22 +252,37 @@ global.__effect_track_event = {
       var area = Struct.get(data, "ef-part_area")
 
       ///@description feature TODO effect.particle.spawn
+      particleService.spawnParticleEmitter(
+        "main",
+        Struct.get(data, "ef-part_template"),
+        (area.getX() + 0.5) * GRID_SERVICE_PIXEL_WIDTH,
+        (area.getY() + 0.5) * GRID_SERVICE_PIXEL_HEIGHT,
+        (area.getX() + area.getWidth() + 0.5) * GRID_SERVICE_PIXEL_WIDTH,
+        (area.getY() + area.getHeight() + 0.5) * GRID_SERVICE_PIXEL_HEIGHT,
+        Struct.get(data, "ef-part_duration"),
+        Struct.get(data, "ef-part_amount"),
+        Struct.get(data, "ef-part_interval"),
+        ParticleEmitterShape.get(Struct.get(data, "ef-part_shape")),
+        ParticleEmitterDistribution.get(Struct.get(data, "ef-part_distribution"))
+      )
+      
+      /*
       particleService.send(particleService
         .factoryEventSpawnParticleEmitter(
           {
             particleName: Struct.get(data, "ef-part_template"),
-            ///@todo investigate why + 0.5?
             beginX: (area.getX() + 0.5) * GRID_SERVICE_PIXEL_WIDTH,
             beginY: (area.getY() + 0.5) * GRID_SERVICE_PIXEL_HEIGHT,
             endX: (area.getX() + area.getWidth() + 0.5) * GRID_SERVICE_PIXEL_WIDTH,
             endY: (area.getY() + area.getHeight() + 0.5) * GRID_SERVICE_PIXEL_HEIGHT,
+            duration: Struct.get(data, "ef-part_duration"),
             amount: Struct.get(data, "ef-part_amount"),
             interval: Struct.get(data, "ef-part_interval"),
-            duration: Struct.get(data, "ef-part_duration"),
             shape: ParticleEmitterShape.get(Struct.get(data, "ef-part_shape")),
             distribution: ParticleEmitterDistribution.get(Struct.get(data, "ef-part_distribution")),
           }, 
         ))
+      */
     },
   },
   "brush_effect_config": {
