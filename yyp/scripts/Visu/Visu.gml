@@ -1071,6 +1071,16 @@ function _Visu() constructor {
     BRUSH_TOOLBAR_ENTRY_STEP = Core.getProperty("visu.const.BRUSH_TOOLBAR_ENTRY_STEP", BRUSH_TOOLBAR_ENTRY_STEP)
     FLIP_VALUE = Core.getProperty("visu.const.FLIP_VALUE", FLIP_VALUE)
 
+    var layerId = Scene.fetchLayer(layerName, layerDefaultDepth)
+
+    if (!Beans.exists(BeanFileService)) {
+      Beans.add(Beans.factory(BeanFileService, GMServiceInstance, layerId,
+        new FileService({
+          dispatcher: {
+            limit: Core.getProperty("visu.files-service.dispatcher.limit", 1),
+          }
+        })))
+    }
 
     this.settings.set(new SettingEntry({ name: "visu.editor.autosave", type: SettingTypes.BOOLEAN, defaultValue: false }))
       .set(new SettingEntry({ name: "visu.language", type: SettingTypes.STRING, defaultValue: LanguageType.en_EN }))
@@ -1166,8 +1176,6 @@ function _Visu() constructor {
     
     Language.load(this.settings.getValue("visu.language", LanguageType.en_EN))
 
-    var layerId = Scene.fetchLayer(layerName, layerDefaultDepth)
-
     if (!Beans.exists(BeanHTTPService)) {
       Beans.add(Beans.factory(BeanHTTPService, GMServiceInstance, layerId,
         new HTTPService({
@@ -1176,15 +1184,6 @@ function _Visu() constructor {
           },
           executor: {
             enableLogger: true,
-          }
-        })))
-    }
-
-    if (!Beans.exists(BeanFileService)) {
-      Beans.add(Beans.factory(BeanFileService, GMServiceInstance, layerId,
-        new FileService({
-          dispatcher: {
-            limit: Core.getProperty("visu.files-service.dispatcher.limit", 1),
           }
         })))
     }
