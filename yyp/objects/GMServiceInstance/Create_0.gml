@@ -16,3 +16,6 @@
   
 	///@type {?Calllable}
 	__onHTTPEvent = null
+
+	///@type {?Calllable}
+	__onSaveLoadEvent = null

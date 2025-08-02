@@ -42,12 +42,18 @@ function ParticleSystem(_layerName) constructor {
   ///@type {TaskExecutor}
   executor = new TaskExecutor(this)
 
+  ///@private
+  ///@type {Queue<Particle>}
+  gc = new Queue(Particle)
+
   clear = function() {
     this.executor.tasks.forEach(TaskUtil.fullfill).clear()
     if (Core.isType(this.asset, GMParticleSystem)) {
       part_particles_clear(this.asset)
+      this.gc.forEach(function(particle) { particle.free() })
     }
   }
+
   ///@return {ParticleSystem}
   update = function() {
     if (!Core.isType(this.asset, GMParticleSystem)) {
@@ -84,10 +90,13 @@ function ParticleSystem(_layerName) constructor {
     
   free = function() {
     if (Core.isType(this.asset, GMParticleSystem)) {
+      part_particles_clear(this.asset)
       if (typeof(this.emitter) == "ref" || part_emitter_exists(this.asset, this.emitter)) {
         part_emitter_destroy(this.asset, this.emitter)
         this.emitter = null
       }
+
+      this.gc.forEach(function(particle) { particle.free() })
 
       part_system_destroy(this.asset)
       this.asset = null
@@ -129,30 +138,23 @@ function ParticleService(config = null): Service() constructor {
       var task = new Task("emmit-particle")
         .setTimeout(Struct.getDefault(event.data, "duration", FRAME_MS))
         .setTick(Struct.getDefault(event.data, "interval", FRAME_MS))
-        .setState(new Map(String, any, {
-          particle: event.data.particle,
-          system: event.data.system,
-          shape: event.data.shape,
-          amount: event.data.amount,
-          coords: event.data.coords,
-          distribution: event.data.distribution,
-        }))
+        .setState(event.data)
         .whenTimeout(function() {
           this.fullfill()
         })
         .whenUpdate(function(executor) {
-          var system = this.state.get("system")
-          var coords = this.state.get("coords")
-          var shape = this.state.get("shape")
-          var distribution = this.state.get("distribution")
+          var system = this.state.system
+          var coords = this.state.coords
+          var shape = this.state.shape
+          var distribution = this.state.distribution
           part_emitter_region(
             system.asset, system.emitter,
             coords.x, coords.z, coords.y, coords.a,
             shape, distribution
           )
 
-          var particle = this.state.get("particle")
-          var amount = this.state.get("amount")
+          var particle = this.state.particle
+          var amount = this.state.amount
           part_emitter_burst(system.asset, system.emitter, particle.asset, amount)
         })
       event.data.system.executor.add(task)
@@ -168,23 +170,46 @@ function ParticleService(config = null): Service() constructor {
     },
   }))
 
+  ///@param {ParticleSystem} system
   ///@param {String} name
   ///@return {?Particle}
-  factoryParticle = function(name) {
+  factoryParticle = function(system, name) {
     var template = this.getTemplate(name)
-    return template != null ? new Particle(template) : null
+    if (template != null) {
+      if (template.particle == null) {
+        template.particle = new Particle(template)
+        system.gc.push(template.particle)
+      }
+      return template.particle
+    }
+
+    return null
   }
 
   ///@param {Struct} config
   ///@return {Event}
   factoryEventSpawnParticleEmitter = function(config) {
+    var systemName = Struct.getDefault(config, "systemName", "main")
+    var system = this.systems.get(systemName)
+    if (system == null) {
+      Logger.warn("ParticleService", $"Found null system for name: {systemName}")
+      return
+    }
+
+    var particleName = Struct.getDefault(config, "particleName", "particle-default")
+    var particle = this.factoryParticle(system, particleName)
+    if (particle == null) {
+      Logger.warn("ParticleService", $"Found null particle-template for name: {particleName}, system: {systemName}")
+      return
+    }
+
     return new Event("spawn-particle-emitter", {
-      particle: this.factoryParticle(Struct.getDefault(config, "particleName", "particle-default")),
-      system: this.systems.get(Struct.getDefault(config, "systemName", "main")),
+      particle: particle,
+      system: system,
       coords: new Vector4(
         Struct.get(config, "beginX"),
-        Struct.get(config, "beginY"),
         Struct.get(config, "endX"),
+        Struct.get(config, "beginY"),
         Struct.get(config, "endY")
       ),
       shape: Struct.getDefault(config, "shape", ParticleEmitterShape.ELLIPSE),
@@ -193,6 +218,69 @@ function ParticleService(config = null): Service() constructor {
       amount: Struct.getDefault(config, "amount", 100),
       distribution: Struct.getDefault(config, "distribution", ParticleEmitterDistribution.LINEAR),
     })
+  }
+
+  ///@param {String} systemName
+  ///@param {String} particleName
+  ///@param {Number} beginX
+  ///@param {Number} beginY
+  ///@param {Number} endX
+  ///@param {Number} endY
+  ///@param {Number} [duration]
+  ///@param {Number} [amount]
+  ///@param {Number} [interval]
+  ///@param {ParticleEmitterShape} [shape]
+  ///@param {ParticleEmitterDistribution} [distribution]
+  spawnParticleEmitter = function(systemName, particleName, beginX, beginY, endX, endY, duration = 0, amount = 1, interval = FRAME_MS, shape = ParticleEmitterShape.ELLIPSE, distribution = ParticleEmitterDistribution.LINEAR) {
+    var system = this.systems.get(systemName)
+    if (system == null) {
+      Logger.warn("ParticleService", $"Found null system for name: {systemName}")
+      return
+    }
+
+    var particle = this.factoryParticle(system, particleName)
+    if (particle == null) {
+      Logger.warn("ParticleService", $"Found null particle-template for name: {particleName}, system: {systemName}")
+      return
+    }
+
+    var task = new Task("emmit-particle")
+      .setTimeout(duration)
+      .setTick(interval)
+      .setState({
+        particle: particle,
+        system: system,
+        beginX: beginX,
+        beginY: beginY,
+        endX: endX,
+        endY: endY,
+        duration: duration,
+        amount: amount,
+        interval: interval,
+        shape: shape,
+        distribution: distribution,
+      })
+      .whenTimeout(function() {
+        this.fullfill()
+      })
+      .whenUpdate(function(executor) {
+        var system = this.state.system
+        part_emitter_region(
+          system.asset, 
+          system.emitter,
+          this.state.beginX,
+          this.state.endX,
+          this.state.beginY,
+          this.state.endY,
+          this.state.shape,
+          this.state.distribution
+        )
+
+        var particle = this.state.particle
+        var amount = this.state.amount
+        part_emitter_burst(system.asset, system.emitter, this.state.particle.asset, this.state.amount)
+      })
+    system.executor.add(task)
   }
 
   ///@param {Event} event
@@ -207,6 +295,7 @@ function ParticleService(config = null): Service() constructor {
     this.systems.forEach(function(system) {
       system.update()
     })
+
     return this
   }
 

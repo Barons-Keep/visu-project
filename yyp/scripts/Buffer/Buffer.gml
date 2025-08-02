@@ -38,7 +38,7 @@ function Buffer() constructor {
     static free = function() { }
 }
 
-#macro TEXT_BUFFER_SIZE 256
+#macro TEXT_BUFFER_SIZE 1024
 #macro TEXT_BUFFER_ALIGNMENT 1
 
 ///@param {Struct} [config]

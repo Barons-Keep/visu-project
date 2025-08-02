@@ -11,6 +11,10 @@ uniform float amount;
 
 #define t 6.28318530718
 #define r 6.
+	
+float get_alpha_from_pixel(vec3 pixel) {
+  return dot(pixel, vec3(0.2126, 0.7152, 0.0722)); // Luma (ITU-R BT.709)
+}
 
 vec3 g(vec3 a, vec3 b, float n) {
     vec3 aa = a*n;
@@ -35,17 +39,10 @@ void main() {
     // Time varying pixel color
     float s = SDFhex(uv);
     float c = fract(s-iTime*.5);
-    vec3 col = vec3(g(vec3(.48,0.,1.),iTint,sqrt(c)));
-    //if (s>r) col = vec3(0.);
-    vec4 textureColor = texture2D(gm_BaseTexture, v_vTexcoord);
-    //col.r *= 0.33;
-    //col.g *= clamp(textureColor.g + 0.33, 0.0, 1.0);
-    //col.b *= clamp(textureColor.b + 0.33, 0.0, 1.0);
-    // Output to screen
-    gl_FragColor = vec4(
-        col.x + textureColor.x, 
-        col.y + textureColor.y, 
-        col.z + textureColor.z, 
-        textureColor.a * v_vColour.a
-    );
+    vec4 texture = texture2D(gm_BaseTexture, v_vTexcoord);
+    vec3 pixel = vec3(g(vec3(.48,0.,1.),iTint,sqrt(c)));;
+    float alpha = get_alpha_from_pixel(pixel);
+    pixel = mix(pixel, texture.rgb, 1.0 - v_vColour.a);
+    pixel = mix(pixel, texture.rgb, 1.0 - alpha);
+    gl_FragColor = vec4(pixel, texture.a + (alpha * v_vColour.a));
 }

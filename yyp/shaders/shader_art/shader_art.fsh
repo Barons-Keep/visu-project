@@ -7,6 +7,10 @@ varying vec4 vColor;
 uniform float iTime;
 uniform vec2 iResolution;
 uniform float iIterations;
+	
+float get_alpha_from_pixel(vec3 pixel) {
+  return dot(pixel, vec3(0.2126, 0.7152, 0.0722)); // Luma (ITU-R BT.709)
+}
 
 ///@description https://iquilezles.org/articles/palettes/
 vec3 palette(float t) {
@@ -25,7 +29,11 @@ void main() {
   vec3 finalColor = vec3(0.0);
   vec3 col = vec3(0.0);
   float d = 0.0;
-  for (float idx = 0.0; idx < iIterations; idx++) {
+  for (float idx = 0.0; idx < 64.0; idx++) {
+    if (idx > iIterations) {
+      break;
+    }
+
     uv = fract(uv * 1.5) - 0.5;
     col = palette(length(uv0) + idx * 0.25 + iTime * 0.25);
     d = length(uv) * exp(-length(uv0));
@@ -34,12 +42,10 @@ void main() {
     finalColor += col * d;
   }
 
-  vec4 textureColor = texture2D(gm_BaseTexture, vTexcoord);
-  vec3 pixel = mix(finalColor, textureColor.rgb, 0.08);
-  gl_FragColor = vec4(
-    pixel.x, 
-    pixel.y, 
-    pixel.z, 
-    textureColor.a * vColor.a * ((pixel.x + pixel.y + pixel.z) / 1.77)
-  );
+  vec4 texture = texture2D(gm_BaseTexture, vTexcoord);
+  vec3 pixel = finalColor;
+  float alpha = get_alpha_from_pixel(pixel);
+  pixel = mix(pixel, texture.rgb, 1.0 - vColor.a);
+  pixel = mix(pixel, texture.rgb, 1.0 - alpha);
+  gl_FragColor = vec4(pixel, texture.a + (alpha * vColor.a));
 }

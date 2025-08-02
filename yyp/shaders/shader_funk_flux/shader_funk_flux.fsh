@@ -7,10 +7,6 @@
 #define DEG_TO_RAD 0.01745329251
 #define SQRT_3 1.732050807568877
 
-// Shader specific constatns
-#define OCTAVES 20.0
-#define PERIOD 500.0
-
 const mat3 rgb2yiq = mat3(
   0.299, 0.587, 0.114, 
   0.595716, -0.274453, -0.321263, 
@@ -24,15 +20,22 @@ const mat3 yiq2rgb = mat3(
 );
 
 
+// Shader specific constatns
+#define OCTAVES 20.0
+#define PERIOD 500.0
+
+
 // Varying Outputs
 varying vec2 v_texcoord;
 varying vec4 v_color;
 
+
 // Uniforms
 uniform float u_angle;      // Default: 0.0
+uniform float u_brightness; // Default: 1.0
 uniform float u_density;    // Default: 1.0
-uniform float u_sat;        // Default: 1.0
 uniform float u_hue;        // Default: 0.0
+uniform float u_sat;        // Default: 1.0
 uniform float u_scale;      // Default: 1.0
 uniform float u_seed;       // Default: 0.0
 uniform float u_sharp;      // Default: 0.25
@@ -41,7 +44,6 @@ uniform float u_time;       // Default: 0.0, where 1.0=1sec
 uniform float u_treshold;   // Default: 1.0
 uniform vec2 u_offset;			// Default: (0.5, 0.5)
 uniform vec2 u_resolution;  // Default: vec2(GuiWith(), GuiHeight())
-
 
 
 // Base methods
@@ -55,21 +57,6 @@ vec2 rotated_uv_resolution(vec2 v_texcoord, vec2 resolution, vec2 origin, float 
   origin_ndc = (origin_ndc * 2.0 - resolution) / resolution.y;
 
   vec2 coord = (v_texcoord * 2.0 - resolution) / resolution.y;
-  coord -= origin_ndc;
-
-  return vec2(
-    coord.x * cos_a - coord.y * sin_a,
-    coord.x * sin_a + coord.y * cos_a
-  );
-}
-
-vec2 rotated_uv(vec2 texcoord, vec2 origin, float angle_deg) {
-  float angle_rad = angle_deg * DEG_TO_RAD;
-  float cos_a = cos(angle_rad);
-  float sin_a = sin(angle_rad);
-
-  vec2 origin_ndc = origin * 2.0 - 1.0;
-  vec2 coord = texcoord * 2.0 - 1.0;
   coord -= origin_ndc;
 
   return vec2(
@@ -95,14 +82,14 @@ vec3 apply_hue(vec3 color, float hue) {
   return vec3(y_color.r, chroma * cos(final_hue), chroma * sin(final_hue)) * yiq2rgb;
 }
 
-vec4 mix_pixel(vec3 pixel, vec4 texture, vec4 color) {
-  float alpha = get_alpha_from_pixel(pixel);
-  return vec4(mix(texture.rgb, pixel * color.rgb, color.a * alpha), alpha * color.a * texture.a);
-}
 
 // Shader methods
 float get_cos_range(float degrees, float range) {
 	return (((1.0 + cos(degrees * DEG_TO_RAD)) * 0.5) * range);
+}
+
+float get_sin_range(float degrees, float range) {
+	return (((1.0 + sin(degrees * DEG_TO_RAD)) * 0.5) * range);
 }
 
 float loop_time(float time) {
@@ -110,29 +97,21 @@ float loop_time(float time) {
 }
 
 void main() {
-	vec2 uv = rotated_uv_resolution(v_texcoord * u_scale, u_resolution, u_offset, u_angle);
-  vec4 texture = texture2D(gm_BaseTexture, v_texcoord);
-
-  float angle_rad = u_angle * DEG_TO_RAD;
-  float len_x = cos(angle_rad);
-  float len_y = sin(angle_rad);
-  float x_scale = get_cos_range(u_time + u_seed, len_x * u_speed);
-  float y_scale = get_cos_range(u_time + u_seed, len_y * u_speed);
-  float f_scale = get_cos_range(u_time + u_seed, u_density) + 1.0;
+  vec2 uv = rotated_uv_resolution(v_texcoord * u_scale, u_resolution, u_offset, u_angle);
   float time = loop_time(u_time + u_seed);
+  float x_scale = get_cos_range(u_time + u_seed, u_speed);
+  float y_scale = get_sin_range(u_time + u_seed, u_speed);
+  float f_scale = get_cos_range(u_time + u_seed, u_density) + 1.0;
   for (float idx = 1.0; idx < OCTAVES; idx += 1.0) {
     uv.x += u_sharp / idx * sin(idx * uv.y + time) * f_scale + x_scale;		
     uv.y += u_sharp / idx * cos(idx * uv.x + time) * f_scale + y_scale;
   }
 
-  vec3 pixel = apply_hue(apply_saturation(vec3(
-    sin(uv.x) * 0.5 + 0.5,
-    cos(uv.y) * 0.5 + 0.5,
-    sin(uv.x + uv.y) * 0.5 + 0.5
-  ), u_sat), u_hue);
-
+  vec4 texture = texture2D(gm_BaseTexture, v_texcoord);
+  vec3 color = vec3(sin(uv.x) * 0.5 + 0.5, cos(uv.y) * 0.5 + 0.5, sin(uv.y) * 0.5 + 0.5);
+  vec3 pixel = apply_hue(apply_saturation(color, u_sat), u_hue) * u_brightness;
   float alpha = get_alpha_from_pixel(pixel);
-  pixel = mix(pixel, vec3(0.0), 1.0 - alpha);
-  pixel = mix(pixel, texture.a * texture.rgb, (1.0 - alpha) * (1.0 - u_treshold));
-  gl_FragColor = vec4(pixel, v_color.a * (alpha + u_treshold));
+  pixel = mix(pixel, texture.rgb, 1.0 - v_color.a);
+  pixel = mix(pixel, texture.rgb, (1.0 - alpha) * (1.0 - u_treshold));
+  gl_FragColor = vec4(pixel, texture.a + (alpha * v_color.a));
 }

@@ -39,27 +39,37 @@ function CoinTemplate(_name, json) constructor {
 
   //@return {Struct}
   serialize = function() {
-    var json = {
+    return {
       name: this.name,
       category: this.category,
       sprite: this.sprite,
       useSpeed: this.useSpeed,
       changeSpeed: this.changeSpeed,
+      mask: this.mask,
+      amount: this.amount,
+      speed: this.speed != null ? JSON.clone(this.speed) : null,
     }
+  }
 
-    if (Optional.is(this.mask)) {
-      Struct.set(json, "mask", this.mask)
+  ///@param {Number} x
+  ///@param {Number} y
+  ///@param {?Number} [angle]
+  ///@param {?Struct} [speed]
+  serializeSpawn = function(x, y, angle = null, speed = null) {
+    var _speed = this.speed != null ? JSON.clone(this.speed) : null
+    return {
+      name: this.name,
+      category: this.category,
+      sprite: this.sprite,
+      useSpeed: this.useSpeed,
+      changeSpeed: this.changeSpeed,
+      mask: this.mask != null ? JSON.clone(this.mask) : null,
+      amount: this.amount,
+      x: x,
+      y: y,
+      angle: angle != null ? angle : 90.0,
+      speed: speed != null ? Struct.append(_speed, speed) : _speed,
     }
-
-    if (Optional.is(this.amount)) {
-      Struct.set(json, "amount", this.amount)
-    }
-
-    if (Optional.is(this.speed)) {
-      Struct.set(json, "speed", this.speed)
-    }
-
-    return JSON.clone(json)
   }
 }
 
@@ -67,19 +77,19 @@ function CoinTemplate(_name, json) constructor {
 function Coin(config) constructor {
 
   ///@type {Number}
-  x = Assert.isType(Struct.get(config, "x"), Number)
+  x = Struct.get(config, "x")
 
   ///@type {Number}
-  y = Assert.isType(Struct.get(config, "y"), Number)
+  y = Struct.get(config, "y")
 
   ///@type {Number}
-  z = Assert.isType(Struct.getDefault(config, "z", 0), Number)
+  z = Struct.getDefault(config, "z", 0)
 
   ///@type {Sprite}
-  sprite = Assert.isType(SpriteUtil.parse(Struct.get(config, "sprite"), { name: "texture_missing" }), Sprite)
+  sprite = SpriteUtil.parse(Struct.get(config, "sprite"), { name: "texture_missing" })
 
   ///@type {Rectangle}
-  mask = Core.isType(Struct.get(config, "mask"), Struct)
+  mask = Struct.get(config, "mask") != null
     ? new Rectangle(config.mask)
     : new Rectangle({
       x: 0,
@@ -89,10 +99,10 @@ function Coin(config) constructor {
   })
 
   ///@type {CoinCategory}
-  category = Assert.isEnum(Struct.get(config, "category"), CoinCategory)
+  category = Struct.get(config, "category")
 
   ///@type {Number}
-  amount = Core.isType(Struct.get(config, "amount"), Number) ? config.amount : 1
+  amount = Struct.getIfType(config, "amount", Number, 1)
 
   if (Optional.is(Struct.getIfType(config, "speed", Struct))) {
     if (!Struct.getIfType(config, "useSpeed", Boolean, false)) {
@@ -117,13 +127,19 @@ function Coin(config) constructor {
       })
 
   ///@type {Number}
-  angle = Optional.is(Struct.getIfType(config, "angle", Number))
-    ? config.angle
-    : 90.0
+  angle = Struct.getIfType(config, "angle", Number, 90.0)
 
   ///@private
   ///@type {Boolean}
   simpleAngle = this.angle == 90.0
+  
+  ///@private
+  ///@type {Boolean}
+  magnet = false
+
+  ///@private
+  ///@type {Number}
+  magnetSpeed = 0.0
 
   ///@param {Player} target
   ///@return {Boolean}
@@ -145,14 +161,6 @@ function Coin(config) constructor {
       targetX + halfTargetWidth, targetY + halfTargetHeight
     )
   }
-
-  ///@private
-  ///@type {Boolean}
-  magnet = false
-
-  ///@private
-  ///@type {Number}
-  magnetSpeed = 0.0
 
   ///@param {?Player} player
   ///@return {Coin}

@@ -45,6 +45,21 @@ function CoinService(config = {}): Service() constructor {
     },
   }))
 
+  spawnCoin = function(name, x, y, angle = null, speed = null) {
+    if (name == "coin-empty") {
+      return
+    }
+
+    var template = this.getTemplate(name)
+    if (template == null) {
+      Logger.warn("CoinService", $"Found null coin-template for name {name}")
+      return
+    }
+    
+    var coin = new Coin(template.serializeSpawn(x, y, angle, speed))
+    this.coins.add(coin)
+  }
+
   ///@param {Event} event
   ///@return {?Promise}
   send = function(event) {

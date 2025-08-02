@@ -45,6 +45,12 @@ function DisplayService(_controller, config = {}): Service() constructor {
   minHeight = Core.isType(Struct.get(config, "minHeight"), Number) ? config.minHeight : 240
 
   ///@type {Number}
+  beforeFullscreenWidth = this.minWidth
+	
+	///@type {Number}
+	beforeFullscreenHeight = this.minHeight
+
+  ///@type {Number}
   scale = Core.isType(Struct.get(config, "scale"), Number) ? config.scale : 1
 
   ///@private
@@ -80,19 +86,33 @@ function DisplayService(_controller, config = {}): Service() constructor {
     return window_get_fullscreen() == true
   }
 
+  ///@return {Boolean} [enable]
   ///@return {DisplayService}
-  setFullscreen = function(enable) {
+  setFullscreen = function(enable = true) {
     var fullscreen = this.getFullscreen()
-    if (fullscreen != enable) {
-      window_set_fullscreen(enable)
-
-      if (fullscreen) {
-        this.resize(this.windowWidth, this.windowHeight)
-      } else {
-        this.windowWidth = this.getWidth()
-        this.windowHeight = this.getHeight()
-      }
+    window_set_fullscreen(enable)
+    if (enable && !fullscreen) { 
+      this.beforeFullscreenWidth = this.previousWidth
+      this.beforeFullscreenHeight = this.previousHeight
+      this.resize(this.getWidth(), this.getHeight())
     }
+
+    if (!enable && fullscreen) {
+      this.resize(this.beforeFullscreenWidth, this.beforeFullscreenHeight)
+    }
+    return this
+  }
+
+  ///@return {Boolean}
+  getBorderlessWindow = function() {
+    return !window_get_showborder()
+  }
+
+  ///@return {Boolean} [enable]
+  ///@return {DisplayService}
+  setBorderlessWindow = function(enable = true) {
+    window_set_showborder(!enable)
+    window_enable_borderless_fullscreen(enable)
     return this
   }
 

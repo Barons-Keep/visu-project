@@ -1046,6 +1046,7 @@ function _Visu() constructor {
   static initShaders = function() {
     ShaderArcRunner.install(SHADERS, SHADER_CONFIGS)
     ShaderFunkFlux.install(SHADERS, SHADER_CONFIGS)
+    ShaderWarpPulse.install(SHADERS, SHADER_CONFIGS)
     ShaderWavyMesh.install(SHADERS, SHADER_CONFIGS)
     ShaderWavySpectrum.install(SHADERS, SHADER_CONFIGS)
     return this

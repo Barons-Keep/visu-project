@@ -7,13 +7,28 @@
 #define DEG_TO_RAD 0.01745329251
 #define SQRT_3 1.732050807568877
 
+const mat3 rgb2yiq = mat3(
+  0.299, 0.587, 0.114, 
+  0.595716, -0.274453, -0.321263, 
+  0.211456, -0.522591, 0.311135
+);
+
+const mat3 yiq2rgb = mat3(
+  1.0, 0.9563, 0.6210, 
+  1.0, -0.2721, -0.6474, 
+  1.0, -1.1070, 1.7046
+);
+
+
 // Shader specific constatns
 #define NOISE_DISTORTION_SCALE 1000000.0
 #define OCTAVES 6
 
+
 // Varying Outputs
 varying vec2 v_texcoord;
 varying vec4 v_color;
+
 
 // Uniforms
 uniform float u_angle;      // Default: 0.0
@@ -23,8 +38,11 @@ uniform float u_curves;     // Default: 2.0
 uniform float u_distortion; // Default: 0.01
 uniform float u_frequency;  // Default: 1.0
 uniform float u_glow;       // Default: 1.0
+uniform float u_hue;        // Default: 0.0
 uniform float u_jumpiness;  // Default: 2.9
+uniform float u_sat;        // Default: 1.0
 uniform float u_scale;      // Default: 1.5
+uniform float u_seed;       // Default: 0.0
 uniform float u_speed;      // Default: 1.0
 uniform float u_time;				// Default: 0.0, where 1.0=1sec
 uniform float u_wiggle;     // Default: 2.0
@@ -71,10 +89,19 @@ float get_alpha_from_pixel(vec3 pixel) {
   return dot(pixel, vec3(0.2126, 0.7152, 0.0722)); // Luma (ITU-R BT.709)
 }
 
-vec4 mix_pixel(vec3 pixel, vec4 texture, vec4 color) {
-  float alpha = get_alpha_from_pixel(pixel);
-  return vec4(mix(texture.rgb, pixel * color.rgb, color.a * alpha), alpha * color.a * texture.a);
+vec3 apply_saturation(vec3 color, float saturation) {
+  float luma = get_alpha_from_pixel(color);
+  return mix(vec3(luma), color, saturation);
 }
+
+vec3 apply_hue(vec3 color, float hue) {
+  vec3 y_color = color * rgb2yiq;
+  float original_hue = atan(y_color.b, y_color.g);
+  float final_hue = original_hue + (hue * TAU);
+  float chroma = sqrt(y_color.b * y_color.b + y_color.g * y_color.g);
+  return vec3(y_color.r, chroma * cos(final_hue), chroma * sin(final_hue)) * yiq2rgb;
+}
+
 
 // Shader methods
 float hash_1d(float x) {
@@ -128,7 +155,7 @@ float lightning_path(vec2 uv, float seed, float jumpiness, float distortion, flo
   float noise_val = fract(noise_1d(seed * (1.0 + wiggle)) * j) * (j / 2.0) - 1.0;
   float bend = noise_val * u_bend;
   uv.y += (j - uv.x * uv.x) * bend;
-  uv.x -= u_time * (0.2 * u_speed);
+  uv.x -= u_seed + (u_time * (0.2 * u_speed));
 
   float displacement = fbm(uv * vec2(curve_freq, curve_freq * 0.66) - vec2(0.0, seed), distortion);
   displacement = (displacement * (scale * 2.0) - scale) * 0.5;
@@ -137,7 +164,7 @@ float lightning_path(vec2 uv, float seed, float jumpiness, float distortion, flo
 }
 
 vec3 lightning_field(vec2 uv, float jumpiness, float distortion, float scale, float curve_freq, float brightness, float wiggle, vec3 tint) {
-  float time_offset = u_time * (0.08 * u_frequency);
+  float time_offset = u_seed + (u_time * (0.08 * u_frequency));
 
   float d1 = lightning_path(uv, 100.0 + time_offset * 1.0, jumpiness, distortion, scale, curve_freq, wiggle);
   float d2 = lightning_path(uv, 300.0 + time_offset * 1.5, jumpiness, distortion, scale, curve_freq, wiggle);
@@ -154,7 +181,11 @@ vec3 lightning_field(vec2 uv, float jumpiness, float distortion, float scale, fl
 
 void main() {
   vec2 uv = rotated_uv_resolution(v_texcoord, u_resolution, u_offset, u_angle);
-  vec3 pixel = lightning_field(uv, u_jumpiness, u_distortion, u_scale, u_curves, u_brightness, u_wiggle, u_tint);
-  vec4 texture = texture2D(gm_BaseTexture, uv);
-  gl_FragColor = mix_pixel(pixel, texture, v_color);
+  vec4 texture = texture2D(gm_BaseTexture, v_texcoord);
+  vec3 color = lightning_field(uv, u_jumpiness, u_distortion, u_scale, u_curves, u_brightness, u_wiggle, u_tint);
+  vec3 pixel = apply_hue(apply_saturation(color, u_sat), u_hue);
+  float alpha = get_alpha_from_pixel(pixel);
+  pixel = mix(pixel, texture.rgb, 1.0 - v_color.a);
+  pixel = mix(pixel, texture.rgb, 1.0 - alpha);
+  gl_FragColor = vec4(pixel, texture.a + (alpha * v_color.a));
 }

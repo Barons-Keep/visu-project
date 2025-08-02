@@ -219,7 +219,7 @@ function _FileUtil() constructor {
       file_text_readln(file)
     }
     file_text_close(file)
-    Logger.debug("FileUtil", $"fetch-file-sync successfully: {path}")
+    Logger.debug("FileUtil", $"open-file-sync successfully: {path}")
     return new File({ path: path, data: data })
   }
 

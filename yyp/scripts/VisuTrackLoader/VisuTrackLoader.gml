@@ -117,7 +117,7 @@ function VisuTrackLoader(_controller): Service() constructor {
             var controller = Beans.get(BeanVisuController)
             var editor = Beans.get(Visu.modules().editor.controller)
             fsmState.state.set("promise", Beans.get(BeanFileService).send(
-              new Event("fetch-file")
+              new Event("open-file")
                 .setData({ path: path })
                 .setPromise(new Promise()
                   .whenSuccess(function(result) {
@@ -197,7 +197,7 @@ function VisuTrackLoader(_controller): Service() constructor {
               {
                 name: "texture",
                 callback: callback,
-                data: new Event("fetch-file")
+                data: new Event("open-file")
                   .setData({ path: $"{data.path}{data.manifest.texture}" })
                   .setPromise(new Promise()
                     .setState({ 
@@ -231,7 +231,7 @@ function VisuTrackLoader(_controller): Service() constructor {
               {
                 name: "sound",
                 callback: callback,
-                data: new Event("fetch-file")
+                data: new Event("open-file")
                   .setData({ path: $"{data.path}{data.manifest.sound}" })
                   .setPromise(new Promise()
                     .setState({ 
@@ -270,7 +270,7 @@ function VisuTrackLoader(_controller): Service() constructor {
               {
                 name: "shader",
                 callback: callback,
-                data: new Event("fetch-file")
+                data: new Event("open-file")
                   .setData({ path: $"{data.path}{data.manifest.shader}" })
                   .setPromise(new Promise()
                     .setState({ 
@@ -288,7 +288,7 @@ function VisuTrackLoader(_controller): Service() constructor {
               {
                 name: "track",
                 callback: callback,
-                data: new Event("fetch-file")
+                data: new Event("open-file")
                   .setData({ path: $"{data.path}{data.manifest.track}" })
                   .setPromise(new Promise()
                     .setState({ 
@@ -321,7 +321,7 @@ function VisuTrackLoader(_controller): Service() constructor {
               {
                 name: "bullet",
                 callback: callback,
-                data: new Event("fetch-file")
+                data: new Event("open-file")
                   .setData({ path: $"{data.path}{data.manifest.bullet}" })
                   .setPromise(new Promise()
                     .setState({ 
@@ -339,7 +339,7 @@ function VisuTrackLoader(_controller): Service() constructor {
               {
                 name: "coin",
                 callback: callback,
-                data: new Event("fetch-file")
+                data: new Event("open-file")
                   .setData({ path: $"{data.path}{data.manifest.coin}" })
                   .setPromise(new Promise()
                     .setState({ 
@@ -357,7 +357,7 @@ function VisuTrackLoader(_controller): Service() constructor {
               {
                 name: "subtitle",
                 callback: callback,
-                data: new Event("fetch-file")
+                data: new Event("open-file")
                   .setData({ path: $"{data.path}{data.manifest.subtitle}" })
                   .setPromise(new Promise()
                     .setState({ 
@@ -375,7 +375,7 @@ function VisuTrackLoader(_controller): Service() constructor {
               {
                 name: "shroom",
                 callback: callback,
-                data: new Event("fetch-file")
+                data: new Event("open-file")
                   .setData({ path: $"{data.path}{data.manifest.shroom}" })
                   .setPromise(new Promise()
                     .setState({ 
@@ -393,7 +393,7 @@ function VisuTrackLoader(_controller): Service() constructor {
               {
                 name: "particle",
                 callback: callback,
-                data: new Event("fetch-file")
+                data: new Event("open-file")
                   .setData({ path: $"{data.path}{data.manifest.particle}" })
                   .setPromise(new Promise()
                     .setState({ 
@@ -414,7 +414,7 @@ function VisuTrackLoader(_controller): Service() constructor {
             /*
             var _promises = new Map(String, Promise, {
               "texture": Beans.get(BeanFileService).send(
-                new Event("fetch-file")
+                new Event("open-file")
                   .setData({ path: $"{data.path}{data.manifest.texture}" })
                   .setPromise(new Promise()
                     .setState({ 
@@ -446,7 +446,7 @@ function VisuTrackLoader(_controller): Service() constructor {
                     }))
               ),
               "sound": Beans.get(BeanFileService).send(
-                new Event("fetch-file")
+                new Event("open-file")
                   .setData({ path: $"{data.path}{data.manifest.sound}" })
                   .setPromise(new Promise()
                     .setState({ 
@@ -483,7 +483,7 @@ function VisuTrackLoader(_controller): Service() constructor {
                     }))
               ),
               "shader": Beans.get(BeanFileService).send(
-                new Event("fetch-file")
+                new Event("open-file")
                   .setData({ path: $"{data.path}{data.manifest.shader}" })
                   .setPromise(new Promise()
                     .setState({ 
@@ -499,7 +499,7 @@ function VisuTrackLoader(_controller): Service() constructor {
                     }))
               ),
               "track": Beans.get(BeanFileService).send(
-                new Event("fetch-file")
+                new Event("open-file")
                   .setData({ path: $"{data.path}{data.manifest.track}" })
                   .setPromise(new Promise()
                     .setState({ 
@@ -528,7 +528,7 @@ function VisuTrackLoader(_controller): Service() constructor {
                     }))
               ),
               "bullet": Beans.get(BeanFileService).send(
-                new Event("fetch-file")
+                new Event("open-file")
                   .setData({ path: $"{data.path}{data.manifest.bullet}" })
                   .setPromise(new Promise()
                     .setState({ 
@@ -544,7 +544,7 @@ function VisuTrackLoader(_controller): Service() constructor {
                     }))
               ),
               "coin": Beans.get(BeanFileService).send(
-                new Event("fetch-file")
+                new Event("open-file")
                   .setData({ path: $"{data.path}{data.manifest.coin}" })
                   .setPromise(new Promise()
                     .setState({ 
@@ -560,7 +560,7 @@ function VisuTrackLoader(_controller): Service() constructor {
                     }))
               ),
               "subtitle": Beans.get(BeanFileService).send(
-                new Event("fetch-file")
+                new Event("open-file")
                   .setData({ path: $"{data.path}{data.manifest.subtitle}" })
                   .setPromise(new Promise()
                     .setState({ 
@@ -576,7 +576,7 @@ function VisuTrackLoader(_controller): Service() constructor {
                     }))
               ),
               "shroom": Beans.get(BeanFileService).send(
-                new Event("fetch-file")
+                new Event("open-file")
                   .setData({ path: $"{data.path}{data.manifest.shroom}" })
                   .setPromise(new Promise()
                     .setState({ 
@@ -592,7 +592,7 @@ function VisuTrackLoader(_controller): Service() constructor {
                     }))
               ),
               "particle": Beans.get(BeanFileService).send(
-                new Event("fetch-file")
+                new Event("open-file")
                   .setData({ path: $"{data.path}{data.manifest.particle}" })
                   .setPromise(new Promise()
                     .setState({ 
@@ -655,7 +655,7 @@ function VisuTrackLoader(_controller): Service() constructor {
                 acc.events.push({
                   name: file,
                   callback: acc.callback,
-                  data: new Event("fetch-file")
+                  data: new Event("open-file")
                     .setData({ path: $"{acc.data.path}{file}" })
                     .setPromise(new Promise()
                       .setState({ 
@@ -683,7 +683,7 @@ function VisuTrackLoader(_controller): Service() constructor {
             /*
             data.manifest.editor.forEach(function(file, index, acc) { 
               var promise = Beans.get(BeanFileService).send(
-                new Event("fetch-file")
+                new Event("open-file")
                   .setData({ path: $"{acc.data.path}{file}" })
                   .setPromise(new Promise()
                     .setState({ 

@@ -30,7 +30,18 @@ function ParticleFeature(json): GridItemFeature(json) constructor {
       //  || (_y < 0 || _y > GRID_SERVICE_PIXEL_HEIGHT)) {
       //  return
       //}
+      controller.particleService.spawnParticleEmitter(
+        "main",
+        this.particle,
+        _x,
+        _y,
+        _x,
+        _y,
+        this.duration,
+        this.amount
+      )
 
+      /*
       controller.particleService.send(controller.particleService
         .factoryEventSpawnParticleEmitter(
           {
@@ -43,6 +54,7 @@ function ParticleFeature(json): GridItemFeature(json) constructor {
             amount: this.amount,
           }, 
         ))
+      */
     }
   }
 }
@@ -85,7 +97,18 @@ function _ParticleFeature(json) {
         //  || (_y < 0 || _y > GRID_SERVICE_PIXEL_HEIGHT)) {
         //  return
         //}
+        controller.particleService.spawnParticleEmitter(
+          "main",
+          this.particle,
+          _x,
+          _y,
+          _x,
+          _y,
+          this.duration,
+          this.amount
+        )
 
+        /*
         controller.particleService.send(controller.particleService
           .factoryEventSpawnParticleEmitter(
             {
@@ -98,6 +121,7 @@ function _ParticleFeature(json) {
               amount: this.amount,
             }, 
           ))
+        */
       }
     },
   }))

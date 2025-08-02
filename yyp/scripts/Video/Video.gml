@@ -137,7 +137,7 @@ function Video(json) constructor {
   loop = Assert.isType(Struct.getDefault(json, "loop", false), Boolean)
 
   ///@type {Surface}
-  surface = Assert.isType(new VideoSurface(1, 1), VideoSurface)
+  surface = Assert.isType(new VideoSurface(), VideoSurface)
 
   ///@return {VideoStatus}
   getStatus = function() {

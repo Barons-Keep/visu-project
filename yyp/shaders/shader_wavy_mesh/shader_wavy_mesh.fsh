@@ -5,10 +5,19 @@
 #define PI 3.14159265359
 #define TAU 6.28318530718
 #define DEG_TO_RAD 0.01745329251
-
-
-// Shader specific constants
 #define SQRT_3 1.732050807568877
+
+const mat3 rgb2yiq = mat3(
+  0.299, 0.587, 0.114, 
+  0.595716, -0.274453, -0.321263, 
+  0.211456, -0.522591, 0.311135
+);
+
+const mat3 yiq2rgb = mat3(
+  1.0, 0.9563, 0.6210, 
+  1.0, -0.2721, -0.6474, 
+  1.0, -1.1070, 1.7046
+);
 
 
 // Varying Outputs
@@ -19,14 +28,16 @@ varying vec4 v_color;
 // Uniforms
 uniform float u_angle;        // Default: 0.0
 uniform float u_border;       // Default: 0.01
+uniform float u_brightness;   // Default: 1.0
 uniform float u_fbm_scale;    // Default: 0.5
 uniform float u_fbm_size;     // Default: 0.5
+uniform float u_hue;          // Default: 0.0
 uniform float u_jitter;       // Default: 0.5
-uniform float u_jitter_seed;  // Default: 20.0
 uniform float u_mesh_size;    // Default: 2.0
+uniform float u_sat;          // Default: 1.0
+uniform float u_seed;         // Default: 0.0
 uniform float u_shift;        // Default: 0.0
 uniform float u_thickness;    // Default: 1.0
-uniform float u_time_scale;   // Default: 0.5
 uniform float u_time;         // Default: 0.0, where 1.0=1sec
 uniform vec2 u_offset;        // Default: vec2(0.5, 0.5)
 uniform vec2 u_resolution;    // Default: vec2(GuiWith(), GuiHeight())
@@ -54,7 +65,6 @@ vec2 rotated_uv_resolution(vec2 v_texcoord, vec2 resolution, vec2 origin, float 
   );
 }
 
-
 vec2 rotated_uv(vec2 texcoord, vec2 origin, float angle_deg) {
   float angle_rad = angle_deg * DEG_TO_RAD;
   float cos_a = cos(angle_rad);
@@ -74,9 +84,17 @@ float get_alpha_from_pixel(vec3 pixel) {
   return dot(pixel, vec3(0.2126, 0.7152, 0.0722)); // Luma (ITU-R BT.709)
 }
 
-vec4 mix_pixel(vec3 pixel, vec4 texture, vec4 color) {
-  float alpha = get_alpha_from_pixel(pixel);
-  return vec4(mix(texture.rgb, pixel * color.rgb, color.a * alpha), alpha * color.a * texture.a);
+vec3 apply_saturation(vec3 color, float saturation) {
+  float luma = get_alpha_from_pixel(color);
+  return mix(vec3(luma), color, saturation);
+}
+
+vec3 apply_hue(vec3 color, float hue) {
+  vec3 y_color = color * rgb2yiq;
+  float original_hue = atan(y_color.b, y_color.g);
+  float final_hue = original_hue + (hue * TAU);
+  float chroma = sqrt(y_color.b * y_color.b + y_color.g * y_color.g);
+  return vec3(y_color.r, chroma * cos(final_hue), chroma * sin(final_hue)) * yiq2rgb;
 }
 
 
@@ -170,25 +188,25 @@ void main() {
   
   vec2 grid = floor(uv);
   vec2 pixel_uv = rotated_uv_resolution(v_texcoord, u_resolution, u_offset, u_angle);
-  vec4 texture = texture2D(gm_BaseTexture, v_texcoord);
-  vec3 col = vec3(0.0);
-  float time = u_time * u_time_scale;
+
+  vec3 color = vec3(0.0);
+  float time = (u_time + u_seed) / 2.0;
   float angle_rad = u_angle * DEG_TO_RAD;
-  uv.x += cos(angle_rad) * time;
-  uv.y += sin(angle_rad) * time;
+  uv.x += cos(time) * angle_rad;
+  uv.y += sin(time) * angle_rad;
   
   float n = noise(uv * u_fbm_scale);
   float fbmSize = clamp(abs(u_fbm_size), 0.0, 1.0);
-  float osc = fbmSize + ((1.0 - fbmSize) * sin(time + n * 6.28));
+  float osc = fbmSize + ((1.0 - fbmSize) * sin(time + n * TAU));
   for (int j = -1; j <= 1; ++j) {
     for (int i = -1; i <= 1; ++i) {
       vec2 offset = vec2(float(i), float(j));
       vec2 cell = grid + offset;
-      vec2 pos = cell + 0.5 + u_shift + jitter(cell, time, u_jitter, u_jitter_seed, u_mesh_size);
+      vec2 pos = cell + 0.5 + u_shift + jitter(cell, time, u_jitter, u_seed * 2.0, u_mesh_size);
       vec2 norm_pos = pos / u_mesh_size;
       float fade = pulse(cell, time);
       fade *= fade * fade;
-      //col += dot_shape(pixel_uv, norm_pos, 0.01) * fade * fade;
+      //color += dot_shape(pixel_uv, norm_pos, 0.01) * fade * fade;
       for (int jj = 0; jj <= 1; ++jj) {
         for (int ii = 0; ii <= 1; ++ii) {
       //for (int jj = -1; jj <= 1; ++jj) {
@@ -199,7 +217,7 @@ void main() {
               continue;
           }
           
-          vec2 n_pos = neighbor + 0.5 - u_shift + jitter(neighbor, time, u_jitter, u_jitter_seed, u_mesh_size);
+          vec2 n_pos = neighbor + 0.5 - u_shift + jitter(neighbor, time, u_jitter, u_seed * 2.0, u_mesh_size);
           vec2 n_norm_pos = n_pos / u_mesh_size;
           float n_fade = pulse(neighbor, time);
           n_fade *= n_fade * n_fade;
@@ -210,7 +228,7 @@ void main() {
               continue;
           }
           
-          col += mix(u_color_mesh, u_color_between, line_shape_factor / 2.0) * line_shape_factor;
+          color += mix(u_color_mesh, u_color_between, line_shape_factor / 2.0) * line_shape_factor;
           if (ii < 0) {
               continue;
           }
@@ -220,7 +238,7 @@ void main() {
           }
           
           vec2 third = neighbor + vec2(1.0, 0.0);
-          vec2 third_pos = third + 0.5 + (u_shift / 2.0) + jitter(third, time, u_jitter, u_jitter_seed, u_mesh_size);
+          vec2 third_pos = third + 0.5 + (u_shift / 2.0) + jitter(third, time, u_jitter, u_seed * 2.0, u_mesh_size);
           vec2 third_norm = third_pos / u_mesh_size;
           float third_fade = pulse(third, time);
           third_fade *= third_fade * third_fade;
@@ -228,13 +246,16 @@ void main() {
           float tri_fade = line_fade * third_fade;
           float tri_fill = triangle_fill(pixel_uv, norm_pos, n_norm_pos, third_norm, u_border) * osc;
           vec3 tri_col = rainbow(time + hash(cell + neighbor + third)) + 1.0;
-          col += u_color_bkg * tri_fill * tri_col * tri_fade * osc;
+          color += u_color_bkg * tri_fill * tri_col * tri_fade * osc;
         }
       }
     }
   }
 
-  float factor = get_color_distance(texture.rgb, col);
-  vec3 color = mix(texture.rgb, col, factor);
-  gl_FragColor = vec4(color, texture.a * v_color.a);
+  vec4 texture = texture2D(gm_BaseTexture, v_texcoord);
+  vec3 pixel = apply_hue(apply_saturation(color, u_sat), u_hue) * u_brightness;
+  float alpha = get_color_distance(texture.rgb, pixel);
+  pixel = mix(pixel, texture.rgb, 1.0 - v_color.a);
+  pixel = mix(pixel, texture.rgb, 1.0 - alpha);
+  gl_FragColor = vec4(pixel, texture.a + (alpha * v_color.a));
 }

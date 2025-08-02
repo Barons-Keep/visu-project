@@ -149,8 +149,12 @@ function Settings(_path) constructor {
         return settingsEntry.serialize()
       }, null, Struct).getContainer()
     }
-    
-    FileUtil.writeFileSync(new File({ path: this.path, data: JSON.stringify(json, { pretty: true }) }))
+
+    Beans.get(BeanFileService).send(new Event("save-file")
+      .setData(new File({ 
+        path: this.path,
+        data: JSON.stringify(json, { pretty: true })
+      })))
     return this
   }
 }

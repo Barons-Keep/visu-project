@@ -13,6 +13,10 @@ uniform float iDistance;
 uniform float iTreshold; // 0.0006
 uniform vec3 iTint; // vec3(0.0, 0.3, 0.7)
 
+float get_alpha_from_pixel(vec3 pixel) {
+  return dot(pixel, vec3(0.2126, 0.7152, 0.0722)); // Luma (ITU-R BT.709)
+}
+
 float sdSphere(vec3 pos, float size) {
   return length(pos) - size;
 }
@@ -93,7 +97,11 @@ void main() {
   float ac = 0.0;
   float d = 0.0;
 
-  for (float i = 0.0; i < iIterations; i += 1.0) {
+  for (float i = 0.0; i < 50.0; i += 1.0) {
+    if (i > iIterations) {
+      break;
+    }
+
     rayPos = cameraOrigin + rayDirection * depth;
     d = getDistance(rayPos, p);
     if (abs(d) < iTreshold) {
@@ -105,13 +113,11 @@ void main() {
   }
   
   ac *= 0.168 * (iResolution.x / iResolution.y - abs(p.x));
-  vec4 textureColor = texture2D(gm_BaseTexture, vTexcoord);
-  vec3 pixel = mix(iTint * ac, vec3(textureColor.r, textureColor.g, textureColor.b), 0.36);
 
-  gl_FragColor = vec4(
-    pixel.x, 
-    pixel.y, 
-    pixel.z, 
-    textureColor.a * vColor.a * ((pixel.x + pixel.y + pixel.z) / 1.33)
-  );
+  vec4 texture = texture2D(gm_BaseTexture, vTexcoord);
+  vec3 pixel = vec3(iTint * clamp(ac, 0.0, 1.34));
+  float alpha = get_alpha_from_pixel(pixel);
+  pixel = mix(pixel, texture.rgb, 1.0 - vColor.a);
+  pixel = mix(pixel, texture.rgb, 1.0 - alpha);
+  gl_FragColor = vec4(pixel, texture.a + (alpha * vColor.a));
 }

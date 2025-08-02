@@ -12,6 +12,10 @@ uniform float iMix;
 
 const float RADIANS = 0.017453292519943295;
 const float BRIGHTNESS = 0.975;
+	
+float get_alpha_from_pixel(vec3 pixel) {
+  return dot(pixel, vec3(0.2126, 0.7152, 0.0722)); // Luma (ITU-R BT.709)
+}
 
 float cosRange(float degrees, float range, float minimum) {
 	return (((1.0 + cos(degrees * RADIANS)) * 0.5) * range) + minimum;
@@ -47,5 +51,12 @@ void main() {
   extrusion *= vignette;
   
   col = mix(col, iTint, iMix);
-	gl_FragColor = vec4(col.r, col.g, col.b, min(vColor.a, vColor.a * extrusion));
+	//gl_FragColor = vec4(col.r, col.g, col.b, min(vColor.a, vColor.a * extrusion));
+
+  vec4 texture = texture2D(gm_BaseTexture, vTexcoord);
+  vec3 pixel = mix(col, iTint, iMix);
+  float alpha = get_alpha_from_pixel(pixel);
+  pixel = mix(pixel, texture.rgb, 1.0 - vColor.a);
+  pixel = mix(pixel, texture.rgb, 1.0 - alpha);
+  gl_FragColor = vec4(pixel, texture.a + (alpha * vColor.a));
 }

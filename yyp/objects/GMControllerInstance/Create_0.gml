@@ -28,4 +28,6 @@
   
   ///@type {?Callable}
   __onTextureLoadedEvent = null
-  
+ 
+ ///@type {?Callable}
+	__onSaveLoadEvent = null

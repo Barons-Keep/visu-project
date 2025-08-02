@@ -17,6 +17,10 @@ uniform float iTreshold;
 uniform float iSize;
 uniform vec3 iTint;
 
+float get_alpha_from_pixel(vec3 pixel) {
+  return dot(pixel, vec3(0.2126, 0.7152, 0.0722)); // Luma (ITU-R BT.709)
+}
+
 mat2 makem2(in float theta) {
   float c = cos(theta);
   float s = sin(theta);
@@ -69,8 +73,10 @@ void main() {
   p /= exp(mod((my_time + rz), 3.1415)); 
   rz *= pow(abs((0.1 - circ(p))), 0.9);
   
-  //final color
+  vec4 texture = texture2D(gm_BaseTexture, vTexcoord);
   vec3 pixel = clamp(pow(abs(iTint / rz), vec3(0.99)), 0.0, 1.0);
-  gl_FragColor = vec4(pixel, max(pixel.r, max(pixel.g, pixel.b)) 
-    * texture2D(gm_BaseTexture, vTexcoord).a * vColor.a);
+  float alpha = get_alpha_from_pixel(pixel);
+  pixel = mix(pixel, texture.rgb, 1.0 - vColor.a);
+  pixel = mix(pixel, texture.rgb, 1.0 - alpha);
+  gl_FragColor = vec4(pixel, texture.a + (alpha * vColor.a));
 }

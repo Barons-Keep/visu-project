@@ -143,23 +143,30 @@ function GridItemEmitter(json = null) constructor {
   }))
 
   ///@type {Number}
-  //perArray = Struct.getIfType(json, "perArray", Number, 1)
+  perArray = Struct.getIfType(json, "perArray", Number, 1)
 
   ///@type {NumberTransformer}
+  /*
   perArray = new NumberTransformer(Struct.getDefault(json, "perArray", {
     value: 1.0,
     target: 1.0,
     duration: 0.0,
     ease: EaseType.LINEAR,
   }))
-  
+  */
+
+  ///@type {Number}
+  anglePerArray = Struct.getIfType(json, "anglePerArray", Number, 0.)
+
   ///@type {NumberTransformer}
+  /*
   anglePerArray = new NumberTransformer(Struct.getDefault(json, "anglePerArray", {
     value: 0.0,
     target: 0.0,
     duration: 0.0,
     ease: EaseType.LINEAR,
   }))
+  */
 
   ///@type {Number}
   anglePerArrayRng = Struct.getIfType(json, "anglePerArrayRng", Number, 0.0)
@@ -173,15 +180,17 @@ function GridItemEmitter(json = null) constructor {
   //}))
 
   ///@type {Number}
-  //anglePerArrayStep = Struct.getIfType(json, "anglePerArrayStep", Number, 0.0)
+  anglePerArrayStep = Struct.getIfType(json, "anglePerArrayStep", Number, 0.0)
 
   ///@type {NumberTransformer}
+  /*
   anglePerArrayStep = new NumberTransformer(Struct.getDefault(json, "anglePerArrayStep", {
     value: 0.0,
     target: 0.0,
     duration: 0.0,
     ease: EaseType.LINEAR,
   }))
+  */
   
   ///@type {NumberTransformer}
   speed = new NumberTransformer(Struct.getDefault(json, "speed", {
@@ -232,13 +241,18 @@ function GridItemEmitter(json = null) constructor {
     ease: EaseType.LINEAR,
   }))
 
+  ///@type {Number}
+  wiggleFrequency = Struct.getIfType(json, "wiggleFrequency", Number, 1.0)
+  
   ///@type {NumberTransformer}
+  /*
   wiggleFrequency = new NumberTransformer(Struct.getDefault(json, "wiggleFrequency", {
     value: 1.0,
     target: 1.0,
     duration: 0.0,
     ease: EaseType.LINEAR,
   }))
+  */
 
   ///@type {NumberTransformer}
   wiggleAmplitude = new NumberTransformer(Struct.getDefault(json, "wiggleAmplitude", {
@@ -282,15 +296,15 @@ function GridItemEmitter(json = null) constructor {
     this.offsetY.update()
     this.speed.update()
     this.angle.update()
-    this.anglePerArray.update()
-    this.wiggleFrequency.update()
-    this.wiggleAmplitude.update()
     this.arrays.update()
-    //this.angleRng.update()
     this.angleStep.update()
-    this.perArray.update()
+    this.wiggleAmplitude.update()
+    //this.wiggleFrequency.update()
+    //this.anglePerArray.update()
+    //this.angleRng.update()
+    //this.perArray.update()
     //this.anglePerArrayRng.update()
-    this.anglePerArrayStep.update()
+    //this.anglePerArrayStep.update()
     //this.speedRng.update()
 
     this.time += DeltaTime.apply(FRAME_MS)
@@ -317,15 +331,15 @@ function GridItemEmitter(json = null) constructor {
     }
 
     if (this.callback != null) {
-      var wiggle = sin(this.wiggleFrequency.value * this.timeSum) * this.wiggleAmplitude.value
+      var wiggle = sin(this.wiggleFrequency/*.value*/ * this.timeSum) * this.wiggleAmplitude.value
       for (var idx = 0; idx < floor(this.arrays.value); idx++) {
         var angle = startAngle + (idx * this.angleStep.value) + random(this.angleRng/*.value*/) + wiggle
         var _posX = Math.fetchCircleX(_offset, angle)
         var _posY = Math.fetchCircleY(_offset, angle)
-        for (var arrIdx = 0; arrIdx < floor(this.perArray.value); arrIdx++) {
+        for (var arrIdx = 0; arrIdx < floor(this.perArray/*.value*/); arrIdx++) {
           this.callback(
             item, controller, this, idx, arrIdx, posX + _posX, posY + _posY,
-            angle + this.anglePerArray.value + (arrIdx * this.anglePerArrayStep.value) + random(this.anglePerArrayRng/*.value*/),
+            angle + this.anglePerArray/*.value*/ + (arrIdx * this.anglePerArrayStep/*.value*/) + random(this.anglePerArrayRng/*.value*/),
             spd + random(this.speedRng/*.value*/)
           )
         }
@@ -350,15 +364,15 @@ function GridItemEmitter(json = null) constructor {
     this.offsetY.reset()
     this.speed.reset()
     this.angle.reset()
-    this.anglePerArray.reset()
-    this.wiggleFrequency.reset()
-    this.wiggleAmplitude.reset()
     this.arrays.reset()
-    //this.angleRng.reset()
     this.angleStep.reset()
-    this.perArray.reset()
+    this.wiggleAmplitude.reset()
+    //this.wiggleFrequency.reset()
+    //this.angleRng.reset()
+    //this.anglePerArray.reset()
+    //this.perArray.reset()
     //this.anglePerArrayRng.reset()
-    this.anglePerArrayStep.reset()
+    //this.anglePerArrayStep.reset()
     //this.speedRng.reset()
     return this
   }

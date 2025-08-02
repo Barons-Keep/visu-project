@@ -286,6 +286,19 @@ function PlayerStats(_player, json) constructor {
 
         var view = controller.gridService.view
         var player = this.stats.player
+
+        controller.particleService.spawnParticleEmitter(
+          "main",
+          "particle-player-bomb-start",
+          (player.x - view.x) * GRID_SERVICE_PIXEL_WIDTH,
+          (player.y - view.y) * GRID_SERVICE_PIXEL_HEIGHT,
+          (player.x - view.x) * GRID_SERVICE_PIXEL_WIDTH,
+          (player.y - view.y) * GRID_SERVICE_PIXEL_HEIGHT,
+          0.0,
+          3
+        )
+        
+        /*
         controller.particleService.send(controller.particleService
           .factoryEventSpawnParticleEmitter({
             particleName: "particle-player-bomb-start",
@@ -296,6 +309,7 @@ function PlayerStats(_player, json) constructor {
             duration: 0.0,
             amount: 3,
           }))
+        */
           
         var task = new Task("spawn-particle-player-bomb")
           .setTimeout(10.0)
@@ -369,6 +383,19 @@ function PlayerStats(_player, json) constructor {
               }
             }, player)
 
+            controller.particleService.spawnParticleEmitter(
+              "main",
+              "particle-player-bomb",
+              (player.x - view.x) * GRID_SERVICE_PIXEL_WIDTH,
+              (player.y - view.y) * GRID_SERVICE_PIXEL_HEIGHT,
+              (player.x - view.x) * GRID_SERVICE_PIXEL_WIDTH,
+              (player.y - view.y) * GRID_SERVICE_PIXEL_HEIGHT,
+              1.0,
+              2,
+              0.5
+            )
+
+            /*  
             controller.particleService.send(controller.particleService
               .factoryEventSpawnParticleEmitter({
                 particleName: "particle-player-bomb",
@@ -377,9 +404,10 @@ function PlayerStats(_player, json) constructor {
                 endX: (player.x - view.x) * GRID_SERVICE_PIXEL_WIDTH,
                 endY: (player.y - view.y) * GRID_SERVICE_PIXEL_HEIGHT,
                 duration: 1.0,
-                interval: 0.5,
                 amount: 2,
+                interval: 0.5,
               }))
+            */
 
             controller.visuRenderer.hudRenderer.sendGlitchEvent()
             effect_track_event.brush_effect_glitch.run({
@@ -487,6 +515,18 @@ function PlayerStats(_player, json) constructor {
           this.stats.bomb.set(3)
         }
 
+        controller.particleService.spawnParticleEmitter(
+          "main",
+           "particle-player-death",
+          (this.stats.player.x - view.x) * GRID_SERVICE_PIXEL_WIDTH,
+          (this.stats.player.y - view.y) * GRID_SERVICE_PIXEL_HEIGHT,
+          (this.stats.player.x - view.x) * GRID_SERVICE_PIXEL_WIDTH,
+          (this.stats.player.y - view.y) * GRID_SERVICE_PIXEL_HEIGHT,
+          0.0,
+          2
+        )
+
+        /*
         controller.particleService.send(controller.particleService
           .factoryEventSpawnParticleEmitter({
             particleName: "particle-player-death",
@@ -497,6 +537,7 @@ function PlayerStats(_player, json) constructor {
             duration: 0.0,
             amount: 2,
           }))
+        */
 
         var forceValue = this.stats.force.get()
         var forceCoinAmount = ceil((forceValue / 2.0) + irandom(forceValue / 2.0))
@@ -520,6 +561,12 @@ function PlayerStats(_player, json) constructor {
             speedMin / (speedMax * 10.0), 
             speedMax / (speedMax * 10.0)
           )
+
+          controller.coinService.spawnCoin("coin-force", _x, _y, angle, { 
+            value: -1.0 * speedValue, 
+            factor: speedFactor,
+          })
+          /*
           var coin = {
             template: "coin-force",
             x: _x,
@@ -530,13 +577,25 @@ function PlayerStats(_player, json) constructor {
               factor: speedFactor,
             },
           }
-
           controller.coinService.send(new Event("spawn-coin", coin))
+          */
         }
 
         this.stats.player.x = view.x + (view.width / 2.0)
         this.stats.player.y = view.y + (view.height * 0.75)
 
+        controller.particleService.spawnParticleEmitter(
+          "main",
+          "particle-player-respawn",
+          (this.stats.player.x - view.x) * GRID_SERVICE_PIXEL_WIDTH,
+          (this.stats.player.y - view.y) * GRID_SERVICE_PIXEL_HEIGHT,
+          (this.stats.player.x - view.x) * GRID_SERVICE_PIXEL_WIDTH,
+          (this.stats.player.y - view.y) * GRID_SERVICE_PIXEL_HEIGHT,
+          0.0,
+          2
+        )
+
+        /*
         controller.particleService.send(controller.particleService
           .factoryEventSpawnParticleEmitter({
             particleName: "particle-player-respawn",
@@ -547,6 +606,7 @@ function PlayerStats(_player, json) constructor {
             duration: 0.0,
             amount: 2,
           }))
+        */
       }
       return this
     },
