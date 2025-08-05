@@ -386,7 +386,7 @@ function VESceneConfigPreview(_config = null) constructor {
         + $"      X: {camera.x + (sin(camera.breathTimer2.time) * GRID_SERVICE_PIXEL_WIDTH * -1.0)}\n"
         + $"      Y: {camera.y}\n"
         + $"      Z: {camera.z}\n"
-        + $"      Angle: {camera.angle + (sin(camera.breathTimer2.time) * BREATH_TIMER_FACTOR_2)}\n"
+        + $"      Angle: {camera.angle + (sin(camera.breathTimer2.time / 4.0) * BREATH_TIMER_FACTOR_2)}\n"
         + $"      Pitch: {camera.pitch + (sin(camera.breathTimer1.time) * BREATH_TIMER_FACTOR_1)}\n"
         + $"  Layer:\n"
         + $"    Background:\n"

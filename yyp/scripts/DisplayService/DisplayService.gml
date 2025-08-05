@@ -39,16 +39,16 @@ function DisplayService(_controller, config = {}): Service() constructor {
   previousGuiHeight = 0
 
   ///@type {Number}
-  minWidth = Core.isType(Struct.get(config, "minWidth"), Number) ? config.minWidth : 320
+  minWidth = Struct.getIfType(config, "minWidth", Number, 320)
 
   ///@type {Number}
-  minHeight = Core.isType(Struct.get(config, "minHeight"), Number) ? config.minHeight : 240
+  minHeight = Struct.getIfType(config, "minHeight", Number, 240)
 
   ///@type {Number}
-  beforeFullscreenWidth = this.minWidth
+  beforeFullscreenWidth = Struct.getIfType(config, "windowWidth", Number, 960)
 	
 	///@type {Number}
-	beforeFullscreenHeight = this.minHeight
+	beforeFullscreenHeight = Struct.getIfType(config, "windowHeight", Number, 540)
 
   ///@type {Number}
   scale = Core.isType(Struct.get(config, "scale"), Number) ? config.scale : 1
@@ -148,11 +148,6 @@ function DisplayService(_controller, config = {}): Service() constructor {
 
     var xOffset = Core.getProperty("core.display-service.center.offset.x", 0.0)
     var yOffset = Core.getProperty("core.display-service.center.offset.y", 0.0)
-    if (xOffset == 0.0 && yOffset == 0.0) {
-      window_center()
-      return this
-    }
-
     window_set_position(
       ((this.getDisplayWidth() - this.getWidth()) / 2.0) + xOffset,
       ((this.getDisplayHeight() - this.getHeight()) / 2.0) + yOffset

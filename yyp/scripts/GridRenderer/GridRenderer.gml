@@ -1249,7 +1249,7 @@ function GridRenderer() constructor {
     var depths = properties.depths
     var camera = this.camera
     var gmCamera = camera.get()
-    var cameraAngle = camera.angle + (sin(camera.breathTimer2.time) * BREATH_TIMER_FACTOR_2)
+    var cameraAngle = camera.angle + (sin(camera.breathTimer2.time / 4.0) * BREATH_TIMER_FACTOR_2)
     var cameraPitch = camera.pitch + (sin(camera.breathTimer1.time) * BREATH_TIMER_FACTOR_1)
     var xto = camera.x + (sin(camera.breathTimer2.time) * GRID_SERVICE_PIXEL_WIDTH * -1.0)
     var yto = camera.y
@@ -1303,7 +1303,7 @@ function GridRenderer() constructor {
       var depths = properties.depths
       var camera = context.camera
       var gmCamera = camera.get()
-      var cameraAngle = camera.angle + (sin(camera.breathTimer2.time) * BREATH_TIMER_FACTOR_2)
+      var cameraAngle = camera.angle + (sin(camera.breathTimer2.time / 4.0) * BREATH_TIMER_FACTOR_2)
       var cameraPitch = camera.pitch + (sin(camera.breathTimer1.time) * BREATH_TIMER_FACTOR_1)
       var xto = camera.x + (sin(camera.breathTimer2.time) * GRID_SERVICE_PIXEL_WIDTH * -1.0)
       var yto = camera.y
@@ -1429,7 +1429,7 @@ function GridRenderer() constructor {
     var depths = properties.depths
     var camera = this.camera
     var gmCamera = camera.get()
-    var cameraAngle = camera.angle + (sin(camera.breathTimer2.time) * BREATH_TIMER_FACTOR_2)
+    var cameraAngle = camera.angle + (sin(camera.breathTimer2.time / 4.0) * BREATH_TIMER_FACTOR_2)
     var cameraPitch = camera.pitch + (sin(camera.breathTimer1.time) * BREATH_TIMER_FACTOR_1)
     var xto = camera.x + (sin(camera.breathTimer2.time) * GRID_SERVICE_PIXEL_WIDTH * -1.0)
     var yto = camera.y

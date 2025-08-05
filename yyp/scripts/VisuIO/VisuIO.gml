@@ -49,6 +49,10 @@ function VisuIO() constructor {
       Logger.debug("VisuIO", String.join("Set fullscreen to", fullscreen ? "'false'" : "'true'", "."))
       controller.displayService.setFullscreen(!fullscreen)
       Visu.settings.setValue("visu.fullscreen", !fullscreen).save()
+
+      if (fullscreen && !Visu.settings.getValue("visu.borderless-window")) {
+        controller.displayService.center()
+      }
     }
 
     return this

@@ -845,6 +845,7 @@
     {"id":{"name":"texture_hechan_3_abstract","path":"sprites/texture_hechan_3_abstract/texture_hechan_3_abstract.yy",},},
     {"id":{"name":"texture_hechan_3_background","path":"sprites/texture_hechan_3_background/texture_hechan_3_background.yy",},},
     {"id":{"name":"texture_hechan_3","path":"sprites/texture_hechan_3/texture_hechan_3.yy",},},
+    {"id":{"name":"texture_hechan_4","path":"sprites/texture_hechan_4/texture_hechan_4.yy",},},
     {"id":{"name":"texture_icon_ease_in_back","path":"sprites/texture_icon_ease_in_back/texture_icon_ease_in_back.yy",},},
     {"id":{"name":"texture_icon_ease_in_bounce","path":"sprites/texture_icon_ease_in_bounce/texture_icon_ease_in_bounce.yy",},},
     {"id":{"name":"texture_icon_ease_in_circ","path":"sprites/texture_icon_ease_in_circ/texture_icon_ease_in_circ.yy",},},

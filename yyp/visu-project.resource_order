@@ -378,6 +378,7 @@
     {"name":"texture_grid_line_default","order":1,"path":"sprites/texture_grid_line_default/texture_grid_line_default.yy",},
     {"name":"texture_hechan_3_abstract","order":1,"path":"sprites/texture_hechan_3_abstract/texture_hechan_3_abstract.yy",},
     {"name":"texture_hechan_3_background","order":2,"path":"sprites/texture_hechan_3_background/texture_hechan_3_background.yy",},
+    {"name":"texture_hechan_4","order":3,"path":"sprites/texture_hechan_4/texture_hechan_4.yy",},
     {"name":"texture_icon_ease_in_bounce","order":1,"path":"sprites/texture_icon_ease_in_bounce/texture_icon_ease_in_bounce.yy",},
     {"name":"texture_icon_ease_in_circ","order":2,"path":"sprites/texture_icon_ease_in_circ/texture_icon_ease_in_circ.yy",},
     {"name":"texture_icon_ease_in_cubic","order":3,"path":"sprites/texture_icon_ease_in_cubic/texture_icon_ease_in_cubic.yy",},

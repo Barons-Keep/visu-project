@@ -63,7 +63,7 @@ function VisuController(layerName) constructor {
               controller.ostSound.stop()
               controller.ostSound = null
             }
-
+            
             var task = TaskUtil.factory.splashscreen({
               fadeIn: 1.75,
               duration: 6.0,
@@ -71,6 +71,9 @@ function VisuController(layerName) constructor {
               showSkipTimer: 0.5,
               skipTimer: 0.5,
               initTimer: new Timer(1.5),
+              bkgFactor: (FRAME_MS / 64.0) * -30.0,
+              fadeInEmitt: false,
+              fadeOutEmitt: false,
               sfxPlayed: false,
               logo: Assert.isType(SpriteUtil.parse({ name: "texture_barons_keep" }), Sprite, 
                 "logo must be type of Sprite"),
@@ -82,11 +85,25 @@ function VisuController(layerName) constructor {
                 useScale: true,
                 alpha: 0.0,
               }),
+              bkg: Assert.isType(SpriteUtil.parse({ name: "texture_bkg_spaace_2" }), Sprite, 
+                "bkg must be type of Sprite"),
               render: function(task, layout) {
                 var controller = Beans.get(BeanVisuController)
                 var displayService = controller.displayService
                 var width = layout.width()
                 var height = layout.height()
+                task.state.bkgFactor += DeltaTime.apply(FRAME_MS / 48.0)
+                task.state.bkg
+                  .scaleToFill(GuiWidth() + 400, GuiHeight() + 400)
+                  .setScaleX(task.state.bkg.getScaleX() + task.state.bkgFactor)
+                  .setScaleY(task.state.bkg.getScaleY() + task.state.bkgFactor)
+                  .setBlend(ColorUtil.parse("#ff00f7ff").toGMColor())
+                  .setAlpha(clamp(5.0 * task.state.bkgFactor * (1.0 - task.state.fadeOut.getProgress()), 0.0, 1.0))
+                  .setAngle(45.0 * task.state.bkgFactor)
+                  .render(
+                    ((GuiWidth() - (task.state.bkg.getWidth() * task.state.bkg.getScaleX())) / 2.0) - 200,
+                    ((GuiHeight() - (task.state.bkg.getHeight() * task.state.bkg.getScaleY())) / 2.0) - 200
+                  )
 
                 if (!task.state.initTimer.update().finished) {
                   return
@@ -105,6 +122,26 @@ function VisuController(layerName) constructor {
                   }
                 }
 
+                
+                var interval = 5
+                var duration = 3
+                var amount = 3
+                if (!task.state.fadeInEmitt) {
+                  task.state.fadeInEmitt = true
+                  controller.particleService.spawnParticleEmitter(
+                    "main",
+                    "particle-splashscreen",
+                    GuiWidth() / 2.0,
+                    GuiHeight() / 2.0,
+                    GuiWidth() / 2.0,
+                    GuiHeight() / 2.0,
+                    FRAME_MS * interval * duration,
+                    amount,
+                    FRAME_MS * interval
+                  )
+                }
+
+                controller.particleService.update().systems.get("main").render()
                 if (shader_is_compiled(shader_dissolve)) {
                   var u_time = shader_get_uniform(shader_dissolve, "u_time")
 
@@ -235,20 +272,20 @@ function VisuController(layerName) constructor {
             var pump = controller.dispatcher
             var executor = controller.executor
             var color = ColorUtil.parse(GMArray.getRandom([
+              "#000000ff",
+              "#081179ff",
               "#000000",
-              "#160e24",
+              "#480564ff",
+              "#0a1a17ff",
+              "#8e0a0aff",
               "#000000",
-              "#300642",
+              "#21670eff",
+              "#32162cff",
+              "#c70a68ff",
               "#000000",
-              "#161d21",
+              "#d31c44ff",
               "#000000",
-              "#463b5c",
-              "#000000",
-              "#c4146c",
-              "#000000",
-              "#1d6296",
-              "#000000",
-              "#4550e6"
+              "#470e57ff"
             ]))
             Visu.resolveColorTransformerTrackEvent(
               {
@@ -701,6 +738,8 @@ function VisuController(layerName) constructor {
   displayService = new DisplayService(this, { 
     minWidth: 800, 
     minHeight: 480,
+    windowWidth: Visu.settings.getValue("visu.window.width", 1440),
+    windowHeight: Visu.settings.getValue("visu.window.height", 900),
     scale: Visu.settings.getValue("visu.interface.scale"),
   })
 

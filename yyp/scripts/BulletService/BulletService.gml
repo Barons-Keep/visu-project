@@ -259,7 +259,7 @@ function BulletService(_controller, config = {}): Service() constructor {
 
   ///@return {BulletService}
   update = function() { 
-    this.optimalizationSortEntitiesByTxGroup = Visu.settings.getValue("visu.optimalization.sort-entities-by-txgroup")
+    this.optimalizationSortEntitiesByTxGroup = false //Visu.settings.getValue("visu.optimalization.sort-entities-by-txgroup")
     if (controller.gameMode != this.gameMode) {
       this.gameMode = this.controller.gameMode
       this.bullets.forEach(this.updateGameMode, this.gameMode)

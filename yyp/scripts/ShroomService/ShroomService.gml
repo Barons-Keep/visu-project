@@ -132,7 +132,7 @@ function ShroomService(_controller, config = {}): Service() constructor {
 
 
       var shroom = new Shroom(template)
-      shroom.updateGameMode(this.controller.gameMode)
+      //shroom.updateGameMode(this.controller.gameMode)
 
       this.shrooms.add(shroom)
       this.chunkService.add(shroom)
@@ -224,7 +224,7 @@ function ShroomService(_controller, config = {}): Service() constructor {
     }
 
     var shroom = new Shroom(template)
-    shroom.updateGameMode(this.controller.gameMode)
+    //shroom.updateGameMode(this.controller.gameMode)
 
     this.shrooms.add(shroom)
     this.chunkService.add(shroom)
@@ -293,11 +293,11 @@ function ShroomService(_controller, config = {}): Service() constructor {
 
   ///@return {ShroomService}
   update = function() {
-    this.optimalizationSortEntitiesByTxGroup = Visu.settings.getValue("visu.optimalization.sort-entities-by-txgroup")
-    if (controller.gameMode != this.gameMode) {
-      this.gameMode = this.controller.gameMode
-      this.shrooms.forEach(this.updateGameMode, this.gameMode)
-    }
+    this.optimalizationSortEntitiesByTxGroup = false //Visu.settings.getValue("visu.optimalization.sort-entities-by-txgroup")
+    //if (controller.gameMode != this.gameMode) {
+    //  this.gameMode = this.controller.gameMode
+    //  this.shrooms.forEach(this.updateGameMode, this.gameMode)
+    //}
 
     this.dispatcher.update()
     this.executor.update()

@@ -989,6 +989,7 @@ function VisuMenu(_config = null) constructor {
         factoryCreditsEntry("Y6yNV8JN", "\nPassion\n@kedy_selma"),
         factoryCreditsEntry("yfMcRQPG", "\namphetamine\n@nfract"),
         factoryCreditsEntry("yfMcRQPG", "\nHikikomori Condition\n@nfract"),
+        factoryCreditsEntry("anMlmEyW", "\nthe memories fade but the feeling remains\n@pikaro & @PAXNKOXD"),
         factoryCreditsEntry("fyQD5OCd", "\nDestination Unknown\n@Schnoopy"),
         factoryCreditsEntry("TdMvcdS6", "\nPsychosis\n@Sewerslvt"),
         factoryCreditsEntry("Zvsi4gtq", "\nPurple Hearts In Her Eyes\n@Sewerslvt"),
@@ -1160,6 +1161,10 @@ function VisuMenu(_config = null) constructor {
                 controller.displayService.setFullscreen(!fullscreen)
                 Visu.settings.setValue("visu.fullscreen", !fullscreen).save()
                 Beans.get(BeanVisuController).sfxService.play("menu-use-entry")
+
+                if (fullscreen && !Visu.settings.getValue("visu.borderless-window")) {
+                  controller.displayService.center()
+                }
               }),
               onMouseReleasedLeft: function() {
                 this.callback()
@@ -1173,6 +1178,10 @@ function VisuMenu(_config = null) constructor {
                 controller.displayService.setFullscreen(!fullscreen)
                 Visu.settings.setValue("visu.fullscreen", !fullscreen).save()
                 Beans.get(BeanVisuController).sfxService.play("menu-use-entry")
+
+                if (fullscreen && !Visu.settings.getValue("visu.borderless-window")) {
+                  controller.displayService.center()
+                }
               },
               updateCustom: function() {
                 this.label.text = Beans.get(BeanVisuController).displayService.getFullscreen() ? "Enabled" : "Disabled"
@@ -1524,6 +1533,7 @@ function VisuMenu(_config = null) constructor {
             }
           }
         },
+        /*
         {
           name: "graphics_menu-spin-select-entry_anti-aliasing",
           template: VisuComponents.get("menu-spin-select-entry"),
@@ -1588,6 +1598,7 @@ function VisuMenu(_config = null) constructor {
             },
           },
         },
+        */
         {
           name: "graphics_menu-button-entry_back",
           template: VisuComponents.get("menu-button-entry"),
@@ -2470,40 +2481,7 @@ function VisuMenu(_config = null) constructor {
             }
           }
         },
-        {
-          name: "developer_menu-button-input-entry_optimalization-iterate-entities-once",
-          template: VisuComponents.get("menu-button-input-entry"),
-          layout: VisuLayouts.get("menu-button-input-entry"),
-          config: {
-            layout: { type: UILayoutType.VERTICAL },
-            label: { 
-              text: "Iterate entities once",
-              callback: new BindIntent(function() {
-                var value = Visu.settings.getValue("visu.optimalization.iterate-entities-once")
-                Visu.settings.setValue("visu.optimalization.iterate-entities-once", !value).save()
-                Beans.get(BeanVisuController).sfxService.play("menu-use-entry")
-              }),
-              onMouseReleasedLeft: function() {
-                this.callback()
-              },
-            },
-            input: {
-              label: { text: "Enabled" },
-              callback: function() {
-                var value = Visu.settings.getValue("visu.optimalization.iterate-entities-once")
-                Visu.settings.setValue("visu.optimalization.iterate-entities-once", !value).save()
-                Beans.get(BeanVisuController).sfxService.play("menu-use-entry")
-              },
-              updateCustom: function() {
-                this.label.text = Visu.settings.getValue("visu.optimalization.iterate-entities-once") ? "Enabled" : "Disabled"
-                this.label.alpha = this.label.text == "Enabled" ? 1.0 : 0.3
-              },
-              onMouseReleasedLeft: function() {
-                this.callback()
-              },
-            }
-          }
-        },
+        /*
         {
           name: "developer_menu-button-input-entry_optimalization-sort-entities-by-txgroup",
           template: VisuComponents.get("menu-button-input-entry"),
@@ -2538,6 +2516,7 @@ function VisuMenu(_config = null) constructor {
             }
           }
         },
+        */
         {
           name: "developer_menu-button-entry_restart",
           template: VisuComponents.get("menu-button-entry"),

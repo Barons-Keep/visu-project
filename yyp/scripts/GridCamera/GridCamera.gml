@@ -4,7 +4,7 @@
 #macro BREATH_TIMER_FACTOR_1 6.88
 
 ///@type {Number}
-#macro BREATH_TIMER_FACTOR_2 -2.33
+#macro BREATH_TIMER_FACTOR_2 -8.33
 
 
 ///@param {?Struct} [config]
@@ -17,20 +17,20 @@ function GridCamera(config = null) constructor {
 	y = Struct.getIfType(config, "y", Number, 6656)
 
   ///@type {Number}1
-	z = Struct.getIfType(config, "z", Number, 5000)
+	z = Struct.getIfType(config, "z", Number, 4000)
 
   ///@type {Number}
 	angle = Struct.getIfType(config, "angle", Number, 270.0)
 
   ///@type {Number}
-	pitch = Struct.getIfType(config, "pitch", Number, -32.5)
+	pitch = Struct.getIfType(config, "pitch", Number, -10.0)
 
   ///@type {Timer}
-  breathTimer1 = new Timer(TAU, { amount: 0.006, loop: Infinity })
+  breathTimer1 = new Timer(TAU * 100.0, { amount: 0.0065, loop: Infinity })
 
   ///@type {Timer}
-  breathTimer2 = new Timer(TAU, { amount: 0.004, loop: Infinity })
-
+  breathTimer2 = new Timer(TAU * 100.0, { amount: 0.0037, loop: Infinity })
+  
   ///@type {?GMMatrix}
   viewMatrix = null
 

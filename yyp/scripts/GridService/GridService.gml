@@ -433,6 +433,9 @@ function GridService(_config = null) constructor {
     return md5_string_utf8(string(this.uidPointer))
   }
 
+  ///@type {String}
+  hechan = choose("texture_hechan_3", "texture_hechan_4")
+
   ///@param {?Number} [duration]
   ///@return {GridService}
   init = function(duration = null) {
@@ -450,9 +453,11 @@ function GridService(_config = null) constructor {
         var angle = random(7.5) * choose(1.0, -1.0)
         var lastTask = controller.visuRenderer.gridRenderer.overlayRenderer.foregrounds.getLast()
         if (Core.isType(lastTask, Task) && Core.isType(lastTask.state, Map)) {
-          lastX = lastTask.state.get("x") + (random(GuiWidth() / 2.0) * choose(1.0, 1.0, -1.0))
+          lastX = lastTask.state.get("x") + (GuiWidth() * 0.1) + random(GuiWidth() * 0.3)
           lastY = lastTask.state.get("y")
-          var prev = lastY
+          if (lastX > GuiWidth() * 1.125) {
+            lastX -= (GuiWidth() * 0.85) + random(GuiWidth() * 0.5)
+          }
           if (sign(lastY) >= 0) {
             lastY -= random(abs(lastY) + random(GuiHeight() / 3.0))
           } else {
@@ -463,17 +468,13 @@ function GridService(_config = null) constructor {
         controller.send(new Event("fade-sprite", {
           sprite: SpriteUtil.parse({
             name: "texture_hechan_3_abstract",
-            alpha: 0.4,
+            alpha: 0.5,
             blend: GMArray.getRandom([
               "#FFFFFF",
-              "#f0e92b",
-              "#31944d",
-              "#FFFFFF",
-              "#b51943",
-              "#3f056b",
-              "#FFFFFF", 
-              "#138774",
-              "#f02b2b"
+              "#194ba8ff",
+              "#1472c4ff",
+              "#820745ff",
+              "#383269ff",
             ]),
           }),
           collection: controller.visuRenderer.gridRenderer.overlayRenderer.backgrounds,
@@ -494,23 +495,18 @@ function GridService(_config = null) constructor {
           xScale: scale,
           yScale: scale,
         }))
-        //this.fullfill()
-        //return null;
+
         controller.send(new Event("fade-sprite", {
           sprite: SpriteUtil.parse({
             name: "texture_hechan_3_background",
-            alpha: 0.9,
+            alpha: 0.75,
             //blend: "#FFFFFF",
             blend: GMArray.getRandom([
               "#FFFFFF",
-              "#2f0080",
-              "#87135d",
-              "#FFFFFF",
-              "#134787",
-              "#138774",
-              "#FFFFFF", 
-              "#138774",
-              "#f02b2b"
+              "#194ba8ff",
+              "#1472c4ff",
+              "#680f6bff",
+              "#891769ff",
             ]),
           }),
           collection: controller.visuRenderer.gridRenderer.overlayRenderer.backgrounds,
@@ -534,19 +530,13 @@ function GridService(_config = null) constructor {
 
         controller.send(new Event("fade-sprite", {
           sprite: SpriteUtil.parse({
-            name: "texture_hechan_3",
+            name: controller.gridService.hechan,
             alpha: 0.75 + random(1.0) * 0.25,
             blend: GMArray.getRandom([
               "#FFFFFF",
-              "#ed6d9c",
-              "#FFFFFF",
-              "#887aff",
-              "#FFFFFF",
-              "#96facf",
-              "#FFFFFF",
-              "#fff875",
-              "#FFFFFF", 
-              "#edb8ff"
+              "#56f68eff",
+              "#929efbff",
+              "#fc80fcff",
             ]),
           }),
           collection: controller.visuRenderer.gridRenderer.overlayRenderer.foregrounds,
@@ -560,14 +550,18 @@ function GridService(_config = null) constructor {
           blendEquation: BlendEquation.ADD,
           blendEquationAlpha: BlendEquation.ADD,
           executor: executor,
-          tiled: true,
-          replace: random(1.0) > 0.75,
+          tiled: random(1.0) > 0.75,
+          replace: random(1.0) > 0.5,
           lifespan: Struct.get(this.state, "duration"),
           x: lastX,
           y: lastY,
           xScale: scale,
           yScale: scale,
         }))
+
+        controller.gridService.hechan = controller.gridService.hechan == "texture_hechan_3"
+          ? "texture_hechan_4"
+          : "texture_hechan_3"
         this.fullfill()
       })
     Beans.get(BeanVisuController).executor.add(task)
@@ -594,7 +588,6 @@ function GridService(_config = null) constructor {
         if (Core.isType(lastTask, Task) && Core.isType(lastTask.state, Map)) {
           lastX = lastTask.state.get("x") + (random(GuiWidth() / 2.0) * choose(1.0, 1.0, -1.0))
           lastY = lastTask.state.get("y")
-          var prev = lastY
           if (sign(lastY) >= 0) {
             lastY -= random(abs(lastY) + random(GuiHeight() / 3.0))
           } else {
@@ -879,7 +872,7 @@ function GridService(_config = null) constructor {
 
   ///@private
   ///@return {GridService}
-  updateGridItemsOriginal = function() {
+  updateGridItems = function() {
     var controller = Beans.get(BeanVisuController)
     this.moveGridItems()
     this.signalGridItemsCollision()
@@ -887,78 +880,6 @@ function GridService(_config = null) constructor {
     controller.shroomService.update(this)
     controller.bulletService.update(this)
     return this
-  }
-
-  ///@private
-  ///@return {GridService}
-  updateGridItemsAlternative = function() {
-    static bulletLambda = function(bullet, index, acc) {
-      acc.moveBullet(bullet, index, acc)
-      acc.bulletCollision(bullet, index, acc.controller)
-      acc.bulletService.updateBullet(bullet, index, acc.bulletService)
-    }
-
-    static shroomLambda = function(shroom, index, acc) {
-      acc.shroomCollision(shroom, index, acc.player)
-      acc.shroomService.updateShroom(shroom, index, acc.shroomService)
-      if (!shroom.signals.kill) {
-        acc.moveShroom(shroom, index, acc)
-      }
-    }
-
-    var controller = Beans.get(BeanVisuController)
-    var gridService = this
-    var bulletService = controller.bulletService
-    var shroomService = controller.shroomService
-    var playerService = controller.playerService
-    var player = playerService.player
-    var isPlayer = Core.isType(player, Player)
-    var view = controller.gridService.view
-
-    if (isPlayer) {
-      player.move()
-    }
-
-    bulletService.dispatcher.update()
-    bulletService.bullets.forEach(bulletLambda, {
-      controller: controller,
-      moveBullet: this.moveBullet,
-      view: view,
-      chunkService: bulletService.chunkService,
-      bulletCollision: isPlayer ? this.bulletCollision : this.bulletCollisionNoPlayer,
-      gridService: gridService,
-      bulletService: bulletService,
-    }).runGC() 
-
-    if (controller.gameMode != shroomService.gameMode) {
-      shroomService.gameMode = controller.gameMode
-      shroomService.shrooms.forEach(shroomService.updateGameMode, shroomService.gameMode)
-    }
-  
-    shroomService.dispatcher.update()
-    shroomService.shrooms.forEach(shroomLambda, {
-      moveShroom: this.moveShroom,
-      view: view,
-      chunkService: shroomService.chunkService,
-      shroomCollision: isPlayer
-        ? (player.stats.godModeCooldown > 0.0 
-          ? this.shroomCollisionGodMode 
-          : this.shroomCollision) 
-        : this.shroomCollisionNoPlayer,
-      player: player,
-      shroomService: shroomService,
-    }).runGC()
-    
-    playerService.update()
-    return this
-  }
-
-  ///@private
-  ///@return {GridService}
-  updateGridItems = function() {
-    return Visu.settings.getValue("visu.optimalization.iterate-entities-once")
-      ? this.updateGridItemsAlternative()
-      : this.updateGridItemsOriginal()
   }
 
   ///@param {Event} event

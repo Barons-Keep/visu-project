@@ -137,7 +137,7 @@ function GridECS(_controller) constructor {
       
     var cameraDistance = 1 ///@todo extract parameter
     var cameraPitch = renderer.camera.pitch + (sin(renderer.camera.breathTimer1.time) * BREATH_TIMER_FACTOR_1)
-    var cameraAngle = renderer.camera.angle + (sin(renderer.camera.breathTimer2.time) * BREATH_TIMER_FACTOR_2)
+    var cameraAngle = renderer.camera.angle + (sin(renderer.camera.breathTimer2.time / 4.0) * BREATH_TIMER_FACTOR_2)
     var xto = renderer.camera.x
     var yto = renderer.camera.y
     var zto = renderer.camera.z

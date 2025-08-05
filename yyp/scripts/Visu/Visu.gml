@@ -610,6 +610,57 @@ function _Visu() constructor {
         "maxValue":360.0
       }
     },
+    "particle-splashscreen":{
+      "blend":true,
+      "life":{
+        "minValue":50.0,
+        "maxValue":75.0
+      },
+      "angle":{
+        "minValue":0.0,
+        "maxValue":360.0,
+        "wiggle":1.0,
+        "increase":-1.5
+      },
+      "alpha":{
+        "start":0.0,
+        "finish":0.0,
+        "halfway":0.85
+      },
+      "speed":{
+        "minValue":0.0,
+        "maxValue":5.0,
+        "wiggle":3.0,
+        "increase":1.0
+      },
+      "color":{
+        "start":"#e5ff00ff",
+        "finish":"#FF0000",
+        "halfway":"#622DDD"
+      },
+      "scale":{
+        "x":1.0,
+        "y":1.0
+      },
+      "gravity":{
+        "angle":0.0,
+        "amount":0.0
+      },
+      "orientation":{
+        "relative":0.0,
+        "minValue":0.0,
+        "maxValue":360.0,
+        "wiggle":1.0,
+        "increase":0.5
+      },
+      "shape":"EXPLOSION",
+      "size":{
+        "minValue":0.0,
+        "maxValue":0.0,
+        "wiggle":0.5,
+        "increase":0.5
+      }
+    }
   }
 
   ///@private
@@ -693,6 +744,10 @@ function _Visu() constructor {
     },
     "texture_hechan_3_abstract": {
       "asset": texture_hechan_3_abstract,
+      "file": "",
+    },
+    "texture_hechan_4": {
+      "asset": texture_hechan_4,
       "file": "",
     },
     "texture_bullet_blue": {
@@ -1092,7 +1147,6 @@ function _Visu() constructor {
       .set(new SettingEntry({ name: "visu.debug.render-surfaces", type: SettingTypes.BOOLEAN, defaultValue: false }))
       .set(new SettingEntry({ name: "visu.god-mode", type: SettingTypes.BOOLEAN, defaultValue: false }))
       .set(new SettingEntry({ name: "visu.optimalization.sort-entities-by-txgroup", type: SettingTypes.BOOLEAN, defaultValue: false }))
-      .set(new SettingEntry({ name: "visu.optimalization.iterate-entities-once", type: SettingTypes.BOOLEAN, defaultValue: false }))
       .set(new SettingEntry({ name: "visu.window.width", type: SettingTypes.NUMBER, defaultValue: 1400 }))
       .set(new SettingEntry({ name: "visu.window.height", type: SettingTypes.NUMBER, defaultValue: 900 }))
       .set(new SettingEntry({ name: "visu.interface.scale", type: SettingTypes.NUMBER, defaultValue: 1 }))
@@ -1169,10 +1223,11 @@ function _Visu() constructor {
         }))
       .load()
 
-    if (!Optional.is(Core.fetchAARange().find(Lambda.equal, this.settings.getValue("visu.graphics.aa")))) {
-      this.settings.setValue("visu.graphics.aa", 0).save()
-    }
-    display_reset(this.settings.getValue("visu.graphics.aa"), this.settings.getValue("visu.graphics.vsync"))
+    //if (!Optional.is(Core.fetchAARange().find(Lambda.equal, this.settings.getValue("visu.graphics.aa")))) {
+    //  this.settings.setValue("visu.graphics.aa", 0).save()
+    //}
+    //display_reset(this.settings.getValue("visu.graphics.aa"), this.settings.getValue("visu.graphics.vsync"))
+    display_reset(display_aa, this.settings.getValue("visu.graphics.vsync", true))
     
     Language.load(this.settings.getValue("visu.language", LanguageType.en_EN))
 

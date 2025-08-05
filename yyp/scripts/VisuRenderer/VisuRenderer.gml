@@ -295,7 +295,7 @@ function VisuRenderer() constructor {
         + $"y:     {gridCamera.y}\n"
         + $"z:     {gridCamera.z}\n"
         + $"pitch: {gridCamera.pitch + (sin(this.gridRenderer.camera.breathTimer1.time) * BREATH_TIMER_FACTOR_1)}\n"
-        + $"angle: {gridCamera.angle + (sin(this.gridRenderer.camera.breathTimer2.time) * BREATH_TIMER_FACTOR_2)}\n"
+        + $"angle: {gridCamera.angle + (sin(this.gridRenderer.camera.breathTimer2.time / 4.0) * BREATH_TIMER_FACTOR_2)}\n"
         + $"view.x: {gridService.view.x}\n"
         + $"view.y: {gridService.view.y}\n"
 
