@@ -1,9 +1,9 @@
 
 ///@type {Number}
-#macro SHROOM_SPAWN_AMOUNT 50
+#macro SHROOM_SPAWN_AMOUNT 60
 
 ///@type {Number}
-#macro SHROOM_SPAWN_SIZE 8
+#macro SHROOM_SPAWN_SIZE 10
 
 ///@type {Struct}
 global.__entity_track_event = {
@@ -200,7 +200,7 @@ global.__entity_track_event = {
         "en-shr_hide-em-wiggle-freq": Struct.parse.boolean(data, "en-shr_hide-em-wiggle-freq", TRACK_EVENT_DEFAULT_HIDDEN_VALUE),
         "en-shr_hide-em-wiggle-amp": Struct.parse.boolean(data, "en-shr_hide-em-wiggle-amp", TRACK_EVENT_DEFAULT_HIDDEN_VALUE),
 
-        "en-shr_preview": Struct.parse.boolean(data, "en-shr_preview"),
+        "en-shr_preview": Struct.parse.boolean(data, "en-shr_preview", true),
         "en-shr_template": Struct.parse.text(data, "en-shr_template", "shroom-default"),
         "en-shr_use-lifespan": Struct.parse.boolean(data, "en-shr_use-lifespan", false),
         "en-shr_lifespan": Struct.parse.number(data, "en-shr_lifespan", 15.0),
@@ -362,30 +362,6 @@ global.__entity_track_event = {
           inherit
         )
       }
-      
-
-      ///@description ecs
-      /*
-      var controller = Beans.get(BeanVisuController)
-      controller.gridECS.add(new GridEntity({
-        type: GridEntityType.ENEMY,
-        position: { 
-          x: controller.gridService.view.x
-            + (Struct.get(data, "en-shr_x") 
-              * (SHROOM_SPAWN_SIZE / SHROOM_SPAWN_AMOUNT) 
-              + 0.5),
-          y: controller.gridService.view.y
-            + (Struct.get(data, "en-shr_y") 
-              * (SHROOM_SPAWN_SIZE / SHROOM_SPAWN_AMOUNT) 
-              - 0.5),
-        },
-        velocity: { 
-          speed: Struct.get(data, "en-shr_spd") / 1000, 
-          angle: Struct.get(data, "en-shr_dir"),
-        },
-        renderSprite: { name: "texture_baron" },
-      }))
-      */
     },
   },
   "brush_entity_bullet": {
@@ -571,7 +547,7 @@ global.__entity_track_event = {
         "en-blt_hide-em-wiggle-freq": Struct.parse.boolean(data, "en-blt_hide-em-wiggle-freq", TRACK_EVENT_DEFAULT_HIDDEN_VALUE),
         "en-blt_hide-em-wiggle-amp": Struct.parse.boolean(data, "en-blt_hide-em-wiggle-amp", TRACK_EVENT_DEFAULT_HIDDEN_VALUE),
 
-        "en-blt_preview": Struct.parse.boolean(data, "en-blt_preview"),
+        "en-blt_preview": Struct.parse.boolean(data, "en-blt_preview", true),
         "en-blt_template": Struct.parse.text(data, "en-blt_template", "bullet-default"),
         "en-blt_use-lifespan": Struct.parse.boolean(data, "en-blt_use-lifespan", false),
         "en-blt_lifespan": Struct.parse.number(data, "en-blt_lifespan", 15.0),
@@ -746,29 +722,6 @@ global.__entity_track_event = {
           damage
         )
       }
-
-      ///@description ecs
-      /*
-      var controller = Beans.get(BeanVisuController)
-      controller.gridECS.add(new GridEntity({
-        type: GridEntityType.ENEMY,
-        position: { 
-          x: controller.gridService.view.x
-            + (Struct.get(data, "en-blt_x") 
-              * (SHROOM_SPAWN_SIZE / SHROOM_SPAWN_AMOUNT) 
-              + 0.5),
-          y: controller.gridService.view.y
-            + (Struct.get(data, "en-blt_y") 
-              * (SHROOM_SPAWN_SIZE / SHROOM_SPAWN_AMOUNT) 
-              - 0.5),
-        },
-        velocity: { 
-          speed: Struct.get(data, "en-blt_spd") / 1000, 
-          angle: Struct.get(data, "en-blt_dir"),
-        },
-        renderSprite: { name: "texture_baron" },
-      }))
-      */
     },
   },
   "brush_entity_coin": {
@@ -777,7 +730,7 @@ global.__entity_track_event = {
         "icon": Struct.parse.sprite(data, "icon"),
         "en-coin_hide": Struct.parse.boolean(data, "en-coin_hide", TRACK_EVENT_DEFAULT_HIDDEN_VALUE),
         "en-coin_hide-spawn": Struct.parse.boolean(data, "en-shr_coin-spawn", TRACK_EVENT_DEFAULT_HIDDEN_VALUE),
-        "en-coin_preview": Struct.parse.boolean(data, "en-coin_preview"),
+        "en-coin_preview": Struct.parse.boolean(data, "en-coin_preview", true),
         "en-coin_template": Struct.parse.text(data, "en-coin_template", "coin-default"),
         "en-coin_x": Struct.parse.number(data, "en-coin_x", 0.0,
           -1.0 * (SHROOM_SPAWN_AMOUNT / 2.0),
@@ -898,24 +851,6 @@ global.__entity_track_event = {
             }
           ]
         }),
-        "en-pl_use-platformer": Struct.parse.boolean(data, "en-pl_use-platformer"),
-        "en-pl_platformer": Struct.getIfType(data, "en-pl_platformer", Struct, {
-          x: {
-            friction: 9.3,
-            acceleration: 1.92,
-            speedMax: 2.1,
-          },
-          y: {
-            friction: 0.0,
-            acceleration: 1.92,
-            speedMax: 25.0,
-          },
-          jump:  {
-            size:  3.5,
-          }
-        }),
-        "en-pl_use-racing": Struct.parse.boolean(data, "en-pl_use-racing"),
-        "en-pl_racing": Struct.getIfType(data, "en-pl_racing", Struct, { }),
       }
     },
     run: function(data, channel) {
@@ -934,14 +869,8 @@ global.__entity_track_event = {
         "stats": Struct.get(data, "en-pl_use-stats")
           ? Struct.get(data, "en-pl_stats")
           : null,
-        "bulletHell": Struct.get(data, "en-pl_use-bullethell")
+        "handler": Struct.get(data, "en-pl_use-bullethell")
           ? Struct.get(data, "en-pl_bullethell")
-          : null,
-        "platformer": Struct.get(data, "en-pl_use-platformer")
-          ? Struct.get(data, "en-pl_platformer")
-          : null,
-        "racing": Struct.get(data, "en-pl_use-racing")
-          ? Struct.get(data, "en-pl_racing")
           : null,
       }))
 

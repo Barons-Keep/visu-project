@@ -7,33 +7,30 @@
 function FSMState(_name, config = {}) constructor {
 
   ///@type {String}
-  name = Assert.isType(_name, String, "name")
+  name = Assert.isType(_name, String, "FSMState::name must be type of String")
 
   ///@private
-  ///@type {FSM} [fsm]
   ///@return {Map<String, any>}
-  static defaultFactoryState = function(fsm) { 
+  defaultFactoryState = function() { 
     return new Map(String, any)
   }
 
   ///@private
   ///@param {FSM} fsm
   ///@return {FSMState}
-  static defaultUpdate = function(fsm) {
+  defaultUpdate = function(fsm) {
     return this
   }
 
   ///@private
   ///@return {Map<String, any>}
-  factoryState = method(this, Assert.isType(Struct.getDefault(config, "factoryState", 
-    this.defaultFactoryState), Callable))  
+  factoryState = method(this, Struct.getIfType(config, "factoryState", Callable, this.defaultFactoryState))
 
   ///@type {Map<String, any>}
-  state = Assert.isType(this.factoryState(), Map, "state")
+  state = Assert.isType(this.factoryState(), Map, "FSMState::state must be type of Map")
   
   ///@type {Callable}
-  update = method(this, Assert.isType(Struct.getDefault(config, "update", 
-    this.defaultUpdate), Callable))
+  update = method(this, Struct.getIfType(config, "update", Callable, this.defaultUpdate))
 
   ///@type {Map<String, Callable>}
   actions = Assert.isType(Struct.contains(config, "actions")

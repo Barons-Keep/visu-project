@@ -10,10 +10,10 @@ function GridView(config = {}) constructor {
   y = Assert.isType(Struct.getDefault(config, "y", 0.0), Number)
 
   ///@type {Number}
-  width = Assert.isType(Struct.getDefault(config, "width", 1), Number)
+  width = Assert.isType(Struct.getDefault(config, "width", 1.0), Number)
 
   ///@type {Number}
-  height = Assert.isType(Struct.getDefault(config, "height", 1), Number)
+  height = Assert.isType(Struct.getDefault(config, "height", 1.0), Number)
 
   ///@type {Number}
   worldWidth = Assert.isType(Struct.getDefault(config, "worldWidth", 2.0) , Number)
@@ -21,19 +21,19 @@ function GridView(config = {}) constructor {
   ///@type {Number}
   worldHeight = Assert.isType(Struct.getDefault(config, "worldHeight", 2.0) , Number)
 
-  ///@type {Struct}
-  follow = {
-    target: null,
-    xMargin: Assert.isType(Struct.getDefault(config, "follow.xMargin", 0.35), Number),
-    yMargin: Assert.isType(Struct.getDefault(config, "follow.yMargin", 0.40), Number),
-    smooth: Assert.isType(Struct.getDefault(config, "follow.smooth", 32), Number),
-  }
-
   ///@type {Number}
   derivativeX = 0.0
 
   ///@type {Number}
   derivativeY = 0.0
+
+  ///@type {Struct}
+  follow = {
+    target: null,
+    xMargin: Struct.getIfType(config, "follow.xMargin", Number, 0.35),
+    yMargin: Struct.getIfType(config, "follow.yMargin", Number, 0.40),
+    smooth: Struct.getIfType(config, "follow.smooth", Number, 32),
+  }
 
   ///@param {GridItem} target
   ///@return {GridView}

@@ -141,7 +141,7 @@ function TrackService(_context, config = {}): Service() constructor {
   rewind = function(timestamp) {
     if (!this.isTrackLoaded) {
       return this
-    }
+    } 
 
     this.rewindFrom = this.time
     this.rewindTo = timestamp

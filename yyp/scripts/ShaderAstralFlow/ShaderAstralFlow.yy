@@ -1,0 +1,13 @@
+{
+  "$GMScript":"v1",
+  "%Name":"ShaderAstralFlow",
+  "isCompatibility":false,
+  "isDnD":false,
+  "name":"ShaderAstralFlow",
+  "parent":{
+    "name":"shader_astral_flow",
+    "path":"folders/io.alkapivo.core/resource/shader/screen/shader_astral_flow.yy",
+  },
+  "resourceType":"GMScript",
+  "resourceVersion":"2.0",
+}

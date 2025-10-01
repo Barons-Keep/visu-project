@@ -32,6 +32,7 @@ varying vec4 v_color;
 
 // Uniforms
 uniform float u_angle;      // Default: 0.0
+uniform float u_bpm;        // Default: 0.0
 uniform float u_brightness; // Default: 1.0
 uniform float u_density;    // Default: 1.0
 uniform float u_hue;        // Default: 0.0
@@ -96,9 +97,30 @@ float loop_time(float time) {
   return cos((time - (PI * (PERIOD / 2.0))) / PERIOD) * PERIOD + PERIOD;
 }
 
+//void mainImage(out vec4 fragColor, in vec2 v_texcoord) {
 void main() {
+  /*
+  vec4 v_color = vec4(1.0);
+  float u_angle = 0.0;
+  float u_bpm = 0.0;
+  float u_brightness = 1.0;
+  float u_density = 1.0;
+  float u_hue = 0.0;
+  float u_sat = 1.0;
+  float u_scale = 1.0;
+  float u_seed = 0.0;
+  float u_sharp = 0.25;
+  float u_speed = 10.0;
+  float u_time = iTime;
+  float u_treshold = 1.0;
+  vec2 u_offset = vec2(0.5, 0.5);
+  vec2 u_resolution = vec2(iResolution.xy);
+  */
+
   vec2 uv = rotated_uv_resolution(v_texcoord * u_scale, u_resolution, u_offset, u_angle);
-  float time = loop_time(u_time + u_seed);
+  float bpm = (u_bpm / 60.0) * TAU;
+  float time = u_time + u_seed;
+  time = loop_time(time + sin(time * bpm));
   float x_scale = get_cos_range(u_time + u_seed, u_speed);
   float y_scale = get_sin_range(u_time + u_seed, u_speed);
   float f_scale = get_cos_range(u_time + u_seed, u_density) + 1.0;
@@ -107,11 +129,15 @@ void main() {
     uv.y += u_sharp / idx * cos(idx * uv.x + time) * f_scale + y_scale;
   }
 
+  //vec4 texture = vec4(0.0, 0.0, 0.0, 1.0);
+  //vec4 texture = texture(iChannel0, v_texcoord / iResolution.xy);
   vec4 texture = texture2D(gm_BaseTexture, v_texcoord);
   vec3 color = vec3(sin(uv.x) * 0.5 + 0.5, cos(uv.y) * 0.5 + 0.5, sin(uv.y) * 0.5 + 0.5);
   vec3 pixel = apply_hue(apply_saturation(color, u_sat), u_hue) * u_brightness;
-  float alpha = get_alpha_from_pixel(pixel);
+  float alpha = texture.a == 0.0 ? 0.0 : get_alpha_from_pixel(pixel);
   pixel = mix(pixel, texture.rgb, 1.0 - v_color.a);
   pixel = mix(pixel, texture.rgb, (1.0 - alpha) * (1.0 - u_treshold));
+  //fragColor = vec4(color, 1.0);
+  //fragColor = vec4(pixel, texture.a + v_color.a);
   gl_FragColor = vec4(pixel, texture.a + (alpha * v_color.a));
 }

@@ -306,19 +306,6 @@ function generateVEStyles() {
           blend: VETheme.color.textShadow,
         },
       },
-      remove: {
-        backgroundColor: VETheme.color.primaryDark,
-        colorHoverOver: VETheme.color.deny,
-        colorHoverOut:VETheme.color.primaryDark,
-        label: {
-          align: { v: VAlign.CENTER, h: HAlign.CENTER },
-          font: "font_inter_10_regular",
-          color: VETheme.color.textShadow,
-        },
-        sprite: {
-          blend: VETheme.color.textShadow,
-        },
-      },
       mute: {
         backgroundColor: VETheme.color.primaryDark,
         colorHoverOver: VETheme.color.primary,
@@ -679,28 +666,6 @@ function generateVEStyles() {
         font: "font_inter_8_regular",
         color: VETheme.color.textShadow,
         align: { v: VAlign.CENTER, h: HAlign.CENTER },
-      }
-    },
-    "double-checkbox": {
-      label: {
-        offset: { x: 0 },
-        font: "font_inter_10_regular",
-        color: VETheme.color.textShadow,
-        align: { v: VAlign.CENTER, h: HAlign.RIGHT },
-      },
-      checkbox1: { },
-      label1: {
-        offset: { x: 0 },
-        font: "font_inter_8_regular",
-        color: VETheme.color.textShadow,
-        align: { v: VAlign.CENTER, h: HAlign.LEFT },
-      },
-      checkbox2: { },
-      label2: {
-        offset: { x: 0 },
-        font: "font_inter_8_regular",
-        color: VETheme.color.textShadow,
-        align: { v: VAlign.CENTER, h: HAlign.LEFT },
       }
     },
   })

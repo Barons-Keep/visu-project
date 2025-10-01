@@ -309,18 +309,54 @@ function _Math() constructor {
     return point_distance(fromX, fromY, toX, toY)
   }
 
-  ///@param {Number} sx1
-  ///@param {Number} sy1
-  ///@param {Number} sx2
-  ///@param {Number} sy2
-  ///@param {Number} dx1
-  ///@param {Number} dy1
-  ///@param {Number} dx2
-  ///@param {Number} dy2
+  ///@param {Number} sourceX
+  ///@param {Number} sourceY
+  ///@param {Number} sourceWidth
+  ///@param {Number} sourceHeight
+  ///@param {Number} targetX
+  ///@param {Number} targetY
+  ///@param {Number} targetWidth
+  ///@param {Number} targetHeight
   ///@return {Boolean}
-  static rectangleOverlaps = function(sx1, sy1, sx2, sy2, dx1, dy1, dx2, dy2) {
+  static rectangleOverlaps = function(sourceX, sourceY, sourceWidth, sourceHeight, targetX, targetY, targetWidth, targetHeight) {
     gml_pragma("forceinline")
-    return rectangle_in_rectangle(sx1, sy1, sx2, sy2, dx1, dy1, dx2, dy2) > 0
+    return rectangle_in_rectangle(sourceX, sourceY, sourceX + sourceWidth, sourceY + sourceHeight, targetX, targetY, targetX + targetWidth, targetY + targetHeight) > 0
+  }
+
+  /// @param {Number} sourceX
+  /// @param {Number} sourceY
+  /// @param {Number} sourceRadius
+  /// @param {Number} targetX
+  /// @param {Number} targetY
+  /// @param {Number} targetRadius
+  /// @return {Boolean}
+  static circleOverlaps = function(sourceX, sourceY, sourceRadius, targetX, targetY, targetRadius) {
+    gml_pragma("forceinline")
+    var dx = sourceX - targetX
+    var dy = sourceY - targetY
+    var length = (dx * dx) + (dy * dy)
+    var radius = sourceRadius + targetRadius
+    return length <= radius * radius
+  }
+
+  ///@param {Number} sourceX
+  ///@param {Number} sourceY
+  ///@param {Number} sourceWidth
+  ///@param {Number} sourceHeight
+  ///@param {Number} targetX
+  ///@param {Number} targetY
+  ///@param {Number} targetWidth
+  ///@param {Number} targetHeight
+  ///@return {Boolean}
+  static ellipseOverlaps = function(sourceX, sourceY, sourceWidth, sourceHeight, targetX, targetY, targetWidth, targetHeight) {
+    gml_pragma("forceinline")
+    var scaleX = sourceWidth * 0.5
+    var scaleY = sourceHeight * 0.5
+    var dx = (targetX - sourceX) / scaleX
+    var dy = (targetY - sourceY) / scaleY
+    var length = dx * dx + dy * dy
+    var radius = 1.0 + (0.5 * ((targetWidth / scaleX) + (targetHeight / scaleY)))
+    return length <= radius * radius
   }
 
   ///@param {Number} length
@@ -483,5 +519,6 @@ function _Math() constructor {
     return (sign(value) == 1.0) ? sqrt(value) : 0.0
   }
 }
+
 global.__Math = new _Math()
 #macro Math global.__Math

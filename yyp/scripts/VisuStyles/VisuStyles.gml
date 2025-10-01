@@ -63,16 +63,17 @@ global.__VisuStyles = new Map(String, Callable, {
   },
   "menu-label-entry": {
     label: {
-      align: { v: VAlign.CENTER, h: HAlign.CENTER },
+      align: { v: VAlign.CENTER, h: HAlign.LEFT },
       font: "font_kodeo_mono_18_bold",
       color: VisuTheme.color.text,
-      //offset: { x: 24 },
+      offset: { x: 24 },
+      useScaleWithOffset: true,
       enableColorWrite: false,
       //backgroundColor: VisuTheme.color.side,
       colorHoverOver: VisuTheme.color.accentLight,
       colorHoverOut: VisuTheme.color.accentShadow,
       backgroundMargin: { top: 6, left: 6, bottom: 6, right: 6 },
-      backgroundAlpha: 0.01,
+      backgroundAlpha: 0.05,
     },
   },
   "menu-button-input-entry": {

@@ -46,11 +46,11 @@ function VisuIO() constructor {
 
     if (this.keyboard.keys.fullscreen.pressed) {
       var fullscreen = controller.displayService.getFullscreen()
-      Logger.debug("VisuIO", String.join("Set fullscreen to", fullscreen ? "'false'" : "'true'", "."))
+      Logger.debug(BeanVisuIO, fullscreen ? "Window" : "Fullscreen")
       controller.displayService.setFullscreen(!fullscreen)
       Visu.settings.setValue("visu.fullscreen", !fullscreen).save()
 
-      if (fullscreen && !Visu.settings.getValue("visu.borderless-window")) {
+      if (fullscreen && Visu.settings.getValue("visu.borderless-window")) {
         controller.displayService.center()
       }
     }

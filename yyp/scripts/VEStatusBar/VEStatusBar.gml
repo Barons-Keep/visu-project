@@ -122,7 +122,6 @@ function VEStatusBar(_editor) constructor {
     var controller = this
     var layout = this.factoryLayout(parent)
     var autosaveEnabled = Beans.get(BeanVisuEditorController).autosave.value
-    var updateServices = Beans.get(BeanVisuEditorController).updateServices
     return new Map(String, UI, {
       "ve-status-bar": new UI({
         name: "ve-status-bar",
@@ -516,26 +515,6 @@ function VEStatusBar(_editor) constructor {
               template: VEComponents.get("line-w"),
               layout: VELayouts.get("line-w"),
               config: { layout: { type: UILayoutType.HORIZONTAL } },
-            },
-            {
-              name: "ve-status-bar_update-checkbox",
-              template: VEComponents.get("checkbox"),
-              layout: VELayouts.get("checkbox"),
-              config: { 
-                layout: { 
-                  type: UILayoutType.HORIZONTAL,
-                  width: function() { return 28 },
-                },
-                checkbox: {
-                  value: updateServices,
-                  spriteOn: { name: "visu_texture_checkbox_on" },
-                  spriteOff: { name: "visu_texture_checkbox_off" },
-                  callback: function() {
-                    var editor = Beans.get(BeanVisuEditorController)
-                    editor.updateServices = !editor.updateServices
-                  },
-                },
-              },
             },
             {
               name: "ve-status-bar_update-label",

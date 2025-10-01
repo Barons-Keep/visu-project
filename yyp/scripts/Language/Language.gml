@@ -50,6 +50,7 @@ function _Language() constructor {
         Language.pack = Assert.isType(new prototype(json), LanguagePack,
           "Language.pack must be type of LanguagePack")
       },
+      model: "io.alkapivo.core.lang.LanguagePack",
     }).update()
 
     return this

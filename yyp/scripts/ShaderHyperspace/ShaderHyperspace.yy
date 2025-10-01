@@ -1,0 +1,13 @@
+{
+  "$GMScript":"v1",
+  "%Name":"ShaderHyperspace",
+  "isCompatibility":false,
+  "isDnD":false,
+  "name":"ShaderHyperspace",
+  "parent":{
+    "name":"shader_hyperspace",
+    "path":"folders/io.alkapivo.core/resource/shader/screen/shader_hyperspace.yy",
+  },
+  "resourceType":"GMScript",
+  "resourceVersion":"2.0",
+}

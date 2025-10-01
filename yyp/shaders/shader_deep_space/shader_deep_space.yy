@@ -1,0 +1,12 @@
+{
+  "$GMShader":"",
+  "%Name":"shader_deep_space",
+  "name":"shader_deep_space",
+  "parent":{
+    "name":"shader_deep_space",
+    "path":"folders/io.alkapivo.core/resource/shader/screen/shader_deep_space.yy",
+  },
+  "resourceType":"GMShader",
+  "resourceVersion":"2.0",
+  "type":1,
+}

@@ -1,0 +1,13 @@
+{
+  "$GMScript":"v1",
+  "%Name":"ShaderCloudySky",
+  "isCompatibility":false,
+  "isDnD":false,
+  "name":"ShaderCloudySky",
+  "parent":{
+    "name":"shader_cloudy_sky",
+    "path":"folders/io.alkapivo.core/resource/shader/screen/shader_cloudy_sky.yy",
+  },
+  "resourceType":"GMScript",
+  "resourceVersion":"2.0",
+}

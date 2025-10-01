@@ -144,40 +144,6 @@ function TestEvent_PlayerService_player_shoot(json = {}) constructor {
             }
           ]
         },
-        "en-pl_use-platformer":true,
-        "en-pl_platformer":{
-          "x":{
-            "acceleration":1.9199999999999999,
-            "friction":9.3000000000000007,
-            "speedMax":2.5
-          },
-          "jump":{
-            "size":4.0
-          },
-          "y":{
-            "acceleration":1.9199999999999999,
-            "friction":0.0,
-            "speedMax":25.0
-          }
-        },
-        "en-pl_use-racing":true,
-        "en-pl_racing":{
-          "nitro":{
-            "acceleration":0.5,
-            "friction":1.0,
-            "speedMax":1.0
-          },
-          "throttle":{
-            "acceleration":0.20000000000000001,
-            "friction":0.5,
-            "speedMax":1.5
-          },
-          "wheel":{
-            "acceleration":0.29999999999999999,
-            "friction":0.059999999999999998,
-            "speedMax":3.0
-          }
-        },
       }),
       unfocusTimer: new Timer(Struct.getIfType(json, "unfocusTimer", Number, 2.0)),
       unfocusBulletCount: Struct.getIfType(json, "unfocusBulletCount", Number, 4),

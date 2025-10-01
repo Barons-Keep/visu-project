@@ -8,6 +8,7 @@ global.__ShaderFunkFlux = {
       type: "GLSL_ES",
       uniforms: {
         u_angle: "FLOAT",
+        u_bpm: "FLOAT",
         u_brightness: "FLOAT",
         u_density: "FLOAT",
         u_sat: "FLOAT",
@@ -33,6 +34,10 @@ global.__ShaderFunkFlux = {
           ease: "LINEAR"
         },
         components: { }
+      },
+      u_bpm: {
+        store: { value: 0.0 },
+        components: { },
       },
       u_brightness: {
         store: {

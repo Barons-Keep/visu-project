@@ -4,35 +4,50 @@
 global.__MAGIC_NUMBER_TASK = 12
 #macro MAGIC_NUMBER_TASK global.__MAGIC_NUMBER_TASK
 
+
 ///@type {Number}
 global.__SYNC_UI_STORE_STEP = 12
 #macro SYNC_UI_STORE_STEP global.__SYNC_UI_STORE_STEP
+
 
 ///@type {Number}
 global.__BRUSH_ENTRY_STEP = 1
 #macro BRUSH_ENTRY_STEP global.__BRUSH_ENTRY_STEP
 
+
 ///@type {Number}
 global.__BRUSH_TOOLBAR_ENTRY_STEP = 1
 #macro BRUSH_TOOLBAR_ENTRY_STEP global.__BRUSH_TOOLBAR_ENTRY_STEP
 
+
 ///@type {Number}
 global.__FLIP_VALUE = 1
 #macro FLIP_VALUE global.__FLIP_VALUE
+
 
 ///@hack
 #macro TEMPLATE_ENTRY_STEP global.__BRUSH_ENTRY_STEP
 #macro TEMPLATE_TOOLBAR_ENTRY_STEP global.__BRUSH_TOOLBAR_ENTRY_STEP
 #macro EVENT_INSPECTOR_ENTRY_STEP global.__BRUSH_TOOLBAR_ENTRY_STEP
 
+
 ///@enum
-function _GameMode(): Enum() constructor {
-  RACING = "racing"
-  BULLETHELL = "bulletHell"
-  PLATFORMER = "platformer"
+function _Difficulty(): Enum() constructor {
+  EASY = "EASY"
+  NORMAL = "NORMAL"
+  HARD = "HARD"
+  LUNATIC = "LUNATIC"
 }
-global.__GameMode = new _GameMode()
-#macro GameMode global.__GameMode
+global.__Difficulty = new _Difficulty()
+#macro Difficulty global.__Difficulty
+
+
+///@param {Struct} json
+function VisuSave(json) constructor {
+  
+  ///@type {String}
+  name = Assert.isType(Struct.get(json, "name"), String)
+}
 
 
 ///@static
@@ -74,11 +89,9 @@ function _Visu() constructor {
   shroomTemplates = {
     "shroom-default": {
       "sprite": { "name": "texture_baron" },
-      "gameModes":{
-        "bulletHell":{ "features": [] },
-        "platformer": { "features": [] },
-        "racing":{ "features": [] },
-      },
+      "features": [],
+      "queue": [],
+      "inherit": [],
     },
   }
 
@@ -86,11 +99,6 @@ function _Visu() constructor {
   ///@type {Struct}
   bulletTemplates = {
     "bullet-default": {
-      "gameModes":{
-        "bulletHell": { "features": [] },
-        "platformer": { "features": [] },
-        "racing": { "features": [] },
-      },
       "sprite":{
         "name":"texture_bullet"
       },
@@ -921,6 +929,12 @@ function _Visu() constructor {
               Beans.get(BeanTestRunner).push(args.get(0))
               Core.setProperty("visu.manifest.load-on-start", false)
               Core.setProperty("visu.menu.open-on-start", false)
+              Core.setProperty("visu.skip-splashscreen", true)
+
+              var fsm = Beans.get(BeanVisuController).fsm
+              if (fsm.getStateName() != "idle") {
+                fsm.dispatcher.send(new Event("transition", { name: "idle" }))
+              }
             },
           }),
           new CLIParam({
@@ -1100,34 +1114,45 @@ function _Visu() constructor {
   ///@return {Visu}
   static initShaders = function() {
     ShaderArcRunner.install(SHADERS, SHADER_CONFIGS)
+    ShaderAstralFlow.install(SHADERS, SHADER_CONFIGS)
+    ShaderCloudySky.install(SHADERS, SHADER_CONFIGS)
+    ShaderDeepSpace.install(SHADERS, SHADER_CONFIGS)
+    ShaderFractalBloom.install(SHADERS, SHADER_CONFIGS)
     ShaderFunkFlux.install(SHADERS, SHADER_CONFIGS)
+    //ShaderHyperspace.install(SHADERS, SHADER_CONFIGS)
+    ShaderPolycular.install(SHADERS, SHADER_CONFIGS)
     ShaderWarpPulse.install(SHADERS, SHADER_CONFIGS)
+    ShaderWavyLines.install(SHADERS, SHADER_CONFIGS)
     ShaderWavyMesh.install(SHADERS, SHADER_CONFIGS)
     ShaderWavySpectrum.install(SHADERS, SHADER_CONFIGS)
+    ShaderWormholeVortex.install(SHADERS, SHADER_CONFIGS)
     return this
   }
-  
-  ///@param {String} [layerName]
-  ///@param {Number} [layerDefaultDepth]
-  ///@return {Visu}
-  static run = function(layerName = "layer_main", layerDefaultDepth = 100) {
+
+  static boot = function() {
+    Logger.info("Visu", "run::boot()")
     randomize()
     initBeans()
     initGPU()
     initGMTF()
     this.initShaders()
-    
+  }
+  
+  static loadProperties = function() {
+    //Logger.info("Visu", "run::loadProperties()")
     Core.loadProperties(FileUtil.get($"{working_directory}core-properties.json"))
     Core.loadProperties(FileUtil.get($"{working_directory}visu-properties.json"))
+    Core.loadProperties(FileUtil.get($"{working_directory}visu-editor-properties.json"))
 
     MAGIC_NUMBER_TASK = Core.getProperty("visu.const.MAGIC_NUMBER_TASK", MAGIC_NUMBER_TASK)
     SYNC_UI_STORE_STEP = Core.getProperty("visu.const.SYNC_UI_STORE_STEP", SYNC_UI_STORE_STEP)
     BRUSH_ENTRY_STEP = Core.getProperty("visu.const.BRUSH_ENTRY_STEP", BRUSH_ENTRY_STEP)
     BRUSH_TOOLBAR_ENTRY_STEP = Core.getProperty("visu.const.BRUSH_TOOLBAR_ENTRY_STEP", BRUSH_TOOLBAR_ENTRY_STEP)
     FLIP_VALUE = Core.getProperty("visu.const.FLIP_VALUE", FLIP_VALUE)
+  }
 
-    var layerId = Scene.fetchLayer(layerName, layerDefaultDepth)
-
+  static initFileService = function(layerId) {
+    //Logger.info("Visu", "run::initFileService()")
     if (!Beans.exists(BeanFileService)) {
       Beans.add(Beans.factory(BeanFileService, GMServiceInstance, layerId,
         new FileService({
@@ -1136,10 +1161,14 @@ function _Visu() constructor {
           }
         })))
     }
+  }
 
+  static loadSettings = function() {
+    //Logger.info("Visu", "run::loadSettings()")
     this.settings.set(new SettingEntry({ name: "visu.editor.autosave", type: SettingTypes.BOOLEAN, defaultValue: false }))
       .set(new SettingEntry({ name: "visu.language", type: SettingTypes.STRING, defaultValue: LanguageType.en_EN }))
       .set(new SettingEntry({ name: "visu.fullscreen", type: SettingTypes.BOOLEAN, defaultValue: false }))
+      .set(new SettingEntry({ name: "visu.borderless-window", type: SettingTypes.BOOLEAN, defaultValue: false }))
       .set(new SettingEntry({ name: "visu.server.enable", type: SettingTypes.BOOLEAN, defaultValue: false }))
       .set(new SettingEntry({ name: "visu.debug", type: SettingTypes.BOOLEAN, defaultValue: false }))
       .set(new SettingEntry({ name: "visu.debug.render-entities-mask", type: SettingTypes.BOOLEAN, defaultValue: false }))
@@ -1180,6 +1209,7 @@ function _Visu() constructor {
       .set(new SettingEntry({ name: "visu.editor.accordion.render-template-toolbar", type: SettingTypes.BOOLEAN, defaultValue: false }))
       .set(new SettingEntry({ name: "visu.editor.timeline-zoom", type: SettingTypes.NUMBER, defaultValue: 10 }))
       .set(new SettingEntry({ name: "visu.editor.timeline-follow", type: SettingTypes.BOOLEAN, defaultValue: false }))
+      .set(new SettingEntry({ name: "visu.editor.update-services", type: SettingTypes.BOOLEAN, defaultValue: false }))
       .set(new SettingEntry({ name: "visu.keyboard.player.up", type: SettingTypes.NUMBER, defaultValue: KeyboardKeyType.ARROW_UP }))
       .set(new SettingEntry({ name: "visu.keyboard.player.down", type: SettingTypes.NUMBER, defaultValue: KeyboardKeyType.ARROW_DOWN }))
       .set(new SettingEntry({ name: "visu.keyboard.player.left", type: SettingTypes.NUMBER, defaultValue: KeyboardKeyType.ARROW_LEFT }))
@@ -1222,15 +1252,57 @@ function _Visu() constructor {
           }
         }))
       .load()
+  }
 
+  static initDisplay = function() {
+    //Logger.info("Visu", "run::initDisplay()")
     //if (!Optional.is(Core.fetchAARange().find(Lambda.equal, this.settings.getValue("visu.graphics.aa")))) {
     //  this.settings.setValue("visu.graphics.aa", 0).save()
     //}
     //display_reset(this.settings.getValue("visu.graphics.aa"), this.settings.getValue("visu.graphics.vsync"))
     display_reset(display_aa, this.settings.getValue("visu.graphics.vsync", true))
-    
-    Language.load(this.settings.getValue("visu.language", LanguageType.en_EN))
+  }
 
+  static loadLanguage = function() {
+    //Logger.info("Visu", "run::loadLanguage()")
+    Language.load(this.settings.getValue("visu.language", LanguageType.en_EN))
+  }
+
+  static initEditor = function(layerId) {
+    //Logger.info("Visu", "run::initEditor()")
+    var enableEditor = this.settings.getValue("visu.editor.enable", false)
+    var editorIOConstructor = Core.getConstructor("VisuEditorIO")
+    if (Optional.is(editorIOConstructor)) {
+      if (!Beans.exists(Visu.modules().editor.io) && enableEditor) {
+        Beans.add(Beans.factory(Visu.modules().editor.io, GMServiceInstance, layerId,
+          new editorIOConstructor()))
+      }
+    }
+
+    var editorConstructor = Core.getConstructor("VisuEditorController")
+    if (Optional.is(editorConstructor)) {
+      if (!Beans.exists(Visu.modules().editor.controller) && enableEditor) {
+        Beans.add(Beans.factory(Visu.modules().editor.controller, GMServiceInstance, layerId,
+          new editorConstructor()))
+      }
+    }
+  }
+
+  static initVisu = function(layerId, layerName) {
+    //Logger.info("Visu", "run::initVisu()")
+    if (!Beans.exists(BeanVisuIO)) {
+      Beans.add(Beans.factory(BeanVisuIO, GMServiceInstance, layerId,
+        new VisuIO()))
+    }
+
+    if (!Beans.exists(BeanVisuController)) {
+      Beans.add(Beans.factory(BeanVisuController, GMControllerInstance, layerId,
+        new VisuController(layerName)))
+    }
+  }
+
+  static initHTTPService = function(layerId) {
+    //Logger.info("Visu", "run::initHTTPService()")
     if (!Beans.exists(BeanHTTPService)) {
       Beans.add(Beans.factory(BeanHTTPService, GMServiceInstance, layerId,
         new HTTPService({
@@ -1242,12 +1314,18 @@ function _Visu() constructor {
           }
         })))
     }
+  }
 
+  static initDeltaTimeService = function(layerId) {
+    //Logger.info("Visu", "run::initDeltaTimeService()")
     if (!Beans.exists(BeanDeltaTimeService)) {
       Beans.add(Beans.factory(BeanDeltaTimeService, GMServiceInstance, layerId,
         new DeltaTimeService()))
     }
+  }
 
+  static initTextureService = function(layerId) {
+    //Logger.info("Visu", "run::initTextureService()")
     if (!Beans.exists(BeanTextureService)) {
       Beans.add(Beans.factory(BeanTextureService, GMServiceInstance, layerId,
         new TextureService({
@@ -1256,12 +1334,18 @@ function _Visu() constructor {
           },
         })))
     }
+  }
 
+  static initSoundService = function(layerId) {
+    //Logger.info("Visu", "run::initSoundService()")
     if (!Beans.exists(BeanSoundService)) {
       Beans.add(Beans.factory(BeanSoundService, GMServiceInstance, layerId,
         new SoundService()))
     }
+  }
 
+  static initDialogueDesignerService = function(layerId) {
+    //Logger.info("Visu", "run::initDialogueDesignerService()")
     if (!Beans.exists(BeanDialogueDesignerService)) {
       Beans.add(Beans.factory(BeanDialogueDesignerService, GMServiceInstance, layerId,
         new DialogueDesignerService({
@@ -1281,40 +1365,45 @@ function _Visu() constructor {
           }),
         })))
     }
+  }
 
+  static initTestRunner = function(layerId) {
+    //Logger.info("Visu", "run::initTestRunner()")
     if (!Beans.exists(BeanTestRunner)) {
       Beans.add(Beans.factory(BeanTestRunner, GMServiceInstance, layerId,
         new TestRunner()))
     }
+  }
 
-    var enableEditor = this.settings.getValue("visu.editor.enable", false)
-    var editorIOConstructor = Core.getConstructor("VisuEditorIO")
-    if (Optional.is(editorIOConstructor)) {
-      if (!Beans.exists(Visu.modules().editor.io) && enableEditor) {
-        Beans.add(Beans.factory(Visu.modules().editor.io, GMServiceInstance, layerId,
-          new editorIOConstructor()))
-      }
-    }
-
-    var editorConstructor = Core.getConstructor("VisuEditorController")
-    if (Optional.is(editorConstructor)) {
-      if (!Beans.exists(Visu.modules().editor.controller) && enableEditor) {
-        Beans.add(Beans.factory(Visu.modules().editor.controller, GMServiceInstance, layerId,
-          new editorConstructor()))
-      }
-    }
-
-    if (!Beans.exists(BeanVisuIO)) {
-      Beans.add(Beans.factory(BeanVisuIO, GMServiceInstance, layerId,
-        new VisuIO()))
-    }
-
-    if (!Beans.exists(BeanVisuController)) {
-      Beans.add(Beans.factory(BeanVisuController, GMControllerInstance, layerId,
-        new VisuController(layerName)))
-    }
-
+  static parseCli = function() {
+    //Logger.info("Visu", "run::parseCli()")
     this.cliParser().parse()
+  }
+  
+  ///@param {String} [layerName]
+  ///@param {Number} [layerDefaultDepth]
+  ///@return {Visu}
+  static run = function(layerName = "layer_main", layerDefaultDepth = 100) {
+    Logger.info("Visu", "run()")
+
+    var layerId = Scene.fetchLayer(layerName, layerDefaultDepth)
+    
+    this.boot()
+    this.loadProperties()
+    this.initFileService(layerId)
+    this.loadSettings()
+    this.initDisplay()
+    this.loadLanguage()
+    this.initHTTPService(layerId) 
+    this.initDeltaTimeService(layerId)
+    this.initTextureService(layerId)
+    this.initSoundService(layerId)
+    this.initDialogueDesignerService(layerId)
+    this.initTestRunner(layerId)
+    this.initEditor(layerId)
+    this.initVisu(layerId, layerName)
+    this.parseCli()
+
     return this
   }
 }

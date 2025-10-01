@@ -8,6 +8,7 @@ global.__ShaderWavySpectrum = {
       type: "GLSL_ES",
       uniforms: {
         u_angle: "FLOAT",
+        u_bpm: "CONST_FLOAT",
         u_brightness: "FLOAT",
         u_color_a: "COLOR",
         u_color_b: "COLOR",
@@ -34,6 +35,10 @@ global.__ShaderWavySpectrum = {
           duration: 0.0,
           ease: "LINEAR",
         },
+        components: { },
+      },
+      u_bpm: {
+        store: { value: 0.0 },
         components: { },
       },
       u_brightness: {

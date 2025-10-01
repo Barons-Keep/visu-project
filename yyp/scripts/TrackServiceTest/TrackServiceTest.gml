@@ -5,7 +5,7 @@ function TrackServiceTest(): Test() constructor {
     name = "Test TrackService.gml"
 
     ///@override
-    ///@type {Struct[]}
+    ///@type {GMArray<Struct>}
     cases = [
         {
             name: "Track.update",

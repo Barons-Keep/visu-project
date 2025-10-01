@@ -24,12 +24,13 @@ function BktGlitch_init() {
 	bktglitch_init();
 }
 
-/// @function BktGlitch_activate(_width, _height)
+/// @function BktGlitch_activate(_width, _height, _time)
 /// @description Activates the shader and sets required uniforms.
 /// @param {real} _width
 /// @param {real} _height
-function BktGlitch_activate(_width, _height) {
-	bktglitch_activate(_width, _height);
+/// @param {real} _time
+function BktGlitch_activate(_width, _height, _time) {
+	bktglitch_activate(_width, _height, _time);
 }
 
 /// @function BktGlitch_config_preset(_preset)

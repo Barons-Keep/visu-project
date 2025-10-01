@@ -1,0 +1,13 @@
+{
+  "$GMScript":"v1",
+  "%Name":"DummyFeature",
+  "isCompatibility":false,
+  "isDnD":false,
+  "name":"DummyFeature",
+  "parent":{
+    "name":"feature",
+    "path":"folders/io.alkapivo.visu/src/service/grid/feature.yy",
+  },
+  "resourceType":"GMScript",
+  "resourceVersion":"2.0",
+}

@@ -73,7 +73,12 @@ function TestRunner() constructor {
         acc.testSuites.push(testSuite)
       },
       acc: context,
-    }).update()
+      model: "io.alkapivo.core.test.TestSuite",
+    })
+    
+    if (task != null) {
+      task.update()
+    }
 
     return this
   }

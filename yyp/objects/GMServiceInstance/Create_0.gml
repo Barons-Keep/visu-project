@@ -19,3 +19,6 @@
 
 	///@type {?Calllable}
 	__onSaveLoadEvent = null
+	
+	///@type {?Calllable}
+	__onSocialEvent = null

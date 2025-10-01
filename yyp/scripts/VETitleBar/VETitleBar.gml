@@ -136,7 +136,7 @@ function VETitleBar(_editor) constructor {
             name: "title-bar.version",
             x: function() { return (this.context.width() - this.width()) / 2.0 },
             y: function() { return 0 },
-            width: function() { return 256 },
+            width: function() { return 480 },
           },
           trackControl: {
             name: "title-bar.trackControl",
@@ -1059,7 +1059,7 @@ function VETitleBar(_editor) constructor {
                       shortcut: { text: "" },
                       callback: function() {
                         try {
-                          url_open("https://github.com/Barons-Keep/visu-project/wiki/1.-UI-overview")
+                          url_open("https://github.com/Barons-Keep/visu-project")
                           var uiService = Beans.get(BeanVisuEditorController).uiService
                           uiService.send(new Event("remove", { 
                             name: this.context.name, 
@@ -1098,7 +1098,7 @@ function VETitleBar(_editor) constructor {
             {
               type: UIText,
               layout: layout.nodes.version,
-              text: $"v.{GM_build_date} {date_datetime_string(GM_build_date)}",
+              text: $"v{Visu.version()} | Build date: {date_time_string(GM_build_date)} | Runtime: {GM_runtime_version}",
               updateArea: Callable.run(UIUtil.updateAreaTemplates.get("applyLayout")),
             },
             VEStyles.get("ve-title-bar").version,

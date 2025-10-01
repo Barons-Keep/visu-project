@@ -1,7 +1,7 @@
 ///@package io.alkapivo.visu.ui
 
 ///@type {Number}
-#macro VISU_MENU_ENTRY_HEIGHT 68
+#macro VISU_MENU_ENTRY_HEIGHT 80
 
 ///@type {Map<String, Callable>}
 global.__VisuLayouts = new Map(String, Callable, {
@@ -158,7 +158,7 @@ global.__VisuLayouts = new Map(String, Callable, {
         }
       }
       
-    var hidden = Struct.getDefault(config, "hidden", false),
+    var hidden = Struct.getDefault(config, "hidden", false)
     return {
       name: "spin-select",
       margin: Struct.getDefault(config, "margin", { top: 2 }),
@@ -265,7 +265,7 @@ global.__VisuLayouts = new Map(String, Callable, {
       }
     }
 
-    var hidden = Struct.getDefault(config, "hidden", false),
+    var hidden = Struct.getDefault(config, "hidden", false)
     return {
       name: "number-property",
       type: Struct.getDefault(config, "type", UILayoutType.VERTICAL),

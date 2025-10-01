@@ -7,6 +7,6 @@ function SubtitleServiceTest(): Test() constructor {
     name = "Test SubtitleService.gml"
 
     ///@override
-    ///@type {Struct[]}
+    ///@type {GMArray<Struct>}
     cases = []
 }

@@ -1,0 +1,13 @@
+{
+  "$GMScript":"v1",
+  "%Name":"VELineHComponent",
+  "isCompatibility":false,
+  "isDnD":false,
+  "name":"VELineHComponent",
+  "parent":{
+    "name":"component",
+    "path":"folders/io.alkapivo.visu/src/editor/ui/component.yy",
+  },
+  "resourceType":"GMScript",
+  "resourceVersion":"2.0",
+}

@@ -7,6 +7,6 @@ function BulletServiceTest(): Test() constructor {
     name = "Test BulletService.gml"
 
     ///@override
-    ///@type {Struct[]}
+    ///@type {GMArray<Struct>}
     cases = []
 }

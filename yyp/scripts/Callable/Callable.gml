@@ -14,10 +14,13 @@ function _Callable() constructor {
     return Core.isType(callable, Callable) ? callable : null
   }
 
-  ///@param {Struct} context
-  ///@return {Callable}
+  ///@param {?Struct|?GMObject} context
+  ///@param {?Callable} callable
+  ///@return {?Callable}
   bind = function(context, callback) {
-    return method(context, callback)
+    return callback != null && (Core.isType(context, Struct) || Core.isType(context, GMObject))
+      ? method(context, callback)
+      : null
   }
 
   ///@param {String|Callable} _callback
@@ -99,11 +102,12 @@ global.__Callable = new _Callable()
 function BindIntent(_callback) constructor {
 
   ///@type {Callable}
-  callback = Assert.isType(_callback, Callable)
+  callback = Assert.isType(_callback, Callable,
+    "BindIntent::callback must be type of Callable")
 
-  ///@param {Struct} context
-  ///@return {Callable}
-  bind = function(context) {
+  ///@param {?Struct|?GMObject} context
+  ///@return {?Callable}
+  static bind = function(context) {
     return Callable.bind(context, this.callback)
   }
 }

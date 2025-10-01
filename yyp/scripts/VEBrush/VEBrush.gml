@@ -51,6 +51,7 @@ function VEBrush(template) constructor {
           spriteOff: { name: "visu_texture_checkbox_hide" },
           store: { key: "brush-hidden" },
         },
+        input: { },
       },
     },
     {

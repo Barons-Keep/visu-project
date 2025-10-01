@@ -5,6 +5,30 @@ function _ShaderPipelineType(): Enum() constructor {
   BACKGROUND = "BACKGROUND"
   GRID = "GRID"
   COMBINED = "COMBINED"
+
+  ///@override
+  ///@return {Array<String>}
+  keys = function() {
+    static filterKeys = function(key) {
+      return key != "_keys"
+          && key != "keys"
+          && key != "get"
+          && key != "getKey"
+          && key != "findKey"
+          && key != "contains"
+          && key != "containsKey"
+    }
+
+    if (this._keys == null) {
+      this._keys = new Array(String, [
+        ShaderPipelineType.BACKGROUND,
+        ShaderPipelineType.GRID,
+        ShaderPipelineType.COMBINED
+      ])
+    }
+
+    return this._keys
+  }
 }
 global.__ShaderPipelineType = new _ShaderPipelineType()
 #macro ShaderPipelineType global.__ShaderPipelineType
@@ -15,6 +39,30 @@ function _GlitchType(): Enum() constructor {
   BACKGROUND = "BACKGROUND"
   GRID = "GRID"
   COMBINED = "COMBINED"
+
+  ///@override
+  ///@return {Array<String>}
+  keys = function() {
+    static filterKeys = function(key) {
+      return key != "_keys"
+          && key != "keys"
+          && key != "get"
+          && key != "getKey"
+          && key != "findKey"
+          && key != "contains"
+          && key != "containsKey"
+    }
+
+    if (this._keys == null) {
+      this._keys = new Array(String, [
+        GlitchType.BACKGROUND,
+        GlitchType.GRID,
+        GlitchType.COMBINED
+      ])
+    }
+
+    return this._keys
+  }
 }
 global.__GlitchType = new _GlitchType()
 #macro GlitchType global.__GlitchType

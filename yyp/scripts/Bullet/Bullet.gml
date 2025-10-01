@@ -3,6 +3,7 @@
 ///@type {Number}
 #macro BULLET_FADE_IN_TIME 0.125
 
+
 ///@type {Number}
 #macro BULLET_FADE_OUT_TIME 0.33
 

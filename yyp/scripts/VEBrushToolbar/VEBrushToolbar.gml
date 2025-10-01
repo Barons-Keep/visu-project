@@ -523,16 +523,18 @@ global.__VisuBrushContainers = new Map(String, Callable, {
                         saveTemplate: saveTemplate,
                       },
                       steps: MAGIC_NUMBER_TASK,
+                      model: "Collection<io.alkapivo.visu.editor.api.VEBrushTemplate>",
                     })
                     .whenSuccess(function(result) {
-                      ///@todo refactor
                       if (result == null) {
-                        return new Task("dummy-task").whenUpdate(function(executor) {
-                          this.fullfill()
-                        })
+                        return TaskUtil.factory.dummy()
                       }
 
                       var task = JSON.parserTask(result.data, this.state)
+                      if (task == null) {
+                        return TaskUtil.factory.dummy()
+                      }
+
                       Beans.get(BeanVisuController).executor.add(task)
                       return task
                     }))

@@ -330,6 +330,14 @@ function _TaskUtil() constructor {
           this.state.resolveSkipAlpha(this)
         })
     },
+
+    ///@return {Task}
+    dummy: function() {
+      return new Task("dummy-task")
+        .whenUpdate(function(executor) {
+          this.fullfill()
+        })
+    },
   }
 
   ///@param {Task}

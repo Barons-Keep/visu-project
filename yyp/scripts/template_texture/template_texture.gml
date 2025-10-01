@@ -32,7 +32,24 @@ function template_texture(json = null) {
                 return
               }
 
-              mouse.setClipboard(this)
+              var _x = event.data.x - this.context.area.getX() - this.area.getX() - this.context.offset.x
+              var _y = event.data.y - this.context.area.getY() - this.area.getY() - this.context.offset.y
+              var areaWidth = this.area.getWidth()
+              var areaHeight = this.area.getHeight()
+              var scaleX = this.image.getScaleX()
+              var scaleY = this.image.getScaleY()
+              this.image.scaleToFit(areaWidth, areaHeight)
+
+              var width = this.image.getWidth() * this.image.getScaleX()
+              var height = this.image.getHeight() * this.image.getScaleY()
+              this.image.setScaleX(scaleX).setScaleY(scaleY)
+
+              var marginH = (areaWidth - width) / 2.0
+              var marginV = (areaHeight - height) / 2.0
+              if ((_x >= marginH && _x <= areaWidth - marginH)
+                && (_y >= marginV && _y <= areaHeight - marginV)) {
+                mouse.setClipboard(this)  
+              }
             },
             onMouseOnLeft: function(event) {
               var editorIO = Beans.get(BeanVisuEditorIO)

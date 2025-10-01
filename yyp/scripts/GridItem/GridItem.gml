@@ -24,12 +24,6 @@ function GridItemSignals() constructor {
   ///@type {?GridItem}
   playerCollision = null
 
-  ///@type {Boolean}
-  playerLanded = false
-
-  ///@type {Boolean}
-  playerLeave = false
-
   ///@param {String} key
   ///@param {any} value
   ///@return {GridItemSignals}
@@ -42,13 +36,10 @@ function GridItemSignals() constructor {
   ///@return {GridItemSignals}
   static reset = function() {
     gml_pragma("forceinline")
-    //this.kill = false
     this.damage = false
     this.bulletCollision = null
     this.shroomCollision = null
     this.playerCollision = null
-    this.playerLanded = false
-    this.playerLeave = false
     return this
   }
 }
@@ -426,12 +417,6 @@ function GridItem(config) constructor {
   ///@type {GridItemSignals}
   signals = new GridItemSignals()
 
-  ///@type {Map<String, GridItemGameMode>}
-  gameModes = new Map(String, GridItemGameMode)
-  
-  ///@type {?GridItemGameMode}
-  gameMode = null
-
   ///@type {Number}
   fadeIn = 0.0
 
@@ -472,15 +457,6 @@ function GridItem(config) constructor {
     return this
   }
 
-  ///@param {GameMode} mode
-  ///@return {GridItem}
-  static updateGameMode = function(mode) {
-    gml_pragma("forceinline")
-    this.gameMode = this.gameModes.get(mode)
-    this.gameMode.onStart(this, Beans.get(BeanVisuController))
-    return this
-  }
-
   ///@param {any} name
   ///@param {any} [value]
   ///@return {GridItem}
@@ -491,22 +467,22 @@ function GridItem(config) constructor {
   }
 
   ///@param {GridItem} target
-  ///@return {Bollean} collide?
+  ///@return {Bollean}
   static collide = function(target) {
     gml_pragma("forceinline")
-    var halfSourceWidth = (this.mask.z * this.sprite.scaleX) / 2.0
-    var halfSourceHeight = (this.mask.a * this.sprite.scaleY) / 2.0
-    var halfTargetWidth = (target.mask.z * target.sprite.scaleX) / 2.0
-    var halfTargetHeight = (target.mask.a * target.sprite.scaleY) / 2.0
     var sourceX = this.x * GRID_SERVICE_PIXEL_WIDTH
     var sourceY = this.y * GRID_SERVICE_PIXEL_HEIGHT
     var targetX = target.x * GRID_SERVICE_PIXEL_WIDTH
     var targetY = target.y * GRID_SERVICE_PIXEL_HEIGHT
-    return Math.rectangleOverlaps(
-      sourceX - halfSourceWidth, sourceY - halfSourceHeight,
-      sourceX + halfSourceWidth, sourceY + halfSourceHeight,
-      targetX - halfTargetWidth, targetY - halfTargetHeight,
-      targetX + halfTargetWidth, targetY + halfTargetHeight
+    return Math.ellipseOverlaps(
+      sourceX - ((this.sprite.getWidth() * this.sprite.scaleX) / 2.0) + (this.mask.x * this.sprite.scaleX),
+      sourceY - ((this.sprite.getHeight() * this.sprite.scaleY) / 2.0) + (this.mask.y * this.sprite.scaleY),
+      this.mask.z * this.sprite.scaleX,
+      this.mask.a * this.sprite.scaleY,
+      targetX - ((target.sprite.getWidth() * target.sprite.scaleX) / 2.0) + (target.mask.x * target.sprite.scaleX),
+      targetY - ((target.sprite.getHeight() * target.sprite.scaleY) / 2.0) + (target.mask.y * target.sprite.scaleY),
+      target.mask.z * target.sprite.scaleX,
+      target.mask.a * target.sprite.scaleY
     )
   }
 
@@ -515,8 +491,10 @@ function GridItem(config) constructor {
   static move = function() {
     gml_pragma("forceinline")
     this.signals.reset()
-    this.x += Math.fetchCircleX(DeltaTime.apply(this.speed), this.angle)
-    this.y += Math.fetchCircleY(DeltaTime.apply(this.speed), this.angle)
+    //var _speed = DeltaTime.apply(controller.gridService.properties.bulletTime * this.speed)
+    var _speed = DeltaTime.apply(GRID_SERVICE_BULLET_TIME * this.speed)
+    this.x += Math.fetchCircleX(_speed, this.angle)
+    this.y += Math.fetchCircleY(_speed, this.angle)
     return this
   }
 
@@ -524,10 +502,6 @@ function GridItem(config) constructor {
   ///@return {GridItem}
   static update = function(controller) { 
     gml_pragma("forceinline")
-    if (this.gameMode != null) {
-      gameMode.update(this, controller)
-    }
-
     if (this.fadeIn < 1.0) {
       this.fadeIn = clamp(this.fadeIn + VISU_FADE_FACTOR, 0.0, 1.0)
     }
@@ -535,3 +509,4 @@ function GridItem(config) constructor {
     return this
   }
 }
+

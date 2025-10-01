@@ -1,0 +1,13 @@
+{
+  "$GMScript":"v1",
+  "%Name":"ShaderPolycular",
+  "isCompatibility":false,
+  "isDnD":false,
+  "name":"ShaderPolycular",
+  "parent":{
+    "name":"shader_polycular",
+    "path":"folders/io.alkapivo.core/resource/shader/screen/shader_polycular.yy",
+  },
+  "resourceType":"GMScript",
+  "resourceVersion":"2.0",
+}

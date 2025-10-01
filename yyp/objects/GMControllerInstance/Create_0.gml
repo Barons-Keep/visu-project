@@ -29,5 +29,8 @@
   ///@type {?Callable}
   __onTextureLoadedEvent = null
  
- ///@type {?Callable}
+	///@type {?Callable}
 	__onSaveLoadEvent = null
+
+	///@type {?Callable}
+	__onSocialEvent = null

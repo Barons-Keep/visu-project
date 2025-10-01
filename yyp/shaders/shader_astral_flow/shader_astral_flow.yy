@@ -1,0 +1,12 @@
+{
+  "$GMShader":"",
+  "%Name":"shader_astral_flow",
+  "name":"shader_astral_flow",
+  "parent":{
+    "name":"shader_astral_flow",
+    "path":"folders/io.alkapivo.core/resource/shader/screen/shader_astral_flow.yy",
+  },
+  "resourceType":"GMShader",
+  "resourceVersion":"2.0",
+  "type":1,
+}

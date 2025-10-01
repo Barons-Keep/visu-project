@@ -13,9 +13,6 @@ function BulletService(_controller, config = {}): Service() constructor {
   ///@type {Map<String, BulletTemplate>}
   templates = new Map(String, BulletTemplate)
 
-  ///@type {?GameMode}
-  gameMode = null
-
   ///@type {GridItemChunkService}
   chunkService = new GridItemChunkService(GRID_ITEM_CHUNK_SERVICE_SIZE)
 
@@ -53,7 +50,6 @@ function BulletService(_controller, config = {}): Service() constructor {
       if (event.data.producer == Player) {
         this.chunkService.add(bullet)
       }
-      //bullet.updateGameMode(this.controller.gameMode)
 
       this.bullets.add(bullet)
 
@@ -120,7 +116,6 @@ function BulletService(_controller, config = {}): Service() constructor {
     if (producer == Player) {
       this.chunkService.add(bullet)
     }
-    //bullet.updateGameMode(this.controller.gameMode)
 
     this.bullets.add(bullet)
 
@@ -191,11 +186,6 @@ function BulletService(_controller, config = {}): Service() constructor {
     return this.dispatcher.send(event)
   }
 
-  static updateGameMode = function(bullet, index, gameMode) {
-    gml_pragma("forceinline")
-    bullet.updateGameMode(gameMode)
-  }
-
   static updateBullet = function(bullet, index, context) {
     gml_pragma("forceinline")
     bullet.update(context.controller)
@@ -245,26 +235,13 @@ function BulletService(_controller, config = {}): Service() constructor {
         lifespan,
         damage,
         onDeath
-      )        
-      //context.send(new Event("spawn-bullet", {
-      //  template: bullet.onDeath,
-      //  producer: bullet.producer,
-      //  x: bullet.x,
-      //  y: bullet.y,
-      //  angle: dir,
-      //  speed: spd,
-      //}))
+      )
     }
   }
 
   ///@return {BulletService}
   update = function() { 
-    this.optimalizationSortEntitiesByTxGroup = false //Visu.settings.getValue("visu.optimalization.sort-entities-by-txgroup")
-    if (controller.gameMode != this.gameMode) {
-      this.gameMode = this.controller.gameMode
-      this.bullets.forEach(this.updateGameMode, this.gameMode)
-    }
-
+    //this.optimalizationSortEntitiesByTxGroup = Visu.settings.getValue("visu.optimalization.sort-entities-by-txgroup")
     this.dispatcher.update()
     this.executor.update()
     this.bullets.forEach(this.updateBullet, this).runGC()

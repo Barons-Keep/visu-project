@@ -323,6 +323,12 @@ global.__VisuTemplateContainers = new Map(String, Callable, {
                 preRender: function() { 
                   Struct.set(this, "_text", this.label.text)
                   this.label.text = String.toUpperCase(String.replaceAll(String.replace(this.label.text, "shader_", ""), "_", " "))
+                  if (Struct.get(DEPRECATED_SHADERS, this._text) == true) {
+                    this.label.color = ColorUtil.parse("#ffff00").toGMColor()
+                    this.label.text = $"{this.label.text}\nDEPRECATED"
+                  } else {
+                    this.label.color = ColorUtil.parse(VETheme.color.textFocus).toGMColor()
+                  }
                 },
                 postRender: function() { 
                   this.label.text = this._text
@@ -1192,15 +1198,18 @@ global.__VisuTemplateContainers = new Map(String, Callable, {
                       acc: controller.shaderPipeline.templates,
                       steps: MAGIC_NUMBER_TASK,
                       store: store,
+                      model: "Collection<io.alkapivo.core.service.shader.ShaderTemplate>",
                     })
                     .whenSuccess(function(result) {
                       if (result == null) {
-                        return new Task("dummy-task").whenUpdate(function(executor) {
-                          this.fullfill()
-                        })
+                        return TaskUtil.factory.dummy()
                       }
 
                       var task = JSON.parserTask(result.data, this.state)
+                      if (task == null) {
+                        return TaskUtil.factory.dummy()
+                      }
+
                       task.state.set("store", this.state.store)
                       task.whenFinish(function() {
                         var type = this.state.get("store").get("type")
@@ -1221,15 +1230,18 @@ global.__VisuTemplateContainers = new Map(String, Callable, {
                       acc: controller.shroomService.templates,
                       steps: MAGIC_NUMBER_TASK,
                       store: store,
+                      model: "Collection<io.alkapivo.visu.service.shroom.ShroomTemplate>",
                     })
                     .whenSuccess(function(result) {
                       if (result == null) {
-                        return new Task("dummy-task").whenUpdate(function(executor) {
-                          this.fullfill()
-                        })
+                        return TaskUtil.factory.dummy()
                       }
 
                       var task = JSON.parserTask(result.data, this.state)
+                      if (task == null) {
+                        return TaskUtil.factory.dummy()
+                      }
+
                       task.state.set("store", this.state.store)
                       task.whenFinish(function() {
                         var type = this.state.get("store").get("type")
@@ -1250,15 +1262,18 @@ global.__VisuTemplateContainers = new Map(String, Callable, {
                       acc: controller.bulletService.templates,
                       steps: MAGIC_NUMBER_TASK,
                       store: store,
+                      model: "Collection<io.alkapivo.visu.service.bullet.BulletTemplate>",
                     })
                     .whenSuccess(function(result) {
                       if (result == null) {
-                        return new Task("dummy-task").whenUpdate(function(executor) {
-                          this.fullfill()
-                        })
+                        return TaskUtil.factory.dummy()
                       }
 
                       var task = JSON.parserTask(result.data, this.state)
+                      if (task == null) {
+                        return TaskUtil.factory.dummy()
+                      }
+
                       task.state.set("store", this.state.store)
                       task.whenFinish(function() {
                         var type = this.state.get("store").get("type")
@@ -1279,15 +1294,18 @@ global.__VisuTemplateContainers = new Map(String, Callable, {
                       acc: controller.coinService.templates,
                       steps: MAGIC_NUMBER_TASK,
                       store: store,
+                      model: "Collection<io.alkapivo.visu.service.coin.CoinTemplate>",
                     })
                     .whenSuccess(function(result) {
                       if (result == null) {
-                        return new Task("dummy-task").whenUpdate(function(executor) {
-                          this.fullfill()
-                        })
+                        return TaskUtil.factory.dummy()
                       }
 
                       var task = JSON.parserTask(result.data, this.state)
+                      if (task == null) {
+                        return TaskUtil.factory.dummy()
+                      }
+
                       task.state.set("store", this.state.store)
                       task.whenFinish(function() {
                         var type = this.state.get("store").get("type")
@@ -1308,15 +1326,18 @@ global.__VisuTemplateContainers = new Map(String, Callable, {
                       acc: controller.subtitleService.templates,
                       steps: MAGIC_NUMBER_TASK,
                       store: store,
+                      model: "Collection<io.alkapivo.visu.service.subtitle.SubtitleTemplate>",
                     })
                     .whenSuccess(function(result) {
                       if (result == null) {
-                        return new Task("dummy-task").whenUpdate(function(executor) {
-                          this.fullfill()
-                        })
+                        return TaskUtil.factory.dummy()
                       }
 
                       var task = JSON.parserTask(result.data, this.state)
+                      if (task == null) {
+                        return TaskUtil.factory.dummy()
+                      }
+
                       task.state.set("store", this.state.store)
                       task.whenFinish(function() {
                         var type = this.state.get("store").get("type")
@@ -1337,15 +1358,18 @@ global.__VisuTemplateContainers = new Map(String, Callable, {
                       acc: controller.particleService.templates,
                       steps: MAGIC_NUMBER_TASK,
                       store: store,
+                      model: "Collection<io.alkapivo.core.service.particle.ParticleTemplate>",
                     })
                     .whenSuccess(function(result) {
                       if (result == null) {
-                        return new Task("dummy-task").whenUpdate(function(executor) {
-                          this.fullfill()
-                        })
+                        return TaskUtil.factory.dummy()
                       }
 
                       var task = JSON.parserTask(result.data, this.state)
+                      if (task == null) {
+                        return TaskUtil.factory.dummy()
+                      }
+
                       task.state.set("store", this.state.store)
                       task.whenFinish(function() {
                         var type = this.state.get("store").get("type")
@@ -3309,13 +3333,20 @@ function VETemplateToolbar(_editor) constructor {
       var sizeAfter = 0
       switch (type) {
         case VETemplateType.SHADER:
+          var shaderTemplate = new ShaderTemplate(name, {
+            name: name,
+            shader: this.store.getValue("shader"),
+          })
           sizeBefore = controller.shaderPipeline.templates.size()
           sizeAfter = controller.shaderPipeline.templates
-            .set(name, new ShaderTemplate(name, {
-              name: name,
-              shader: this.store.getValue("shader"),
-            }))
+            .set(name, shaderTemplate)
             .size()
+
+          Struct.set(shaderTemplate, "type", VETemplateType.SHADER)
+          this.store
+            .get("template")
+            .set(new VETemplate(shaderTemplate))
+          this.send(new Event("save-template"))
           break
         case VETemplateType.SHROOM:
           sizeBefore = controller.shroomService.templates.size()

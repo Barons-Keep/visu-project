@@ -5,14 +5,18 @@
 global.__ShaderWarpPulse = {
   template: function() {
     return {
-      type: "GLSL_ES",
+      type: "GLSL",
       uniforms: {
         u_angle: "FLOAT",
         u_brightness: "FLOAT",
+        u_bpm: "CONST_FLOAT",
         u_distortion: "FLOAT",
-        u_factor_a: "FLOAT",
-        u_factor_b: "FLOAT",
+        u_hardness: "FLOAT",
+        u_thickness: "FLOAT",
         u_hue: "FLOAT",
+        u_mask_density: "FLOAT",
+        u_mask_mode: "CONST_FLOAT",
+        u_mask_size: "FLOAT",
         u_sat: "FLOAT",
         u_seed: "CONST_FLOAT",
         u_size: "FLOAT",
@@ -44,6 +48,10 @@ global.__ShaderWarpPulse = {
         },
         components: { },
       },
+      u_bpm: {
+        store: { value: 60.0 },
+        components: { },
+      },
       u_distortion: {
         store: {
           value: 0.2,
@@ -53,19 +61,19 @@ global.__ShaderWarpPulse = {
         },
         components: { },
       },
-      u_factor_a: {
+      u_hardness: {
         store: {
-          value: 0.1,
-          target: 0.1,
+          value: 1.0,
+          target: 1.0,
           duration: 0.0,
           ease: "LINEAR",
         },
         components: { },
       },
-      u_factor_b: {
+      u_thickness: {
         store: {
-          value: 0.9,
-          target: 0.9,
+          value: 1.0,
+          target: 1.0,
           duration: 0.0,
           ease: "LINEAR",
         },
@@ -75,6 +83,30 @@ global.__ShaderWarpPulse = {
         store: {
           value: 0.0,
           target: 0.0,
+          duration: 0.0,
+          ease: "LINEAR",
+        },
+        components: { },
+      },
+      u_mask_density: {
+        store: {
+          value: 1.0,
+          target: 1.0,
+          duration: 0.0,
+          ease: "LINEAR",
+        },
+        components: { },
+      },
+      u_mask_mode: {
+        store: { value: 0.0 },
+        components: { },
+        passthrough: UIUtil.passthrough.getClampedNumberTransformer(),
+        data: new Vector2(0.0, 6.0),
+      },
+      u_mask_size: {
+        store: {
+          value: 1.0,
+          target: 1.0,
           duration: 0.0,
           ease: "LINEAR",
         },
@@ -95,8 +127,8 @@ global.__ShaderWarpPulse = {
       },
       u_size: {
         store: {
-          value: 4.0,
-          target: 4.0,
+          value: 1.0,
+          target: 1.0,
           duration: 0.0,
           ease: "LINEAR",
         },
@@ -106,7 +138,7 @@ global.__ShaderWarpPulse = {
         store: {
           value: 0.0,
           target: 1000.0,
-          duration: 2000.0,
+          duration: 1000.0,
           ease: "LINEAR",
         },
         components: { }

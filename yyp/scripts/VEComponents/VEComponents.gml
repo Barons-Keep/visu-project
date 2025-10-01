@@ -1,6 +1,12 @@
 ///@package io.alkapivo.visu.editor.ui
 
 ///@static
+///@type {Boolean}
+global.__PRINT_VECOMPONENTS_NEW_SCHEMA = false
+#macro PRINT_VECOMPONENTS_NEW_SCHEMA global.__PRINT_VECOMPONENTS_NEW_SCHEMA
+
+
+///@static
 ///@type {Struct}
 global.__VEComponentsUtil = {
   factory: {
@@ -820,21 +826,6 @@ global.__VEComponents = new Map(String, Callable, {
           false
         )
       ),
-      UIButton(
-        $"{name}_channel-entry_remove", 
-        Struct.appendRecursive(
-          Struct.appendRecursive(
-            { 
-              layout: layout.nodes.remove,
-              updateArea: Callable.run(UIUtil.updateAreaTemplates.get("applyCollectionLayout")),
-            }, 
-            VEStyles.get("channel-entry").remove,
-            false
-          ),
-          Struct.get(config, "remove"),
-          false
-        )
-      ),
       UIText(
         $"{name}_channel-entry_label",
         Struct.appendRecursive(
@@ -1037,6 +1028,9 @@ global.__VEComponents = new Map(String, Callable, {
   "property": function(name, layout, config = null) {
     var style = VEStyles.get("property")
     var items = new Array(UIItem)
+    var checkbox = Struct.get(config, "checkbox")
+    var label = Struct.get(config, "label")
+    var input = Struct.get(config, "input")
     if (Struct.get(config, "checkbox") != null) {
       items.add(UICheckbox($"{name}_checkbox", Struct.appendRecursive(
         Struct.appendRecursive({ 
@@ -1067,6 +1061,59 @@ global.__VEComponents = new Map(String, Callable, {
           }, Struct.get(style, "input"), false),
         Struct.get(config, "input"), false)
       ))
+    }
+
+    if (PRINT_VECOMPONENTS_NEW_SCHEMA) {
+      var hidden = null
+      if (Struct.get(checkbox, "hidden") != null) {
+        hidden = checkbox.hidden
+      } else if (Struct.get(label, "hidden") != null) {
+        hidden = label.hidden
+      } else if (Struct.get(input, "hidden") != null) {
+        hidden = input.hidden
+      }
+
+      var enable = null
+      if (Struct.get(checkbox, "enable") != null) {
+        enable = checkbox.enable
+      } else if (Struct.get(label, "enable") != null) {
+        enable = label.enable
+      } else if (Struct.get(input, "enable") != null) {
+        enable = input.enable
+      }
+
+      var background = null
+      if (Struct.get(checkbox, "backgroundColor") != null) {
+        background = checkbox.backgroundColor
+      } else if (Struct.get(label, "backgroundColor") != null) {
+        background = label.backgroundColor
+      } else if (Struct.get(input, "backgroundColor") != null) {
+        background = input.backgroundColor
+      }
+
+      var component = Struct.removeNullableRecursive({
+        hidden: hidden,
+        enable: enable,
+        background: background,
+        label: {
+          text: Struct.get(label, "text"),
+          font: Struct.get(label, "font"),
+          updateCustom: Struct.get(label, "updateCustom") != null ? "function()" : null,
+          preRender: Struct.get(label, "preRender") != null ? "function()" : null,
+        },
+        input: {
+          spriteOn: Struct.get(input, "spriteOn"),
+          spriteOff: Struct.get(input, "spriteOff"),
+          store: Struct.get(input, "store"),
+        },
+        checkbox: {
+          spriteOn: Struct.get(checkbox, "spriteOn"),
+          spriteOff: Struct.get(checkbox, "spriteOff"),
+          store: Struct.get(checkbox, "store"),
+        },
+      })
+      var text = String.concat($"VETitleComponent(\"{name}\", ", JSON.stringify(component, { pretty: true }), "),")
+      Core.print("\n\n", text, "\n\n")
     }
 
     return items
@@ -1602,90 +1649,6 @@ global.__VEComponents = new Map(String, Callable, {
     }
     return items
   },
-
-  ///@param {String} name
-  ///@param {UILayout} layout
-  ///@param {?Struct} [config]
-  ///@return {Array<UIItem>}
-  "double-checkbox": function(name, layout, config = null) {
-    return new Array(UIItem, [
-      UIText(
-        $"label_{name}", 
-        Struct.appendRecursive(
-          Struct.appendRecursive(
-            { 
-              layout: layout.nodes.label,
-              updateArea: Callable.run(UIUtil.updateAreaTemplates.get("applyLayout")),
-            },
-            VEStyles.get("double-checkbox").label,
-            false
-          ),
-          Struct.get(config, "label"),
-          false
-        )
-      ),
-      UICheckbox(
-        $"checkbox1_{name}", 
-        Struct.appendRecursive(
-          Struct.appendRecursive(
-            { 
-              layout: layout.nodes.checkbox1,
-              updateArea: Callable.run(UIUtil.updateAreaTemplates.get("applyLayout")),
-            },
-            VEStyles.get("double-checkbox").checkbox1,
-            false
-          ),
-          Struct.get(config, "checkbox1"),
-          false
-        )
-      ),
-      UIText(
-        $"label1_{name}", 
-        Struct.appendRecursive(
-          Struct.appendRecursive(
-            { 
-              layout: layout.nodes.label1,
-              updateArea: Callable.run(UIUtil.updateAreaTemplates.get("applyLayout")),
-            },
-            VEStyles.get("double-checkbox").label1,
-            false
-          ),
-          Struct.get(config, "label1"),
-          false
-        )
-      ),
-      UICheckbox(
-        $"checkbox2_{name}", 
-        Struct.appendRecursive(
-          Struct.appendRecursive(
-            { 
-              layout: layout.nodes.checkbox2,
-              updateArea: Callable.run(UIUtil.updateAreaTemplates.get("applyLayout")),
-            },
-            VEStyles.get("double-checkbox").checkbox2,
-            false
-          ),
-          Struct.get(config, "checkbox2"),
-          false
-        )
-      ),
-      UIText(
-        $"label2_{name}", 
-        Struct.appendRecursive(
-          Struct.appendRecursive(
-            { 
-              layout: layout.nodes.label2,
-              updateArea: Callable.run(UIUtil.updateAreaTemplates.get("applyLayout")),
-            },
-            VEStyles.get("double-checkbox").label2,
-            false
-          ),
-          Struct.get(config, "label2"),
-          false
-        )
-      ),
-    ])
-  },
   
   ///@param {String} name
   ///@param {UILayout} layout
@@ -2129,6 +2092,17 @@ global.__VEComponents = new Map(String, Callable, {
 
               Struct.inject(this.image, "_restoreFrame", this.image.getFrame())
               this.image.setFrame(Struct.inject(this.image, "_frame", this.image.getFrame()))
+
+              var scaleX = this.image.getScaleX()
+              var scaleY = this.image.getScaleY()
+              this.image.scaleToFit(this.area.getWidth(), this.area.getHeight())
+              var color = ColorUtil.parse(VETheme.color.primary).toGMColor()
+              var _x = this.context.area.getX() + this.area.getX() + (this.area.getWidth() / 2.0)
+              var _y = this.context.area.getY() + this.area.getY() + (this.area.getHeight() / 2.0)
+              var _width = this.image.getWidth() * this.image.getScaleX()
+              var _height = this.image.getHeight() * this.image.getScaleY()
+              GPU.render.rectangle(_x - (_width / 2.0) - 1.0, _y - (_height / 2.0) - 1.0, _x + (_width / 2.0) + 1.0, _y + (_height / 2.0) + 1.0, true, color)
+              this.image.setScaleX(scaleX).setScaleY(scaleY)
             },
             postRender: function() {
               if (this.image == null) {
@@ -2754,6 +2728,17 @@ global.__VEComponents = new Map(String, Callable, {
 
               Struct.inject(this.image, "_restoreFrame", this.image.getFrame())
               this.image.setFrame(Struct.inject(this.image, "_frame", this.image.getFrame()))
+
+              var scaleX = this.image.getScaleX()
+              var scaleY = this.image.getScaleY()
+              this.image.scaleToFit(this.area.getWidth(), this.area.getHeight())
+              var color = ColorUtil.parse(VETheme.color.primary).toGMColor()
+              var _x = this.context.area.getX() + this.area.getX() + (this.area.getWidth() / 2.0)
+              var _y = this.context.area.getY() + this.area.getY() + (this.area.getHeight() / 2.0)
+              var _width = this.image.getWidth() * this.image.getScaleX()
+              var _height = this.image.getHeight() * this.image.getScaleY()
+              GPU.render.rectangle(_x - (_width / 2.0) - 1.0, _y - (_height / 2.0) - 1.0, _x + (_width / 2.0) + 1.0, _y + (_height / 2.0) + 1.0, true, color)
+              this.image.setScaleX(scaleX).setScaleY(scaleY)
             },
             postRender: function() {
               if (this.image == null) {
@@ -3276,6 +3261,17 @@ global.__VEComponents = new Map(String, Callable, {
 
               Struct.inject(this.image, "_restoreFrame", this.image.getFrame())
               this.image.setFrame(Struct.inject(this.image, "_frame", this.image.getFrame()))
+
+              var scaleX = this.image.getScaleX()
+              var scaleY = this.image.getScaleY()
+              this.image.scaleToFit(this.area.getWidth(), this.area.getHeight())
+              var color = ColorUtil.parse(VETheme.color.primary).toGMColor()
+              var _x = this.context.area.getX() + this.area.getX() + (this.area.getWidth() / 2.0)
+              var _y = this.context.area.getY() + this.area.getY() + (this.area.getHeight() / 2.0)
+              var _width = this.image.getWidth() * this.image.getScaleX()
+              var _height = this.image.getHeight() * this.image.getScaleY()
+              GPU.render.rectangle(_x - (_width / 2.0) - 1.0, _y - (_height / 2.0) - 1.0, _x + (_width / 2.0) + 1.0, _y + (_height / 2.0) + 1.0, true, color)
+              this.image.setScaleX(scaleX).setScaleY(scaleY)
             },
             postRender: function() {
               if (this.image == null) {
@@ -3885,6 +3881,17 @@ global.__VEComponents = new Map(String, Callable, {
 
               Struct.inject(this.image, "_restoreFrame", this.image.getFrame())
               this.image.setFrame(Struct.inject(this.image, "_frame2", this.image.getFrame()))
+
+              var scaleX = this.image.getScaleX()
+              var scaleY = this.image.getScaleY()
+              this.image.scaleToFit(this.area.getWidth(), this.area.getHeight())
+              var color = ColorUtil.parse(VETheme.color.primary).toGMColor()
+              var _x = this.context.area.getX() + this.area.getX() + (this.area.getWidth() / 2.0)
+              var _y = this.context.area.getY() + this.area.getY() + (this.area.getHeight() / 2.0)
+              var _width = this.image.getWidth() * this.image.getScaleX()
+              var _height = this.image.getHeight() * this.image.getScaleY()
+              GPU.render.rectangle(_x - (_width / 2.0) - 1.0, _y - (_height / 2.0) - 1.0, _x + (_width / 2.0) + 1.0, _y + (_height / 2.0) + 1.0, true, color)
+              this.image.setScaleX(scaleX).setScaleY(scaleY)
             },
             postRender: function() {
               if (this.image == null) {
@@ -3926,47 +3933,18 @@ global.__VEComponents = new Map(String, Callable, {
         var scaleX = this.image.getScaleX()
         var scaleY = this.image.getScaleY()
         this.image.scaleToFit(this.area.getWidth(), this.area.getHeight())
-        var _x = this.context.area.getX() 
-          + this.area.getX()
-          + (this.area.getWidth() / 2.0)
-          - ((image.getWidth() * image.getScaleX()) / 2.0)
-          + (mask.getX() * image.getScaleX())
-        var _y = this.context.area.getY() 
-          + this.area.getY()
-          + (this.area.getHeight() / 2.0)
-          - ((image.getHeight() * image.getScaleY()) / 2.0)
-          + (mask.getY() * image.getScaleY())
-        var width = mask.getWidth() * image.getScaleX()
-        var height = mask.getHeight() * image.getScaleY()
-        this.image.setScaleX(scaleX).setScaleY(scaleY)
 
-        if (width < 1 || height < 1) {
-          return
+        var _x = this.context.area.getX() + this.area.getX() + (this.area.getWidth() / 2.0) - ((image.getWidth() * image.getScaleX()) / 2.0) + (mask.getX() * image.getScaleX())
+        var _y = this.context.area.getY() + this.area.getY() + (this.area.getHeight() / 2.0) - ((image.getHeight() * image.getScaleY()) / 2.0) + (mask.getY() * image.getScaleY())
+        var _width = mask.getWidth() * this.image.getScaleX()
+        var _height = mask.getHeight() * this.image.getScaleY()
+
+        if (_width >= 1 && _height >= 1) {
+          GPU.render.ellipse(_x, _y, _x + _width, _y + _height, false, c_black, c_black, alpha)
+          GPU.render.ellipse(_x, _y, _x + _width, _y + _height, true, c_red, c_red, alpha)
         }
-        GPU.render.rectangle(
-          _x,
-          _y,
-          _x + width,
-          _y + height,
-          false,
-          c_black,
-          c_black,
-          c_black,
-          c_black,
-          alpha
-        )
-        GPU.render.rectangle(
-          _x,
-          _y,
-          _x + width,
-          _y + height,
-          true,
-          c_red,
-          c_red,
-          c_red,
-          c_red,
-          alpha
-        )
+
+        this.image.setScaleX(scaleX).setScaleY(scaleY)
       })
 
       return uiImage
@@ -4077,7 +4055,6 @@ global.__VEComponents = new Map(String, Callable, {
         template: VEComponents.get("text-field-button"),
         layout: VELayouts.get("text-field-square-center-button"),
         config: Struct.appendRecursive(
-          config, 
           {
             field: {
               store: {
@@ -4106,6 +4083,7 @@ global.__VEComponents = new Map(String, Callable, {
               },
             }
           },
+          config, 
           false
         ),
       }).toUIItems(layout)
@@ -4196,7 +4174,6 @@ global.__VEComponents = new Map(String, Callable, {
         template: VEComponents.get("numeric-slider-increase-field"),
         layout: VELayouts.get("numeric-slider-increase-field"),
         config: Struct.appendRecursive(
-          config, 
           {
             field: {
               store: {
@@ -4275,6 +4252,7 @@ global.__VEComponents = new Map(String, Callable, {
             increase: factoryIncrease(config, 1.0),
             decrease: factoryIncrease(config, -1.0),
           },
+          config, 
           false
         ),
       }).toUIItems(layout)
@@ -4363,7 +4341,6 @@ global.__VEComponents = new Map(String, Callable, {
         template: VEComponents.get("numeric-slider-increase-field"),
         layout: VELayouts.get("numeric-slider-increase-field"),
         config: Struct.appendRecursive(
-          config, 
           {
             field: {
               store: {
@@ -4383,6 +4360,7 @@ global.__VEComponents = new Map(String, Callable, {
             increase: factoryIncrease(config, 1.0),
             decrease: factoryIncrease(config, -1.0),
           },
+          config, 
           false
         ),
       }).toUIItems(layout)
@@ -4464,7 +4442,6 @@ global.__VEComponents = new Map(String, Callable, {
       $"{name}_red",
       layout.nodes.red,
       Struct.appendRecursive(
-        Struct.get(config, "red"), 
         {
           layout: { 
             //type: layout.type,
@@ -4475,6 +4452,7 @@ global.__VEComponents = new Map(String, Callable, {
           decrease: { colorChannel: "red" },
           increase: { colorChannel: "red" },
         },
+        Struct.get(config, "red"), 
         false
       )
     ).forEach(addItem, items)
@@ -4483,7 +4461,6 @@ global.__VEComponents = new Map(String, Callable, {
       $"{name}_green",
       layout.nodes.green,
       Struct.appendRecursive(
-        Struct.get(config, "green"),
         {
           layout: { 
             //type: layout.type,
@@ -4494,6 +4471,7 @@ global.__VEComponents = new Map(String, Callable, {
           decrease: { colorChannel: "green" },
           increase: { colorChannel: "green" },
         },
+        Struct.get(config, "green"),
         false
       )
     ).forEach(addItem, items)
@@ -4502,7 +4480,6 @@ global.__VEComponents = new Map(String, Callable, {
       $"{name}_blue",
       layout.nodes.blue,
       Struct.appendRecursive(
-        Struct.get(config, "blue"),
         {
           layout: { 
             //type: layout.type,
@@ -4513,6 +4490,7 @@ global.__VEComponents = new Map(String, Callable, {
           decrease: { colorChannel: "blue" },
           increase: { colorChannel: "blue" },
         },
+        Struct.get(config, "blue"),
         false
       )
     ).forEach(addItem, items)
@@ -4522,7 +4500,6 @@ global.__VEComponents = new Map(String, Callable, {
         $"{name}_alpha",
         layout.nodes.alpha,
         Struct.appendRecursive(
-          Struct.get(config, "alpha"),
           {
             layout: { 
               //type: layout.type,
@@ -4533,6 +4510,7 @@ global.__VEComponents = new Map(String, Callable, {
             decrease: { colorChannel: "alpha" },
             increase: { colorChannel: "alpha" },
           },
+          Struct.get(config, "alpha"),
           false
         )
       ).forEach(addItem, items)
@@ -5928,6 +5906,499 @@ global.__VEComponents = new Map(String, Callable, {
         Struct.get(config, "ease"),
         false
       )
+    ).forEach(addItem, items)
+
+    return items
+  },
+
+
+  ///@param {String} name
+  ///@param {UILayout} layout
+  ///@param {?Struct} [config]
+  ///@return {Array<UIItem>}
+  "number-transformer": function(name, layout, config = null) {
+    ///@todo move to Lambda util
+    static addItem = function(item, index, items) {
+      items.add(item)
+    }
+
+    ///@param {String} name
+    ///@param {UILayout} layout
+    ///@param {?Struct} [config]
+    ///@return {Array<UIItem>}
+    static factoryTextFieldIncreaseStickCheckbox = function(name, layout, config) {
+      return new UIComponent({
+        name: name,
+        template: VEComponents.get("text-field-increase-stick-checkbox"),
+        layout: VELayouts.get("text-field-increase-stick-checkbox"),
+        config: Struct.appendRecursive(
+          {
+            field: {
+              store: {
+                callback: function(value, data) { 
+                  var item = data.store.get()
+                  if (item == null) {
+                    return 
+                  }
+
+                  var key = Struct.get(data, "transformNumericProperty")
+                  var transformer = item.get()
+                  if (!Core.isType(transformer, NumberTransformer) 
+                    || !Struct.contains(transformer, key)
+                    || GMTFContext.get() == data.textField) {
+                    return 
+                  }
+                  data.textField.setText(Struct.get(transformer, key))
+                },
+                set: function(value) {
+                  var item = this.get()
+                  if (item == null) {
+                    return 
+                  }
+
+                  var parsedValue = NumberUtil.parse(value, null)
+                  if (parsedValue == null) {
+                    return
+                  }
+
+                  var key = Struct.get(this.context, "transformNumericProperty")
+                  var transformer = item.get()
+                  if (!Core.isType(transformer, NumberTransformer) 
+                    || !Struct.contains(transformer, key)) {
+                    return 
+                  }
+                  item.set(Struct.set(transformer, key, parsedValue))
+                },
+              },
+            },
+            decrease: VEComponentsUtil.factory.config.decreaseNumericProperty(),
+            increase: VEComponentsUtil.factory.config.increaseNumericProperty(),
+            stick: VEComponentsUtil.factory.config.numberStick({ 
+              store: {
+                callback: Lambda.passthrough,
+                set: function(value) {
+                  var item = this.get()
+                  if (item == null) {
+                    return 
+                  }
+
+                  var parsedValue = NumberUtil.parse(value, null)
+                  if (parsedValue == null) {
+                    return
+                  }
+
+                  var key = Struct.get(this.context, "transformNumericProperty")
+                  var transformer = item.get()
+                  if (!Core.isType(transformer, NumberTransformer) 
+                    || !Struct.contains(transformer, key)) {
+                    return 
+                  }
+                  item.set(Struct.set(transformer, key, parsedValue))
+                },
+                getValue: function() {
+                  var key = Struct.get(this.context, "transformNumericProperty")
+                  if (!Optional.is(key)) {
+                    return null
+                  }
+
+                  var item = this.get()
+                  if (!Optional.is(item)) {
+                    return null
+                  }
+
+                  var transformer = item.get()
+                  if (!Optional.is(transformer)) {
+                    return
+                  }
+                  
+                  return Struct.get(transformer, key)
+                },
+              },
+            }),
+          },
+          config, 
+          false
+        )
+      }).toUIItems(layout)
+    }
+
+    ///@param {String} name
+    ///@param {UILayout} layout
+    ///@param {?Struct} [config]
+    ///@return {Array<UIItem>}
+    static factorySpinSelect = function(name, layout, config) {
+      return new UIComponent({
+        name: name,
+        template: VEComponents.get("spin-select"),
+        layout: VELayouts.get("spin-select"),
+        config: Struct.appendRecursive(
+          {
+            label: { 
+              text: "Ease"
+            },
+            layout: { 
+              type: UILayoutType.VERTICAL,
+              height: function() { return 32 },
+              margin: { top: 6, bottom: 12 },
+            },
+            previous: { 
+              callback: function() {
+                var increment = -1
+                if (!Optional.is(this.store)) {
+                  return
+                }
+  
+                var item = this.store.get()
+                if (!Optional.is(item)) {
+                  return
+                }
+
+                var transformer = item.get()
+                if (!Core.isType(transformer, NumberTransformer)) {
+                  return
+                }
+  
+                var data = EaseType.keys()
+                var index = data.findIndex(Lambda.equal, transformer.easeType)
+                index = (index == null ? 0 : index) + increment
+                if (index < 0) {
+                  index = data.size() - 1
+                } else if (index > data.size() - 1) {
+                  index = 0
+                }
+
+                transformer.easeType = data.get(index)
+                transformer.startValue = transformer.value
+                transformer.startFactor = transformer.factor
+                transformer.reset()
+                item.set(transformer)
+              },
+              store: { 
+                callback: function(value, data) { },
+                set: function(value) { },
+              },
+            },
+            preview: { 
+              image: { name: "texture_empty" },
+              store: {
+                callback: function(transformer, data) { 
+                  if (!Core.isType(transformer, NumberTransformer)) {
+                    return
+                  }
+                  
+                  var textureName = Struct.get(EASE_TYPE_MAP, transformer.easeType)
+                  if (!Optional.is(textureName)) {
+                    return
+                  }
+
+                  var image = SpriteUtil.parse({ name: textureName })
+                  if (!Core.isType(image, Sprite)) {
+                    return
+                  }
+
+                  Struct.set(data, "image", image)
+                },
+              },
+              updateCustom: function() {
+                if (!Optional.is(this.store)) {
+                  return
+                }
+    
+                var item = this.store.get()
+                if (!Optional.is(item)) {
+                  return
+                }
+
+                var transformer = item.get()
+                if (!Core.isType(transformer, NumberTransformer)) {
+                  return
+                }
+
+                var texture = Struct.get(EASE_TYPE_MAP, transformer.easeType)
+
+                Struct.set(this, "image", SpriteUtil.parse({ "name": texture }))
+              },
+              postRender: function() {
+                if (!Optional.is(this.store)) {
+                  return
+                }
+    
+                var item = this.store.get()
+                if (!Optional.is(item)) {
+                  return
+                }
+
+                var transformer = item.get()
+                if (!Core.isType(transformer, NumberTransformer)) {
+                  return
+                }
+    
+                var data = EaseType.keys()
+                var index = data.findIndex(Lambda.equal, transformer.easeType)
+                if (!Optional.is(index)) {
+                  return
+                }
+    
+                var margin = 5.0
+                var width = 32.0
+                var spinButtonsWidth = 2.0 * (16.0 + margin)
+                var size = floor((this.area.getWidth() - spinButtonsWidth) / (width + margin))
+                if (size <= 3.0) {
+                  return
+                }
+    
+                if (size mod 2.0 == 0.0) {
+                  size -= 1.0
+                }
+    
+                var from = -1.0 * floor(size / 2.0)
+                var to = abs(from)
+                var beginX = round(this.context.area.getX() + this.area.getX() + (this.area.getWidth() / 2.0) - (width / 2.0))
+                var beginY = this.context.area.getY() + this.area.getY(),
+                var color = ColorUtil.parse(VETheme.color.primaryLight).toGMColor()
+                var color2 = ColorUtil.parse("#d1a1ff").toGMColor()
+                var enableFactor = Struct.get(this.enable, "value") == false ? 0.5 : 1.0
+                for (var idx = from; idx <= to; idx += 1.0) {
+                  if (idx == 0.0) {
+                    GPU.render.rectangle(
+                      beginX - 1,
+                      beginY - 1,
+                      beginX + width + 0,
+                      beginY + width + 0,
+                      true,
+                      color,
+                      color,
+                      color,
+                      color,
+                      0.75
+                    )
+                    GPU.render.rectangle(
+                      beginX - 2,
+                      beginY - 2,
+                      beginX + width + 1,
+                      beginY + width + 1,
+                      true,
+                      color,
+                      color,
+                      color,
+                      color,
+                      0.5
+                    )
+                    
+                    continue
+                  }
+    
+                  if (data.size() + idx < 0.0 || idx >= data.size()) {
+                    continue
+                  }
+    
+                  var wrappedIndex = (((index + idx) mod data.size()) + data.size()) mod data.size()
+                  var easeTypeName = data.get(wrappedIndex)
+
+                  var textureName = Struct.get(EASE_TYPE_MAP, easeTypeName)
+                  
+                  if (!Optional.is(textureName)) {
+                    continue
+                  }
+    
+                  var texture = TextureUtil.parse(textureName)
+                  if (!Optional.is(texture)) {
+                    continue
+                  }
+    
+                  var scale = width / texture.width
+                  texture.render(
+                    beginX + (idx * (width + margin)) + (texture.offsetX * scale),
+                    beginY + (texture.offsetY * scale),
+                    0.0, scale, scale, 1.6*enableFactor, 0.0, color2
+                  )
+                }
+
+                var label = Struct.get(this, "_label")
+                if (!Optional.is(label)) {
+                  label = new UILabel({
+                    text: "",
+                    align: { v: VAlign.TOP, h: HAlign.CENTER },
+                    color: VETheme.color.text,
+                    useScale: false,
+                    outline: true,
+                    outlineColor: VETheme.color.sideDark,
+                    font: "font_inter_8_bold",
+                  })
+                  Struct.set(this, "_label", label)
+                }
+
+                var labelAlpha = label.alpha
+                label.alpha *= enableFactor
+                label.text = String.replaceAll(transformer.easeType, "_", " ")
+                if (keyboard_check(vk_control)) {
+                  label.text = $"F: {String.format(transformer.factor, 8, 4)},  I: {String.format(transformer.increase, 8, 4)}"
+                }
+
+                label.render(
+                  // todo VALIGN HALIGN
+                  this.context.area.getX() + this.area.getX() + (this.area.getWidth() / 2),
+                  this.context.area.getY() + this.area.getY() + (this.area.getHeight() / 1) + 2,
+                  this.area.getWidth(),
+                  this.area.getHeight()
+                )
+                label.alpha = labelAlpha
+              },
+              onMouseReleasedLeft: function(event) {
+                var enable = Struct.get(this.enable, "value")
+                if (enable == false) {
+                  return
+                }
+
+                if (!Optional.is(this.store)) {
+                  return
+                }
+    
+                var item = this.store.get()
+                if (!Optional.is(item)) {
+                  return
+                }
+
+                var transformer = item.get()
+                if (!Core.isType(transformer, NumberTransformer)) {
+                  return
+                }
+    
+                var data = EaseType.keys()
+                var index = data.findIndex(Lambda.equal, transformer.easeType)
+                if (!Optional.is(index)) {
+                  return
+                }
+    
+                var margin = 5.0
+                var width = 32.0
+                var spinButtonsWidth = 2.0 * (16.0 + margin)
+                var size = floor((this.area.getWidth() - spinButtonsWidth) / (width + margin))
+                if (size <= 3.0) {
+                  return
+                }
+    
+                if (size mod 2.0 == 0.0) {
+                  size -= 1.0
+                }
+    
+                var from = -1.0 * floor(size / 2.0)
+                var to = abs(from)
+                var mouseX = event.data.x - this.context.area.getX() - this.context.offset.x
+                var beginX = this.area.getX() + (this.area.getWidth() / 2.0) - (width / 2.0)
+                for (var idx = from; idx <= to; idx += 1.0) {
+                  if (idx == 0.0 || data.size() + idx < 0.0 || idx >= data.size()) {
+                    continue
+                  }
+    
+                  var wrappedIndex = (((index + idx) mod data.size()) + data.size()) mod data.size()
+                  var easeTypeName = data.get(wrappedIndex)
+
+                  if (!Optional.is(easeTypeName)) {
+                    continue
+                  }
+
+                  var textureX = beginX + (idx * (width + margin)) 
+                  if (mouseX < textureX || mouseX > textureX + width) {
+                    continue
+                  }
+    
+                  transformer.easeType = easeTypeName
+                  transformer.startValue = transformer.value
+                  transformer.startFactor = transformer.factor
+                  transformer.reset()
+                  item.set(transformer)
+                }
+              },
+            },
+            next: { 
+              callback: function() {
+                var increment = 1
+                if (!Optional.is(this.store)) {
+                  return
+                }
+  
+                var item = this.store.get()
+                if (!Optional.is(item)) {
+                  return
+                }
+
+                var transformer = item.get()
+                if (!Core.isType(transformer, NumberTransformer)) {
+                  return
+                }
+  
+                var data = EaseType.keys()
+                var index = data.findIndex(Lambda.equal, transformer.easeType)
+                index = (index == null ? 0 : index) + increment
+                if (index < 0) {
+                  index = data.size() - 1
+                } else if (index > data.size() - 1) {
+                  index = 0
+                }
+
+                transformer.easeType = data.get(index)
+                transformer.startValue = transformer.value
+                transformer.startFactor = transformer.factor
+                transformer.reset()
+                item.set(transformer)
+              },
+              store: { 
+                callback: function(value, data) { },
+                set: function(value) { },
+              },
+            },
+          },
+          config,
+          false
+        )
+      }).toUIItems(layout)
+    }
+
+    var items = new Array(UIItem)
+
+    factoryTextFieldIncreaseStickCheckbox(
+      $"{name}_value",
+      layout.nodes.value,
+      Struct.appendRecursive({ 
+        layout: { propagateHidden: true },
+        field: { transformNumericProperty: "value" },
+        decrease: { transformNumericProperty: "value" },
+        increase: { transformNumericProperty: "value" },
+        stick: { transformNumericProperty: "value" },
+      }, Struct.get(config, "value"), false)
+    ).forEach(addItem, items)
+
+    factoryTextFieldIncreaseStickCheckbox(
+      $"{name}_target",
+      layout.nodes.target,
+      Struct.appendRecursive({ 
+        layout: { propagateHidden: true },
+        field: { transformNumericProperty: "target" },
+        decrease: { transformNumericProperty: "target" },
+        increase: { transformNumericProperty: "target" },
+        stick: { transformNumericProperty: "target" },
+      }, Struct.get(config, "target"), false)
+    ).forEach(addItem, items)
+
+    factoryTextFieldIncreaseStickCheckbox(
+      $"{name}_duration",
+      layout.nodes.duration,
+      Struct.appendRecursive({
+        layout: { propagateHidden: true },
+        field: { transformNumericProperty: "duration" },
+        decrease: { transformNumericProperty: "duration" },
+        increase: { transformNumericProperty: "duration" },
+        stick: { transformNumericProperty: "duration" },
+      }, Struct.get(config, "duration"), false)
+    ).forEach(addItem, items)
+
+    factorySpinSelect(
+      $"{name}_ease",
+      layout.nodes.duration,
+      Struct.appendRecursive({
+        layout: { propagateHidden: true },
+      }, Struct.get(config, "ease"), false)
     ).forEach(addItem, items)
 
     return items
@@ -7757,64 +8228,3 @@ global.__EaseTypeMap = {
   "IN_OUT_BOUNCE": "texture_icon_ease_in_out_bounce",
 }
 #macro EASE_TYPE_MAP global.__EaseTypeMap
-
-
-//@param {String} name
-//@param {?Struct} [config]
-function VETitleComponent(name, config = null) {
-  var label = Struct.get(config, "label")
-  var input = Struct.get(config, "input")
-  var checkbox = Struct.get(config, "checkbox")
-
-  var hidden = Struct.get(config, "hidden")
-  if (hidden != null) {
-    Struct.set(label, "hidden", hidden)
-    Struct.set(input, "hidden", hidden)
-    Struct.set(checkbox, "hidden", hidden)
-  }
-  
-  var enable = Struct.get(config, "enable")
-  if (enable != null) {
-    Struct.set(label, "enable", enable)
-  }
-
-  var background = Struct.get(config, "background")
-  if (background != null) {
-    Struct.set(label, "backgroundColor", background)
-    Struct.set(input, "backgroundColor", background)
-    Struct.set(checkbox, "backgroundColor", background)
-  }
-
-  return {
-    name: name,
-    template: VEComponents.get("property"),
-    layout: VELayouts.get("property"),
-    config: { 
-      layout: { type: UILayoutType.VERTICAL },
-      label: label,
-      input: input,
-      checkbox: checkbox,
-    },
-  }
-}
-/** Template
-VETitleComponent("", {
-  hidden: null,
-  enable: null,
-  background: null,
-  label: {
-    text: null,
-    font: null,
-  }
-  input: {
-    spriteOn: null,
-    spriteOff: null,
-    store: null,
-  },
-  checkbox: {
-    spriteOn: null,
-    spriteOff: null,
-    store: null,
-  },
-})
-*/

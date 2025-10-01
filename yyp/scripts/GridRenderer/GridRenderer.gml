@@ -1,4 +1,7 @@
 ///@package com.alkapivo.visu.renderer.grid
+global.cameraRollSpeed = 0 
+global.cameraPitchSpeed = 0 
+global.cameraYawSpeed = 0 
 
 function GridRenderer() constructor {
 
@@ -18,6 +21,10 @@ function GridRenderer() constructor {
   ///@private
   ///@type {Surface}
   gridSurface = new Surface({ width: GuiWidth(), height: GuiHeight(), depth: false })
+
+  ///@private
+  ///@type {Surface}
+  gridItemSurface = new Surface({ width: GuiWidth(), height: GuiHeight(), depth: false })
 
   ///@private
   ///@type {Surface}
@@ -339,16 +346,12 @@ function GridRenderer() constructor {
         .setAlpha(alpha)
         .setAngle(angle)
       this.player2DCoords = Math.project3DCoordsOn2D(_x + baseX, _y + baseY, gridService.properties.depths.playerZ, this.camera.viewMatrix, this.camera.projectionMatrix, this.gridSurface.width, this.gridSurface.height)
-      
-      GPU.render.rectangle(
-        (player.x - ((player.mask.getWidth() * player.sprite.scaleX) / (2.0 * GRID_SERVICE_PIXEL_WIDTH)) - gridService.view.x) * GRID_SERVICE_PIXEL_WIDTH,
-        (player.y - ((player.mask.getHeight() * player.sprite.scaleY) / (2.0 * GRID_SERVICE_PIXEL_HEIGHT)) - gridService.view.y) * GRID_SERVICE_PIXEL_HEIGHT,
-        (player.x + ((player.mask.getWidth() * player.sprite.scaleX) / (2.0 * GRID_SERVICE_PIXEL_WIDTH)) - gridService.view.x) * GRID_SERVICE_PIXEL_WIDTH,
-        (player.y + ((player.mask.getHeight() * player.sprite.scaleY) / (2.0 * GRID_SERVICE_PIXEL_HEIGHT)) - gridService.view.y) * GRID_SERVICE_PIXEL_HEIGHT,
-        false, 
-        c_lime
-      )
-      
+
+      _x = ((player.x - gridService.view.x) * GRID_SERVICE_PIXEL_WIDTH) - ((player.sprite.getWidth() * player.sprite.scaleX) / 2.0) + (player.mask.x * player.sprite.scaleX)
+      _y = ((player.y - gridService.view.y) * GRID_SERVICE_PIXEL_HEIGHT) - ((player.sprite.getHeight() * player.sprite.scaleY) / 2.0) + (player.mask.y * player.sprite.scaleY)
+      var _width = player.mask.z * player.sprite.scaleX
+      var _height = player.mask.a * player.sprite.scaleY
+      GPU.render.ellipse(_x, _y, _x + _width, _y + _height, false, c_lime)
     }
     
     return this
@@ -370,14 +373,11 @@ function GridRenderer() constructor {
         .setAlpha(alpha)
     }
     static debugRenderShroomMask = function(shroom, index, gridService) {
-      GPU.render.rectangle(
-        (shroom.x - ((shroom.mask.getWidth() * shroom.sprite.scaleX) / (2.0 * GRID_SERVICE_PIXEL_WIDTH)) - gridService.view.x) * GRID_SERVICE_PIXEL_WIDTH,
-        (shroom.y - ((shroom.mask.getHeight() * shroom.sprite.scaleY) / (2.0 * GRID_SERVICE_PIXEL_HEIGHT)) - gridService.view.y) * GRID_SERVICE_PIXEL_HEIGHT,
-        (shroom.x + ((shroom.mask.getWidth() * shroom.sprite.scaleX) / (2.0 * GRID_SERVICE_PIXEL_WIDTH)) - gridService.view.x) * GRID_SERVICE_PIXEL_WIDTH,
-        (shroom.y + ((shroom.mask.getHeight() * shroom.sprite.scaleY) / (2.0 * GRID_SERVICE_PIXEL_HEIGHT)) - gridService.view.y) * GRID_SERVICE_PIXEL_HEIGHT,
-        false, 
-        c_red
-      )
+      var _x = ((shroom.x - gridService.view.x) * GRID_SERVICE_PIXEL_WIDTH) - ((shroom.sprite.getWidth() * shroom.sprite.scaleX) / 2.0) + (shroom.mask.x * shroom.sprite.scaleX)
+      var _y = ((shroom.y - gridService.view.y) * GRID_SERVICE_PIXEL_HEIGHT) - ((shroom.sprite.getHeight() * shroom.sprite.scaleY) / 2.0) + (shroom.mask.y * shroom.sprite.scaleY)
+      var _width = shroom.mask.z * shroom.sprite.scaleX
+      var _height = shroom.mask.a * shroom.sprite.scaleY
+      GPU.render.ellipse(_x, _y, _x + _width, _y + _height, false, c_red)
     }
 
     if (!gridService.properties.renderElements 
@@ -404,14 +404,11 @@ function GridRenderer() constructor {
         )
     }
     static debugRenderBulletMask = function(bullet, index, gridService) {
-      GPU.render.rectangle(
-        (bullet.x - ((bullet.mask.getWidth() * bullet.sprite.scaleX) / (2.0 * GRID_SERVICE_PIXEL_WIDTH)) - gridService.view.x) * GRID_SERVICE_PIXEL_WIDTH,
-        (bullet.y - ((bullet.mask.getHeight() * bullet.sprite.scaleY) / (2.0 * GRID_SERVICE_PIXEL_HEIGHT)) - gridService.view.y) * GRID_SERVICE_PIXEL_HEIGHT,
-        (bullet.x + ((bullet.mask.getWidth() * bullet.sprite.scaleX) / (2.0 * GRID_SERVICE_PIXEL_WIDTH)) - gridService.view.x) * GRID_SERVICE_PIXEL_WIDTH,
-        (bullet.y + ((bullet.mask.getHeight() * bullet.sprite.scaleY) / (2.0 * GRID_SERVICE_PIXEL_HEIGHT)) - gridService.view.y) * GRID_SERVICE_PIXEL_HEIGHT,
-        false, 
-        c_blue
-      )
+      var _x = ((bullet.x - gridService.view.x) * GRID_SERVICE_PIXEL_WIDTH) - ((bullet.sprite.getWidth() * bullet.sprite.scaleX) / 2.0) + (bullet.mask.x * bullet.sprite.scaleX)
+      var _y = ((bullet.y - gridService.view.y) * GRID_SERVICE_PIXEL_HEIGHT) - ((bullet.sprite.getHeight() * bullet.sprite.scaleY) / 2.0) + (bullet.mask.y * bullet.sprite.scaleY)
+      var _width = bullet.mask.z * bullet.sprite.scaleX
+      var _height = bullet.mask.a * bullet.sprite.scaleY
+      GPU.render.ellipse(_x, _y, _x + _width, _y + _height, false, c_yellow)
     }
     
     if (!gridService.properties.renderElements
@@ -436,14 +433,11 @@ function GridRenderer() constructor {
       )
     }
     static debugRenderCoinMask = function(coin, index, gridService) {
-      GPU.render.rectangle(
-        (coin.x - ((coin.mask.getWidth() * coin.sprite.scaleX) / (2.0 * GRID_SERVICE_PIXEL_WIDTH)) - gridService.view.x) * GRID_SERVICE_PIXEL_WIDTH,
-        (coin.y - ((coin.mask.getHeight() * coin.sprite.scaleY) / (2.0 * GRID_SERVICE_PIXEL_HEIGHT)) - gridService.view.y) * GRID_SERVICE_PIXEL_HEIGHT,
-        (coin.x + ((coin.mask.getWidth() * coin.sprite.scaleX) / (2.0 * GRID_SERVICE_PIXEL_WIDTH)) - gridService.view.x) * GRID_SERVICE_PIXEL_WIDTH,
-        (coin.y + ((coin.mask.getHeight() * coin.sprite.scaleY) / (2.0 * GRID_SERVICE_PIXEL_HEIGHT)) - gridService.view.y) * GRID_SERVICE_PIXEL_HEIGHT,
-        false, 
-        c_orange
-      )
+      var _x = ((coin.x - gridService.view.x) * GRID_SERVICE_PIXEL_WIDTH) - ((coin.sprite.getWidth() * coin.sprite.scaleX) / 2.0) + (coin.mask.x * coin.sprite.scaleX)
+      var _y = ((coin.y - gridService.view.y) * GRID_SERVICE_PIXEL_HEIGHT) - ((coin.sprite.getHeight() * coin.sprite.scaleY) / 2.0) + (coin.mask.y * coin.sprite.scaleY)
+      var _width = coin.mask.z * coin.sprite.scaleX
+      var _height = coin.mask.a * coin.sprite.scaleY
+      GPU.render.ellipse(_x, _y, _x + _width, _y + _height, false, c_fuchsia)
     }
     
     if (!gridService.properties.renderElements
@@ -710,10 +704,10 @@ function GridRenderer() constructor {
     return this
   }
 
-  ///@private
+    ///@private
   ///@param {GridService} gridService
   ///@return {GridRenderer}
-  gridRenderSeparators = function(gridService) {
+  gridRenderSeparatorsSide = function(gridService) {
     var properties = gridService.properties
     var view = gridService.view
     if (!properties.renderGrid) || (properties.separators <= 0) {
@@ -738,24 +732,12 @@ function GridRenderer() constructor {
     var primaryBegin = round(secondaryTreshold)
     var primaryEnd = round(size - secondaryTreshold)
     var mode = gridService.properties.separatorsMode
+    var startBeginY = ((-6.0 * view.height) + ((-1 * primaryBegin) * separatorHeight) + offset) * GRID_SERVICE_PIXEL_HEIGHT
+    var finishBeginY = ((-6.0 * view.height) + offset) * GRID_SERVICE_PIXEL_HEIGHT
+    var startEndY = ((-6.0 * view.height) + (primaryEnd * separatorHeight) + offset) * GRID_SERVICE_PIXEL_HEIGHT
+    var finishEndY = ((-6.0 * view.height) + (size * separatorHeight) + offset) * GRID_SERVICE_PIXEL_HEIGHT
     switch (mode) {
       case "SINGLE":
-        for (var index = -1 * primaryBegin; index < size; index++) {
-          var beginX = -4.0 * GRID_SERVICE_PIXEL_WIDTH
-          var beginY = ((-6.0 * view.height) + (index * separatorHeight) + offset + time) * GRID_SERVICE_PIXEL_HEIGHT
-          var endX = (view.width + 4.0) * GRID_SERVICE_PIXEL_WIDTH
-          var endY = beginY
-          var _alpha = index < 0.0 ? ((primaryBegin - abs(index)) / primaryBegin) * primaryAlpha : primaryAlpha
-          _alpha = index > primaryEnd ? (size - index) / (size - primaryEnd) * primaryAlpha : _alpha
-          GPU.render.texturedLineSimple(
-            beginX, beginY, 
-            endX, endY, 
-            primaryThickness,
-            _alpha, 
-            primaryColor,
-            this.textureLine
-          )
-        }
         break
       case "DUAL":
         for (var index = -1 * primaryBegin; index <= primaryBegin; index++) {
@@ -763,13 +745,16 @@ function GridRenderer() constructor {
           var beginY = ((-6.0 * view.height) + (index * separatorHeight) + offset + time) * GRID_SERVICE_PIXEL_HEIGHT
           var endX = (view.width + 4.0) * GRID_SERVICE_PIXEL_WIDTH
           var endY = beginY
+
           var _alpha = index == (-1 * primaryBegin) ? secondaryAlpha * (1.0 - borderRatio) : secondaryAlpha
           if (index + 1 > primaryBegin) {
             _alpha = secondaryAlpha * borderRatio
-          } else if (index < 0.0) {
-            _alpha = ((primaryBegin - abs(index)) / primaryBegin) * _alpha
           }
-    
+
+          if (index < 0.0) {
+            _alpha = _alpha * ((beginY - startBeginY) / (finishBeginY - startBeginY))
+          }
+
           GPU.render.texturedLineSimple(
             beginX, beginY, 
             endX, endY, 
@@ -785,9 +770,14 @@ function GridRenderer() constructor {
           var beginY = ((-6 * view.height) + (index * separatorHeight) + offset + time) * GRID_SERVICE_PIXEL_HEIGHT
           var endX = (view.width + 4.0) * GRID_SERVICE_PIXEL_WIDTH
           var endY = beginY
+
           var _alpha = index == primaryEnd ? secondaryAlpha * (1.0 - borderRatio) : secondaryAlpha
           if (index + 1 > size) {
             _alpha = secondaryAlpha * borderRatio
+          }
+
+          if (index > primaryEnd) {
+            _alpha = _alpha * ((finishEndY - beginY) / (finishEndY - startEndY))
           }
     
           GPU.render.texturedLineSimple(
@@ -799,12 +789,82 @@ function GridRenderer() constructor {
             this.textureLine
           )
         }
-    
+        break
+    }
+   
+    return this
+  }
+
+  ///@private
+  ///@param {GridService} gridService
+  ///@return {GridRenderer}
+  gridRenderSeparatorsMain = function(gridService) {
+    var properties = gridService.properties
+    var view = gridService.view
+    if (!properties.renderGrid) || (properties.separators <= 0) {
+      return this
+    }
+
+    var separators = properties.separators
+    var primaryColor = properties.separatorsPrimaryColor.toGMColor()
+    var primaryAlpha = properties.separatorsPrimaryAlpha
+    var primaryThickness = properties.separatorsPrimaryThickness
+    var secondaryColor = properties.separatorsSecondaryColor.toGMColor()
+    var secondaryAlpha = properties.separatorsSecondaryAlpha
+    var secondaryThickness = gridService.properties.separatorsSecondaryThickness
+    var separatorHeight = (view.height * 2) / separators
+    var time = gridService.properties.separatorTimer.time
+    var offset = 2.0
+    var separatorsSize = separators * 3
+    var secondaryTreshold = separatorsSize / 3
+    var duration = gridService.properties.separatorTimer.duration
+    var borderRatio = clamp(1.0 - (time / duration), 0.0, 1.0)
+    var size = floor(separatorsSize)
+    var primaryBegin = round(secondaryTreshold)
+    var primaryEnd = round(size - secondaryTreshold)
+    var mode = gridService.properties.separatorsMode
+    var startBeginY = ((-6.0 * view.height) + ((-1 * primaryBegin) * separatorHeight) + offset) * GRID_SERVICE_PIXEL_HEIGHT
+    var finishBeginY = ((-6.0 * view.height) + offset) * GRID_SERVICE_PIXEL_HEIGHT
+    var startEndY = ((-6.0 * view.height) + (primaryEnd * separatorHeight) + offset) * GRID_SERVICE_PIXEL_HEIGHT
+    var finishEndY = ((-6.0 * view.height) + (size * separatorHeight) + offset) * GRID_SERVICE_PIXEL_HEIGHT
+    switch (mode) {
+      case "SINGLE":
+        for (var index = -1 * primaryBegin; index <= size; index++) {
+          var _col = primaryColor
+          var beginX = -4.0 * GRID_SERVICE_PIXEL_WIDTH
+          var beginY = ((-6.0 * view.height) + (index * separatorHeight) + offset + time) * GRID_SERVICE_PIXEL_HEIGHT
+          var endX = (view.width + 4.0) * GRID_SERVICE_PIXEL_WIDTH
+          var endY = beginY
+          var _alpha = primaryAlpha
+          if (index == -1 * primaryBegin) {
+            _alpha = primaryAlpha * (1.0 - borderRatio)
+          } else if (index == size) {
+            _alpha = primaryAlpha * borderRatio
+          }
+
+          if (index < 0.0) {
+            _alpha = _alpha * ((beginY - startBeginY) / (finishBeginY - startBeginY))
+          } else if (index > primaryEnd) {
+            _alpha = _alpha * ((finishEndY - beginY) / (finishEndY - startEndY))
+          }
+          
+          GPU.render.texturedLineSimple(
+            beginX, beginY, 
+            endX, endY, 
+            primaryThickness,
+            _alpha, 
+            _col,
+            this.textureLine
+          )
+        }
+        break
+      case "DUAL":
         for (var index = primaryBegin; index <= primaryEnd; index++) {
           var beginX = -4.0 * GRID_SERVICE_PIXEL_WIDTH
           var beginY = ((-6 * view.height) + (index * separatorHeight) + offset + time) * GRID_SERVICE_PIXEL_HEIGHT
           var endX = (view.width + 4.0) * GRID_SERVICE_PIXEL_WIDTH
           var endY = beginY
+
           //var alpha = index == primaryBegin ? primaryAlpha * (1.0 - borderRatio) : primaryAlpha
           //if (index + 1 > primaryEnd) {
           //  alpha = primaryAlpha * borderRatio
@@ -834,7 +894,87 @@ function GridRenderer() constructor {
   ///@private
   ///@param {GridService} gridService
   ///@return {GridRenderer}
-  gridRenderChannels = function(gridService) {
+  gridRenderChannelsSide = function(gridService) {
+    var properties = gridService.properties
+    if (!gridService.properties.renderGrid || properties.channels <= 0) {
+      return this
+    }
+
+    var primaryColor = properties.channelsPrimaryColor.toGMColor()
+    var primaryAlpha = properties.channelsPrimaryAlpha
+    var primaryThickness = properties.channelsPrimaryThickness
+    var secondaryColor = properties.channelsSecondaryColor.toGMColor()
+    var secondaryAlpha = properties.channelsSecondaryAlpha
+    var secondaryThickness = properties.channelsSecondaryThickness
+    var mode = properties.channelsMode
+    
+    var view = gridService.view
+    var viewX = view.x
+    var viewWidth = view.width
+    var viewHeight = view.height
+    var channels = properties.channels
+    var channelPxWidth = (viewWidth / channels) * GRID_SERVICE_PIXEL_WIDTH
+    var viewBorder = 5
+    var viewCurrent = floor(viewX / viewWidth)
+    var viewXOffset = viewX - viewCurrent
+    var viewXStart = (viewCurrent - viewBorder) * GRID_SERVICE_PIXEL_WIDTH
+    var viewXFinish = (viewCurrent + 2.0 + viewBorder) * GRID_SERVICE_PIXEL_WIDTH
+    if (this.channelXStart == null) {
+      this.channelXStart = viewXStart
+    } else {
+      if (viewXStart < this.channelXStart) {
+        this.channelXStart = this.channelXStart - (channelPxWidth * ((this.channelXStart - viewXStart) div channelPxWidth))
+      } else if (viewXStart > this.channelXStart) {
+        this.channelXStart = this.channelXStart + (channelPxWidth * ((viewXStart - this.channelXStart) div channelPxWidth))
+      }
+      viewXStart = this.channelXStart
+    }
+
+    var size = (viewXFinish - viewXStart) div channelPxWidth
+    var offset = floor(viewX * GRID_SERVICE_PIXEL_WIDTH) - this.channelXStart
+    var indexLeft = floor((floor(viewX * GRID_SERVICE_PIXEL_WIDTH) - this.channelXStart) / channelPxWidth)
+    var indexFactor = ((floor(viewX * GRID_SERVICE_PIXEL_WIDTH) - this.channelXStart) / channelPxWidth) - indexLeft
+    var indexRight = indexLeft + floor(channels)
+    var indexMiddle = indexLeft + floor(abs(indexRight - indexLeft) / 2.0)
+    switch (mode) {
+      case "SINGLE":
+        break
+      case "DUAL":
+        for (var index = 0; index <= indexLeft; index++) {
+          var beginX = this.channelXStart + (index * channelPxWidth) - (viewX * GRID_SERVICE_PIXEL_WIDTH)
+          var beginY = -6.0 * GRID_SERVICE_PIXEL_HEIGHT
+          var endX = beginX
+          var endY = (viewHeight + 6.0) * GRID_SERVICE_PIXEL_HEIGHT
+          if (index == indexLeft) {
+            var factor = 1.0 - indexFactor
+            GPU.render.texturedLineSimple(beginX, beginY, endX, endY, secondaryThickness, secondaryAlpha * (1.0 - factor), secondaryColor, this.textureLine)
+          } else {
+            GPU.render.texturedLineSimple(beginX, beginY, endX, endY, secondaryThickness, secondaryAlpha * clamp((index - (channels * viewXOffset)) / (channels * viewBorder), 0.0, 1.0), secondaryColor, this.textureLine)
+          }
+        }
+        
+        for (var index = indexRight; index <= size; index++) {
+          var beginX = this.channelXStart + (index * channelPxWidth) - (viewX * GRID_SERVICE_PIXEL_WIDTH)
+          var beginY = -6.0 * GRID_SERVICE_PIXEL_HEIGHT
+          var endX = beginX
+          var endY = (viewHeight + 6.0) * GRID_SERVICE_PIXEL_HEIGHT
+          if (index == indexRight) {
+            var factor = indexFactor
+            GPU.render.texturedLineSimple(beginX, beginY, endX, endY, secondaryThickness, secondaryAlpha * (1.0 - factor), secondaryColor, this.textureLine)
+          } else {
+            GPU.render.texturedLineSimple(beginX, beginY, endX, endY, secondaryThickness, secondaryAlpha * clamp((size - index + (channels * viewXOffset)) / (channels * viewBorder), 0.0, 1.0), secondaryColor, this.textureLine)
+          }
+        }
+        break
+    }
+
+    return this
+  }
+
+    ///@private
+  ///@param {GridService} gridService
+  ///@return {GridRenderer}
+  gridRenderChannelsMain = function(gridService) {
     var properties = gridService.properties
     if (!gridService.properties.renderGrid || properties.channels <= 0) {
       return this
@@ -893,32 +1033,6 @@ function GridRenderer() constructor {
         }
         break
       case "DUAL":
-        for (var index = 0; index <= indexLeft; index++) {
-          var beginX = this.channelXStart + (index * channelPxWidth) - (viewX * GRID_SERVICE_PIXEL_WIDTH)
-          var beginY = -6.0 * GRID_SERVICE_PIXEL_HEIGHT
-          var endX = beginX
-          var endY = (viewHeight + 6.0) * GRID_SERVICE_PIXEL_HEIGHT
-          if (index == indexLeft) {
-            var factor = 1.0 - indexFactor
-            GPU.render.texturedLineSimple(beginX, beginY, endX, endY, secondaryThickness, secondaryAlpha * (1.0 - factor), secondaryColor, this.textureLine)
-          } else {
-            GPU.render.texturedLineSimple(beginX, beginY, endX, endY, secondaryThickness, secondaryAlpha * clamp((index - (channels * viewXOffset)) / (channels * viewBorder), 0.0, 1.0), secondaryColor, this.textureLine)
-          }
-        }
-        
-        for (var index = indexRight; index <= size; index++) {
-          var beginX = this.channelXStart + (index * channelPxWidth) - (viewX * GRID_SERVICE_PIXEL_WIDTH)
-          var beginY = -6.0 * GRID_SERVICE_PIXEL_HEIGHT
-          var endX = beginX
-          var endY = (viewHeight + 6.0) * GRID_SERVICE_PIXEL_HEIGHT
-          if (index == indexRight) {
-            var factor = indexFactor
-            GPU.render.texturedLineSimple(beginX, beginY, endX, endY, secondaryThickness, secondaryAlpha * (1.0 - factor), secondaryColor, this.textureLine)
-          } else {
-            GPU.render.texturedLineSimple(beginX, beginY, endX, endY, secondaryThickness, secondaryAlpha * clamp((size - index + (channels * viewXOffset)) / (channels * viewBorder), 0.0, 1.0), secondaryColor, this.textureLine)
-          }
-        }
-    
         for (var index = indexLeft; index < indexMiddle; index++) {
           var beginX = this.channelXStart + (index * channelPxWidth) - (viewX * GRID_SERVICE_PIXEL_WIDTH)
           var beginY = -6.0 * GRID_SERVICE_PIXEL_HEIGHT
@@ -977,9 +1091,9 @@ function GridRenderer() constructor {
       yMin = clamp(yMin - yMaxOffset, 0.0, view.worldHeight)
       yMax = clamp(yMax + yMinOffset, 0.0, view.worldHeight)
 
-      var beginX = -3.0 * GRID_SERVICE_PIXEL_WIDTH
+      var beginX = -1.0 * (1.0 + vertical) * GRID_SERVICE_PIXEL_WIDTH
       var beginY = (clamp(yMin, 0.0, view.worldHeight) - view.y) * GRID_SERVICE_PIXEL_HEIGHT
-      var endX = (3.0 + view.width) * GRID_SERVICE_PIXEL_WIDTH
+      var endX = (1.0 + vertical + view.width) * GRID_SERVICE_PIXEL_WIDTH
       var endY = beginY
 
       GPU.render.texturedLineSimple(
@@ -1005,11 +1119,11 @@ function GridRenderer() constructor {
       yMin = clamp(yMin - yMaxOffset, 0.0, view.worldHeight)
       yMax = clamp(yMax + yMinOffset, 0.0, view.worldHeight)
 
-      var beginX = -3.0 * GRID_SERVICE_PIXEL_WIDTH
+      var beginX = -1.0 * (1.0 + vertical) * GRID_SERVICE_PIXEL_WIDTH
       var beginY = isLockedY && Optional.is(lockY)
         ? (yMax - view.y) * GRID_SERVICE_PIXEL_HEIGHT
         : clamp((view.worldHeight - view.y), 0.0, view.worldHeight) * GRID_SERVICE_PIXEL_HEIGHT
-      var endX = (3.0 + view.width) * GRID_SERVICE_PIXEL_WIDTH
+      var endX = (1.0 + vertical + view.width) * GRID_SERVICE_PIXEL_WIDTH
       var endY = beginY
 
       GPU.render.texturedLineSimple(
@@ -1032,9 +1146,9 @@ function GridRenderer() constructor {
       var view = gridService.view
       var horizontal = gridService.properties.borderHorizontalLength / 2.0
       var beginX = (lockX + (view.width / 2.0) + horizontal - view.x) * GRID_SERVICE_PIXEL_WIDTH
-      var beginY = -6.0 * GRID_SERVICE_PIXEL_HEIGHT
+      var beginY = -1.0 * (1.0 + horizontal) * GRID_SERVICE_PIXEL_HEIGHT
       var endX = beginX
-      var endY = (5.0 + view.height) * GRID_SERVICE_PIXEL_HEIGHT
+      var endY = (1.0 + view.height + horizontal) * GRID_SERVICE_PIXEL_HEIGHT
 
       GPU.render.texturedLineSimple(
         beginX, beginY, endX, endY, 
@@ -1056,9 +1170,9 @@ function GridRenderer() constructor {
       var view = gridService.view
       var horizontal = gridService.properties.borderHorizontalLength / 2.0
       var beginX = (lockX + (view.width / 2.0) - horizontal - view.x) * GRID_SERVICE_PIXEL_WIDTH
-      var beginY = -6.0 * GRID_SERVICE_PIXEL_HEIGHT
+      var beginY = -1.0 * (1.0 + horizontal) * GRID_SERVICE_PIXEL_HEIGHT
       var endX = beginX
-      var endY = (5.0 + view.height) * GRID_SERVICE_PIXEL_HEIGHT
+      var endY = (1.0 + view.height + horizontal) * GRID_SERVICE_PIXEL_HEIGHT
 
       GPU.render.texturedLineSimple(
         beginX, beginY, endX, endY, 
@@ -1122,8 +1236,8 @@ function GridRenderer() constructor {
         .setScaleY(scaleY)
       shader_reset()
     } else {
-      var focus = Struct.get(player.gameMode, "focus") == true
-      var focusCooldown = Struct.get(player.gameMode, "focusCooldown")
+      var focus = Struct.get(player.handler, "focus") == true
+      var focusCooldown = Struct.get(player.handler, "focusCooldown")
       var focusTime = Struct.get(focusCooldown, "time")
       var focusDuration = Struct.get(focusCooldown, "duration")
       var focusFactor = Optional.is(focusTime) && Optional.is(focusDuration) ? focusTime / focusDuration : 0.0
@@ -1279,7 +1393,7 @@ function GridRenderer() constructor {
     
     matrix_set(matrix_world, matrix_build(
       baseX, baseY, depths.particleZ, 
-      0, 0, 0, 
+      global.cameraRollSpeed, global.cameraPitchSpeed, global.cameraYawSpeed,
       1, 1, 1
     ))
     
@@ -1333,7 +1447,7 @@ function GridRenderer() constructor {
       
       matrix_set(matrix_world, matrix_build(
         baseX, baseY, depths.particleZ, 
-        0, 0, 0, 
+        global.cameraRollSpeed, global.cameraPitchSpeed, global.cameraYawSpeed,
         1, 1, 1
       ))
       
@@ -1417,13 +1531,8 @@ function GridRenderer() constructor {
       GPU.render.clear(properties.gridClearColor.toGMColor(), properties.gridClearFrameAlpha)
     } else {
       GPU.set.blendMode(BlendMode.SUBTRACT)
-        .render.fillColor(
-          width,
-          height,
-          properties.gridClearColor.toGMColor(),
-          properties.gridClearFrameAlpha
-        )
-        .reset.blendMode()
+      GPU.render.fillColor(width, height, properties.gridClearColor.toGMColor(), properties.gridClearFrameAlpha)
+      GPU.reset.blendMode()
     }
 
     var depths = properties.depths
@@ -1460,72 +1569,140 @@ function GridRenderer() constructor {
       : 0.0
     matrix_set(matrix_world, matrix_build(
       baseX + _baseX, baseY, depths.gridZ, 
-      0, 0, 0, 
+      global.cameraRollSpeed, global.cameraPitchSpeed, global.cameraYawSpeed,
       1, 1, 1
     ))
-    this.gridRenderChannels(gridService)
+    this.gridRenderChannelsSide(gridService)
 
     matrix_set(matrix_world, matrix_build(
-      baseX, baseY, depths.gridZ + 1, 
-      0, 0, 0, 
+      baseX + _baseX, baseY, depths.gridZ + 1, 
+      global.cameraRollSpeed, global.cameraPitchSpeed, global.cameraYawSpeed,
       1, 1, 1
     ))
-    this.gridRenderSeparators(gridService)
+    this.gridRenderChannelsMain(gridService)
+
+    matrix_set(matrix_world, matrix_build(
+      baseX, baseY, depths.gridZ + 2, 
+      global.cameraRollSpeed, global.cameraPitchSpeed, global.cameraYawSpeed,
+      1, 1, 1
+    ))
+    this.gridRenderSeparatorsSide(gridService)
+
+    matrix_set(matrix_world, matrix_build(
+      baseX, baseY, depths.gridZ + 3, 
+      global.cameraRollSpeed, global.cameraPitchSpeed, global.cameraYawSpeed,
+      1, 1, 1
+    ))
+    this.gridRenderSeparatorsMain(gridService)
 
     gpu_set_ztestenable(true)
     gpu_set_zwriteenable(true)
     gpu_set_alphatestenable(true)
+  
     if (this.pathTrack != null) {
       var xxx = (((gridService.width - gridService.view.width) / 2.0) - gridService.view.x) * GRID_SERVICE_PIXEL_WIDTH
       var yyy = (gridService.height - gridService.view.y) * GRID_SERVICE_PIXEL_HEIGHT
       matrix_set(matrix_world, matrix_build(
         baseX + xxx, baseY + yyy, depths.coinZ - 1, 
-        0, 0, 0,
+        global.cameraRollSpeed, global.cameraPitchSpeed, global.cameraYawSpeed,
         1, 1, 1
       ))
       vertex_submit(this.pathTrack.vertexBuffer.buffer, pr_trianglelist, -1)
     }
 
-    //if (Visu.settings.getValue("visu.graphics.particle")) {
-    //  matrix_set(matrix_world, matrix_build(
-    //    baseX, baseY, depths.particleZ, 
-    //    0, 0, 0, 
-    //    1, 1, 1
-    //  ))
-    //
-    //  var editor = Beans.get(Visu.modules().editor.controller)
-    //  if (Optional.is(editor) && editor.renderUI) {
-    //    this.editorRenderParticleArea(gridService, shroomService, layout)
-    //  }
-    //
-    //  this.layerRenderParticles(gridService, particleService)
-    //}
+    gpu_set_ztestenable(false)
+    gpu_set_zwriteenable(false)
+    gpu_set_alphatestenable(false)
+
+    matrix_set(matrix_world, matrix_build(
+      baseX, baseY, depths.playerZ, 
+      global.cameraRollSpeed, global.cameraPitchSpeed, global.cameraYawSpeed,
+      1, 1, 1
+    ))
+    //this.gridRenderBorders(gridService)
+
+    matrix_set(matrix_world, matrix_build_identity())
+
+    return this
+  }
+
+    ///@private
+  ///@param {UILayout} layout
+  ///@return {GridRenderer}
+  renderGridItemSurface = function(layout) {
+    var width = layout.width()
+    var height = layout.height()
+    var renderDebugMasks = Visu.settings.getValue("visu.debug.render-entities-mask", false)
+    var renderDebugChunks = Visu.settings.getValue("visu.debug.render-debug-chunks", false)
+    var _renderPlayer = this.entityRenderPlayer
+    var _renderShrooms = this.entityRenderShrooms
+    var _renderBullets = this.entityRenderBullets
+    var _renderCoins = this.entityRenderCoins
+    if (renderDebugMasks) {
+      _renderPlayer = this.debugRenderPlayer
+      _renderShrooms = this.debugRenderShrooms
+      _renderBullets = this.debugRenderBullets
+      _renderCoins = this.debugRenderCoins
+    }
+    
+    var controller = Beans.get(BeanVisuController)
+    var gridService = controller.gridService
+    var properties = gridService.properties
+    var bulletService = controller.bulletService
+    var playerService = controller.playerService
+    var shroomService = controller.shroomService
+    var coinService = controller.coinService
+    var particleService = controller.particleService
+
+    GPU.render.clear(properties.gridClearColor.toGMColor(), 0.0)
+
+    var depths = properties.depths
+    var camera = this.camera
+    var gmCamera = camera.get()
+    var cameraAngle = camera.angle + (sin(camera.breathTimer2.time / 4.0) * BREATH_TIMER_FACTOR_2)
+    var cameraPitch = camera.pitch + (sin(camera.breathTimer1.time) * BREATH_TIMER_FACTOR_1)
+    var xto = camera.x + (sin(camera.breathTimer2.time) * GRID_SERVICE_PIXEL_WIDTH * -1.0)
+    var yto = camera.y
+    var zto = camera.z
+    var xfrom = xto + dcos(cameraAngle) * dcos(cameraPitch)
+    var yfrom = yto - dsin(cameraAngle) * dcos(cameraPitch)
+    var zfrom = zto - dsin(cameraPitch)
+    var baseX = GRID_SERVICE_PIXEL_WIDTH + GRID_SERVICE_PIXEL_WIDTH * 0.5
+    var baseY = GRID_SERVICE_PIXEL_HEIGHT + GRID_SERVICE_PIXEL_HEIGHT * 0.5
+    camera.viewMatrix = matrix_build_lookat(
+      xfrom, yfrom, zfrom, 
+      xto, yto, zto, 
+      0, 0, 1
+    )
+    ///@todo extract parameters
+    camera.projectionMatrix = matrix_build_projection_perspective_fov(
+      -60, 
+      -1 * (width / height), 
+      1, 
+      32000 
+    ) 
+    camera_set_view_mat(gmCamera, camera.viewMatrix)
+    camera_set_proj_mat(gmCamera, camera.projectionMatrix)
+    camera_apply(gmCamera)
+
+    gpu_set_ztestenable(true)
+    gpu_set_zwriteenable(true)
+    gpu_set_alphatestenable(true)
 
     matrix_set(matrix_world, matrix_build(
       baseX, baseY, depths.coinZ, 
-      0, 0, 0, 
+      global.cameraRollSpeed, global.cameraPitchSpeed, global.cameraYawSpeed,
       1, 1, 1
     ))
     _renderCoins(gridService, coinService)
 
     matrix_set(matrix_world, matrix_build(
       baseX, baseY, depths.shroomZ, 
-      0, 0, 0, 
+      global.cameraRollSpeed, global.cameraPitchSpeed, global.cameraYawSpeed,
       1, 1, 1
     ))
     _renderShrooms(gridService, shroomService)
 
-    //var x2d = (baseX + MouseUtil.getMouseX()) 
-    //var y2d = (baseY + MouseUtil.getMouseY())
-    //var coords3d = Math.project2DCoordsOn3D(x2d, y2d, camera.viewMatrix, camera.projectionMatrix, width, height)
-    //Core.print("xy2d", x2d, y2d, "xyz3d", coords3d)
-    //matrix_set(matrix_world, matrix_build(
-    //  coords3d[0], coords3d[1], coords3d[2],
-    //  0, 0, 0, 
-    //  1, 1, 1
-    //))
-    //draw_sprite(texture_baron, 0, x2d, y2d)
-    
     if (renderDebugChunks) {
       shroomService.chunkService.chunks.forEach(function(chunk, key, view) {
         var arr = String.split(key, "_")
@@ -1563,20 +1740,21 @@ function GridRenderer() constructor {
     }
     
     this.editorRenderSpawners(gridService, shroomService, layout)
+
     gpu_set_ztestenable(false)
     gpu_set_zwriteenable(false)
     gpu_set_alphatestenable(false)
 
     matrix_set(matrix_world, matrix_build(
       baseX, baseY, depths.bulletZ, 
-      0, 0, 0, 
+      global.cameraRollSpeed, global.cameraPitchSpeed, global.cameraYawSpeed,
       1, 1, 1
     ))
     _renderBullets(gridService, bulletService)
     
     matrix_set(matrix_world, matrix_build(
       baseX, baseY, depths.playerZ, 
-      0, 0, 0, 
+      global.cameraRollSpeed, global.cameraPitchSpeed, global.cameraYawSpeed,
       1, 1, 1
     ))
     this.gridRenderBorders(gridService)
@@ -1593,31 +1771,35 @@ function GridRenderer() constructor {
   renderFocusGridSurface = function(layout) {
     var controller = Beans.get(BeanVisuController)
     var properties = controller.gridService.properties
-    var size = max(
-      (properties.renderGridShaders && Visu.settings.getValue("visu.graphics.main-shaders")
-        ? controller.shaderPipeline.executor.tasks.size()
-        : 0),
-      (properties.renderCombinedShaders && Visu.settings.getValue("visu.graphics.combined-shaders")
-        ? controller.shaderCombinedPipeline.executor.tasks.size()
-        : 0)
-    )
-
-    GPU.render.clear(properties.gridClearColor.toGMColor(), 0.0)
-    //GPU.render.clear(properties.gridClearColor.toGMColor(), properties.gridClearFrameAlpha)
-
-    if (!properties.renderSupportGrid || properties.supportGridTreshold > size) {
+    if (!properties.renderSupportGrid) {
       return this
     }
 
-    this.gridSurface.renderStretched(
-      this.focusGridSurface.width,
-      this.focusGridSurface.height,
-      0,
-      0,
-      properties.supportGridAlpha,
-      properties.supportGridBlendColor.toGMColor(),
-      properties.supportGridBlendConfig
-    )
+    var width = this.focusGridSurface.width
+    var height = this.focusGridSurface.height
+    var size = properties.supportGridTreshold
+    var color = properties.supportColor.toGMColor()
+    var gridColor = properties.supportGridColor.toGMColor()
+    var focusColor = gridColor
+    var colorAlpha = properties.supportColorAlpha
+    var gridAlpha = properties.supportGridAlpha
+    var focusAlpha = properties.supportFocusAlpha
+    var blendConfig = properties.supportBlendConfig
+
+    GPU.render.clear(color, colorAlpha)
+
+    if (shader_is_compiled(shader_gaussian_blur)) {
+      shader_set(shader_gaussian_blur)
+      shader_set_uniform_f(shader_get_uniform(shader_gaussian_blur, "size"), width, height, size)
+      this.gridSurface.renderStretched(width, height, 0, 0, gridAlpha, color, blendConfig)
+      this.gridSurface.renderStretched(width, height, 0, 0, gridAlpha, gridColor, blendConfig)
+      shader_reset()
+    } else {
+      this.gridSurface.renderStretched(width, height, 0, 0, gridAlpha, color, blendConfig)
+      this.gridSurface.renderStretched(width, height, 0, 0, gridAlpha, gridColor, blendConfig)
+    }
+
+    this.gridItemSurface.renderStretched(width, height, 0, 0, focusAlpha, focusColor, blendConfig)
 
     return this
   }
@@ -1777,12 +1959,7 @@ function GridRenderer() constructor {
       GPU.render.clear(properties.shaderClearColor.toGMColor(), properties.shaderClearFrameAlpha)
     } else {
       GPU.set.blendMode(BlendMode.SUBTRACT)
-      GPU.render.fillColor(
-        width,
-        height,
-        properties.shaderClearColor.toGMColor(),
-        properties.shaderClearFrameAlpha
-      )
+      GPU.render.fillColor(width, height, properties.shaderClearColor.toGMColor(), properties.shaderClearFrameAlpha)
       GPU.reset.blendMode()
     }
     GPU.reset.surface()
@@ -1948,9 +2125,12 @@ function GridRenderer() constructor {
 
     var width = layout.width()
     var height = layout.height()
-    this.backgroundGlitchService.update(width, height)
-    this.gridGlitchService.update(width, height)
-    this.combinedGlitchService.update(width, height)
+    var controller = Beans.get(BeanVisuController)
+    if (controller.isGameplayRunning()) {
+      this.backgroundGlitchService.update(width, height)
+      this.gridGlitchService.update(width, height)
+      this.combinedGlitchService.update(width, height)
+    }
 
     if (this.pathTrack != null) {
       this.pathTrack.update()
@@ -2039,6 +2219,14 @@ function GridRenderer() constructor {
       .update(width, height)
       .renderOn(this.renderGridSurface, layout, true)
 
+    this.gridItemSurface
+      .update(width, height)
+      .renderOn(this.renderGridItemSurface, layout, true)
+
+    GPU.set.surface(this.gridSurface)
+    this.gridItemSurface.renderStretched(width, height, 0, 0, 1.0)
+    GPU.reset.surface()
+
     this.focusGridSurface
       .update(width, height)
       .renderOn(this.renderFocusGridSurface, layout, true)
@@ -2071,11 +2259,21 @@ function GridRenderer() constructor {
   renderGUI = function(layout) {
     var controller = Beans.get(BeanVisuController)
     if (Visu.settings.getValue("visu.debug.render-surfaces")) {
+      var width = round(GuiWidth() / 3.0)
+      var height = round(GuiHeight() / 3.0)
+      
       GPU.render.clear(controller.gridService.properties.gridClearColor, 1.0)
-      this.backgroundSurface.renderStretched(GuiWidth() / 2.0, GuiHeight() / 2.0, 0.0, 0.0)
-      this.gridSurface.renderStretched(GuiWidth() / 2.0, GuiHeight() / 2.0, GuiWidth() / 2.0, 0.0)
-      this.shaderBackgroundSurface.renderStretched(GuiWidth() / 2.0, GuiHeight() / 2.0, 0.0, GuiHeight() / 2.0)
-      this.shaderSurface.renderStretched(GuiWidth() / 2.0, GuiHeight() / 2.0, GuiWidth() / 2.0, GuiHeight() / 2.0)
+
+      this.backgroundSurface.renderStretched(width, height, width * 0.0, height * 0.0)
+      this.gridSurface.renderStretched(width, height, width * 0.0, height * 1.0)
+      this.gridItemSurface.renderStretched(width, height, width * 0.0, height * 2.0)
+
+      this.focusGridSurface.renderStretched(width, height, width * 1.0, height * 0.0)
+      this.gameSurface.renderStretched(width, height, width * 1.0, height * 1.0)
+
+      this.shaderBackgroundSurface.renderStretched(width, height, width * 2.0, height * 0.0)
+      this.shaderSurface.renderStretched(width, height, width * 2.0, height * 1.0)
+      this.shaderCombinedSurface.renderStretched(width, height, width * 2.0, height * 2.0)
       return this
     }
 
@@ -2096,7 +2294,7 @@ function GridRenderer() constructor {
     }
 
     var editor = Beans.get(Visu.modules().editor.controller)
-    if (Optional.is(editor) && editor.renderUI) {
+    if (editor != null && editor.renderUI) {
       this.editorRenderSubtitlesArea(controller.gridService, controller.shroomService, layout)
     }
 
@@ -2107,6 +2305,7 @@ function GridRenderer() constructor {
   free = function() {
     this.backgroundSurface.free()
     this.gridSurface.free()
+    this.gridItemSurface.free()
     this.focusGridSurface.free()
     this.gameSurface.free()
     this.shaderSurface.free()

@@ -1,0 +1,13 @@
+{
+  "$GMScript":"v1",
+  "%Name":"ShaderDeepSpace",
+  "isCompatibility":false,
+  "isDnD":false,
+  "name":"ShaderDeepSpace",
+  "parent":{
+    "name":"shader_deep_space",
+    "path":"folders/io.alkapivo.core/resource/shader/screen/shader_deep_space.yy",
+  },
+  "resourceType":"GMScript",
+  "resourceVersion":"2.0",
+}

@@ -1,0 +1,13 @@
+{
+  "$GMScript":"v1",
+  "%Name":"VENumberInputComponent",
+  "isCompatibility":false,
+  "isDnD":false,
+  "name":"VENumberInputComponent",
+  "parent":{
+    "name":"component",
+    "path":"folders/io.alkapivo.visu/src/editor/ui/component.yy",
+  },
+  "resourceType":"GMScript",
+  "resourceVersion":"2.0",
+}

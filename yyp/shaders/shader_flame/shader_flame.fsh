@@ -3,6 +3,8 @@
 // Created by anatole duprat - XT95/2013
 // License Creative Commons Attribution-NonCommercial-ShareAlike 3.0 Unported License.
 
+#define ITERATIONS 64.0
+
 varying vec2 v_vTexcoord;
 varying vec4 v_vColour;
 
@@ -40,7 +42,11 @@ vec4 raymarch(vec3 org, vec3 dir) {
   float eps = 0.02;
 	vec3  p = org;
 	bool glowed = false;
-  for (float i = 0.0; i < iIterations; i += 1.0) {
+  for (float i = 0.0; i < ITERATIONS; i += 1.0) {
+    if (i > iIterations) {
+      break;
+    }
+
     d = scene(p) + eps;
     p += d * dir;
     if (d > eps) {

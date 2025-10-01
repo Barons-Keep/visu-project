@@ -20,7 +20,11 @@ void main() {
 		vec3 p = init + s * vec3(uv, 0.05);
 		p.z = fract(p.z);
     // Thanks to Kali's little chaotic loop...
-		for (float i = 0.0; i < iIterations; i += 1.0) {
+		for (float i = 0.0; i < 24.0; i += 1.0) {
+      if (i > iIterations) {
+        break;
+      }
+
       p = abs(p * iFactor) / dot(p, p) -0.9;
     }
 		v += pow(dot(p, p), iSize.x) * iSize.y;

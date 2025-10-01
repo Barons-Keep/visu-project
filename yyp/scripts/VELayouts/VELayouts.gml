@@ -99,27 +99,17 @@ global.__VELayouts = new Map(String, Callable, {
           height: function() { return 32 - this.__margin.top - this.__margin.bottom },
           margin: { top: 0, left: 2, right: 2, bottom: 2 },
         },
-        remove: {
-          name: "channel-entry.remove",
-          width: function() { return 32 - this.__margin.left - this.__margin.right },
-          height: function() { return 32 - this.__margin.top - this.__margin.bottom },
-          x: function() { return this.context.nodes.settings.right() },
-          margin: { top: 0, left: 0, right: 2, bottom: 2 },
-        },
         label: {
           name: "channel-entry.label",
           width: function() { return this.context.width() 
             - this.context.nodes.settings.width()
             - this.context.nodes.settings.__margin.left
             - this.context.nodes.settings.__margin.right
-            - this.context.nodes.remove.width()
-            - this.context.nodes.remove.__margin.left
-            - this.context.nodes.remove.__margin.right
             - this.context.nodes.mute.width()
             - this.context.nodes.mute.__margin.left
             - this.context.nodes.mute.__margin.right },
           height: function() { return 30 },
-          x: function() { return this.context.nodes.remove.right() },
+          x: function() { return this.context.nodes.settings.right() },
           propagateHidden: Struct.getIfType(Struct.get(config, "label"), "propagateHidden", Boolean, true),
         },
         mute: {
@@ -648,50 +638,6 @@ global.__VELayouts = new Map(String, Callable, {
           width: function() { return ((this.context.width() - this.context.nodes.label.right()) / 2.0)
             - this.__margin.left - this.__margin.right },
           margin: { top: 4, bottom: 5, right: 16, left: 0 },
-        },
-      }
-    }
-  },
-
-  ///@param {?Struct} [config]
-  ///@return {Struct}
-  "double-checkbox": function(config = null) {
-    return {
-      name: "double-checkbox",
-      type: Assert.isEnum(Struct.getDefault(config, "type", UILayoutType.NONE), UILayoutType),
-      margin: Struct.getIfType(config, "margin", Struct),
-      height: function() { return 28 },
-      propagateHidden: Struct.getIfType(config, "propagateHidden", Boolean, false),
-      nodes: {
-        label: {
-          name: "double-checkbox.label",
-          width: function() { return 72 - this.__margin.left - this.__margin.right },
-          margin: { top: 2, bottom: 2, left: 5 },
-          propagateHidden: Struct.getIfType(Struct.get(config, "label"), "propagateHidden", Boolean, true),
-        },
-        checkbox1: {
-          name: "double-checkbox.checkbox1",
-          x: function() { return this.context.nodes.label.right() + this.__margin.left },
-          width: function() { return 24 },
-          margin: { top: 2, bottom: 2, left: 2, right: 2 },
-        },
-        label1: {
-          name: "double-checkbox.label1",
-          x: function() { return this.context.nodes.checkbox1.right() + this.__margin.left },
-          width: function() { return ((this.context.width() - this.context.nodes.label.right()) / 2.0) - this.context.nodes.checkbox1.width() - this.context.nodes.checkbox1.__margin.left - this.context.nodes.checkbox1.__margin.right - this.__margin.right - this.__margin.left },
-          margin: { top: 2, bottom: 2, left: 2, right: 2 },
-        },
-        checkbox2: {
-          name: "double-checkbox.checkbox2",
-          x: function() { return this.context.nodes.label1.right() },
-          width: function() { return 24 },
-          margin: { top: 2, bottom: 2, left: 2, right: 2 },
-        },
-        label2: {
-          name: "double-checkbox.label2",
-          x: function() { return this.context.nodes.checkbox2.right() + this.__margin.left },
-          width: function() { return ((this.context.width() - this.context.nodes.label.right()) / 2.0) - this.context.nodes.checkbox1.width() - this.context.nodes.checkbox1.__margin.left - this.context.nodes.checkbox1.__margin.right - this.__margin.right - this.__margin.left },
-          margin: { top: 2, bottom: 2, left: 2, right: 2 },
         },
       }
     }

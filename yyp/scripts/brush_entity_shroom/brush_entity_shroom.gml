@@ -340,27 +340,24 @@ function brush_entity_shroom(json) {
   }
 
   var components = new Array(Struct, [
-    {
-      name: "en-shr_hide",
-      template: VEComponents.get("property"),
-      layout: VELayouts.get("property"),
-      config: { 
-        layout: { type: UILayoutType.VERTICAL },
-        label: { 
-          text: "Properties",
-          //backgroundColor: VETheme.color.accentShadow,
-        },
-        checkbox: { 
-          spriteOn: { name: "visu_texture_checkbox_show" },
-          spriteOff: { name: "visu_texture_checkbox_hide" },
-          store: { key: "en-shr_hide" },
-          //backgroundColor: VETheme.color.accentShadow,
-        },
-        input: {
-          //backgroundColor: VETheme.color.accentShadow,
-        },
+    VETitleComponent("en-shr_hide", {
+      "label":{
+        "text":"Properties"
       },
-    },
+      "input":{
+      },
+      "checkbox":{
+        "spriteOff":{
+          "name":"visu_texture_checkbox_hide"
+        },
+        "store":{
+          "key":"en-shr_hide"
+        },
+        "spriteOn":{
+          "name":"visu_texture_checkbox_show"
+        }
+      }
+    }),
     {
       name: "en-shr_template",  
       template: VEComponents.get("text-field"),
@@ -485,165 +482,162 @@ function brush_entity_shroom(json) {
         image: { hidden: { key: "en-shr_hide" } },
       },
     },
-    {
-      name: "en-shr_hide-spawn",
-      template: VEComponents.get("property"),
-      layout: VELayouts.get("property"),
-      config: { 
-        layout: { type: UILayoutType.VERTICAL },
-        label: { 
-          text: "Spawner",
-          //backgroundColor: VETheme.color.accentShadow,
-        },
-        checkbox: { 
-          spriteOn: { name: "visu_texture_checkbox_show" },
-          spriteOff: { name: "visu_texture_checkbox_hide" },
-          store: { key: "en-shr_hide-spawn" },
-          //backgroundColor: VETheme.color.accentShadow,
-        },
-        input: {
-          //backgroundColor: VETheme.color.accentShadow,
-        },
+    VETitleComponent("en-shr_hide-spawn", {
+      "label":{
+        "text":"Spawner"
       },
-    },
-    {
-      name: "en-shr_preview",
-      template: VEComponents.get("property"),
-      layout: VELayouts.get("property"),
-      config: { 
-        layout: { type: UILayoutType.VERTICAL },
-        label: { 
-          text: "Show spawner",
-          enable: { key: "en-shr_preview" },
-          backgroundColor: VETheme.color.side,
-          updateCustom: function() {
-            this.preRender()
-            if (Core.isType(this.context.updateTimer, Timer)) {
-              var inspectorType = this.context.state.get("inspectorType")
-              switch (inspectorType) {
-                case VEEventInspector:
-                  var shroomService = Beans.get(BeanVisuController).shroomService
-                  if (shroomService.spawnerEvent != null) {
-                    shroomService.spawnerEvent.timeout = ceil(this.context.updateTimer.duration * 60)
-                  }
-                  break
-                case VEBrushToolbar:
-                  var shroomService = Beans.get(BeanVisuController).shroomService
-                  if (shroomService.spawner != null) {
-                    shroomService.spawner.timeout = ceil(this.context.updateTimer.duration * 60)
-                  }
-                  break
-              }
-            }
-          },
-          preRender: function() {
-            var store = null
-            if (Core.isType(this.context.state.get("brush"), VEBrush)) {
-              store = this.context.state.get("brush").store
-            }
-            
-            if (Core.isType(this.context.state.get("event"), VEEvent)) {
-              store = this.context.state.get("event").store
-            }
-
-            if (!Optional.is(store) || !store.getValue("en-shr_preview")) {
-              return
-            }
-
-            var controller = Beans.get(BeanVisuController)
-            var locked = controller.gridService.targetLocked
-            var view = controller.gridService.view
-
-            if (!Struct.contains(this, "spawnerXTimer")) {
-              Struct.set(this, "spawnerXTimer", new Timer(pi * 2, { 
-                loop: Infinity,
-                amount: FRAME_MS * 4,
-                shuffle: true
-              }))
-            }
-
-            var _x = store.getValue("en-shr_x") * (SHROOM_SPAWN_SIZE / SHROOM_SPAWN_AMOUNT) + 0.5
-            if (store.getValue("en-shr_use-rng-x")) {
-              _x += sin(this.spawnerXTimer.update().time) * (store.getValue("en-shr_rng-x") * (SHROOM_SPAWN_SIZE / SHROOM_SPAWN_AMOUNT) / 2.0)
-            }
-
-            if (store.getValue("en-shr_snap-x")) {
-              _x = _x - (view.x - locked.snapH)
-            }
-
-            if (!Struct.contains(this, "spawnerYTimer")) {
-              Struct.set(this, "spawnerYTimer", new Timer(pi * 2, { 
-                loop: Infinity,
-                amount: FRAME_MS * 4,
-                shuffle: true
-              }))
-            }
-
-            var _y = store.getValue("en-shr_y") * (SHROOM_SPAWN_SIZE / SHROOM_SPAWN_AMOUNT) - 0.5
-            if (store.getValue("en-shr_use-rng-y")) {
-              _y += sin(this.spawnerYTimer.update().time) * (store.getValue("en-shr_rng-y") * (SHROOM_SPAWN_SIZE / SHROOM_SPAWN_AMOUNT) / 2.0)
-            }
-
-            if (store.getValue("en-shr_snap-y")) {
-              _y = _y - (view.y - locked.snapV)
-            }
-
-            if (!Struct.contains(this, "spawnerAngleTimer")) {
-              Struct.set(this, "spawnerAngleTimer", new Timer(pi * 2, { 
-                loop: Infinity,
-                amount: FRAME_MS * 4,
-                shuffle: true
-              }))
-            }
-
-            var angle = store.getValue("en-shr_dir")
-            if (store.getValue("en-shr_use-dir-rng")) {
-              angle += sin(this.spawnerAngleTimer.update().time) * (store.getValue("en-shr_dir-rng") / 2.0)
-            }
-
+      "input":{
+      },
+      "checkbox":{
+        "spriteOff":{
+          "name":"visu_texture_checkbox_hide"
+        },
+        "store":{
+          "key":"en-shr_hide-spawn"
+        },
+        "spriteOn":{
+          "name":"visu_texture_checkbox_show"
+        }
+      }
+    }),
+    VETitleComponent("en-shr_preview", {
+      "enable":{
+        "key":"en-shr_preview"
+      },
+      "label":{
+        updateCustom: function() {
+          this.preRender()
+          if (Core.isType(this.context.updateTimer, Timer)) {
             var inspectorType = this.context.state.get("inspectorType")
             switch (inspectorType) {
               case VEEventInspector:
                 var shroomService = Beans.get(BeanVisuController).shroomService
-                shroomService.spawnerEvent = shroomService.factorySpawner({ 
-                  x: _x, 
-                  y: _y, 
-                  sprite: SpriteUtil.parse({ 
-                    name: "texture_visu_shroom_spawner", 
-                    blend: "#43abfa",
-                    angle: angle,
-                  })
-                })
+                if (shroomService.spawnerEvent != null) {
+                  shroomService.spawnerEvent.timeout = ceil(this.context.updateTimer.duration * 60)
+                }
                 break
               case VEBrushToolbar:
                 var shroomService = Beans.get(BeanVisuController).shroomService
-                shroomService.spawner = shroomService.factorySpawner({ 
-                  x: _x, 
-                  y: _y, 
-                  sprite: SpriteUtil.parse({
-                    name: "texture_visu_shroom_spawner",
-                    blend: "#f757ef",
-                    angle: angle,
-                  })
-                })
+                if (shroomService.spawner != null) {
+                  shroomService.spawner.timeout = ceil(this.context.updateTimer.duration * 60)
+                }
                 break
             }
-          },
-          hidden: { key: "en-shr_hide-spawn" },
+          }
         },
-        checkbox: { 
-          spriteOn: { name: "visu_texture_checkbox_on" },
-          spriteOff: { name: "visu_texture_checkbox_off" },
-          store: { key: "en-shr_preview" },
-          backgroundColor: VETheme.color.side,
-          hidden: { key: "en-shr_hide-spawn" },
+        preRender: function() {
+          var store = null
+          if (Core.isType(this.context.state.get("brush"), VEBrush)) {
+            store = this.context.state.get("brush").store
+          }
+          
+          if (Core.isType(this.context.state.get("event"), VEEvent)) {
+            store = this.context.state.get("event").store
+          }
+
+          if (!Optional.is(store) || !store.getValue("en-shr_preview")) {
+            return
+          }
+
+          var controller = Beans.get(BeanVisuController)
+          var locked = controller.gridService.targetLocked
+          var view = controller.gridService.view
+
+          if (!Struct.contains(this, "spawnerXTimer")) {
+            Struct.set(this, "spawnerXTimer", new Timer(pi * 2, { 
+              loop: Infinity,
+              amount: FRAME_MS * 4,
+              shuffle: true
+            }))
+          }
+
+          var _x = store.getValue("en-shr_x") * (SHROOM_SPAWN_SIZE / SHROOM_SPAWN_AMOUNT) + 0.5
+          if (store.getValue("en-shr_use-rng-x")) {
+            _x += sin(this.spawnerXTimer.update().time) * (store.getValue("en-shr_rng-x") * (SHROOM_SPAWN_SIZE / SHROOM_SPAWN_AMOUNT) / 2.0)
+          }
+
+          if (store.getValue("en-shr_snap-x")) {
+            _x = _x - (view.x - locked.snapH)
+          }
+
+          if (!Struct.contains(this, "spawnerYTimer")) {
+            Struct.set(this, "spawnerYTimer", new Timer(pi * 2, { 
+              loop: Infinity,
+              amount: FRAME_MS * 4,
+              shuffle: true
+            }))
+          }
+
+          var _y = store.getValue("en-shr_y") * (SHROOM_SPAWN_SIZE / SHROOM_SPAWN_AMOUNT) - 0.5
+          if (store.getValue("en-shr_use-rng-y")) {
+            _y += sin(this.spawnerYTimer.update().time) * (store.getValue("en-shr_rng-y") * (SHROOM_SPAWN_SIZE / SHROOM_SPAWN_AMOUNT) / 2.0)
+          }
+
+          if (store.getValue("en-shr_snap-y")) {
+            _y = _y - (view.y - locked.snapV)
+          }
+
+          if (!Struct.contains(this, "spawnerAngleTimer")) {
+            Struct.set(this, "spawnerAngleTimer", new Timer(pi * 2, { 
+              loop: Infinity,
+              amount: FRAME_MS * 4,
+              shuffle: true
+            }))
+          }
+
+          var angle = store.getValue("en-shr_dir")
+          if (store.getValue("en-shr_use-dir-rng")) {
+            angle += sin(this.spawnerAngleTimer.update().time) * (store.getValue("en-shr_dir-rng") / 2.0)
+          }
+
+          var inspectorType = this.context.state.get("inspectorType")
+          switch (inspectorType) {
+            case VEEventInspector:
+              var shroomService = Beans.get(BeanVisuController).shroomService
+              shroomService.spawnerEvent = shroomService.factorySpawner({ 
+                x: _x, 
+                y: _y, 
+                sprite: SpriteUtil.parse({ 
+                  name: "texture_visu_shroom_spawner", 
+                  blend: "#43abfa",
+                  angle: angle,
+                })
+              })
+              break
+            case VEBrushToolbar:
+              var shroomService = Beans.get(BeanVisuController).shroomService
+              shroomService.spawner = shroomService.factorySpawner({ 
+                x: _x, 
+                y: _y, 
+                sprite: SpriteUtil.parse({
+                  name: "texture_visu_shroom_spawner",
+                  blend: "#f757ef",
+                  angle: angle,
+                })
+              })
+              break
+          }
         },
-        input: {
-          backgroundColor: VETheme.color.side,
-          hidden: { key: "en-shr_hide-spawn" },
+        "text":"Show spawner"
+      },
+      "input":{
+      },
+      "background":"#1B1B20",
+      "checkbox":{
+        "spriteOff":{
+          "name":"visu_texture_checkbox_off"
+        },
+        "store":{
+          "key":"en-shr_preview"
+        },
+        "spriteOn":{
+          "name":"visu_texture_checkbox_on"
         }
       },
-    },
+      "hidden":{
+        "key":"en-shr_hide-spawn"
+      }
+    }),
     {
       name: "en-shr_spawn-map",
       template: VEComponents.get("texture-field-intent"),
@@ -667,7 +661,24 @@ function brush_entity_shroom(json) {
               return
             }
 
-            mouse.setClipboard(this)
+            var _x = event.data.x - this.context.area.getX() - this.area.getX() - this.context.offset.x
+            var _y = event.data.y - this.context.area.getY() - this.area.getY() - this.context.offset.y
+            var areaWidth = this.area.getWidth()
+            var areaHeight = this.area.getHeight()
+            var scaleX = this.image.getScaleX()
+            var scaleY = this.image.getScaleY()
+            this.image.scaleToFit(areaWidth, areaHeight)
+
+            var width = this.image.getWidth() * this.image.getScaleX()
+            var height = this.image.getHeight() * this.image.getScaleY()
+            this.image.setScaleX(scaleX).setScaleY(scaleY)
+
+            var marginH = (areaWidth - width) / 2.0
+            var marginV = (areaHeight - height) / 2.0
+            if ((_x >= marginH && _x <= areaWidth - marginH)
+              && (_y >= marginV && _y <= areaHeight - marginV)) {
+              mouse.setClipboard(this)  
+            }
           },
           onMouseOnLeft: function(event) {
             if (!Optional.is(this.store)) {
@@ -707,8 +718,8 @@ function brush_entity_shroom(json) {
 
               var store = this.store.getStore()
               if (Optional.is(store)) {
-                var horizontal = round(((originX / this.image.getWidth()) * 50.0) - 25.0)
-                var vertical = round(((originY / this.image.getHeight()) * 50.0) - 25.0)
+                var horizontal = round(((originX / this.image.getWidth()) * SHROOM_SPAWN_AMOUNT) - (SHROOM_SPAWN_AMOUNT / 2.0))
+                var vertical = round(((originY / this.image.getHeight()) * SHROOM_SPAWN_AMOUNT) - (SHROOM_SPAWN_AMOUNT / 2.0))
                 store.get("en-shr_x").set(horizontal)
                 store.get("en-shr_y").set(vertical)
               }
@@ -726,8 +737,8 @@ function brush_entity_shroom(json) {
               return
             }
 
-            var horizontal = (store.getValue("en-shr_x") + 25.0) / 50.0
-            var vertical = (store.getValue("en-shr_y") + 25.0) / 50.0
+            var horizontal = (store.getValue("en-shr_x") + (SHROOM_SPAWN_AMOUNT / 2.0)) / SHROOM_SPAWN_AMOUNT
+            var vertical = (store.getValue("en-shr_y") + (SHROOM_SPAWN_AMOUNT / 2.0)) / SHROOM_SPAWN_AMOUNT
             var originX = round(horizontal * this.image.getWidth())
             var originY = round(vertical * this.image.getHeight())
             var textureIntent = this.store.getValue()
@@ -1407,31 +1418,36 @@ function brush_entity_shroom(json) {
         image: { hidden: { key: "en-shr_hide-spawn" } },
       },
     },
-    {
-      name: "en-shr_inherit-title",
-      template: VEComponents.get("property"),
-      layout: VELayouts.get("property"),
-      config: { 
-        layout: { type: UILayoutType.VERTICAL },
-        label: {
-          text: "Inherit",
-          //backgroundColor: VETheme.color.accentShadow,
-          enable: { key: "en-shr_use-inherit"},
-        },
-        input: {
-          //backgroundColor: VETheme.color.accentShadow,
-          spriteOn: { name: "visu_texture_checkbox_switch_on" },
-          spriteOff: { name: "visu_texture_checkbox_switch_off" },
-          store: { key: "en-shr_use-inherit" },
-        },
-        checkbox: {
-          //backgroundColor: VETheme.color.accentShadow,
-          store: { key: "en-shr_hide-inherit" },
-          spriteOn: { name: "visu_texture_checkbox_show" },
-          spriteOff: { name: "visu_texture_checkbox_hide" },
-        },
+    VETitleComponent("en-shr_inherit-title", {
+      "enable":{
+        "key":"en-shr_use-inherit"
       },
-    },
+      "label":{
+        "text":"Inherit"
+      },
+      "input":{
+        "spriteOff":{
+          "name":"visu_texture_checkbox_switch_off"
+        },
+        "store":{
+          "key":"en-shr_use-inherit"
+        },
+        "spriteOn":{
+          "name":"visu_texture_checkbox_switch_on"
+        }
+      },
+      "checkbox":{
+        "spriteOff":{
+          "name":"visu_texture_checkbox_hide"
+        },
+        "store":{
+          "key":"en-shr_hide-inherit"
+        },
+        "spriteOn":{
+          "name":"visu_texture_checkbox_show"
+        }
+      }
+    }),
     {
       name: "en-shr_inherit",
       template: VEComponents.get("text-area"),
@@ -1464,31 +1480,37 @@ function brush_entity_shroom(json) {
         },
       },
     },
-    {
-      name: "en-shr_em-title",
-      template: VEComponents.get("property"),
-      layout: VELayouts.get("property"),
-      config: { 
-        layout: { type: UILayoutType.VERTICAL },
-        label: {
-          text: "Emitter",
-          //backgroundColor: VETheme.color.accentShadow,
-          enable: { key: "en-shr_use-em"},
-        },
-        input: {
-          //backgroundColor: VETheme.color.accentShadow,
-          spriteOn: { name: "visu_texture_checkbox_switch_on" },
-          spriteOff: { name: "visu_texture_checkbox_switch_off" },
-          store: { key: "en-shr_use-em" },
-        },
-        checkbox: {
-          //backgroundColor: VETheme.color.accentShadow,
-          store: { key: "en-shr_hide-em" },
-          spriteOn: { name: "visu_texture_checkbox_show" },
-          spriteOff: { name: "visu_texture_checkbox_hide" },
-        },
+    VETitleComponent("en-shr_em-title", {
+      "enable":{
+        "key":"en-shr_use-em"
       },
-    },
+      "label":{
+        "text":"Emitter"
+      },
+      "input":{
+        "spriteOff":{
+          "name":"visu_texture_checkbox_switch_off"
+        },
+        "store":{
+          "key":"en-shr_use-em"
+        },
+        "spriteOn":{
+          "name":"visu_texture_checkbox_switch_on"
+        }
+      },
+      "checkbox":{
+        "spriteOff":{
+          "name":"visu_texture_checkbox_hide"
+        },
+        "store":{
+          "key":"en-shr_hide-em"
+        },
+        "spriteOn":{
+          "name":"visu_texture_checkbox_show"
+        }
+      }
+    }),
+
     {
       name: "en-shr_em-cfg",
       template: VEComponents.get("text-area"),

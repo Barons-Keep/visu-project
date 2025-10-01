@@ -156,6 +156,7 @@ function VideoService(config = {}): Service() constructor {
               var result = video.timestamp - before >= 0
                 ? position >= video.timestamp
                 : position <= video.timestamp
+
               if (result) {
                 task.state.set("stage", "quit").get("timer").reset()
               }

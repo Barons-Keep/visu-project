@@ -96,7 +96,6 @@ function VisuTrackLoader(_controller): Service() constructor {
                 data: this.state.get("path"),
               }))  
             } else {
-              //Callable.run(clearQueue.pop())
               clearQueue.forEach(Callable.run)
             }
           } catch (exception) {
@@ -142,11 +141,6 @@ function VisuTrackLoader(_controller): Service() constructor {
 
                       item = editor.store.get("bpm-sub")
                       item.set(this.response.bpmSub)
-
-                      //if (Struct.get(this.response, "bpmShift") != null) {
-                      //  item = editor.store.get("bpm-shift")
-                      //  item.set(this.response.bpmShift)
-                      //}
                     }
                     
                     return {
@@ -223,6 +217,7 @@ function VisuTrackLoader(_controller): Service() constructor {
                         path: controller.track.path,
                       },
                       steps: 2,
+                      model: "Collection<io.alkapivo.core.service.texture.TextureIntent>",
                     })
                     .whenSuccess(function(result) {
                       return Assert.isType(JSON.parserTask(result.data, this.state), Task)
@@ -262,6 +257,7 @@ function VisuTrackLoader(_controller): Service() constructor {
                         path: controller.track.path,
                       },
                       steps: 1,
+                      model: "Collection<io.alkapivo.core.service.sound.SoundIntent>",
                     })
                     .whenSuccess(function(result) {
                       return Assert.isType(JSON.parserTask(result.data, this.state), Task)
@@ -280,6 +276,7 @@ function VisuTrackLoader(_controller): Service() constructor {
                       },
                       acc: controller.shaderPipeline.templates,
                       steps: MAGIC_NUMBER_TASK,
+                      model: "Collection<io.alkapivo.core.service.shader.ShaderTemplate>",
                     })
                     .whenSuccess(function(result) {
                       return Assert.isType(JSON.parserTask(result.data, this.state), Task)
@@ -313,6 +310,7 @@ function VisuTrackLoader(_controller): Service() constructor {
                         }))
                       },
                       acc: { trackService: controller.trackService },
+                      model: "io.alkapivo.core.service.track.Track",
                     })
                     .whenSuccess(function(result) {
                       return Assert.isType(JSON.parserTask(result.data, this.state), Task)
@@ -331,6 +329,7 @@ function VisuTrackLoader(_controller): Service() constructor {
                       },
                       acc: controller.bulletService.templates,
                       steps: MAGIC_NUMBER_TASK,
+                      model: "Collection<io.alkapivo.visu.service.bullet.BulletTemplate>",
                     })
                     .whenSuccess(function(result) {
                       return Assert.isType(JSON.parserTask(result.data, this.state), Task)
@@ -349,6 +348,7 @@ function VisuTrackLoader(_controller): Service() constructor {
                       },
                       acc: controller.coinService.templates,
                       steps: MAGIC_NUMBER_TASK,
+                      model: "Collection<io.alkapivo.visu.service.coin.CoinTemplate>",
                     })
                     .whenSuccess(function(result) {
                       return Assert.isType(JSON.parserTask(result.data, this.state), Task)
@@ -367,6 +367,7 @@ function VisuTrackLoader(_controller): Service() constructor {
                       },
                       acc: controller.subtitleService.templates,
                       steps: MAGIC_NUMBER_TASK,
+                      model: "Collection<io.alkapivo.visu.service.subtitle.SubtitleTemplate>",
                     })
                     .whenSuccess(function(result) {
                       return Assert.isType(JSON.parserTask(result.data, this.state), Task)
@@ -385,6 +386,7 @@ function VisuTrackLoader(_controller): Service() constructor {
                       },
                       acc: controller.shroomService.templates,
                       steps: MAGIC_NUMBER_TASK,
+                      model: "Collection<io.alkapivo.visu.service.shroom.ShroomTemplate>",
                     })
                     .whenSuccess(function(result) {
                       return Assert.isType(JSON.parserTask(result.data, this.state), Task)
@@ -403,6 +405,7 @@ function VisuTrackLoader(_controller): Service() constructor {
                       },
                       acc: controller.particleService.templates,
                       steps: MAGIC_NUMBER_TASK,
+                      model: "Collection<io.alkapivo.core.service.particle.ParticleTemplate>",
                     })
                     .whenSuccess(function(result) {
                       return Assert.isType(JSON.parserTask(result.data, this.state), Task)
@@ -411,204 +414,6 @@ function VisuTrackLoader(_controller): Service() constructor {
             ])
 
             var promises = new Map(String, Promise)
-            /*
-            var _promises = new Map(String, Promise, {
-              "texture": Beans.get(BeanFileService).send(
-                new Event("open-file")
-                  .setData({ path: $"{data.path}{data.manifest.texture}" })
-                  .setPromise(new Promise()
-                    .setState({ 
-                      callback: function(prototype, json, iterator, acc) {
-                        //Logger.debug("VisuTrackLoader", $"Load texture '{json.name}'")
-                        acc.promises.forEach(function(promise, key) {
-                          if (promise.status == PromiseStatus.REJECTED) {
-                            throw new Exception($"Found rejected load-texture promise for key '{key}'")
-                          }
-                        })
-
-                        var textureIntent = Assert.isType(new prototype(json), TextureIntent)
-                        textureIntent.file = FileUtil.get($"{acc.path}{textureIntent.file}")
-                        var promise = new Promise()
-                        acc.service.send(new Event("load-texture")
-                          .setData(textureIntent)
-                          .setPromise(promise))
-                        acc.promises.add(promise, textureIntent.name)
-                      },
-                      acc: {
-                        service: Beans.get(BeanTextureService),
-                        promises: new Map(String, Promise),
-                        path: controller.track.path,
-                      },
-                      steps: 2,
-                    })
-                    .whenSuccess(function(result) {
-                      return Assert.isType(JSON.parserTask(result.data, this.state), Task)
-                    }))
-              ),
-              "sound": Beans.get(BeanFileService).send(
-                new Event("open-file")
-                  .setData({ path: $"{data.path}{data.manifest.sound}" })
-                  .setPromise(new Promise()
-                    .setState({ 
-                      callback: function(prototype, json, key, acc) {
-                        //Logger.debug("VisuTrackLoader", $"Load sound intent '{key}'")
-                        var soundIntent = new prototype(json)
-                        var soundService = acc.soundService
-                        var visuWASM = Callable.run("VisuWASM")
-                        if (Core.getRuntimeType() == RuntimeType.GXGAMES && Core.isType(visuWASM, Struct)) {
-                          Assert.isTrue(audio_group_is_loaded(visuWASM.getAudioGroup()), "audiogroup must be loaded")
-
-                          var sound = Struct.get(visuWASM.getSounds(), soundIntent.file)
-                          Assert.isType(sound, GMSound, $"Couldn't find sound for wasm target, {soundIntent.file}")
-                          soundService.sounds.add(sound, key)
-                          return
-                        }
-
-                        var path = FileUtil.get($"{acc.path}{soundIntent.file}")
-                        Assert.fileExists(path)
-                        Assert.isFalse(soundService.sounds.contains(key), "GMSound already loaded")
-
-                        var stream = audio_create_stream(path)
-                        soundService.sounds.add(stream, key)
-                        soundService.intents.add(soundIntent, key)
-                      },
-                      acc: {
-                        soundService: Beans.get(BeanSoundService),
-                        path: controller.track.path,
-                      },
-                      steps: 1,
-                    })
-                    .whenSuccess(function(result) {
-                      return Assert.isType(JSON.parserTask(result.data, this.state), Task)
-                    }))
-              ),
-              "shader": Beans.get(BeanFileService).send(
-                new Event("open-file")
-                  .setData({ path: $"{data.path}{data.manifest.shader}" })
-                  .setPromise(new Promise()
-                    .setState({ 
-                      callback: function(prototype, json, key, acc) {
-                        //Logger.debug("VisuTrackLoader", $"Load shader template '{key}'")
-                        acc.set(key, new prototype(key, json))
-                      },
-                      acc: controller.shaderPipeline.templates,
-                      steps: MAGIC_NUMBER_TASK,
-                    })
-                    .whenSuccess(function(result) {
-                      return Assert.isType(JSON.parserTask(result.data, this.state), Task)
-                    }))
-              ),
-              "track": Beans.get(BeanFileService).send(
-                new Event("open-file")
-                  .setData({ path: $"{data.path}{data.manifest.track}" })
-                  .setPromise(new Promise()
-                    .setState({ 
-                      callback: function(prototype, json, key, acc) {
-                        var name = Struct.get(json, "name")
-                        //Logger.debug("VisuTrackLoader", $"Load track '{name}'")
-                        acc.trackService.openTrack(new prototype(json, { 
-                          handlers: acc.trackService.handlers,
-                          parseSettings: function(json) {
-                            var difficulty = Struct.get(json, "difficulty")
-                            return {
-                              "difficulty": {
-                                "EASY": Struct.getDefault(difficulty, "EASY", true),
-                                "NORMAL": Struct.getDefault(difficulty, "NORMAL", true),
-                                "HARD": Struct.getDefault(difficulty, "HARD", true),
-                                "LUNATIC": Struct.getDefault(difficulty, "LUNATIC", true),
-                              }
-                            }
-                          },
-                        }))
-                      },
-                      acc: { trackService: controller.trackService },
-                    })
-                    .whenSuccess(function(result) {
-                      return Assert.isType(JSON.parserTask(result.data, this.state), Task)
-                    }))
-              ),
-              "bullet": Beans.get(BeanFileService).send(
-                new Event("open-file")
-                  .setData({ path: $"{data.path}{data.manifest.bullet}" })
-                  .setPromise(new Promise()
-                    .setState({ 
-                      callback: function(prototype, json, key, acc) {
-                        //Logger.debug("VisuTrackLoader", $"Load bullet template '{key}'")
-                        acc.set(key, new prototype(key, json))
-                      },
-                      acc: controller.bulletService.templates,
-                      steps: MAGIC_NUMBER_TASK,
-                    })
-                    .whenSuccess(function(result) {
-                      return Assert.isType(JSON.parserTask(result.data, this.state), Task)
-                    }))
-              ),
-              "coin": Beans.get(BeanFileService).send(
-                new Event("open-file")
-                  .setData({ path: $"{data.path}{data.manifest.coin}" })
-                  .setPromise(new Promise()
-                    .setState({ 
-                      callback: function(prototype, json, key, acc) {
-                        //Logger.debug("VisuTrackLoader", $"Load coin template '{key}'")
-                        acc.set(key, new prototype(key, json))
-                      },
-                      acc: controller.coinService.templates,
-                      steps: MAGIC_NUMBER_TASK,
-                    })
-                    .whenSuccess(function(result) {
-                      return Assert.isType(JSON.parserTask(result.data, this.state), Task)
-                    }))
-              ),
-              "subtitle": Beans.get(BeanFileService).send(
-                new Event("open-file")
-                  .setData({ path: $"{data.path}{data.manifest.subtitle}" })
-                  .setPromise(new Promise()
-                    .setState({ 
-                      callback: function(prototype, json, key, acc) {
-                        //Logger.debug("VisuTrackLoader", $"Load subtitle template '{key}'")
-                        acc.set(key, new prototype(key, json))
-                      },
-                      acc: controller.subtitleService.templates,
-                      steps: MAGIC_NUMBER_TASK,
-                    })
-                    .whenSuccess(function(result) {
-                      return Assert.isType(JSON.parserTask(result.data, this.state), Task)
-                    }))
-              ),
-              "shroom": Beans.get(BeanFileService).send(
-                new Event("open-file")
-                  .setData({ path: $"{data.path}{data.manifest.shroom}" })
-                  .setPromise(new Promise()
-                    .setState({ 
-                      callback: function(prototype, json, key, acc) {
-                        //Logger.debug("VisuTrackLoader", $"Load shroom template '{key}'")
-                        acc.set(key, new prototype(key, json))
-                      },
-                      acc: controller.shroomService.templates,
-                      steps: MAGIC_NUMBER_TASK,
-                    })
-                    .whenSuccess(function(result) {
-                      return Assert.isType(JSON.parserTask(result.data, this.state), Task)
-                    }))
-              ),
-              "particle": Beans.get(BeanFileService).send(
-                new Event("open-file")
-                  .setData({ path: $"{data.path}{data.manifest.particle}" })
-                  .setPromise(new Promise()
-                    .setState({ 
-                      callback: function(prototype, json, key, acc) {
-                        //Logger.debug("VisuTrackLoader", $"Load particle template '{key}'")
-                        acc.set(key, new prototype(key, json))
-                      },
-                      acc: controller.particleService.templates,
-                      steps: MAGIC_NUMBER_TASK,
-                    })
-                    .whenSuccess(function(result) {
-                      return Assert.isType(JSON.parserTask(result.data, this.state), Task)
-                    }))
-              ),
-            })
-            */
 
             var promises = new Map(String, Promise)
             if (Core.isType(Struct.get(data.manifest, "video"), String)) {
@@ -617,7 +422,7 @@ function VisuTrackLoader(_controller): Service() constructor {
                   name: $"{data.manifest.video}",
                   path: $"{data.path}{data.manifest.video}",
                   timestamp: 0.0,
-                  volume: 0,
+                  volume: 0.0,
                   loop: true,
                 }
               }))
@@ -668,6 +473,7 @@ function VisuTrackLoader(_controller): Service() constructor {
                           file: file,
                         },
                         steps: MAGIC_NUMBER_TASK,
+                        model: "Collection<io.alkapivo.visu.editor.api.VEBrushTemplate>",
                       })
                       .whenSuccess(function(result) {
                         return Assert.isType(JSON.parserTask(result.data, this.state), Task)
@@ -679,31 +485,6 @@ function VisuTrackLoader(_controller): Service() constructor {
                 events: events,
               })
             }
-
-            /*
-            data.manifest.editor.forEach(function(file, index, acc) { 
-              var promise = Beans.get(BeanFileService).send(
-                new Event("open-file")
-                  .setData({ path: $"{acc.data.path}{file}" })
-                  .setPromise(new Promise()
-                    .setState({ 
-                      callback: function(prototype, json, index, acc) {
-                        //Logger.debug("VisuTrackLoader", $"Load brush '{json.name}'")
-                        acc.saveTemplate(new prototype(json))
-                      },
-                      acc: {
-                        saveTemplate: Beans.get(BeanVisuController).brushService.saveTemplate,
-                        file: file,
-                      },
-                      steps: MAGIC_NUMBER_TASK,
-                    })
-                    .whenSuccess(function(result) {
-                      return Assert.isType(JSON.parserTask(result.data, this.state), Task)
-                    }))
-              )
-              acc.promises.add(promise, file)
-            }, { data: data, promises: promises })
-            */
           
             fsmState.state.set("promises", promises)
             fsmState.state.set("events", events)
@@ -716,9 +497,6 @@ function VisuTrackLoader(_controller): Service() constructor {
             if (events.size() > 0) {
               var event = events.pop()
               event.callback(promises, event.name, event.data)
-              //events.forEach(function(event, iterator, promises) {
-              //  event.callback(promises, event.name, event.data)
-              //}, promises)
               return
             }
             
@@ -746,7 +524,7 @@ function VisuTrackLoader(_controller): Service() constructor {
               }
             }))
           } catch (exception) {
-            var message = $"'create-parser-tasks' fatal error: {exception.message}",
+            var message = $"'create-parser-tasks' fatal error: {exception.message}"
             Logger.error("VisuTrackLoader", message)
             Core.printStackTrace()
 

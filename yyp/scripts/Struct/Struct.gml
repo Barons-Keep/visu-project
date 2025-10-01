@@ -44,11 +44,17 @@ function _Struct() constructor {
   ///@param {String} key
   ///@param {Type} type
   ///@param {any} [defaultValue]
+  ///@param {Boolean} [isCallback]
+  ///@param {any} [callbackData]
   ///@return {any}
-  static getIfType = function(struct, key, type, defaultValue = null) {
+  static getIfType = function(struct, key, type, defaultValue = null, isCallback = false, callbackData = null) {
     gml_pragma("forceinline")
     var value = Struct.get(struct, key)
-    return Core.isType(value, type) ? value : defaultValue
+    return Core.isType(value, type)
+      ? value
+      : (isCallback
+        ? defaultValue(callbackData)
+        : defaultValue)
   }
 
   ///@param {?Struct} struct
@@ -620,6 +626,26 @@ function _Struct() constructor {
       var enumKey = Struct.get(struct, key)
       return type.containsKey(enumKey) ? enumKey : type.getKey(defaultValue)
     },
+  }
+
+  ///@param {?Struct} struct
+  ///@return {?Struct}
+  removeNullableRecursive = function(struct) {
+    static removeNullable = function(value, key, context) {
+      if (value == null) {
+        Struct.remove(context, key)
+      } else if (Core.isType(value, Struct) && !Core.hasConstructor(value)) {
+        Struct.set(context, key, Struct.removeNullableRecursive(value))
+      }
+    }
+
+    if (!Core.isType(struct, Struct)) {
+      return null
+    }
+
+    Struct.forEach(struct, removeNullable, struct)
+
+    return struct
   }
 }
 global.__Struct = new _Struct()

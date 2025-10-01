@@ -44,13 +44,12 @@ void main() {
 	col *= BRIGHTNESS;
     
   // Add border
-  float vigAmt = 10.0;
-  float vignette = (1.0 - vigAmt * (uv.y - .5) * (uv.y - 0.5)) * (1.0 - vigAmt * (uv.x - 0.5) * (uv.x - 0.5));
-	float extrusion = (col.x + col.y + col.z) / 4.0;
-  extrusion *= 1.5;
-  extrusion *= vignette;
-  
-  col = mix(col, iTint, iMix);
+  //float vigAmt = 10.0;
+  //float vignette = (1.0 - vigAmt * (uv.y - .5) * (uv.y - 0.5)) * (1.0 - vigAmt * (uv.x - 0.5) * (uv.x - 0.5));
+	//float extrusion = (col.x + col.y + col.z) / 4.0;
+  //extrusion *= 1.5;
+  //extrusion *= vignette;
+  //col = mix(col, iTint, iMix);
 	//gl_FragColor = vec4(col.r, col.g, col.b, min(vColor.a, vColor.a * extrusion));
 
   vec4 texture = texture2D(gm_BaseTexture, vTexcoord);

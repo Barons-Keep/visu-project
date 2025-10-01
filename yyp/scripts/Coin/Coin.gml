@@ -5,6 +5,26 @@ function _CoinCategory(): Enum() constructor {
   POINT = "point"
   BOMB = "bomb"
   LIFE = "life"
+
+  ///@override
+  ///@return {Array<String>}
+  keys = function() {
+    static filterKeys = function(key) {
+      return key != "_keys"
+          && key != "keys"
+          && key != "get"
+          && key != "getKey"
+          && key != "findKey"
+          && key != "contains"
+          && key != "containsKey"
+    }
+
+    if (this._keys == null) {
+      this._keys = new Array(String, GMArray.sort(GMArray.filter(Struct.keys(this), filterKeys)))
+    }
+
+    return this._keys
+  }
 }
 global.__CoinCategory = new _CoinCategory()
 #macro CoinCategory global.__CoinCategory
@@ -145,20 +165,19 @@ function Coin(config) constructor {
   ///@return {Boolean}
   static collide = function(target) {
     gml_pragma("forceinline")
-    var halfSourceWidth = (this.mask.getWidth() * this.sprite.scaleX) / 2.0
-    var halfSourceHeight = (this.mask.getHeight() * this.sprite.scaleY) / 2.0
-    var halfTargetWidth = (target.mask.getWidth() * target.sprite.scaleX) / 2.0
-    var halfTargetHeight = (target.mask.getHeight() * target.sprite.scaleY) / 2.0
-
     var sourceX = this.x * GRID_SERVICE_PIXEL_WIDTH
     var sourceY = this.y * GRID_SERVICE_PIXEL_HEIGHT
     var targetX = target.x * GRID_SERVICE_PIXEL_WIDTH
     var targetY = target.y * GRID_SERVICE_PIXEL_HEIGHT
-    return Math.rectangleOverlaps(
-      sourceX - halfSourceWidth, sourceY - halfSourceHeight,
-      sourceX + halfSourceWidth, sourceY + halfSourceHeight,
-      targetX - halfTargetWidth, targetY - halfTargetHeight,
-      targetX + halfTargetWidth, targetY + halfTargetHeight
+    return Math.ellipseOverlaps(
+      sourceX - ((this.sprite.getWidth() * this.sprite.scaleX) / 2.0) + (this.mask.x * this.sprite.scaleX),
+      sourceY - ((this.sprite.getHeight() * this.sprite.scaleY) / 2.0) + (this.mask.y * this.sprite.scaleY),
+      this.mask.z * this.sprite.scaleX,
+      this.mask.a * this.sprite.scaleY,
+      targetX - ((target.sprite.getWidth() * target.sprite.scaleX) / 2.0) + (target.mask.x * target.sprite.scaleX),
+      targetY - ((target.sprite.getHeight() * target.sprite.scaleY) / 2.0) + (target.mask.y * target.sprite.scaleY),
+      target.mask.z * target.sprite.scaleX,
+      target.mask.a * target.sprite.scaleY
     )
   }
 

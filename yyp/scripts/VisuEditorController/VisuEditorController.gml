@@ -191,6 +191,10 @@ function VisuEditorController() constructor {
       type: Boolean,
       value: Assert.isType(Visu.settings.getValue("visu.editor.timeline-follow", false), Boolean),
     },
+    "update-services": {
+      type: Boolean,
+      value: Assert.isType(Visu.settings.getValue("visu.editor.update-services", false), Boolean),
+    },
   })
 
   ///@type {Struct}
@@ -228,8 +232,6 @@ function VisuEditorController() constructor {
       }
     }
   }
-
-  updateServices = Core.getProperty("visu.editor.update-services", true)
 
   ///@type {EventPump}
   dispatcher = new EventPump(this, new Map(String, Callable, {
@@ -524,6 +526,8 @@ function VisuEditorController() constructor {
     this.store.get("render-sceneConfigPreview").addSubscriber(Visu.generateSettingsSubscriber("visu.editor.render-scene-config-preview"))
     this.store.get("render-brush").addSubscriber(Visu.generateSettingsSubscriber("visu.editor.render-brush"))
     this.store.get("timeline-zoom").addSubscriber(Visu.generateSettingsSubscriber("visu.editor.timeline-zoom"))
+    this.store.get("timeline-follow").addSubscriber(Visu.generateSettingsSubscriber("visu.editor.timeline-follow"))
+    this.store.get("update-services").addSubscriber(Visu.generateSettingsSubscriber("visu.editor.update-services"))
     
     this.layout = this.factoryLayout()
 
@@ -881,7 +885,6 @@ function VisuEditorController() constructor {
     this.updateUIService()
     this.services.forEach(this.updateService, this)
     this.updateLayout()
-
     this.store.get("selected-event").resolveLazyNotify()
     this.updateDebugTimer.finish()
     return this

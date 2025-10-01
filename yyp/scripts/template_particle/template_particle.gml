@@ -82,6 +82,7 @@ function template_particle(json = null) {
             spriteOff: { name: "visu_texture_checkbox_off" },
             store: { key: "particle-blend" },
           },
+          input: { },
         },
       },
       {
@@ -307,9 +308,7 @@ function template_particle(json = null) {
             callback: function() {
               var template = this.store.get("particle-template").get()
               var keys = ParticleShape.keys()
-              var index = keys.findIndex(function(key, index, acc) { ///@todo move to Lambda util
-                return key == acc
-              }, template.shape)
+              var index = keys.findIndex(Lambda.equal, template.shape)
               index = index + 1 >= keys.size() ? 0 : index + 1
               template.shape = keys.get(index)
               this.store.get("particle-template").set(template)
@@ -326,33 +325,27 @@ function template_particle(json = null) {
           },
         },
       },
-      //{
-      //  name: "particle_shape-line-h",
-      //  template: VEComponents.get("line-h"),
-      //  layout: VELayouts.get("line-h"),
-      //  config: { layout: { type: UILayoutType.VERTICAL } },
-      //},
+      {
+        name: "particle_color-start-title",
+        template: VEComponents.get("property"),
+        layout: VELayouts.get("property"),
+        config: { 
+          layout: { type: UILayoutType.VERTICAL },
+          label: {
+            text: "Start color",
+            backgroundColor: VETheme.color.side,
+            color: VETheme.color.textShadow,
+          },
+          input: { backgroundColor: VETheme.color.side },
+          checkbox: { backgroundColor: VETheme.color.side },
+        },
+      },
       {
         name: "particle_color-start",
         template: VEComponents.get("color-picker"),
         layout: VELayouts.get("color-picker"),
         config: { 
           layout: { type: UILayoutType.VERTICAL },
-          line: { disable: false },
-          title: {
-            label: {
-              text: "Start color",
-              backgroundColor: VETheme.color.side,
-              color: VETheme.color.textShadow,
-            }, 
-            input: {
-              store: { key: "particle-color-start" },
-              backgroundColor: VETheme.color.side,
-            },
-            checkbox: {
-              backgroundColor: VETheme.color.side,
-            },
-          },
           red: {
             label: { text: "Red" },
             field: { store: { key: "particle-color-start" } },
@@ -372,6 +365,21 @@ function template_particle(json = null) {
             label: { text: "Hex" },
             field: { store: { key: "particle-color-start" } },
           },
+        },
+      },
+      {
+        name: "particle_color-halfway-title",
+        template: VEComponents.get("property"),
+        layout: VELayouts.get("property"),
+        config: { 
+          layout: { type: UILayoutType.VERTICAL },
+          label: {
+            text: "Halfway color",
+            backgroundColor: VETheme.color.side,
+            color: VETheme.color.textShadow,
+          }, 
+          input: { backgroundColor: VETheme.color.side },
+          checkbox: { backgroundColor: VETheme.color.side },
         },
       },
       {
@@ -383,21 +391,6 @@ function template_particle(json = null) {
             type: UILayoutType.VERTICAL,
             margin: { top: 4 },
           },
-          //line: { disable: true },
-          title: {
-            label: {
-              text: "Halfway color",
-              backgroundColor: VETheme.color.side,
-              color: VETheme.color.textShadow,
-            }, 
-            input: {
-              store: { key: "particle-color-halfway" },
-              backgroundColor: VETheme.color.side,
-            },
-            checkbox: {
-              backgroundColor: VETheme.color.side,
-            },
-          },
           red: {
             label: { text: "Red" },
             field: { store: { key: "particle-color-halfway" } },
@@ -420,6 +413,21 @@ function template_particle(json = null) {
         },
       },
       {
+        name: "particle_color-finish-title",
+        template: VEComponents.get("property"),
+        layout: VELayouts.get("property"),
+        config: { 
+          layout: { type: UILayoutType.VERTICAL },
+          label: {
+            text: "Finish color",
+            backgroundColor: VETheme.color.side,
+            color: VETheme.color.textShadow,
+          },
+          input: { backgroundColor: VETheme.color.side },
+          checkbox: { backgroundColor: VETheme.color.side },
+        },
+      },
+      {
         name: "particle_color-finish",
         template: VEComponents.get("color-picker"),
         layout: VELayouts.get("color-picker"),
@@ -427,21 +435,6 @@ function template_particle(json = null) {
           layout: {
             type: UILayoutType.VERTICAL,
             margin: { top: 4 },
-          },
-          //line: { disable: true },
-          title: {
-            label: {
-              text: "Finish color",
-              backgroundColor: VETheme.color.side,
-              color: VETheme.color.textShadow,
-            }, 
-            input: {
-              store: { key: "particle-color-finish" },
-              backgroundColor: VETheme.color.side,
-            },
-            checkbox: {
-              backgroundColor: VETheme.color.side,
-            },
           },
           red: {
             label: { text: "Red" },
@@ -468,10 +461,12 @@ function template_particle(json = null) {
         name: "particle-color-line-h",
         template: VEComponents.get("line-h"),
         layout: VELayouts.get("line-h"),
-        config: { layout: {
-          type: UILayoutType.VERTICAL,
-          margin: { top: 4, bottom: 3 },
-        } },
+        config: {
+          layout: {
+            type: UILayoutType.VERTICAL,
+            margin: { top: 4, bottom: 3 },
+          }
+        },
       },
       {
         name: "particle_alpha",
@@ -495,7 +490,6 @@ function template_particle(json = null) {
         config: { 
           layout: {
             type: UILayoutType.VERTICAL,
-            //margin: { top: 2 },
           },
           label: { text: "Start" },
           field: {
@@ -795,7 +789,6 @@ function template_particle(json = null) {
         config: { 
           layout: { 
             type: UILayoutType.VERTICAL,
-            //margin: { top: 2 },
           },
           label: { text: "Wiggle" },
           field: { 
@@ -1212,7 +1205,6 @@ function template_particle(json = null) {
         config: { 
           layout: { 
             type: UILayoutType.VERTICAL,
-            //margin: { top: 2 },
           },
           label: { text: "Wiggle" },
           field: {
@@ -1580,7 +1572,6 @@ function template_particle(json = null) {
         config: { 
           layout: { 
             type: UILayoutType.VERTICAL,
-            //margin: { top: 2 },
           },
           label: { text: "Wiggle" },
           field: {
@@ -1948,7 +1939,6 @@ function template_particle(json = null) {
         config: { 
           layout: {
             type: UILayoutType.VERTICAL,
-            //margin: { top: 2 },
           },
           label: { text: "X" },
           field: {
@@ -2144,7 +2134,6 @@ function template_particle(json = null) {
         config: { 
           layout: {
             type: UILayoutType.VERTICAL,
-            //margin: { top: 2 },
           },
           label: { text: "Angle" },
           field: {
@@ -2346,7 +2335,6 @@ function template_particle(json = null) {
         config: { 
           layout: { 
             type: UILayoutType.VERTICAL,
-            //margin: { top: 2 },
           },
           label: { text: "Min" },
           field: {
@@ -2542,7 +2530,6 @@ function template_particle(json = null) {
         config: { 
           layout: {
             type: UILayoutType.VERTICAL,
-            //margin: { top: 2 },
           },
           label: { text: "Relative" },
           field: {

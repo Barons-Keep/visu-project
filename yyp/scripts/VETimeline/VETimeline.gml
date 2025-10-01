@@ -729,7 +729,19 @@ function VETimeline(_editor) constructor {
           }
 
           var channel = Assert.isType(trackService.track
-            .addChannel(name).channels.get(name), TrackChannel)
+            .addChannel(name, {
+              parseSettings: function(json) {
+                var difficulty = Struct.get(json, "difficulty")
+                return {
+                  "difficulty": {
+                    "EASY": Struct.getDefault(difficulty, "EASY", true),
+                    "NORMAL": Struct.getDefault(difficulty, "NORMAL", true),
+                    "HARD": Struct.getDefault(difficulty, "HARD", true),
+                    "LUNATIC": Struct.getDefault(difficulty, "LUNATIC", true),
+                  }
+                }
+              },
+            }).channels.get(name), TrackChannel)
           this.collection.add(new UIComponent({
             name: name,
             template: VEComponents.get("channel-entry"),
@@ -770,12 +782,6 @@ function VETimeline(_editor) constructor {
                 },
                 callbackData: name,
               },
-              remove: {
-                sprite: { name: "texture_ve_icon_trash" },
-                callback: function() {
-                  this.context.removeChannel(this.component.name)
-                },
-              },
               mute: {
                 channelIndex: channel.index,
                 spriteOn: { name: "visu_texture_checkbox_muted_on" },
@@ -794,21 +800,6 @@ function VETimeline(_editor) constructor {
               },
             },
           }))
-        }),
-
-        ///@param {String} name
-        removeChannel: new BindIntent(function(name) {
-          var initialized = this.controller.containers
-            .get("ve-timeline-events").state
-            .get("initialized")
-          if (!initialized) {
-            return
-          }
-
-          Beans.get(BeanVisuController).trackService.track.removeChannel(name)
-          this.onInit()
-          this.controller.containers.get("ve-timeline-events").onInit()
-          
         }),
       },
       "ve-timeline-channel-settings": {
@@ -838,6 +829,8 @@ function VETimeline(_editor) constructor {
                 config: { 
                   layout: { type: UILayoutType.VERTICAL },
                   label: { text: "Edit channel" },
+                  input: { },
+                  checkbox: { },
                 },
               }),
               new UIComponent({
@@ -866,14 +859,14 @@ function VETimeline(_editor) constructor {
                 config: { 
                   layout: { type: UILayoutType.VERTICAL },
                   label: { 
-                    text: "Config",
-                    backgroundColor: VETheme.color.accentShadow,
+                    text: "Settings",
+                    //backgroundColor: VETheme.color.accentShadow,
                   },
                   checkbox: {
-                    backgroundColor: VETheme.color.accentShadow,
+                    //backgroundColor: VETheme.color.accentShadow,
                   },
                   input: {
-                    backgroundColor: VETheme.color.accentShadow,
+                    //backgroundColor: VETheme.color.accentShadow,
                   },
                 },
               }),
@@ -895,7 +888,10 @@ function VETimeline(_editor) constructor {
                 name: "ve-timeline-channel-settings-config-line-h",
                 template: VEComponents.get("line-h"),
                 layout: VELayouts.get("line-h"),
-                config: { layout: { type: UILayoutType.VERTICAL } },
+                config: {
+                  layout: { type: UILayoutType.VERTICAL },
+                  image: { },
+                },
               }),
               new UIComponent({
                 name: "ve-timeline-channel-settings-apply",
@@ -954,9 +950,9 @@ function VETimeline(_editor) constructor {
                     }
                   },
                   layout: { type: UILayoutType.VERTICAL, height: function() { return 28 } },
-                  colorHoverOver: VETheme.color.primaryShadow,
-                  colorHoverOut: VETheme.color.primaryDark,
-                  backgroundColor: VETheme.color.primaryDark,
+                  colorHoverOver: VETheme.color.accept,
+                  colorHoverOut: VETheme.color.acceptShadow,
+                  backgroundColor: VETheme.color.acceptShadow,
                   backgroundMargin: { top: 1, bottom: 2, left: 4, right: 5 },
                   onMouseHoverOver: function(event) {
                     this.backgroundColor = ColorUtil.fromHex(this.colorHoverOver).toGMColor()
@@ -997,6 +993,69 @@ function VETimeline(_editor) constructor {
                     target.set("")
                     name.set("")
                     config.set("{}")
+                  },
+                  layout: { type: UILayoutType.VERTICAL, height: function() { return 28 } },
+                  colorHoverOver: VETheme.color.primaryShadow,
+                  colorHoverOut: VETheme.color.primaryDark,
+                  backgroundColor: VETheme.color.primaryDark,
+                  backgroundMargin: { top: 2, bottom: 3, left: 4, right: 5 },
+                  onMouseHoverOver: function(event) {
+                    this.backgroundColor = ColorUtil.fromHex(this.colorHoverOver).toGMColor()
+                  },
+                  onMouseHoverOut: function(event) {
+                    this.backgroundColor = ColorUtil.fromHex(this.colorHoverOut).toGMColor()
+                  },
+                },
+              }),
+              new UIComponent({
+                name: "ve-timeline-channel-settings-remove",
+                template: VEComponents.get("button"),
+                layout: VELayouts.get("button"),
+                config: {
+                  label: {
+                    font: "font_inter_10_bold",
+                    text: "Remove",
+                  },
+                  callback: function() {
+                    this.context.timeline.channelsMode = "list"
+                    var containers = this.context.controller.containers
+                    var channelsContainer = containers.get("ve-timeline-channels")
+                    var eventsContainer = containers.get("ve-timeline-events")
+                    if (!Core.isType(channelsContainer, UI)
+                        || !Core.isType(eventsContainer, UI)) {
+                      return
+                    }
+                    
+                    var initialized = this.context.controller.containers
+                      .get("ve-timeline-events").state
+                      .get("initialized")
+                    if (!initialized) {
+                      return
+                    }
+
+                    var editor = Beans.get(BeanVisuEditorController)
+                    var target = editor.store.get("channel-settings-target")
+                    var name = editor.store.get("channel-settings-name")
+                    var config = editor.store.get("channel-settings-config")
+                    if (!Core.isType(target, StoreItem)
+                        || !Core.isType(name, StoreItem)
+                        || !Core.isType(config, StoreItem)) {
+                      return
+                    }
+  
+                    var channels = Beans.get(BeanVisuController).trackService.track.channels
+                    var targetName = target.get()
+                    var channel = channels.get(targetName)
+                    if (!Core.isType(channel, TrackChannel)) {
+                      return
+                    }
+
+                    target.set("")
+                    name.set("")
+                    config.set("{}")
+                    Beans.get(BeanVisuController).trackService.track.removeChannel(targetName)
+                    this.context.controller.containers.get("ve-timeline-channels").onInit()
+                    this.context.controller.containers.get("ve-timeline-events").onInit()
                   },
                   layout: { type: UILayoutType.VERTICAL, height: function() { return 28 } },
                   colorHoverOver: VETheme.color.deny,
@@ -2308,7 +2367,6 @@ function VETimeline(_editor) constructor {
                     }
                     break
                   case ToolType.BRUSH:
-
                   case ToolType.CLONE:
                   case ToolType.SELECT:
                     ///@description select

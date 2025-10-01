@@ -254,7 +254,7 @@ void main() {
 
   vec4 texture = texture2D(gm_BaseTexture, v_texcoord);
   vec3 pixel = apply_hue(apply_saturation(color, u_sat), u_hue) * u_brightness;
-  float alpha = get_color_distance(texture.rgb, pixel);
+  float alpha = texture.a == 0.0 ? 0.0 : get_color_distance(texture.rgb, pixel);
   pixel = mix(pixel, texture.rgb, 1.0 - v_color.a);
   pixel = mix(pixel, texture.rgb, 1.0 - alpha);
   gl_FragColor = vec4(pixel, texture.a + (alpha * v_color.a));

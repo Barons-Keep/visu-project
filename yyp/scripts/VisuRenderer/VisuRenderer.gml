@@ -4,12 +4,32 @@
 function _WallpaperType(): Enum() constructor {
   BACKGROUND = "BACKGROUND"
   FOREGROUND = "FOREGROUND"
+
+  ///@override
+  ///@return {Array<String>}
+  keys = function() {
+    static filterKeys = function(key) {
+      return key != "_keys"
+          && key != "keys"
+          && key != "get"
+          && key != "getKey"
+          && key != "findKey"
+          && key != "contains"
+          && key != "containsKey"
+    }
+
+    if (this._keys == null) {
+      this._keys = new Array(String, GMArray.sort(GMArray.filter(Struct.keys(this), filterKeys)))
+    }
+
+    return this._keys
+  }
 }
 global.__WallpaperType = new _WallpaperType()
 #macro WallpaperType global.__WallpaperType
 
 
-///@type {String[]}
+///@type {GMArray<String>}
 global.__VISU_FONT = [
   "font_kodeo_mono_10_regular",
   "font_kodeo_mono_12_regular",

@@ -85,27 +85,28 @@ function Track(json, config = null) constructor {
   ///@return {TrackChannel}
   parseTrackChannel = Core.isType(Struct.get(config, "parseTrackChannel"), Callable)
     ? method(this, config.parseTrackChannel)
-    : function(channel, index, config = null) {
+    : function(channel, index, config) {
         //Logger.debug("Track", $"Parse channel '{channel.name}' at index {index}")
         return new TrackChannel({ 
           name: Assert.isType(Struct.get(channel, "name"), String),
           events: Assert.isType(Struct.get(channel, "events"), GMArray),
           index: index,
-          settings: Struct.getIfType(channel, "settings", Struct, { }),
+          settings: Struct.get(channel, "settings"),
         }, config)
       }
 
   ///@private
   ///@param {String} name
+  ///@param {?Struct} [config]
   ///@return {TrackChannel}
   injectTrackChannel = method(this, Assert.isType(Struct
-    .getDefault(config, "injectTrackChannel", function(name) {
+    .getDefault(config, "injectTrackChannel", function(name, config) {
       return this.channels.contains(name)
         ? this.channels.get(name)
         : this.channels.set(name, this.parseTrackChannel({ 
             name: name, 
             events: []
-          }, this.channels.size())).get(name)
+          }, this.channels.size(), config)).get(name)
     }), Callable))
 
   ///@param {String} name
@@ -127,14 +128,15 @@ function Track(json, config = null) constructor {
     }), Callable))
 
   ///@param {String} name
+  ///@param {?Struct} [config]
   ///@return {Track}
   addChannel = method(this, Assert.isType(Struct
-    .getDefault(config, "addChannel", function(name) {
+    .getDefault(config, "addChannel", function(name, config) {
       if (this.channels.contains(name)) {
         return this
       }
 
-      this.injectTrackChannel(name)
+      this.injectTrackChannel(name, config)
       return this
     }), Callable))
 
@@ -335,7 +337,7 @@ function TrackChannel(json, config = null) constructor {
     })
 
   ///@type {Struct}
-  settings = this.parseSettings(Struct.get(json, "settings"))
+  settings = this.parseSettings(Struct.getIfType(json, "settings", Struct))
 
   ///@param {TrackEvent} event
   ///@return {TrackChannel}
@@ -438,7 +440,7 @@ function TrackChannel(json, config = null) constructor {
       }
       this.time = timestamp
 
-      if (this.muted || events.size() == 0) {
+      if (events.size() == 0) {
         return this
       }
 
@@ -452,10 +454,9 @@ function TrackChannel(json, config = null) constructor {
         if (timestamp >= event.timestamp) {
           this.pointer = pointer
           //Logger.debug("Track", $"(channel: '{this.name}', timestamp: {timestamp}) dispatch event: '{event.callableName}'")
-          event.callable(event.parseData(event.data), this)
-        } else {
-          ///@todo execute events based on some dictionary
-          break
+          if (!this.muted) {
+            event.callable(event.parseData(event.data), this)
+          }
         }
       }
       return this
@@ -470,7 +471,7 @@ function TrackChannel(json, config = null) constructor {
         "events": this.events.map(function(event) {
           return event.serialize()
         }).getContainer(),
-        "settings": Core.isType(Struct.get(this.settings, "serialize"), Struct) 
+        "settings": Core.isType(Struct.get(this.settings, "serialize"), Callable) 
           ? this.settings.serialize() 
           : this.settings,
       }

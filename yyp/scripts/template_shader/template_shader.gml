@@ -15,21 +15,23 @@ global.__ShaderUniformTemplates = new Map(String, Callable)
         duration: 0.0,
         ease: EaseType.IN_OUT_QUINT,
       } : storeConfig)),
+      passthrough: Struct.get(config, "passthrough"),
+      data: Struct.get(config, "data"),
     })
     
     Struct.set(store, $"{uniform.name}_hide", {
       type: Boolean,
-      value: Struct.parse.boolean(json, $"{uniform.name}_hide"),
+      value: Struct.parse.boolean(json, $"{uniform.name}_hide", true),
     })
 
     Struct.set(store, $"{uniform.name}_hide-from", {
       type: Boolean,
-      value: Struct.parse.boolean(json, $"{uniform.name}_hide-from"),
+      value: Struct.parse.boolean(json, $"{uniform.name}_hide-from", true),
     })
 
     Struct.set(store, $"{uniform.name}_hide-to", {
       type: Boolean,
-      value: Struct.parse.boolean(json, $"{uniform.name}_hide-to"),
+      value: Struct.parse.boolean(json, $"{uniform.name}_hide-to", true),
     })
 
     return {
@@ -448,7 +450,7 @@ global.__ShaderUniformTemplates = new Map(String, Callable)
     var componentsConfig = Struct.get(config, "components")
     Struct.set(store, $"{uniform.name}_hide", {
       type: Boolean,
-      value: Struct.parse.boolean(json, $"{uniform.name}_hide"),
+      value: Struct.parse.boolean(json, $"{uniform.name}_hide", true),
     })
 
     Struct.set(store, uniform.name, {
@@ -459,6 +461,8 @@ global.__ShaderUniformTemplates = new Map(String, Callable)
         duration: 0.0,
         ease: EaseType.LINEAR,
       } : storeConfig)),
+      passthrough: Struct.get(config, "passthrough"),
+      data: Struct.get(config, "data"),
     })
 
     return {
@@ -644,7 +648,7 @@ global.__ShaderUniformTemplates = new Map(String, Callable)
     var componentsConfig = Struct.get(config, "components")
     Struct.set(store, $"{uniform.name}_hide", {
       type: Boolean,
-      value: Struct.parse.boolean(json, $"{uniform.name}_hide"),
+      value: Struct.parse.boolean(json, $"{uniform.name}_hide", true),
     })
 
     Struct.set(store, uniform.name, {
@@ -655,6 +659,8 @@ global.__ShaderUniformTemplates = new Map(String, Callable)
         duration: 0.0,
         ease: EaseType.LINEAR,
       } : storeConfig)),
+      passthrough: Struct.get(config, "passthrough"),
+      data: Struct.get(config, "data"),
     })
 
     return {
@@ -730,7 +736,7 @@ global.__ShaderUniformTemplates = new Map(String, Callable)
     var componentsConfig = Struct.get(config, "components")
     Struct.set(store, $"{uniform.name}_hide", {
       type: Boolean,
-      value: Struct.parse.boolean(json, $"{uniform.name}_hide"),
+      value: Struct.parse.boolean(json, $"{uniform.name}_hide", true),
     })
 
     Struct.set(store, uniform.name, {
@@ -749,6 +755,8 @@ global.__ShaderUniformTemplates = new Map(String, Callable)
           ease: EaseType.IN_OUT_QUINT,
         },
       } : storeConfig)),
+      passthrough: Struct.get(config, "passthrough"),
+      data: Struct.get(config, "data"),
     })
 
     return {
@@ -1088,7 +1096,7 @@ global.__ShaderUniformTemplates = new Map(String, Callable)
     var componentsConfig = Struct.get(config, "components")
     Struct.set(store, $"{uniform.name}_hide", {
       type: Boolean,
-      value: Struct.parse.boolean(json, $"{uniform.name}_hide"),
+      value: Struct.parse.boolean(json, $"{uniform.name}_hide", true),
     })
 
     Struct.set(store, uniform.name, {
@@ -1113,6 +1121,8 @@ global.__ShaderUniformTemplates = new Map(String, Callable)
           ease: EaseType.IN_OUT_QUINT,
         },
       } : storeConfig)),
+      passthrough: Struct.get(config, "passthrough"),
+      data: Struct.get(config, "data"),
     })
 
     return {
@@ -1604,7 +1614,7 @@ global.__ShaderUniformTemplates = new Map(String, Callable)
     var componentsConfig = Struct.get(config, "components")
     Struct.set(store, $"{uniform.name}_hide", {
       type: Boolean,
-      value: Struct.parse.boolean(json, $"{uniform.name}_hide"),
+      value: Struct.parse.boolean(json, $"{uniform.name}_hide", true),
     })
 
     Struct.set(store, uniform.name, {
@@ -1635,6 +1645,8 @@ global.__ShaderUniformTemplates = new Map(String, Callable)
           ease: EaseType.IN_OUT_QUINT,
         },
       } : storeConfig)),
+      passthrough: Struct.get(config, "passthrough"),
+      data: Struct.get(config, "data"),
     })
 
     return {
@@ -2281,6 +2293,8 @@ global.__ShaderUniformTemplates = new Map(String, Callable)
       value: new ResolutionTransformer(Struct.getIfType(json, uniform.name, Struct, !Optional.is(storeConfig) ? {
         
       } : storeConfig)),
+      passthrough: Struct.get(config, "passthrough"),
+      data: Struct.get(config, "data"),
     })
 
     return {

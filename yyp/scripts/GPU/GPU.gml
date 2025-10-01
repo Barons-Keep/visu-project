@@ -28,6 +28,26 @@ function _BlendMode(): Enum() constructor {
   REVERSE_SUBTRACT = bm_reverse_subtract
   MIN = bm_min
   MAX = bm_max
+
+  ///@override
+  ///@return {Array<String>}
+  keys = function() {
+    static filterKeys = function(key) {
+      return key != "_keys"
+          && key != "keys"
+          && key != "get"
+          && key != "getKey"
+          && key != "findKey"
+          && key != "contains"
+          && key != "containsKey"
+    }
+
+    if (this._keys == null) {
+      this._keys = new Array(String, GMArray.sort(GMArray.filter(Struct.keys(this), filterKeys)))
+    }
+
+    return this._keys
+  }
 }
 global.__BlendMode = new _BlendMode()
 #macro BlendMode global.__BlendMode
@@ -46,23 +66,23 @@ function BlendConfig(config = null) constructor {
   equation = Struct.getIfEnum(config, "equation", BlendEquation, BlendEquation.ADD)
 
   ///@type {?BlendEquation}
-  equationAlpha = Struct.getIfEnum(config, "equationAlpha", BlendEquation)
+  equationAlpha = Struct.getIfEnum(config, "equationAlpha", BlendEquation, BlendEquation.ADD)
 
   ///@private
   ///@type {?BlendModeExt}
-  previousSource = null
+  previousSource = BlendModeExt.SRC_ALPHA
   
   ///@private
   ///@type {?BlendModeExt}
-  previousTarget = null
+  previousTarget = BlendModeExt.INV_SRC_ALPHA
   
   ///@private 
   ///@type {?BlendEquation}
-  previousEquation = null
+  previousEquation = BlendEquation.ADD
 
   ///@private 
   ///@type {?BlendEquation}
-  previousEquationAlpha = null
+  previousEquationAlpha = BlendEquation.ADD
 
   ///@type {BlendModeExt}
   ///@return {BlendConfig}
@@ -94,11 +114,17 @@ function BlendConfig(config = null) constructor {
 
   ///@return {BlendConfig}
   set = function() {
-    this.previousSource = GPU.get.blendModeExt.source()
-    this.previousTarget = GPU.get.blendModeExt.target()
-    this.previousEquation = GPU.get.blendModeExt.equation()
-    this.previousEquationAlpha = GPU.get.blendModeExt.equationAlpha()
+    GPU.set.blendModeExt(this.source, this.target)
+    GPU.set.blendEquation(this.equation)
+    if (this.equationAlpha != null) {
+      GPU.set.blendEquationAlpha(this.equationAlpha)
+    }
 
+    //this.previousSource = GPU.get.blendModeExt.source()
+    //this.previousTarget = GPU.get.blendModeExt.target()
+    //this.previousEquation = GPU.get.blendModeExt.equation()
+    //this.previousEquationAlpha = GPU.get.blendModeExt.equationAlpha()
+    /*
     if (this.previousSource != this.source
         || this.previousTarget != this.target) {
       GPU.set.blendModeExt(this.source, this.target)
@@ -112,12 +138,20 @@ function BlendConfig(config = null) constructor {
         && this.previousEquationAlpha != this.equationAlpha) {
       GPU.set.blendEquationAlpha(this.equationAlpha)
     }
+    */
 
     return this
   }
 
   ///@return {BlendConfig}
   reset = function() {
+    GPU.set.blendModeExt(this.previousSource, this.previousTarget)
+    GPU.set.blendEquation(this.previousEquation)
+    if (this.previousEquationAlpha != null) {
+      GPU.set.blendEquationAlpha(this.previousEquationAlpha)
+    }
+
+    /*
     if (!Optional.is(this.previousSource)
         || !Optional.is(this.previousTarget)
         || !Optional.is(this.previousEquation)) {
@@ -138,11 +172,12 @@ function BlendConfig(config = null) constructor {
         && this.previousEquationAlpha != this.equationAlpha) {
       GPU.set.blendEquationAlpha(this.previousEquationAlpha)
     }
+    */
 
-    this.previousSource = null
-    this.previousTarget = null
-    this.previousEquation = null
-    this.previousEquationAlpha = null
+    //this.previousSource = null
+    //this.previousTarget = null
+    //this.previousEquation = null
+    //this.previousEquationAlpha = null
     return this
   }
 
@@ -176,6 +211,26 @@ function _BlendModeExt(): Enum() constructor {
   DEST_COLOUR = bm_dest_colour
   INV_DEST_ALPHA = bm_inv_dest_alpha
   INV_DEST_COLOUR = bm_inv_dest_colour
+
+  ///@override
+  ///@return {Array<String>}
+  keys = function() {
+    static filterKeys = function(key) {
+      return key != "_keys"
+          && key != "keys"
+          && key != "get"
+          && key != "getKey"
+          && key != "findKey"
+          && key != "contains"
+          && key != "containsKey"
+    }
+
+    if (this._keys == null) {
+      this._keys = new Array(String, GMArray.sort(GMArray.filter(Struct.keys(this), filterKeys)))
+    }
+
+    return this._keys
+  }
 }
 global.__BlendModeExt = new _BlendModeExt()
 #macro BlendModeExt global.__BlendModeExt
@@ -188,6 +243,26 @@ function _BlendEquation(): Enum() constructor {
   REVERSE_SUBTRACT = bm_eq_reverse_subtract
   MIN = bm_eq_min
   MAX = bm_eq_max
+  
+  ///@override
+  ///@return {Array<String>}
+  keys = function() {
+    static filterKeys = function(key) {
+      return key != "_keys"
+          && key != "keys"
+          && key != "get"
+          && key != "getKey"
+          && key != "findKey"
+          && key != "contains"
+          && key != "containsKey"
+    }
+
+    if (this._keys == null) {
+      this._keys = new Array(String, GMArray.sort(GMArray.filter(Struct.keys(this), filterKeys)))
+    }
+
+    return this._keys
+  }
 }
 global.__BlendEquation = new _BlendEquation()
 #macro BlendEquation global.__BlendEquation
@@ -198,6 +273,26 @@ function _VAlign(): Enum() constructor {
   TOP = fa_top
   CENTER = fa_middle
   BOTTOM = fa_bottom
+
+  ///@override
+  ///@return {Array<String>}
+  keys = function() {
+    static filterKeys = function(key) {
+      return key != "_keys"
+          && key != "keys"
+          && key != "get"
+          && key != "getKey"
+          && key != "findKey"
+          && key != "contains"
+          && key != "containsKey"
+    }
+
+    if (this._keys == null) {
+      this._keys = new Array(String, GMArray.sort(GMArray.filter(Struct.keys(this), filterKeys)))
+    }
+
+    return this._keys
+  }
 }
 global.__VAlign = new _VAlign()
 #macro VAlign global.__VAlign
@@ -208,6 +303,26 @@ function _HAlign(): Enum() constructor {
   LEFT = fa_left
   CENTER = fa_center
   RIGHT = fa_right
+
+  ///@override
+  ///@return {Array<String>}
+  keys = function() {
+    static filterKeys = function(key) {
+      return key != "_keys"
+          && key != "keys"
+          && key != "get"
+          && key != "getKey"
+          && key != "findKey"
+          && key != "contains"
+          && key != "containsKey"
+    }
+
+    if (this._keys == null) {
+      this._keys = new Array(String, GMArray.sort(GMArray.filter(Struct.keys(this), filterKeys)))
+    }
+
+    return this._keys
+  }
 }
 global.__HAlign = new _HAlign()
 #macro HAlign global.__HAlign
@@ -268,9 +383,9 @@ function _GPU() constructor {
     ///@return {GPU}
     clear: function(color, alpha = null) {
       if (Core.isType(color, GMColor)) {
-        draw_clear_alpha(color, Optional.is(alpha) ? alpha : 1.0)  
+        draw_clear_alpha(color, alpha != null ? alpha : 1.0)  
       } else {
-        draw_clear_alpha(color.toGMColor(), Optional.is(alpha) ? alpha : color.alpha)
+        draw_clear_alpha(color.toGMColor(), alpha != null ? alpha : color.alpha)
       }
       
       return GPU
@@ -322,6 +437,60 @@ function _GPU() constructor {
       return GPU
     },
 
+    ///@param {Number} x
+    ///@param {Number} y
+    ///@param {Number} radius
+    ///@param {Boolean} [outline]
+    ///@param {?GMColor} [color1]
+    ///@param {?GMColor} [color2]
+    ///@param {?Number} [alpha]
+    ///@return {GPU}
+    circle: function(x, y, radius, outline = false, color1 = null, color2 = null, alpha = null) {
+      var c1 = color1 == null ? c_black : color1
+      var c2 = color2 == null ? c1 : color2
+      if (alpha == null) {
+        draw_circle_colour(x, y, radius, c1, c2, outline)
+      } else {
+        var _alpha = draw_get_alpha()
+        if (_alpha == alpha) {
+          draw_circle_colour(x, y, radius, c1, c2, outline)
+        } else {
+          draw_set_alpha(alpha)
+          draw_circle_colour(x, y, radius, c1, c2, outline)
+          draw_set_alpha(_alpha)
+        }
+      }
+
+      return GPU
+    },
+
+    ///@param {Number} beginX
+    ///@param {Number} beginY
+    ///@param {Number} endX
+    ///@param {Number} endY
+    ///@param {Boolean} [outline]
+    ///@param {?GMColor} [color1]
+    ///@param {?GMColor} [color2]
+    ///@param {?Number} [alpha]
+    ///@return {GPU}
+    ellipse: function(beginX, beginY, endX, endY, outline = false, color1 = null, color2 = null, alpha = null) {
+      var c1 = color1 == null ? c_black : color1
+      var c2 = color2 == null ? c1 : color2
+      if (alpha == null) {
+        draw_ellipse_color(beginX, beginY, endX, endY, c1, c2, outline)
+      } else {
+        var _alpha = draw_get_alpha()
+        if (_alpha == alpha) {
+          draw_ellipse_color(beginX, beginY, endX, endY, c1, c2, outline)
+        } else {
+          draw_set_alpha(alpha)
+          draw_ellipse_color(beginX, beginY, endX, endY, c1, c2, outline)
+          draw_set_alpha(_alpha)
+        }
+      }
+      return GPU
+    },
+
     ///@param {Number} _x
     ///@param {Number} _y
     ///@param {any} text
@@ -366,7 +535,7 @@ function _GPU() constructor {
 
       draw_text_transformed_colour(x, y, text, scale, scale, angle, color, color, color, color, alpha)
       return GPU
-    }
+    },
   }
 
   ///@type {Struct}
@@ -431,6 +600,13 @@ function _GPU() constructor {
     ///@return {GPU}
     blendEnable: function(enable) {
       gpu_set_blendenable(enable)
+      return GPU
+    },
+
+    ///@param {Number} precision
+    ///@return {GPU}
+    circlePrecision: function(precision) {
+      draw_set_circle_precision(clamp(4 * (precision div 4), 4, 64))
       return GPU
     },
 

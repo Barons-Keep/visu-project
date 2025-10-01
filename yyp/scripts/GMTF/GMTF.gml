@@ -881,8 +881,8 @@ function GMTF(style_struct = null) constructor {
 		}
 	}
   
-	///@params {Number} x
-  ///@params {Number} y
+	///@param {Number} x
+  ///@param {Number} y
   ///@return {GMTF}
 	updateFocused = function(x, y) {
 		atx = x
@@ -1126,8 +1126,8 @@ function GMTF(style_struct = null) constructor {
 		return this
 	}
 
-  ///@params {Number} x
-  ///@params {Number} y
+  ///@param {Number} x
+  ///@param {Number} y
   ///@return {GMTF}
   update = function(x, y) {
      this.surface.x = x
@@ -1135,8 +1135,8 @@ function GMTF(style_struct = null) constructor {
      return this
   }
 
-	///@params {Number} x
-  ///@params {Number} y
+	///@param {Number} x
+  ///@param {Number} y
   ///@return {GMTF}
 	draw = function(x, y) {
 		atx = x

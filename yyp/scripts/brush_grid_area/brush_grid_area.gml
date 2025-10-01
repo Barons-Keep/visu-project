@@ -1,11 +1,135 @@
 ///@package io.alkapivo.visu.editor.service.brush.grid
 
-///@param {Struct} json
-///@return {Struct}
-function brush_grid_area(json) {
-  return {
-    name: "brush_grid_area",
-    store: new Map(String, Struct, {
+///@static
+global.__event_grid_area = {
+  parse: function(data) {
+    return {
+      "icon": Struct.parse.sprite(data, "icon"),
+      "gr-area_hide-h": Struct.parse.boolean(data, "gr-area_hide-h", TRACK_EVENT_DEFAULT_HIDDEN_VALUE),
+      "gr-area_hide-h-length": Struct.parse.boolean(data, "gr-area_hide-h-length", TRACK_EVENT_DEFAULT_HIDDEN_VALUE),
+      "gr-area_hide-h-size": Struct.parse.boolean(data, "gr-area_hide-h-size", TRACK_EVENT_DEFAULT_HIDDEN_VALUE),
+      "gr-area_hide-h-alpha": Struct.parse.boolean(data, "gr-area_hide-h-alpha", TRACK_EVENT_DEFAULT_HIDDEN_VALUE),
+      "gr-area_hide-h-col": Struct.parse.boolean(data, "gr-area_hide-h-col", TRACK_EVENT_DEFAULT_HIDDEN_VALUE),
+      "gr-area_hide-v": Struct.parse.boolean(data, "gr-area_hide-v", TRACK_EVENT_DEFAULT_HIDDEN_VALUE),
+      "gr-area_hide-v-length": Struct.parse.boolean(data, "gr-area_hide-v-length", TRACK_EVENT_DEFAULT_HIDDEN_VALUE),
+      "gr-area_hide-v-size": Struct.parse.boolean(data, "gr-area_hide-v-size", TRACK_EVENT_DEFAULT_HIDDEN_VALUE),
+      "gr-area_hide-v-alpha": Struct.parse.boolean(data, "gr-area_hide-v-alpha", TRACK_EVENT_DEFAULT_HIDDEN_VALUE),
+      "gr-area_hide-v-col": Struct.parse.boolean(data, "gr-area_hide-v-col", TRACK_EVENT_DEFAULT_HIDDEN_VALUE),
+      "gr-area_use-h": Struct.parse.boolean(data, "gr-area_use-h"),
+      "gr-area_h": Struct.parse.numberTransformer(data, "gr-area_h", {
+        clampValue: { from: 0.0, to: 100.0 },
+        clampTarget: { from: 0.0, to: 100.0 },
+      }),
+      "gr-area_change-h": Struct.parse.boolean(data, "gr-area_change-h"),
+      "gr-area_use-h-col": Struct.parse.boolean(data, "gr-area_use-h-col"),
+      "gr-area_h-col": Struct.parse.color(data, "gr-area_h-col"),
+      "gr-area_h-col-spd": Struct.parse.number(data, "gr-area_h-col-spd", 0.0, 0.0, 999.9),
+      "gr-area_use-h-alpha": Struct.parse.boolean(data, "gr-area_use-h-alpha"),
+      "gr-area_h-alpha": Struct.parse.normalizedNumberTransformer(data, "gr-area_h-alpha"),
+      "gr-area_change-h-alpha": Struct.parse.boolean(data, "gr-area_change-h-alpha"),
+      "gr-area_use-h-size": Struct.parse.boolean(data, "gr-area_use-h-size"),
+      "gr-area_h-size": Struct.parse.numberTransformer(data, "gr-area_h-size", {
+        clampValue: { from: 0.0, to: 9999.9 },
+        clampTarget: { from: 0.0, to: 9999.9 },
+      }),
+      "gr-area_change-h-size": Struct.parse.boolean(data, "gr-area_change-h-size"),
+      "gr-area_use-v": Struct.parse.boolean(data, "gr-area_use-v"),
+      "gr-area_v": Struct.parse.numberTransformer(data, "gr-area_v", {
+        clampValue: { from: 0.0, to: 100.0 },
+        clampTarget: { from: 0.0, to: 100.0 },
+      }),
+      "gr-area_change-v": Struct.parse.boolean(data, "gr-area_change-v"),
+      "gr-area_use-v-col": Struct.parse.boolean(data, "gr-area_use-v-col"),
+      "gr-area_v-col": Struct.parse.color(data, "gr-area_v-col"),
+      "gr-area_v-col-spd": Struct.parse.number(data, "gr-area_v-col-spd", 0.0, 0.0, 999.9),
+      "gr-area_use-v-alpha": Struct.parse.boolean(data, "gr-area_use-v-alpha"),
+      "gr-area_v-alpha": Struct.parse.normalizedNumberTransformer(data, "gr-area_v-alpha"),
+      "gr-area_change-v-alpha": Struct.parse.boolean(data, "gr-area_change-v-alpha"),
+      "gr-area_use-v-size": Struct.parse.boolean(data, "gr-area_use-v-size"),
+      "gr-area_v-size": Struct.parse.numberTransformer(data, "gr-area_v-size", {
+        clampValue: { from: 0.0, to: 9999.9 },
+        clampTarget: { from: 0.0, to: 9999.9 },
+      }),
+      "gr-area_change-v-size": Struct.parse.boolean(data, "gr-area_change-v-size"),
+    }
+  },
+  run: function(data, channel) {
+    var controller = Beans.get(BeanVisuController)
+    if (!controller.isChannelDifficultyValid(channel)) {
+      return
+    }
+
+    var gridService = controller.gridService
+    var properties = gridService.properties
+    var pump = gridService.dispatcher
+    var executor = gridService.executor
+
+    ///@description feature TODO grid.area.h
+    Visu.resolveNumberTransformerTrackEvent(data, 
+      "gr-area_use-h",
+      "gr-area_h",
+      "gr-area_change-h",
+      "borderHorizontalLength",
+      properties, pump, executor)
+
+    ///@description feature TODO grid.area.h.color
+    Visu.resolveColorTransformerTrackEvent(data, 
+      "gr-area_use-h-col",
+      "gr-area_h-col",
+      "gr-area_h-col-spd",
+      "borderVerticalColor",
+      properties, pump, executor)
+
+    ///@description feature TODO grid.area.h.alpha
+    Visu.resolveNumberTransformerTrackEvent(data, 
+      "gr-area_use-h-alpha",
+      "gr-area_h-alpha",
+      "gr-area_change-h-alpha",
+      "borderVerticalAlpha",
+      properties, pump, executor)
+
+    ///@description feature TODO grid.area.h.size
+    Visu.resolveNumberTransformerTrackEvent(data, 
+      "gr-area_use-h-size",
+      "gr-area_h-size",
+      "gr-area_change-h-size",
+      "borderVerticalThickness",
+      properties, pump, executor)
+
+    ///@description feature TODO grid.area.v
+    Visu.resolveNumberTransformerTrackEvent(data, 
+      "gr-area_use-v",
+      "gr-area_v",
+      "gr-area_change-v",
+      "borderVerticalLength",
+      properties, pump, executor)
+
+    ///@description feature TODO grid.area.v.color
+    Visu.resolveColorTransformerTrackEvent(data, 
+      "gr-area_use-v-col",
+      "gr-area_v-col",
+      "gr-area_v-col-spd",
+      "borderHorizontalColor",
+      properties, pump, executor)
+
+    ///@description feature TODO grid.area.v.alpha
+    Visu.resolveNumberTransformerTrackEvent(data, 
+      "gr-area_use-v-alpha",
+      "gr-area_v-alpha",
+      "gr-area_change-v-alpha",
+      "borderHorizontalAlpha",
+      properties, pump, executor)
+
+    ///@description feature TODO grid.area.v.size
+    Visu.resolveNumberTransformerTrackEvent(data, 
+      "gr-area_use-v-size",
+      "gr-area_v-size",
+      "gr-area_change-v-size",
+      "borderHorizontalThickness",
+      properties, pump, executor)
+  },
+  store: function(json) {
+    return new Map(String, Struct, {
       "gr-area_use-h": {
         type: Boolean,
         value: Struct.get(json, "gr-area_use-h"),
@@ -14,7 +138,7 @@ function brush_grid_area(json) {
         type: NumberTransformer,
         value: Struct.get(json, "gr-area_h"),
         passthrough: UIUtil.passthrough.getClampedNumberTransformer(),
-        data: new Vector2(0.0, 10.0),
+        data: new Vector2(0.0, 100.0),
       },
       "gr-area_change-h": {
         type: Boolean,
@@ -69,7 +193,7 @@ function brush_grid_area(json) {
         type: NumberTransformer,
         value: Struct.get(json, "gr-area_v"),
         passthrough: UIUtil.passthrough.getClampedNumberTransformer(),
-        data: new Vector2(0.0, 10.0),
+        data: new Vector2(0.0, 100.0),
       },
       "gr-area_change-v": {
         type: Boolean,
@@ -156,8 +280,10 @@ function brush_grid_area(json) {
         type: Boolean,
         value: Struct.get(json, "gr-area_hide-v-col"),
       },
-    }),
-    components: new Array(Struct, [
+    })
+  },
+  components: function(json) {
+    return new Array(Struct, [
       {
         name: "gr-area_h-title",
         template: VEComponents.get("property"),
@@ -2276,6 +2402,18 @@ function brush_grid_area(json) {
           },
         },
       },
-    ]),
+    ])
+  },
+}
+#macro event_grid_area global.__event_grid_area
+
+
+///@param {Struct} json
+///@return {Struct}
+function brush_grid_area(json) {
+  return {
+    name: "brush_grid_area",
+    store: event_grid_area.store(json),
+    components: event_grid_area.components(json),
   }
 }

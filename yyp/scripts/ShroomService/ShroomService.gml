@@ -34,21 +34,15 @@ function ShroomService(_controller, config = {}): Service() constructor {
   ///@type {?Struct}
   subtitlesAreaEvent = null
 
-  ///@type {?GameMode}
-  gameMode = null
-
   ///@param {?Struct} [json]
   ///@return {Struct}
   factorySpawner = function(json = null) {
-    return Struct.appendUnique(
-      json, 
-      {
-        sprite: SpriteUtil.parse({ name: "texture_baron" }),
-        x: 0.5,
-        y: 0,
-        timeout: 5.0,
-      }
-    )
+    return Struct.appendUnique(json, {
+      x: 0.5,
+      y: 0.0,
+      sprite: SpriteUtil.parse({ name: "texture_baron" }),
+      timeout: 5.0,
+    })
   }
 
   ///@param {String} name
@@ -116,7 +110,7 @@ function ShroomService(_controller, config = {}): Service() constructor {
         var acc = {
           names: { },
           service: service,
-          features: Struct.getIfType(template.gameModes.bulletHell, "features", GMArray, [])
+          template: template,
         }
 
         for (var idx = 0; idx < templateInheritSize; idx++) {
@@ -126,13 +120,10 @@ function ShroomService(_controller, config = {}): Service() constructor {
         for (var idx = 0; idx < inheritSize; idx++) {
           this.parseInherit(inherit[idx], idx, acc)
         }
-
-        Struct.set(template.gameModes.bulletHell, "features", acc.features)
       }
 
 
       var shroom = new Shroom(template)
-      //shroom.updateGameMode(this.controller.gameMode)
 
       this.shrooms.add(shroom)
       this.chunkService.add(shroom)
@@ -167,8 +158,8 @@ function ShroomService(_controller, config = {}): Service() constructor {
   })
 
   static parseInherit = function(name, i, acc) {
-    static addFeature = function(feature, index, features) {
-      GMArray.add(features, feature)
+    static add = function(item, index, collection) {
+      GMArray.add(collection, item)
     }
 
     if (Struct.get(acc.names, name) == true) {
@@ -178,20 +169,16 @@ function ShroomService(_controller, config = {}): Service() constructor {
     Struct.set(acc.names, name, true)
 
     var template = acc.service.getTemplate(name)
-    if (!Optional.is(template)) {
+    if (template == null) {
       return
     }
-    
-    var gameModes = template.serializeGameModes()
-    var features = Struct.getIfType(gameModes.bulletHell, "features", GMArray)
-    if (Optional.is(features)) {
-      GMArray.forEach(features, addFeature, acc.features)
-    }
 
-    if (GMArray.size(template.inherit) > 0) {
-      for (var index = 0; index < GMArray.size(template.inherit); index++) {
-        acc.service.parseInherit(template.inherit[index], index, acc)
-      }
+    GMArray.forEach(template.onDamage, add, acc.template.onDamage)
+    GMArray.forEach(template.onDeath, add, acc.template.onDeath)
+    GMArray.forEach(template.queue, add, acc.template.queue)
+    GMArray.forEach(template.features, add, acc.template.features)
+    for (var index = 0; index < GMArray.size(template.inherit); index++) {
+      acc.service.parseInherit(template.inherit[index], index, acc)
     }
   }
 
@@ -209,7 +196,7 @@ function ShroomService(_controller, config = {}): Service() constructor {
       var acc = {
         names: { },
         service: service,
-        features: Struct.getIfType(template.gameModes.bulletHell, "features", GMArray, [])
+        template: template,
       }
 
       for (var idx = 0; idx < templateInheritSize; idx++) {
@@ -219,12 +206,9 @@ function ShroomService(_controller, config = {}): Service() constructor {
       for (var idx = 0; idx < inheritSize; idx++) {
         this.parseInherit(inherit[idx], idx, acc)
       }
-
-      Struct.set(template.gameModes.bulletHell, "features", acc.features)
     }
 
     var shroom = new Shroom(template)
-    //shroom.updateGameMode(this.controller.gameMode)
 
     this.shrooms.add(shroom)
     this.chunkService.add(shroom)
@@ -277,11 +261,6 @@ function ShroomService(_controller, config = {}): Service() constructor {
     return this.dispatcher.send(event)
   }
 
-  static updateGameMode = function(shroom, index, gameMode) {
-    gml_pragma("forceinline")
-    shroom.updateGameMode(gameMode)
-  }
-
   static updateShroom = function(shroom, index, context) {
     gml_pragma("forceinline")
     shroom.update(context.controller)
@@ -293,12 +272,7 @@ function ShroomService(_controller, config = {}): Service() constructor {
 
   ///@return {ShroomService}
   update = function() {
-    this.optimalizationSortEntitiesByTxGroup = false //Visu.settings.getValue("visu.optimalization.sort-entities-by-txgroup")
-    //if (controller.gameMode != this.gameMode) {
-    //  this.gameMode = this.controller.gameMode
-    //  this.shrooms.forEach(this.updateGameMode, this.gameMode)
-    //}
-
+    //this.optimalizationSortEntitiesByTxGroup = Visu.settings.getValue("visu.optimalization.sort-entities-by-txgroup")
     this.dispatcher.update()
     this.executor.update()
     this.shrooms.forEach(this.updateShroom, this).runGC()

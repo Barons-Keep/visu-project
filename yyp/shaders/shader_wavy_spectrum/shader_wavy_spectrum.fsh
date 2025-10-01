@@ -27,12 +27,13 @@ varying vec4 v_color;
 
 // Uniforms
 uniform float u_angle;      // Default: 0.0
+uniform float u_bpm;        // Default: 0.0
 uniform float u_brightness; // Default: 1.0
 uniform float u_distort;    // Default: 0.1
 uniform float u_hue;        // Default: 0.0
 uniform float u_noise;      // Default: 3.0
 uniform float u_sat;        // Default: 1.0
-uniform float u_seed;        // Default: 0.0
+uniform float u_seed;       // Default: 0.0
 uniform float u_scale;      // Default: 3.0
 uniform float u_time;       // Default: 0.0, where 1.0=1sec
 uniform vec2 u_offset;			// Default: (0.5, 0.5)
@@ -124,18 +125,18 @@ float fbm(vec2 p) {
   return f;
 }
 
-vec3 get_spectrum_color(float position) {
+vec3 get_spectrum_color(float position, vec3 color_a, vec3 color_b, vec3 color_c) {
   float t = fract(position); // ensure looping
 
   if (t < 1.0 / 3.0) {
     float f = t * 3.0;
-    return mix(u_color_a, u_color_b, f);
+    return mix(color_a, color_b, f);
   } else if (t < 2.0 / 3.0) {
     float f = (t - 1.0 / 3.0) * 3.0;
-    return mix(u_color_b, u_color_c, f);
+    return mix(color_b, color_c, f);
   } else {
     float f = (t - 2.0 / 3.0) * 3.0;
-    return mix(u_color_c, u_color_a, f);
+    return mix(color_c, color_a, f);
   }
 }
 
@@ -143,16 +144,45 @@ float get_color_distance(vec3 color_from, vec3 color_to) {
   return distance(color_from, color_to) / SQRT_3;
 }
 
-void main() {
-  vec2 uv = rotated_uv_resolution(v_texcoord * u_scale, u_resolution, u_offset, u_angle);
-  float distortion = fbm(uv * u_noise + vec2(0.0, u_time + u_seed)) * u_distort;
-  float position = mod(uv.x + distortion + u_time + u_seed, 1.0);
 
+//void mainImage(out vec4 fragColor, in vec2 v_texcoord) {
+void main() {
+  /*
+  vec4 v_color = vec4(1.0);
+  float u_angle = 0.0;
+  float u_bpm = 0.0;
+  float u_brightness = 1.0;
+  float u_distort = 0.1;
+  float u_hue = 0.0;
+  float u_noise = 3.0;
+  float u_sat = 1.0;
+  float u_seed = 0.0;
+  float u_scale = 3.0;
+  float u_time = iTime;
+  vec2 u_offset = vec2(0.5, 0.5);
+  vec2 u_resolution = iResolution.xy;
+  vec3 u_color_a = vec3(1.0, 0.0, 0.0);
+  vec3 u_color_b = vec3(0.0, 1.0, 0.0);
+  vec3 u_color_c = vec3(0.0, 0.0, 1.0);
+  vec3 u_color_mask = vec3(0.0, 0.0, 0.0);
+  */
+  float bpm = (u_bpm / 60.0) * TAU;
+  float time = u_time + u_seed;
+  time += sin(time * bpm);
+
+  vec2 uv = rotated_uv_resolution(v_texcoord * u_scale, u_resolution, u_offset, u_angle);
+  float distortion = fbm(uv * u_noise + vec2(0.0, time)) * u_distort;
+  float position = mod(uv.x + distortion + time, 1.0);
+  
+  //vec4 texture = vec4(0.0, 0.0, 0.0, 1.0);
+  //vec4 texture = texture(iChannel0, v_texcoord / iResolution.xy);
   vec4 texture = texture2D(gm_BaseTexture, v_texcoord);
-  vec3 color = get_spectrum_color(position);
+  vec3 color = get_spectrum_color(position, u_color_a, u_color_b, u_color_c);
   vec3 pixel = apply_hue(apply_saturation(color, u_sat), u_hue) * u_brightness;
-  float alpha = clamp(get_color_distance(pixel, u_color_mask), 0.0, 1.0);
+  float alpha = texture.a == 0.0 ? 0.0 : clamp(get_color_distance(pixel, u_color_mask), 0.0, 1.0);
   pixel = mix(pixel, texture.rgb, 1.0 - v_color.a);
   pixel = mix(pixel, texture.rgb, 1.0 - alpha);
+  //fragColor = vec4(color, 1.0);
+  //fragColor = vec4(pixel, texture.a + (alpha * v_color.a));
   gl_FragColor = vec4(pixel, texture.a + (alpha * v_color.a));
 }

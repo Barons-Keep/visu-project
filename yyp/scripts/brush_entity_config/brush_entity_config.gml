@@ -312,6 +312,7 @@ function brush_entity_config(json = null) {
             store: { key: "en-cfg_cls-shr" },
             hidden: { key: "en-cfg_hide-cls" },
           },
+          input: { },
         },
       },
       {
@@ -331,6 +332,7 @@ function brush_entity_config(json = null) {
             store: { key: "en-cfg_cls-player" },
             hidden: { key: "en-cfg_hide-cls" },
           },
+          input: { },
         },
       },
       {
@@ -350,6 +352,7 @@ function brush_entity_config(json = null) {
             store: { key: "en-cfg_cls-coin" },
             hidden: { key: "en-cfg_hide-cls" },
           },
+          input: { },
         },
       },
       {
@@ -369,6 +372,7 @@ function brush_entity_config(json = null) {
             store: { key: "en-cfg_cls-bullet" },
             hidden: { key: "en-cfg_hide-cls" },
           },
+          input: { },
         },
       },
       {

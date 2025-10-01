@@ -14,21 +14,3 @@ function KillFeature(json): GridItemFeature(json) constructor {
     item.signal("kill")
   }
 }
-
-
-///@param {Struct} json
-///@return {GridItemFeature}
-function _KillFeature(json) {
-  return new GridItemFeature(Struct.append(json, {
-
-    ///@param {Callable}
-    type: KillFeature,
-
-    ///@override
-    ///@param {GridItem} item
-    ///@param {VisuController} controller
-    update: function(item, controller) {
-      item.signal("kill")
-    },
-  }))
-}

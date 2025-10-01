@@ -1,8 +1,8 @@
 ///@package io.alkapivo.core.util
 
 ///@param {Number} _duration
-///@param {Struct} [config]
-function Timer(_duration, config = {}) constructor {
+///@param {?Struct} [config]
+function Timer(_duration, config = null) constructor {
 
   ///@type {Number}
   duration = Assert.isType(_duration, Number)
@@ -29,15 +29,15 @@ function Timer(_duration, config = {}) constructor {
   amount = Struct.getIfType(config, "amount", Number, FRAME_MS)
 
   ///@type {?Callable}
-  callback = Struct.getIfType(config, "callback", Callable)
+  callback = Callable.bind(this, Struct.get(config, "callback"))
 
   if (Struct.getIfType(config, "shuffle", Boolean, false)) {
     this.time = random(this.duration)
   }
 
-  ///@param {any} [callbackData]
+  ///@param {any} callbackData
   ///@return {Timer}
-  static update = function(callbackData = null) {
+  static update = function(callbackData) {
     gml_pragma("forceinline")
     if (this.finished && (this.loop == Infinity || this.loopCounter < this.loop)) {
       this.finished = false
@@ -62,8 +62,8 @@ function Timer(_duration, config = {}) constructor {
       this.finished = true
     }
 
-    if (this.callback) {
-      this.callback(callbackData, this)
+    if (this.callback != null) {
+      this.callback(callbackData)
     }
 
     this.loopCounter++

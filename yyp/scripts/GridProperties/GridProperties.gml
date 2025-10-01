@@ -172,24 +172,30 @@ function GridProperties(config = null) constructor {
 
   #region support-grid
   ///@type {Number}
-  renderSupportGrid = Assert.isType(Struct
-    .getDefault(config, "properties.renderSupportGrid", true), Boolean)
+  renderSupportGrid = Struct.getIfType(config, "properties.renderSupportGrid",  Boolean, false)
 
   ///@type {Number}
-  supportGridTreshold = Assert.isType(Struct
-    .getDefault(config, "properties.supportGridTreshold", 2), Number)
+  supportGridTreshold = Struct.getIfType(config, "properties.supportGridTreshold", Number, 8.0)
 
   ///@type {Number}
-  supportGridAlpha = Assert.isType(Struct
-    .getDefault(config, "properties.supportGridAlpha", 0.33), Number)
+  supportColorAlpha = Struct.getIfType(config, "properties.supportColorAlpha", Number, 0.0)
+
+  ///@type {Number}
+  supportGridAlpha = Struct.getIfType(config, "properties.supportGridAlpha", Number, 0.0)
+
+  ///@type {Number}
+  supportFocusAlpha = Struct.getIfType(config, "properties.supportFocusAlpha", Number, 0.0)
 
   ///@type {Color}
-  supportGridBlendColor = Assert.isType(ColorUtil.fromHex(Struct
+  supportColor = Assert.isType(ColorUtil.fromHex(Struct
+    .getDefault(config, "properties.supportColor", "#ffffff")), Color)
+
+  ///@type {Color}
+  supportGridColor = Assert.isType(ColorUtil.fromHex(Struct
     .getDefault(config, "properties.supportGridColor", "#ffffff")), Color)
 
   ///@type {BlendConfig}
-  supportGridBlendConfig = new BlendConfig(Struct
-    .getIfType(config, "properties.supportGridBlendConfig", Struct))
+  supportBlendConfig = new BlendConfig(Struct.getIfType(config, "properties.supportBlendConfig", Struct))
   #endregion
 
   ///@type {Color}
@@ -244,6 +250,9 @@ function GridProperties(config = null) constructor {
     playerZ: 2051,
   }
   
+  ///@type {Number}
+  bulletTime = Struct.getIfType(config, "properties.bulletTime", Number, GRID_SERVICE_BULLET_TIME)
+
   ///@private
   ///@type {Timer}
   separatorTimer = new Timer(FRAME_MS, { amount: this.speed / GRID_ITEM_SPEED_SCALE, loop: Infinity })
@@ -311,6 +320,15 @@ function GridProperties(config = null) constructor {
 
     this.gridClearColor.alpha = this.gridClearFrameAlpha
     this.shaderClearColor.alpha = this.shaderClearFrameAlpha
+
+    //if (keyboard_check(ord("K"))) {
+    //  this.bulletTime = Math.transformNumber(GRID_SERVICE_BULLET_TIME, 0.5, 0.02)
+    //  Core.print("bulletTime", this.bulletTime)
+    //} else {
+    //  this.bulletTime = Math.transformNumber(GRID_SERVICE_BULLET_TIME, 1.0, 0.02)
+    //}
+
+    GRID_SERVICE_BULLET_TIME = this.bulletTime
     return this
   }
 }

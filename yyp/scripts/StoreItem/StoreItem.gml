@@ -23,13 +23,13 @@ function StoreItem(_name, json) constructor {
   lazyNotify = false
 
   ///@return {any}
-  get = method(this, Assert.isType(Struct.getDefault(json, "get", function() {
+  get = method(this, Assert.isType(Struct.getIfType(json, "get", Callable, function() {
     return this.value
   }), Callable))
 
   ///@param {any} value
   ///@return {StoreItem}
-  set = method(this, Assert.isType(Struct.getDefault(json, "set", function(value, lazyNotify = false) {
+  set = method(this, Assert.isType(Struct.getIfType(json, "set", Callable, function(value, lazyNotify = false) {
     var _value = Assert.isType(this.passthrough(value), this.type, $"Store item name: {this.name}")
     this.validate(_value)
     this.value = _value
@@ -46,17 +46,17 @@ function StoreItem(_name, json) constructor {
   ///@param {any} value
   ///@return {any} value
   ///@throws {Exception}
-  passthrough = method(this, Assert.isType(Struct.getDefault(json, "passthrough", function(value) {
+  passthrough = method(this, Assert.isType(Struct.getIfType(json, "passthrough", Callable, function(value) {
     return value
   }), Callable))
 
   ///@return {any}
-  factoryDefault = method(this, Assert.isType(Struct.getDefault(json, "factoryDefault", function() {
+  factoryDefault = method(this, Assert.isType(Struct.getIfType(json, "factoryDefault", Callable, function() {
     return null
   }), Callable))
 
   ///@return {any}
-  serialize = method(this, Assert.isType(Struct.getDefault(json, "serialize", function() { 
+  serialize = method(this, Assert.isType(Struct.getIfType(json, "serialize", Callable, function() { 
     var item = this.get()
     return Struct.contains(item, "serialize") && Core.isType(item.serialize, Callable)
       ? item.serialize()
@@ -65,13 +65,13 @@ function StoreItem(_name, json) constructor {
 
   ///@param {any} value
   ///@return {StoreItem}
-  parse = method(this, Assert.isType(Struct.getDefault(json, "parse", function(value) { 
+  parse = method(this, Assert.isType(Struct.getIfType(json, "parse", Callable, function(value) { 
     return this.set(value)
   }), Callable))
 
   ///@param {any} value
   ///@throws {Exception}
-  validate = method(this, Assert.isType(Struct.getDefault(json, "validate", function(value) { 
+  validate = method(this, Assert.isType(Struct.getIfType(json, "validate", Callable, function(value) { 
     return // dummy
   }), Callable))
 

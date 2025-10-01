@@ -1,37 +1,15 @@
 ///@package io.alkapivo.core.service.dialogue-designer
 
 function DialogueRenderer() constructor {
+  
+  bazyl = SpriteUtil.parse({ name: "texture_baron" })
+  bazylTheta = 0.0
 
   ///@type {Font}
   font = Assert.isType(FontUtil.parse({ name: "font_consolas_18_regular" }), Font)
 
   ///@type {?Struct}
   context = null
-
-  ///@return {DialogueRenderer}
-  update = function() {
-    var dialog = Beans.get(BeanDialogueDesignerService).dialog
-    if (!Core.isType(dialog, DDDialogue)) {
-      this.context = null
-      return this
-    }
-
-    var lang = "ENG"
-    if (Struct.get(this.context, "current") != dialog.current) {
-      this.context = {
-        text: this.parseDialogueText(dialog.current.getText(lang)),
-        choices: dialog.current.getChoicesText(lang),
-        current: dialog.current
-      }
-    }
-
-    if (Core.isType(this.context, Struct)) {
-      this.context.text.anykeyConsumed = false
-    }
-    return this
-  }
-
-
 
   layout = new UILayout({
     name: "dialog",
@@ -51,7 +29,7 @@ function DialogueRenderer() constructor {
         height: function() { return this.context.height() },
         x: function() { return this.context.nodes.avatar.right() },
       },
-    }
+    },
   })
 
   ///@param {String} text
@@ -145,9 +123,6 @@ function DialogueRenderer() constructor {
     return parsed
   }
 
-  bazyl = SpriteUtil.parse({ name: "texture_baron" })
-  bazylTheta = 0.0
-
   ///@param {Struct} parsed
   ///@return {DialogueRenderer}
   renderDialogue = function(parsed) {
@@ -233,7 +208,7 @@ function DialogueRenderer() constructor {
     
     this.bazyl.render(avatar.x() + sin(this.bazylTheta), avatar.y() + cos(this.bazylTheta))
 
-    var text = String.wrapText($"{parsed.buffer}{displayText}", this.layout.nodes.text.width(), "\n", 1),
+    var text = String.wrapText($"{parsed.buffer}{displayText}", this.layout.nodes.text.width(), "\n", 1)
     GPU.render.text(
       this.layout.nodes.text.x(),
       this.layout.nodes.text.y(),
@@ -249,6 +224,29 @@ function DialogueRenderer() constructor {
       1.0
     )
 
+    return this
+  }
+
+  ///@return {DialogueRenderer}
+  update = function() {
+    var dialog = Beans.get(BeanDialogueDesignerService).dialog
+    if (!Core.isType(dialog, DDDialogue)) {
+      this.context = null
+      return this
+    }
+
+    var lang = "ENG"
+    if (Struct.get(this.context, "current") != dialog.current) {
+      this.context = {
+        text: this.parseDialogueText(dialog.current.getText(lang)),
+        choices: dialog.current.getChoicesText(lang),
+        current: dialog.current
+      }
+    }
+
+    if (Core.isType(this.context, Struct)) {
+      this.context.text.anykeyConsumed = false
+    }
     return this
   }
 

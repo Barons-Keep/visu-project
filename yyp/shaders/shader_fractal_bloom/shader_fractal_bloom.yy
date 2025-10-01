@@ -1,0 +1,12 @@
+{
+  "$GMShader":"",
+  "%Name":"shader_fractal_bloom",
+  "name":"shader_fractal_bloom",
+  "parent":{
+    "name":"shader_fractal_bloom",
+    "path":"folders/io.alkapivo.core/resource/shader/screen/shader_fractal_bloom.yy",
+  },
+  "resourceType":"GMShader",
+  "resourceVersion":"2.0",
+  "type":1,
+}

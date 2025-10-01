@@ -10,9 +10,6 @@ function PlayerService(_controller, config = {}): Service() constructor {
   ///@type {?Player}
   player = null
 
-  ///@type {?GameMode}
-  gameMode = null
-
   ///@type {EventPump}
   dispatcher = new EventPump(this, new Map(String, Callable, {
     "spawn-player": function(event) {
@@ -25,11 +22,7 @@ function PlayerService(_controller, config = {}): Service() constructor {
         mask: Struct.get(event.data, "mask"),
         stats: Struct.get(event.data, "stats"),
         keyboard: Beans.get(BeanVisuIO).keyboards.get("player"),
-        gameModes: {
-          racing: JSON.clone(Struct.getDefault(event.data, "racing", {})),
-          bulletHell: JSON.clone(Struct.getDefault(event.data, "bulletHell", {})),
-          platformer: JSON.clone(Struct.getDefault(event.data, "platformer", {})),
-        },
+        handler: JSON.clone(Struct.getIfType(event.data, "handler", Struct, {})),
       })
 
       var gridService = this.controller.gridService
@@ -53,7 +46,6 @@ function PlayerService(_controller, config = {}): Service() constructor {
       Struct.set(template, "uid", this.controller.gridService.generateUID())
 
       this.set(new Player(template))
-      this.player.updateGameMode(this.controller.gameMode)
     },
     "clear-player": function(event) {
       this.remove()
@@ -66,6 +58,7 @@ function PlayerService(_controller, config = {}): Service() constructor {
     if (!Core.isType(player, Player)) {
       return this
     }
+
     this.remove().player = player
     return this
   }
@@ -82,6 +75,7 @@ function PlayerService(_controller, config = {}): Service() constructor {
     if (!Core.isType(event.promise, Promise)) {
       event.promise = new Promise()
     }
+
     return this.dispatcher.send(event)
   }
 
@@ -89,17 +83,10 @@ function PlayerService(_controller, config = {}): Service() constructor {
   ///@return {PlayerService}
   update = function() {
     this.dispatcher.update()
-    if (Core.isType(this.player, Player)) {
-      if (this.controller.gameMode != this.gameMode) {
-        this.gameMode = this.controller.gameMode
-        this.player.speed = 0
-        this.player.angle = 90
-        this.player.sprite.setAngle(this.player.angle)
-        this.player.updateGameMode(this.gameMode)
-      }
-      
+    if (this.player != null) {
       this.player.update(this.controller)
     }
+
     return this
   }
 }

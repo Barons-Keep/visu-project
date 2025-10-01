@@ -280,7 +280,8 @@ function brush_view_config(json = null) {
             spriteOff: { name: "visu_texture_checkbox_off" },
             store: { key: "vw-cfg_cls-subtitle" },
             hidden: { key: "vw-cfg_hide-cls" },
-          }
+          },
+          input: { },
         },
       },
       {
@@ -299,7 +300,8 @@ function brush_view_config(json = null) {
             spriteOff: { name: "visu_texture_checkbox_off" },
             store: { key: "vw-cfg_cls-bkg-texture" },
             hidden: { key: "vw-cfg_hide-cls" },
-          }
+          },
+          input: { },
         },
       },
       {
@@ -318,7 +320,8 @@ function brush_view_config(json = null) {
             spriteOff: { name: "visu_texture_checkbox_off" },
             store: { key: "vw-cfg_cls-bkg-col" },
             hidden: { key: "vw-cfg_hide-cls" },
-          }
+          },
+          input: { },
         },
       },
       {
@@ -337,7 +340,8 @@ function brush_view_config(json = null) {
             spriteOff: { name: "visu_texture_checkbox_off" },
             store: { key: "vw-cfg_cls-frg-texture" },
             hidden: { key: "vw-cfg_hide-cls" },
-          }
+          },
+          input: { },
         },
       },
       {
@@ -356,7 +360,8 @@ function brush_view_config(json = null) {
             spriteOff: { name: "visu_texture_checkbox_off" },
             store: { key: "vw-cfg_cls-frg-col" },
             hidden: { key: "vw-cfg_hide-cls" },
-          }
+          },
+          input: { },
         },
       },
       {

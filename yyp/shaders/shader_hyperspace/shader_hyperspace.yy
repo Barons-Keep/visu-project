@@ -1,0 +1,12 @@
+{
+  "$GMShader":"",
+  "%Name":"shader_hyperspace",
+  "name":"shader_hyperspace",
+  "parent":{
+    "name":"shader_hyperspace",
+    "path":"folders/io.alkapivo.core/resource/shader/screen/shader_hyperspace.yy",
+  },
+  "resourceType":"GMShader",
+  "resourceVersion":"2.0",
+  "type":1,
+}

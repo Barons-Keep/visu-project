@@ -46,26 +46,6 @@ function brush_entity_player(json = null) {
         serialize: UIUtil.serialize.getStringStruct(),
         passthrough: UIUtil.passthrough.getStringStruct(),
       },
-      "en-pl_use-platformer": {
-        type: Boolean,
-        value: Struct.get(json, "en-pl_use-platformer"),
-      },
-      "en-pl_platformer": {
-        type: String,
-        value: JSON.stringify(Struct.get(json, "en-pl_platformer"), { pretty: true }),
-        serialize: UIUtil.serialize.getStringStruct(),
-        passthrough: UIUtil.passthrough.getStringStruct(),
-      },
-      "en-pl_use-racing": {
-        type: Boolean,
-        value: Struct.get(json, "en-pl_use-racing"),
-      },
-      "en-pl_racing": {
-        type: String,
-        value: JSON.stringify(Struct.get(json, "en-pl_racing"), { pretty: true }),
-        serialize: UIUtil.serialize.getStringStruct(),
-        passthrough: UIUtil.passthrough.getStringStruct(),
-      },
       "en-pl_hide": {
         type: Boolean,
         value: Struct.get(json, "en-pl_hide"),
@@ -664,73 +644,7 @@ function brush_entity_player(json = null) {
             backgroundAlpha: 0.0,
           },
         },
-      },
-      /* 
-      {
-        name: "grid-player_mode_platformer",
-        template: VEComponents.get("property"),
-        layout: VELayouts.get("property"),
-        config: { 
-          layout: { type: UILayoutType.VERTICAL },
-          label: { 
-            text: "Platformer",
-            enable: { key: "en-pl_use-platformer" },
-          },
-          checkbox: { 
-            spriteOn: { name: "visu_texture_checkbox_on" },
-            spriteOff: { name: "visu_texture_checkbox_off" },
-            store: { key: "en-pl_use-platformer" },
-          },
-        },
-      },
-      {
-        name: "en-pl_platformer",
-        template: VEComponents.get("text-area"),
-        layout: VELayouts.get("text-area"),
-        config: { 
-          layout: { type: UILayoutType.VERTICAL },
-          field: { 
-            v_grow: true,
-            w_min: 570,
-            store: { key: "en-pl_platformer" },
-            enable: { key: "en-pl_use-platformer" },
-            updateCustom: UIItemUtils.textField.getUpdateJSONTextArea(),
-          },
-        },
-      },
-      {
-        name: "en-pl_racing",
-        template: VEComponents.get("property"),
-        layout: VELayouts.get("property"),
-        config: { 
-          layout: { type: UILayoutType.VERTICAL },
-          label: { 
-            text: "Racing",
-            enable: { key: "en-pl_use-racing" },
-          },
-          checkbox: { 
-            spriteOn: { name: "visu_texture_checkbox_on" },
-            spriteOff: { name: "visu_texture_checkbox_off" },
-            store: { key: "en-pl_use-racing" },
-          },
-        },
-      },
-      {
-        name: "en-pl_racing",
-        template: VEComponents.get("text-area"),
-        layout: VELayouts.get("text-area"),
-        config: { 
-          layout: { type: UILayoutType.VERTICAL },
-          field: { 
-            v_grow: true,
-            w_min: 570,
-            store: { key: "en-pl_racing" },
-            enable: { key: "en-pl_use-racing" },
-            updateCustom: UIItemUtils.textField.getUpdateJSONTextArea(),
-          },
-        },
-      },
-      */
+      }
     ]),
   }
 }

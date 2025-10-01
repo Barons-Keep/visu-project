@@ -1073,11 +1073,7 @@ function _UIUtil() constructor {
         var itemY = item.area.y
         var areaX = abs(area.x)
         var areaY = abs(area.y)
-        if (Math.rectangleOverlaps(
-          itemX, itemY,
-          itemX + item.area.z, itemY + item.area.a,
-          areaX, areaY,
-          areaX + area.z, areaY + area.a)) {
+        if (Math.rectangleOverlaps(itemX, itemY, item.area.z, item.area.a, areaX, areaY, area.z, area.a)) {
           item.render()
         }
       }

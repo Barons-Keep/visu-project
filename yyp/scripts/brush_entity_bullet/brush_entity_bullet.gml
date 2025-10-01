@@ -652,7 +652,24 @@ function brush_entity_bullet(json) {
               return
             }
 
-            mouse.setClipboard(this)
+            var _x = event.data.x - this.context.area.getX() - this.area.getX() - this.context.offset.x
+            var _y = event.data.y - this.context.area.getY() - this.area.getY() - this.context.offset.y
+            var areaWidth = this.area.getWidth()
+            var areaHeight = this.area.getHeight()
+            var scaleX = this.image.getScaleX()
+            var scaleY = this.image.getScaleY()
+            this.image.scaleToFit(areaWidth, areaHeight)
+
+            var width = this.image.getWidth() * this.image.getScaleX()
+            var height = this.image.getHeight() * this.image.getScaleY()
+            this.image.setScaleX(scaleX).setScaleY(scaleY)
+
+            var marginH = (areaWidth - width) / 2.0
+            var marginV = (areaHeight - height) / 2.0
+            if ((_x >= marginH && _x <= areaWidth - marginH)
+              && (_y >= marginV && _y <= areaHeight - marginV)) {
+              mouse.setClipboard(this)  
+            }
           },
           onMouseOnLeft: function(event) {
             if (!Optional.is(this.store)) {
@@ -692,8 +709,8 @@ function brush_entity_bullet(json) {
 
               var store = this.store.getStore()
               if (Optional.is(store)) {
-                var horizontal = round(((originX / this.image.getWidth()) * 50.0) - 25.0)
-                var vertical = round(((originY / this.image.getHeight()) * 50.0) - 25.0)
+                var horizontal = round(((originX / this.image.getWidth()) * SHROOM_SPAWN_AMOUNT) - (SHROOM_SPAWN_AMOUNT / 2.0))
+                var vertical = round(((originY / this.image.getHeight()) * SHROOM_SPAWN_AMOUNT) - (SHROOM_SPAWN_AMOUNT / 2.0))
                 store.get("en-blt_x").set(horizontal)
                 store.get("en-blt_y").set(vertical)
               }
@@ -711,8 +728,8 @@ function brush_entity_bullet(json) {
               return
             }
 
-            var horizontal = (store.getValue("en-blt_x") + 25.0) / 50.0
-            var vertical = (store.getValue("en-blt_y") + 25.0) / 50.0
+            var horizontal = (store.getValue("en-blt_x") + (SHROOM_SPAWN_AMOUNT / 2.0)) / SHROOM_SPAWN_AMOUNT
+            var vertical = (store.getValue("en-blt_y") + (SHROOM_SPAWN_AMOUNT / 2.0)) / SHROOM_SPAWN_AMOUNT
             var originX = round(horizontal * this.image.getWidth())
             var originY = round(vertical * this.image.getHeight())
             var textureIntent = this.store.getValue()

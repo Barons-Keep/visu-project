@@ -1,0 +1,12 @@
+{
+  "$GMShader":"",
+  "%Name":"shader_wormhole_vortex",
+  "name":"shader_wormhole_vortex",
+  "parent":{
+    "name":"shader_wormhole_vortex",
+    "path":"folders/io.alkapivo.core/resource/shader/screen/shader_wormhole_vortex.yy",
+  },
+  "resourceType":"GMShader",
+  "resourceVersion":"2.0",
+  "type":1,
+}

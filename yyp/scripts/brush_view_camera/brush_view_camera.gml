@@ -301,6 +301,7 @@ function brush_view_camera(json) {
             store: { key: "vw-cam_reset-follow" },
             hidden: { key: "vw-cam_hide-view" },
           },
+          input: { },
         },
       },
       {

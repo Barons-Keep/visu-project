@@ -10,6 +10,26 @@ function _ParticleEmitterShape(): Enum() constructor {
   ELLIPSE = ps_shape_ellipse
   DIAMOND = ps_shape_diamond
   LINE = ps_shape_line
+
+  ///@override
+  ///@return {Array<String>}
+  keys = function() {
+    static filterKeys = function(key) {
+      return key != "_keys"
+          && key != "keys"
+          && key != "get"
+          && key != "getKey"
+          && key != "findKey"
+          && key != "contains"
+          && key != "containsKey"
+    }
+
+    if (this._keys == null) {
+      this._keys = new Array(String, GMArray.sort(GMArray.filter(Struct.keys(this), filterKeys)))
+    }
+
+    return this._keys
+  }
 }
 global.__ParticleEmitterShape = new _ParticleEmitterShape()
 #macro ParticleEmitterShape global.__ParticleEmitterShape
@@ -19,6 +39,26 @@ function _ParticleEmitterDistribution(): Enum() constructor {
   LINEAR = ps_distr_linear
   GAUSSIAN = ps_distr_gaussian
   INVERTEDGAUSSIAN = ps_distr_invgaussian
+
+  ///@override
+  ///@return {Array<String>}
+  keys = function() {
+    static filterKeys = function(key) {
+      return key != "_keys"
+          && key != "keys"
+          && key != "get"
+          && key != "getKey"
+          && key != "findKey"
+          && key != "contains"
+          && key != "containsKey"
+    }
+
+    if (this._keys == null) {
+      this._keys = new Array(String, GMArray.sort(GMArray.filter(Struct.keys(this), filterKeys)))
+    }
+
+    return this._keys
+  }
 }
 global.__ParticleEmitterDistribution = new _ParticleEmitterDistribution()
 #macro ParticleEmitterDistribution global.__ParticleEmitterDistribution

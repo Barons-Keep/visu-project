@@ -24,7 +24,7 @@ function VEPopupQueue(_editor) constructor {
       _x: 0,
       _y: 24 + 16,
       _width: 300,
-      _height: 32,
+      _height: 40,
       _margin: 8,
       x: function() { return this._x + this.__margin.left },
       y: function() { return this._y + (index * this.height()) + (index * _margin) },
@@ -36,7 +36,7 @@ function VEPopupQueue(_editor) constructor {
           name: "ve-popup-queue_item.icon",
           _offsetY: 0,
           _width: 0,
-          _height: 32,
+          _height: 40,
           x: function() { return this.__margin.left },
           y: function() { return this._offsetY + this.__margin.top },
           width: function() { return _width - this.__margin.left - this.__margin.right },
@@ -61,18 +61,18 @@ function VEPopupQueue(_editor) constructor {
           height: function() { return this._height
             - this.__margin.top 
             - this.__margin.bottom },
-          margin: { top: 0, right: 4, bottom: 0, left: 4 },
+          margin: { top: 4, right: 4, bottom: 4, left: 4 },
         },
         close: {
           name: "ve-popup-queue_item.close",
           _offsetY: 0,
           _width: 32,
-          _height: 32,
+          _height: 40,
           x: function() { return this.context.nodes.message.right() + this.__margin.left },
           y: function() { return this._offsetY + this.__margin.top },
           width: function() { return this._width - this.__margin.left - this.__margin.right },
           height: function() { return this._height - this.__margin.top - this.__margin.bottom },
-          margin: { top: 0, right: 4, bottom: 0, left: 4 },
+          margin: { top: 4, right: 4, bottom: 4, left: 4 },
         },
       }
     })
@@ -156,32 +156,6 @@ function VEPopupQueue(_editor) constructor {
         if (this.enableScrollbarY) {
           this.scrollbarY.render(this)
         }
-
-        GPU.render.rectangle(
-          this.area.getX(),
-          this.area.getY() + this.area.getHeight(),
-          this.area.getX() + this.area.getWidth() - 1,
-          this.area.getY() + this.area.getHeight() + 2,
-          false,
-          this.state.get("background-color"),
-          this.state.get("background-color"),
-          this.state.get("background-color"),
-          this.state.get("background-color"),
-          this.state.get("background-alpha")
-        )
-
-        GPU.render.rectangle(
-          this.area.getX(),
-          this.area.getY() - 4,
-          this.area.getX() + this.area.getWidth() - 1,
-          this.area.getY() - 1,
-          false,
-          this.state.get("background-color"),
-          this.state.get("background-color"),
-          this.state.get("background-color"),
-          this.state.get("background-color"),
-          this.state.get("background-alpha")
-        )
       },
       onMouseHoverOver: function() {
         this.timeout = null
@@ -225,7 +199,8 @@ function VEPopupQueue(_editor) constructor {
             GPU.set.font(this.label.font.asset)
             var text = String.wrapText(this._text, this.layout.width(), "\n", 0)
             var lines = 1 + String.count(text, "\n")
-            this.layout._height = lines == 1 ? this.context.area.getHeight() : lines * string_height("|")
+            var height = string_height("|")
+            this.layout._height = lines == 1 ? this.context.area.getHeight() : ((lines * height) + height)
             this.label.text = text
             this.label.align.v = lines == 1 ? VAlign.CENTER : VAlign.TOP
           },

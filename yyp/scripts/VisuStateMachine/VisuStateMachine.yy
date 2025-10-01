@@ -1,0 +1,13 @@
+{
+  "$GMScript":"v1",
+  "%Name":"VisuStateMachine",
+  "isCompatibility":false,
+  "isDnD":false,
+  "name":"VisuStateMachine",
+  "parent":{
+    "name":"src",
+    "path":"folders/io.alkapivo.visu/src.yy",
+  },
+  "resourceType":"GMScript",
+  "resourceVersion":"2.0",
+}

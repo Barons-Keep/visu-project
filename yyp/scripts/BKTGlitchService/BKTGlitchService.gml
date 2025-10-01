@@ -146,7 +146,7 @@ function BKTGlitchService() constructor {
       this.rng = Struct.getIfType(event.data, "rng", Boolean, this.rng)
     },
     "load-config": function(event) {
-      bktglitch_activate(this.width, this.height)
+      bktglitch_activate(this.width, this.height, this.time)
       var keys = Struct.keys(event.data)
       var size = GMArray.size(keys)
       for (var index = 0; index < size; index++) {
@@ -159,7 +159,7 @@ function BKTGlitchService() constructor {
     },
     "clear-glitch": function(event) {
       this.factor = 1.0
-      bktglitch_activate(this.width, this.height)
+      bktglitch_activate(this.width, this.height, this.time)
       var config = this.configs.get("clear")
       var keys = Struct.keys(config)
       var size = GMArray.size(keys)
@@ -173,6 +173,9 @@ function BKTGlitchService() constructor {
     }
   }))
 
+  ///@type {Number}
+  time = 0.0
+
   ///@param {Event} event
   ///@return {?Promise}
   send = function(event) {
@@ -183,6 +186,7 @@ function BKTGlitchService() constructor {
   ///@param {Number} height
   ///@return {BKTGlitch}
   update = function(width, height) {
+    this.time = (current_time * 0.05) % 5184000.0
     this.dispatcher.update()
     this.width = width
     this.height = height
@@ -199,7 +203,7 @@ function BKTGlitchService() constructor {
   ///@param {any} data
   ///@return {BKTGlitch}
   renderOn = function(callback, data) {
-    bktglitch_activate(this.width, this.height)
+    bktglitch_activate(this.width, this.height, this.time)
 		__bktgtlich_pass_uniforms_from_ui()
     callback(data)
     bktglitch_deactivate()

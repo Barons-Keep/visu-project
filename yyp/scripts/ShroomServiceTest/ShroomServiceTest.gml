@@ -7,6 +7,6 @@ function ShroomServiceTest(): Test() constructor {
     name = "Test ShroomService.gml"
 
     ///@override
-    ///@type {Struct[]}
+    ///@type {GMArray<Struct>}
     cases = []
 }

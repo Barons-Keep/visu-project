@@ -27,35 +27,3 @@ function SwingFeature(json): GridItemFeature(json) constructor {
     item.angle = item.angle + (cos(this.swingTimer.update().time) * this.size)
   }
 }
-
-
-///@param {Struct} json
-///@return {GridItemFeature}
-function _SwingFeature(json) {
-  var data = Struct.map(Assert.isType(Struct
-    .getDefault(json, "data", {}), Struct), GMArray
-    .resolveRandom)
-  
-  return new GridItemFeature(Struct.append(json, {
-
-    ///@param {Callable}
-    type: SwingFeature,
-
-    ///@type {Struct}
-    swingTimer: new Timer(pi * 2, { 
-      loop: Infinity, 
-      amount: FRAME_MS * (Core.isType(Struct.get(data, "amount"), Number) 
-        ? data.amount : 1.0),
-    }),
-
-    ///@type {Number}
-    size: Core.isType(Struct.get(data, "size"), Number) ? data.size : 1.0,
-
-    ///@override
-    ///@param {GridItem} item
-    ///@param {VisuController} controller
-    update: function(item, controller) {
-      item.angle = item.angle + (cos(this.swingTimer.update().time) * this.size)
-    },
-  }))
-}

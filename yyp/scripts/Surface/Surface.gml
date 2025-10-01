@@ -138,7 +138,7 @@ function Surface(config = null) constructor {
       return this
     }
 
-    if (Optional.is(blendConfig)) {
+    if (blendConfig != null) {
       blendConfig.set()
       draw_surface_stretched_ext(this.asset, x, y, width, height, blend, alpha)
       blendConfig.reset()

@@ -15,22 +15,17 @@ function PlayerTemplate(json) constructor {
   ///@type {Keyboard}
   keyboard = Assert.isType(json.keyboard, Keyboard)
 
-  ///@type {Struct}
-  gameModes = Struct.appendUnique(
-    Struct.filter(Struct.getDefault(json, "gameModes", {}), function(gameMode, key) { 
-      return Core.isType(gameMode, Struct) && Core.isEnum(key, GameMode)
-    }),
-    PLAYER_GAME_MODES
-  )
-
   ///@type {?Struct}
   stats = Core.isType(Struct.get(json, "stats"), Struct) ? json.stats : null
+
+  ///@type {Struct}
+  handler = Struct.getIfType(json, "handler", Struct, {})
 
   ///@return {Struct}
   serialize = function() {
     var json = {
       sprite: this.sprite,
-      gameModes: this.gameModes,
+      handler: this.handler,
       keyboard: this.keyboard,
     }
 
@@ -715,6 +710,247 @@ function PlayerStats(_player, json) constructor {
   }
 }
 
+///@param {Struct} json
+function PlayerHandler(json) constructor {
+
+  ///@type {GridItemMovement}
+  x = new GridItemMovement(Struct.getIfType(json, "x", Struct, {}), true)
+  
+  ///@type {GridItemMovement}
+  y = new GridItemMovement(Struct.getIfType(json, "y", Struct, {}), true)
+
+  ///@type {Boolean}
+  focus = Struct.getIfType(json, "focus", Boolean, false)
+
+  ///@type {Struct}
+  focusCooldown = {
+    time: 0.0,
+    duration: Struct.getIfType(json, "focusCooldown", Number, FRAME_MS * 10),
+    finished: false,
+    increment: function() {
+      this.finished = false
+      this.time += DeltaTime.apply()
+      if (this.time >= this.duration) {
+        this.finished = true
+        this.time = this.duration
+      }
+
+      return this
+    },
+    decrement: function() {
+      this.finished = false
+      this.time -= DeltaTime.apply()
+      if (this.time <= 0.0) {
+        this.time = 0.0
+      }
+
+      return this
+    },
+  }
+  
+  ///@type {Struct}
+  previous = {
+    x: {
+      value: 0.0,
+      prev: null,
+      get: function() {
+        return this.value - this.prev
+      },
+      update: function(value) {
+        this.prev = this.prev == null ? value : this.value
+        this.value = value
+        return this
+      },
+      reset: function() {
+        this.value = 0.0
+        this.prev = this.value
+        return this
+      },
+    },
+  }
+
+  ///@type {Array<Struct>}
+  guns = new Array(Struct, Core.isType(Struct.get(json, "guns"), GMArray)
+    ? GMArray.map(json.guns, function(gun) {
+      return {
+        cooldown: new Timer(FRAME_MS * Struct.getIfType(gun, "cooldown", Number, 8.0), { 
+          loop: Infinity,
+          time: Struct.getIfType(gun, "time", Number, 0.0),
+        }),
+        bullet: Struct.getIfType(gun, "bullet", String, "bullet-default"),
+        angle: Struct.getIfType(gun, "angle", Number, 90.0),
+        speed: Struct.getIfType(gun, "speed", Number, 10.0),
+        offsetX: Struct.getIfType(gun, "offsetX", Number, 0.0),
+        offsetY: Struct.getIfType(gun, "offsetY", Number, 0.0),
+        minForce: Struct.getIfType(gun, "minForce", Number, 0.0),
+        maxForce: Struct.getIfType(gun, "maxForce", Number, null),
+        focus: Struct.getIfType(gun, "focus", Boolean, null),
+      }
+    })
+    : []
+  )
+
+  ///@override
+  ///@param {GridItem} player
+  ///@return {PlayerHandler}
+  onStart = function(player) {
+    this.x.speed = 0
+    this.y.speed = 0
+    this.guns.forEach(function(gun) {
+      gun.cooldown.reset()
+    })
+    this.previous.x.reset()
+    player.speed = 0
+    player.angle = 90
+    player.sprite.setAngle(player.angle)
+
+    return this
+  }
+
+  ///@override
+  ///@param {GridItem} player
+  ///@param {VisuController} controller
+  ///@return {PlayerHandler}
+  update = function(player, controller) {
+    static calcSpeed = function(config, player, keyA, keyB, keyFocus) {
+      var spdMax = config.speedMax
+      if (keyFocus) {
+        var factor = DeltaTime.apply(abs(config.speedMax - config.speedMaxFocus) / 15.0)
+        spdMax = clamp(abs(config.speed) - factor, config.speedMaxFocus, config.speedMax)
+      }
+
+      var spd = 0.0
+      if (keyA || keyB) {
+        var dir = keyA ? -1.0 : 1.0
+        config.speed += dir * DeltaTime.apply(config.acceleration) * 0.5
+        spd = DeltaTime.apply(config.speed)
+        config.speed += dir * DeltaTime.apply(config.acceleration) * 0.5
+      } else if (abs(config.speed) - (DeltaTime.apply(config.friction) * 0.5) >= 0) {
+        var dir = sign(config.speed)
+        config.speed -= dir * DeltaTime.apply(config.friction) * 0.5
+        spd = DeltaTime.apply(config.speed)
+        config.speed -= dir * DeltaTime.apply(config.friction) * 0.5
+        if (sign(config.speed) != dir) {
+          config.speed = 0.0
+        }
+      } else {
+        config.speed = 0.0
+      }
+      config.speed = sign(config.speed) * clamp(abs(config.speed), 0.0, spdMax)
+      return spd
+
+      //var speedMax = config.speedMax
+      //if (keyFocus) {
+      //  var factor = abs(config.speedMax - config.speedMaxFocus) / 15.0
+      //  speedMax = clamp(abs(config.speed) - DeltaTime.apply(factor), 
+      //    config.speedMaxFocus, config.speedMax)
+      //}
+      //speedMax = DeltaTime.apply(speedMax)
+      //config.speed = keyA || keyB
+      //  ? (config.speed + (keyA ? -1 : 1) 
+      //    * DeltaTime.apply(config.acceleration))
+      //  : (abs(config.speed) - DeltaTime.apply(config.friction) >= 0
+      //    ? config.speed - sign(config.speed) 
+      //      * DeltaTime.apply(config.friction) : 0)
+      //config.speed = sign(config.speed) * clamp(abs(config.speed), 0, speedMax)
+      //return config.speed
+    }
+
+    static updateKeyActionOnEnabled = function(gun, index, acc) {
+      var forceLevel = acc.player.stats.forceLevel.get()
+      if (!gun.cooldown.update().finished
+        || (forceLevel < gun.minForce)
+        || (gun.maxForce != null && forceLevel > gun.maxForce)
+        || (gun.focus != null && gun.focus != acc.focus)) {
+        return
+      }
+
+      acc.controller.bulletService.spawnBullet(
+        gun.bullet, 
+        Player,
+        acc.player.x + (gun.offsetX / GRID_SERVICE_PIXEL_WIDTH), 
+        acc.player.y + (gun.offsetY / GRID_SERVICE_PIXEL_HEIGHT),
+        gun.angle,
+        gun.speed
+      )
+
+      //acc.controller.bulletService.send(new Event("spawn-bullet", {
+      //  template: gun.bullet,
+      //  producer: Player,
+      //  x: acc.player.x + (gun.offsetX / GRID_SERVICE_PIXEL_WIDTH),
+      //  y: acc.player.y + (gun.offsetY / GRID_SERVICE_PIXEL_HEIGHT),
+      //  angle: gun.angle,
+      //  speed: gun.speed,
+      //}))
+
+      acc.controller.sfxService.play("player-shoot")
+    }
+
+    static updateKeyActionOnDisabled = function(gun) {
+      if (!gun.cooldown.finished && gun.cooldown.update().finished) {
+        gun.cooldown.reset()
+      }
+    }
+
+    static updateGMTFContextFocused = function(key) {
+      key.on = false
+      key.pressed = false
+      key.released = false
+    }
+    
+    var keys = player.keyboard.keys
+    this.focus = keys.focus.on
+      ? this.focusCooldown.increment().finished
+      : this.focusCooldown.decrement().finished
+
+    if (GMTFContext.isFocused()) {
+      Struct.forEach(keys, updateGMTFContextFocused)
+    }
+
+    if (keys.action.on) {
+      this.guns.forEach(updateKeyActionOnEnabled, {
+        controller: controller,
+        player: player,
+        focus: this.focus,
+      })
+    } else {
+      this.guns.forEach(updateKeyActionOnDisabled)
+    }
+
+    if (keys.bomb.pressed) {
+      player.stats.dispatchBomb()
+    }
+
+    if (Optional.is(player.signals.shroomCollision) 
+      || Optional.is(player.signals.bulletCollision)) {
+      this.x.speed = 0.0
+      this.y.speed = 0.0
+      player.stats.dispatchDeath()
+    }
+
+    player.x = clamp(
+      player.x + calcSpeed(this.x, player, keys.left.on, keys.right.on, keys.focus.on),
+      0.0,
+      controller.gridService.width
+    )
+
+    player.y = clamp(
+      player.y + calcSpeed(this.y, player, keys.up.on, keys.down.on, keys.focus.on), 
+      0.0, 
+      controller.gridService.height
+    )
+
+    this.previous.x.update(player.x)
+    
+    //var halfPi = pi / 2
+    //global.cameraRollSpeed = sin((this.y.speed / this.y.speedMax) * halfPi) * 5.0;
+    //global.cameraPitchSpeed = sin((this.x.speed / this.x.speedMax) * halfPi) * 5.0;
+    //global.cameraYawSpeed = sin((this.x.speed / this.x.speedMax) * halfPi) * 5.0;
+    //Core.print("this.x.speed:", this.x.speed, "this.x.speedMax:", this.x.speedMax, "this.y.speed:", this.y.speed, "this.y.speedMax:", this.y.speedMax, "global.cameraRollSpeed:", global.cameraRollSpeed, "global.cameraPitchSpeed:", global.cameraPitchSpeed, "global.cameraYawSpeed:", global.cameraYawSpeed)
+
+    return this
+  }
+}
 
 ///@param {Struct} template
 function Player(template): GridItem(template) constructor {
@@ -725,20 +961,33 @@ function Player(template): GridItem(template) constructor {
   ///@type {PlayerStats}
   stats = new PlayerStats(this, Struct.get(template, "stats"))
 
+  ///@type {PlayerHandler}
+  handler = new PlayerHandler(Struct.getIfType(template, "handler", Struct, {})).onStart(this)
+  
+  ///@override
+  ///@param {VisuController} controller
+  ///@return {GridItem}
+  static move = function(controller) {
+    gml_pragma("forceinline")
+    this.signals.reset()
+
+    var _speed = DeltaTime.apply(this.speed)
+    this.x += Math.fetchCircleX(_speed, this.angle)
+    this.y += Math.fetchCircleY(_speed, this.angle)
+    return this
+  }
+
+
   ///@override
   ///@return {GridItem}
   static update = function(controller) {
     this.keyboard.update()
-    
-    if (Optional.is(this.gameMode)) {
-      gameMode.update(this, controller)
-    }
+    this.handler.update(this, controller)
+    this.stats.update()
 
     if (this.fadeIn < 1.0) {
       this.fadeIn = clamp(this.fadeIn + VISU_FADE_FACTOR, 0.0, 1.0)
     }
-
-    this.stats.update()
 
     var view = controller.gridService.view
     var targetLocked = controller.gridService.targetLocked
@@ -772,9 +1021,4 @@ function Player(template): GridItem(template) constructor {
     this.y = clamp(this.y, 0.0, view.worldHeight)
     return this
   }
-
-  this.gameModes
-    .set(GameMode.BULLETHELL, PlayerBulletHellGameMode(Struct.getDefault(Struct.get(template, "gameModes"), "bulletHell", {})))
-    //.set(GameMode.RACING, PlayerRacingGameMode(Struct.getDefault(Struct.get(template, "gameModes"), "racing", {})))
-    //.set(GameMode.PLATFORMER, PlayerPlatformerGameMode(Struct.getDefault(Struct.get(template, "gameModes"), "platformer", {})))
 }

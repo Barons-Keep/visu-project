@@ -5,7 +5,7 @@ function _DeltaTime() constructor {
 	
   ///@private
 	///@type {Number}
-  deltaTime = 0
+  deltaTime = 1
 	
   ///@private
 	///@type {Number}
@@ -17,7 +17,7 @@ function _DeltaTime() constructor {
 	
 	///@private
   ///@type {Number}
-	deltaTimePrevious = 0.0
+	deltaTimePrevious = 1.0
 	
   ///@private
 	///@type {Boolean}
@@ -27,6 +27,8 @@ function _DeltaTime() constructor {
   ///@return {Number}
   static apply = function(value = FRAME_MS) {
     gml_pragma("forceinline")
+    //var half = value / 2.0
+    //return this.deltaTime != 0.0 ? (this.deltaTime * half) + half : 0.0
     return this.deltaTime * value
   }
 

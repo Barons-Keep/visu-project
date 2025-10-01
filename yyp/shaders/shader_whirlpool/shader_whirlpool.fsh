@@ -168,7 +168,11 @@ void main() {
   color.gb += fbm2(st * 30.0);
   color -= length(st2) - 0.2;
   vec3 finalColor = vec3(0.0, 0.0, 0.0);
-  for (float i = 1.0; i < iIterations; i++) {
+  for (float i = 1.0; i < 64.0; i++) {
+    if (i > iIterations) {
+      break;
+    }
+    
     float t = abs(1.0 / ((uv.y + fbm(uv + worktime / i)) * (i * 100.0)));
     finalColor +=  t * vec3(i * 0.1, 0.9, 1.90);
   }

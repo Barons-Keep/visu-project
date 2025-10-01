@@ -1,0 +1,13 @@
+{
+  "$GMScript":"v1",
+  "%Name":"ShaderWavyLines",
+  "isCompatibility":false,
+  "isDnD":false,
+  "name":"ShaderWavyLines",
+  "parent":{
+    "name":"shader_wavy_lines",
+    "path":"folders/io.alkapivo.core/resource/shader/screen/shader_wavy_lines.yy",
+  },
+  "resourceType":"GMScript",
+  "resourceVersion":"2.0",
+}

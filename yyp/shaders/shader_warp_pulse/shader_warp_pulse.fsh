@@ -33,20 +33,24 @@ varying vec4 v_color;
 
 
 // Uniforms
-uniform float u_angle;      // Default: 0.0
-uniform float u_brightness; // Default: 1.0
-uniform float u_distortion; // Default: 0.2
-uniform float u_factor_a;     // Default: 0.1
-uniform float u_factor_b;     // Default: 0.9
-uniform float u_hue;        // Default: 0.0
-uniform float u_sat;        // Default: 1.0
-uniform float u_seed;       // Default: 0.0
-uniform float u_size;       // Default: 4
-uniform float u_time;				// Default: 0.0, where 1.0=1sec
-uniform float u_treshold;   // Default: 0.001
-uniform vec2 u_offset;			// Default: (0.5, 0.5)
-uniform vec2 u_resolution;  // Default: (GuiWidth(), GuiHeight())
-uniform vec3 u_tint;        // Default: (0.31, 0.5, 0.89)
+uniform float u_angle;        // Default: 0.0
+uniform float u_bpm;          // Default: 60.0
+uniform float u_brightness;   // Default: 1.0
+uniform float u_distortion;   // Default: 0.2
+uniform float u_hardness;     // Default: 1.0
+uniform float u_hue;          // Default: 0.0
+uniform float u_mask_density; // Default: 1.0
+uniform float u_mask_mode;    // Default: 0.0
+uniform float u_mask_size;    // Default: 1.0
+uniform float u_sat;          // Default: 1.0
+uniform float u_seed;         // Default: 0.0
+uniform float u_size;         // Default: 4
+uniform float u_thickness;    // Default: 1.0
+uniform float u_time;				  // Default: 0.0, where 1.0=1sec
+uniform float u_treshold;     // Default: 0.001
+uniform vec2 u_offset;			  // Default: (0.5, 0.5)
+uniform vec2 u_resolution;    // Default: (GuiWidth(), GuiHeight())
+uniform vec3 u_tint;          // Default: (0.31, 0.5, 0.89)
 
 
 // Base methods
@@ -119,35 +123,60 @@ float fbm(vec2 uv) {
 }
 
 float fbm2(vec2 uv, float t) {
-  vec2 uv2 = uv * 0.7; // get two rotated fbm calls and displace the domain
+  vec2 uv2 = uv * 0.7;
   vec2 basis = vec2(fbm(uv2 - t), fbm(uv2 + t));
   basis = (basis - 0.5) * u_distortion;
   uv += basis;
 
-  return fbm(uv); // coloring
+  return fbm(uv);
 }
 
-float circle(vec2 uv) {
+float circle(vec2 uv, float size, float hardness) {
   float radius = length(uv);
   radius = log(sqrt(radius));
-  return abs(mod(radius * 4.0 * u_size, PI * 2.0) - 3.15) * 3.0 + 0.2;
+  return abs(mod(radius * 4.0 * size, TAU) - PI) * (PI * hardness);
 }
+
 
 void main() {
   vec2 uv = rotated_uv_resolution(v_texcoord, u_resolution, u_offset, u_angle);
-  float len = length(uv);
-  uv *= 4.0;
-
+  vec2 uv2 = vec2(uv);
+  float time = (u_time + u_seed) * (u_bpm / 60.0) * PI;
   float result = fbm2(uv, u_time + u_seed);
 
   // rings
-  uv /= exp(mod((u_time + u_seed + result), PI)); 
-  result *= pow(abs((u_factor_a - circle(uv))), u_factor_b);
-
+  uv /= exp(mod(time, PI / u_size)); 
+  result *= pow(abs((circle(uv, u_size, u_hardness))), u_hardness);
+  
+  int mask_mode = int(u_mask_mode);
+  float mask = 0.0;
+  if (mask_mode != 0) {
+    float mask_a = 0.0;
+    mask = pow(((uv2.x * uv2.x) + (uv2.y * uv2.y)) * u_size, u_mask_size);
+    if (mask_mode == 1) {
+      mask *= abs(sin(uv2.x * TAU * u_mask_density)) * abs(cos(uv2.y * TAU * u_mask_density));
+    } else if (mask_mode == 2) {
+      mask *= result * abs(sin(uv2.x * TAU * u_mask_density)) * abs(cos(uv2.y * TAU * u_mask_density));
+    } else if (mask_mode == 3) {
+      mask_a = abs(sin(uv2.x * TAU * u_mask_density)) * abs(cos(uv2.y * TAU * u_mask_density));
+      mask = mask_a == 0.0 ? mask_a : mask / mask_a;
+    } else if (mask_mode == 4) {
+      mask_a = abs(sin(uv2.x * TAU * u_mask_density)) * abs(cos(uv2.y * TAU * u_mask_density));
+      mask = result * (mask_a == 0.0 ? mask_a : mask / mask_a);
+    } else if (mask_mode == 5) {
+      mask = abs(sin(uv2.x * TAU * u_mask_density)) * abs(cos(uv2.y * TAU * u_mask_density));
+    } else if (mask_mode == 6) {
+      mask = result * abs(sin(uv2.x * TAU * u_mask_density)) * abs(cos(uv2.y * TAU * u_mask_density));
+    }
+  }
+  mask = 1.0 - clamp(mask * u_mask_size, 0.0, 1.0);
+  result = result == 0.0 || u_thickness == 0.0 ? 0.0 : (1.0 / (result / u_thickness));
+  
   vec4 texture = texture2D(gm_BaseTexture, v_texcoord);
-  vec3 color = clamp(pow(abs(u_tint / result), vec3(0.99)), 0.0, 1.0);
+  vec3 color = u_tint * result;
+  color = clamp(color * mask, 0.0, 1.0);
   vec3 pixel = apply_hue(apply_saturation(color, u_sat), u_hue) * u_brightness;
-  float alpha = get_alpha_from_pixel(pixel);
+  float alpha = texture.a == 0.0 ? 0.0 : get_alpha_from_pixel(pixel);
   pixel = mix(pixel, texture.rgb, 1.0 - v_color.a);
   pixel = mix(pixel, texture.rgb, 1.0 - alpha);
   gl_FragColor = vec4(pixel, texture.a + (alpha * v_color.a));

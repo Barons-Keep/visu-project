@@ -18,25 +18,11 @@ function DisplayService(_controller, config = {}): Service() constructor {
   ///@type {Controller}
   controller = Assert.isType(_controller, Struct)
 
-  ///@private
 	///@type {Number}
-	previousWidth = 0;
-	
-  ///@private
-	///@type {Number}
-	previousHeight = 0;
-
-	///@type {Number}
-	windowWidth = 0
+	windowWidth = Struct.getIfType(config, "windowWidth", Number, 960)
 	
 	///@type {Number}
-	windowHeight = 0
-
-  ///@type {Number}
-  previousGuiWidth = 0
-
-  ///@type {Number}
-  previousGuiHeight = 0
+	windowHeight = Struct.getIfType(config, "windowHeight", Number, 540)
 
   ///@type {Number}
   minWidth = Struct.getIfType(config, "minWidth", Number, 320)
@@ -61,6 +47,22 @@ function DisplayService(_controller, config = {}): Service() constructor {
   ///@type {Timer}
   timer = new Timer(FRAME_MS * 20)
 
+  ///@private
+	///@type {Number}
+	previousWidth = this.beforeFullscreenWidth
+	
+  ///@private
+	///@type {Number}
+	previousHeight = this.beforeFullscreenHeight
+
+  ///@private
+  ///@type {Number}
+  previousGuiWidth = this.windowWidth * this.scale
+
+  ///@private
+  ///@type {Number}
+  previousGuiHeight = this.windowHeight * this.scale
+  
   ///@return {Number}
   getWidth = function() {
     return window_get_width()
@@ -187,9 +189,7 @@ function DisplayService(_controller, config = {}): Service() constructor {
     }
 
     if (this.state == "idle" || this.state == "resized") {
-      this.state = isResizeRequired(this)
-        ? "required"
-        : "idle"
+      this.state = isResizeRequired(this) ? "required" : "idle"
     }
 
     if (this.state == "required" && this.timer.update().finished) {

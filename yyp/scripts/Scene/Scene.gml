@@ -26,6 +26,7 @@ function _Scene() constructor {
   ///@return {Scene}
   open = function(name, intent = null) {
     var scene = Assert.isType(this.getScene(name), GMScene)
+    Logger.info("Scene", $"open scene: {name}")
     this.setIntent(intent)
     room_goto(scene)
     return this

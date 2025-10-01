@@ -55,9 +55,8 @@ function UILabel(json) constructor {
   ///@param {Number} y
   ///@param {Number} [maxWidth]
   ///@param {Number} [maxHeight]
-  ///@param {Number} [forceScale]
   ///@return {UILabel}
-  render = function(x, y, maxWidth = 0, maxHeight = 0, forceScale = 1.0) { 
+  render = function(x, y, maxWidth = 0, maxHeight = 0) { 
     var enableBlend = GPU.get.blendEnable()
     if (!enableBlend) {
       GPU.set.blendEnable(true)
@@ -78,8 +77,8 @@ function UILabel(json) constructor {
     var _width = string_width(this.text)
     var _height = string_height(this.text)
     var _includeOffset = this.useScaleWithOffset ? 1 : 0
-    var _maxWidth = maxWidth - (this.offset.x * _includeOffset)
-    var _maxHeight = maxHeight - (this.offset.y * _includeOffset)
+    var _maxWidth = maxWidth - (2.0 * this.offset.x * _includeOffset)
+    var _maxHeight = maxHeight - (2.0 * this.offset.y * _includeOffset)
     var _outline = this.outline ? this.outlineColor : null
     var _scale = this.useScale 
       ? min(

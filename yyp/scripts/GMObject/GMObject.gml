@@ -83,6 +83,14 @@ function _GMObjectUtil() constructor {
         }
       }
     },
+    onSocialEvent: {
+      gmObject: "__onSocialEvent",
+      factoryWrapper: function() {
+        return function(event) {
+          this.__context.onSocialEvent(event)
+        }
+      }
+    },
     onSceneEnter: {
       gmObject: "__onSceneEnter",
       factoryWrapper: function() {

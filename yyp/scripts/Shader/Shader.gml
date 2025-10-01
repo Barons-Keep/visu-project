@@ -62,16 +62,6 @@ global.__shaders = {
       "iIterations": "FLOAT"
     }
   },
-  /*
-  "shader_art_wasm": {
-    "type": "GLSL_ES",
-    "uniforms": {
-      "iTime": "FLOAT",
-      "iResolution": "VECTOR2",
-      "iIterations": "FLOAT"
-    }
-  },
-  */
   "shader_octagrams": {
     "type": "GLSL_ES",
     "uniforms": {
@@ -283,16 +273,6 @@ global.__shaders = {
       "pointRadius": "FLOAT"
     }
   },
-  "shader_sincos_3d_wasm": {
-    "type": "GLSL_ES",
-    "uniforms": {
-      "iResolution": "VECTOR3",
-      "iTime": "FLOAT",
-      "iMouse": "VECTOR4",
-      "lineThickness": "FLOAT",
-      "pointRadius": "FLOAT"
-    }
-  },
   "shader_lighting_with_glow": {
     "type": "GLSL_ES",
     "uniforms": {
@@ -344,21 +324,6 @@ global.__shaders = {
       "iTint": "VECTOR3"
     }
   },
-  /*
-  "shader_002_blue_wasm": {
-    "type": "GLSL_ES",
-    "uniforms": {
-      "iTime": "FLOAT",
-      "iResolution": "VECTOR2",
-      "iIterations": "FLOAT",
-      "iSize": "FLOAT",
-      "iPhase": "FLOAT",
-      "iTreshold": "FLOAT",
-      "iDistance": "FLOAT",
-      "iTint": "VECTOR3"
-    }
-  },
-  */
   "shader_monster": {
     "type": "GLSL_ES",
     "uniforms": {
@@ -384,15 +349,6 @@ global.__shaders = {
       "iIterations": "FLOAT"
     }
   },
-  "shader_flame_wasm": {
-    "type": "GLSL_ES",
-    "uniforms": {
-      "iTime": "FLOAT",
-      "iResolution": "VECTOR2",
-      "iPosition": "VECTOR3",
-      "iIterations": "FLOAT"
-    }
-  },
   "shader_whirlpool": {
     "type": "GLSL_ES",
     "uniforms": {
@@ -403,28 +359,7 @@ global.__shaders = {
       "iFactor": "FLOAT"
     }
   },
-  "shader_whirlpool_wasm": {
-    "type": "GLSL_ES",
-    "uniforms": {
-      "iTime": "FLOAT",
-      "iResolution": "VECTOR2",
-      "iIterations": "FLOAT",
-      "iSize": "FLOAT",
-      "iFactor": "FLOAT"
-    }
-  },
   "shader_warp_speed_2": {
-    "type": "GLSL_ES",
-    "uniforms": {
-      "iTime": "FLOAT",
-      "iResolution": "VECTOR2",
-      "iIterations": "FLOAT",
-      "iSize": "VECTOR2",
-      "iFactor": "FLOAT",
-      "iSeed": "VECTOR3"
-    }
-  },
-  "shader_warp_speed_2_wasm": {
     "type": "GLSL_ES",
     "uniforms": {
       "iTime": "FLOAT",
@@ -457,14 +392,53 @@ global.__shaders = {
 
 ///@static
 ///@type {Struct}
+global.__depreacted_shaders = {
+  "shader_nog_betere_2": true,
+  "shader_art": true,
+  "shader_octagrams": true,
+  "shader_70s_melt": true,
+  "shader_warp": true,
+  "shader_phantom_star": true,
+  "shader_abberation": true,
+  "shader_crt": true,
+  "shader_clouds_2d": true,
+  "shader_emboss": true,
+  "shader_hue": true,
+  "shader_led": true,
+  "shader_magnify": true,
+  "shader_mosaic": true,
+  "shader_posterization": true,
+  "shader_revert": true,
+  "shader_ripple": true,
+  "shader_scanlines": true,
+  "shader_shock_wave": true,
+  "shader_sketch": true,
+  "shader_thermal": true,
+  "shader_wave": true,
+  "shader_cineshader_lava": true,
+  "shader_broken_time_portal": true,
+  "shader_base_warp_fbm": true,
+  "shader_dive_to_cloud": true,
+  "shader_cubular": true,
+  "shader_sincos_3d": true,
+  "shader_lighting_with_glow": true,
+  "shader_discoteq_2": true,
+  "shader_ui_noise_halo": true,
+  "shader_colors_embody": true,
+  "shader_grid_space": true,
+  "shader_002_blue": true,
+  "shader_monster": true,
+  "shader_flame": true,
+  "shader_whirlpool": true,
+  "shader_warp_speed_2": true,
+  "shader_star_nest": true,
+}
+#macro DEPRECATED_SHADERS global.__depreacted_shaders
+
+
+///@static
+///@type {Struct}
 global.__SHADER_CONFIGS = {
-  /*
-  "shader_art_wasm": {
-    "iTime": { __type: "FLOAT" },
-    "iResolution": { __type: "VECTOR2" },
-    "iIterations": { __type: "FLOAT" },
-  },
-  */
   "shader_octagrams": {
     "iTime": { __type: "FLOAT" },
     "iResolution": { __type: "VECTOR2" },
@@ -626,13 +600,6 @@ global.__SHADER_CONFIGS = {
     "lineThickness": { __type: "FLOAT" },
     "pointRadius": { __type: "FLOAT" },
   },
-  "shader_sincos_3d_wasm": {
-    "iResolution": { __type: "VECTOR3" },
-    "iTime": { __type: "FLOAT" },
-    "iMouse": { __type: "VECTOR4" },
-    "lineThickness": { __type: "FLOAT" },
-    "pointRadius": { __type: "FLOAT" },
-  },
   "shader_lighting_with_glow": {
     "iTime": { __type: "FLOAT" },
     "iResolution": { __type: "VECTOR2" },
@@ -666,18 +633,6 @@ global.__SHADER_CONFIGS = {
     "iDistance": { __type: "FLOAT" },
     "iTint": { __type: "VECTOR3" },
   },
-  /*
-  "shader_002_blue_wasm": {
-    "iTime": { __type: "FLOAT" },
-    "iResolution": { __type: "VECTOR2" },
-    "iIterations": { __type: "FLOAT" },
-    "iSize": { __type: "FLOAT" },
-    "iPhase": { __type: "FLOAT" },
-    "iTreshold": { __type: "FLOAT" },
-    "iDistance": { __type: "FLOAT" },
-    "iTint": { __type: "VECTOR3" },
-  },
-  */
   "shader_monster": {
     "iTime": { __type: "FLOAT" },
     "iResolution": { __type: "VECTOR2" },
@@ -694,12 +649,6 @@ global.__SHADER_CONFIGS = {
     "iPosition": { __type: "VECTOR3" },
     "iIterations": { __type: "FLOAT" },
   },
-  "shader_flame_wasm": {
-    "iTime": { __type: "FLOAT" },
-    "iResolution": { __type: "VECTOR2" },
-    "iPosition": { __type: "VECTOR3" },
-    "iIterations": { __type: "FLOAT" },
-  },
   "shader_whirlpool": {
     "iTime": { __type: "FLOAT" },
     "iResolution": { __type: "VECTOR2" },
@@ -707,22 +656,7 @@ global.__SHADER_CONFIGS = {
     "iSize": { __type: "FLOAT" },
     "iFactor": { __type: "FLOAT" },
   },
-  "shader_whirlpool_wasm": {
-    "iTime": { __type: "FLOAT" },
-    "iResolution": { __type: "VECTOR2" },
-    "iIterations": { __type: "FLOAT" },
-    "iSize": { __type: "FLOAT" },
-    "iFactor": { __type: "FLOAT" },
-  },
   "shader_warp_speed_2": {
-    "iTime": { __type: "FLOAT" },
-    "iResolution": { __type: "VECTOR2" },
-    "iIterations": { __type: "FLOAT" },
-    "iSize": { __type: "VECTOR2" },
-    "iFactor": { __type: "FLOAT" },
-    "iSeed": { __type: "VECTOR3" },
-  },
-  "shader_warp_speed_2_wasm": {
     "iTime": { __type: "FLOAT" },
     "iResolution": { __type: "VECTOR2" },
     "iIterations": { __type: "FLOAT" },
@@ -750,12 +684,7 @@ global.__SHADER_CONFIGS = {
 ///@static
 ///@type {Struct}
 global.__shadersWASM = {
-  //"shader_002_blue": "shader_002_blue_wasm",
-  //"shader_art": "shader_art_wasm",
-  "shader_flame": "shader_flame_wasm",
-  "shader_sincos_3d": "shader_sincos_3d_wasm",
-  "shader_warp_speed_2": "shader_warp_speed_2_wasm",
-  "shader_whirlpool": "shader_whirlpool_wasm",
+
 }
 #macro SHADERS_WASM global.__shadersWASM
 

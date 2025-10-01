@@ -124,7 +124,7 @@ function VETrackControl(_editor) constructor {
           },
           shift_field: {
             name: "track-control.shift_field",
-            width: function() { return 32 },
+            width: function() { return 48 },
             height: function() { return 24 },
             margin: { top: 10, bottom: 10, left: 0, right: 4 },
             x: function() { return this.context.nodes.shift_label.right() 
@@ -561,18 +561,16 @@ function VETrackControl(_editor) constructor {
             this.spinner
               .setAlpha(this.spinnerFactor / 100.0)
               .render(
-                (GuiWidth() / 2) - ((this.spinner.getWidth() * this.spinner.getScaleX()) / 2),
-                (GuiHeight() / 2) - ((this.spinner.getHeight() * this.spinner.getScaleY()) / 2)
-                  - (this.spinnerFactor / 2)
+                (GuiWidth() / 2) ,
+                (GuiHeight() / 2) - (this.spinnerFactor / 2)
             )
           } else if (this.spinnerFactor > 0) {
             this.spinnerFactor = lerp(this.spinnerFactor, 0.0, 0.1)
             this.spinner
               .setAlpha(this.spinnerFactor / 100.0)
               .render(
-              (GuiWidth() / 2) - ((this.spinner.getWidth() * this.spinner.getScaleX()) / 2),
-              (GuiHeight() / 2) - ((this.spinner.getHeight() * this.spinner.getScaleY()) / 2)
-                - (this.spinnerFactor / 2)
+              (GuiWidth() / 2),
+              (GuiHeight() / 2) - (this.spinnerFactor / 2)
             )
           }
         },
@@ -818,7 +816,6 @@ function VETrackControl(_editor) constructor {
                 data.textField.setText(string(bpm))
               },
               set: function(value) {
-                Core.print("set bpm-count", value)
                 var item = this.get()
                 if (item == null) {
                   return 
@@ -1033,12 +1030,8 @@ function VETrackControl(_editor) constructor {
           "checkbox_ve-track-control_update": {
             type: UICheckbox,
             layout: layout.nodes.update,
-            value: Beans.get(BeanVisuEditorController).updateServices,
             updateArea: Callable.run(UIUtil.updateAreaTemplates.get("applyLayout")),
-            callback: function() {
-              var editor = Beans.get(BeanVisuEditorController)
-              editor.updateServices = !editor.updateServices
-            },
+            store: { key: "update-services" },
             spriteOn: {
               name: "texture_ve_brush_toolbar_icon_update",
               blend: "#FFFFFF",

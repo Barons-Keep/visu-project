@@ -493,7 +493,260 @@ function VisuNewProjectForm(json = null) constructor {
         "data":{
           "name": json.name,
           "audio": "sound_external",
-          "channels":[]
+          "channels":[
+            {
+              "name":"EFFECT | Config",
+              "events": [],
+              "settings":{
+                "difficulty":{
+                  "EASY":true,
+                  "LUNATIC":true,
+                  "NORMAL":true,
+                  "HARD":true
+                }
+              }
+            },
+            {
+              "name":"EFFECT | Shader BKG",
+              "events": [],
+              "settings":{
+                "difficulty":{
+                  "EASY":true,
+                  "LUNATIC":true,
+                  "NORMAL":true,
+                  "HARD":true
+                }
+              }
+            },
+            {
+              "name":"EFFECT | Shader GRID",
+              "events": [],
+              "settings":{
+                "difficulty":{
+                  "EASY":true,
+                  "LUNATIC":true,
+                  "NORMAL":true,
+                  "HARD":true
+                }
+              }
+            },
+            {
+              "name":"EFFECT | Shader COMBINED",
+              "events": [],
+              "settings":{
+                "difficulty":{
+                  "EASY":true,
+                  "LUNATIC":true,
+                  "NORMAL":true,
+                  "HARD":true
+                }
+              }
+            },
+            {
+              "name":"EFFECT | Glitch BKG",
+              "events": [],
+              "settings":{
+                "difficulty":{
+                  "EASY":true,
+                  "LUNATIC":true,
+                  "NORMAL":true,
+                  "HARD":true
+                }
+              }
+            },
+            {
+              "name":"EFFECT | Glitch GRID",
+              "events": [],
+              "settings":{
+                "difficulty":{
+                  "EASY":true,
+                  "LUNATIC":true,
+                  "NORMAL":true,
+                  "HARD":true
+                }
+              }
+            },
+            {
+              "name":"EFFECT | Grid COMBINED",
+              "events": [],
+              "settings":{
+                "difficulty":{
+                  "EASY":true,
+                  "LUNATIC":true,
+                  "NORMAL":true,
+                  "HARD":true
+                }
+              }
+            },
+            {
+              "name":"EFFECT | Particle",
+              "events": [],
+              "settings":{
+                "difficulty":{
+                  "EASY":true,
+                  "LUNATIC":true,
+                  "NORMAL":true,
+                  "HARD":true
+                }
+              }
+            },
+            {
+              "name":"ENTITY | Config",
+              "events": [],
+              "settings":{
+                "difficulty":{
+                  "EASY":true,
+                  "LUNATIC":true,
+                  "NORMAL":true,
+                  "HARD":true
+                }
+              }
+            },
+            {
+              "name":"ENTITY | Shroom",
+              "events": [],
+              "settings":{
+                "difficulty":{
+                  "EASY":true,
+                  "LUNATIC":true,
+                  "NORMAL":true,
+                  "HARD":true
+                }
+              }
+            },
+            {
+              "name":"ENTITY | Bullet",
+              "events": [],
+              "settings":{
+                "difficulty":{
+                  "EASY":true,
+                  "LUNATIC":true,
+                  "NORMAL":true,
+                  "HARD":true
+                }
+              }
+            },
+            {
+              "name":"ENTITY | Coin",
+              "events": [],
+              "settings":{
+                "difficulty":{
+                  "EASY":true,
+                  "LUNATIC":true,
+                  "NORMAL":true,
+                  "HARD":true
+                }
+              }
+            },
+            {
+              "name":"ENTITY | Player",
+              "events": [],
+              "settings":{
+                "difficulty":{
+                  "EASY":true,
+                  "LUNATIC":true,
+                  "NORMAL":true,
+                  "HARD":true
+                }
+              }
+            },
+            {
+              "name":"GRID | Config",
+              "events": [],
+              "settings":{
+                "difficulty":{
+                  "EASY":true,
+                  "LUNATIC":true,
+                  "NORMAL":true,
+                  "HARD":true
+                }
+              }
+            },
+            {
+              "name":"GRID | Area",
+              "events": [],
+              "settings":{
+                "difficulty":{
+                  "EASY":true,
+                  "LUNATIC":true,
+                  "NORMAL":true,
+                  "HARD":true
+                }
+              }
+            },
+            {
+              "name":"GRID | Column",
+              "events": [],
+              "settings":{
+                "difficulty":{
+                  "EASY":true,
+                  "LUNATIC":true,
+                  "NORMAL":true,
+                  "HARD":true
+                }
+              }
+            },
+            {
+              "name":"GRID | Row",
+              "events": [],
+              "settings":{
+                "difficulty":{
+                  "EASY":true,
+                  "LUNATIC":true,
+                  "NORMAL":true,
+                  "HARD":true
+                }
+              }
+            },
+            {
+              "name":"VIEW | Config",
+              "events": [],
+              "settings":{
+                "difficulty":{
+                  "EASY":true,
+                  "LUNATIC":true,
+                  "NORMAL":true,
+                  "HARD":true
+                }
+              }
+            },
+            {
+              "name":"VIEW | Camera",
+              "events": [],
+              "settings":{
+                "difficulty":{
+                  "EASY":true,
+                  "LUNATIC":true,
+                  "NORMAL":true,
+                  "HARD":true
+                }
+              }
+            },
+            {
+              "name":"VIEW | Layer",
+              "events": [],
+              "settings":{
+                "difficulty":{
+                  "EASY":true,
+                  "LUNATIC":true,
+                  "NORMAL":true,
+                  "HARD":true
+                }
+              }
+            },
+            {
+              "name":"VIEW | Subtitle",
+              "events": [],
+              "settings":{
+                "difficulty":{
+                  "EASY":true,
+                  "LUNATIC":true,
+                  "NORMAL":true,
+                  "HARD":true
+                }
+              }
+            }
+          ]
         }
       }
     })

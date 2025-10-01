@@ -94,11 +94,12 @@ function bktglitch_init() {
 	buffer_delete(_buffer);
 }
 	
-/// @function bktglitch_activate(_width, _height)
+/// @function bktglitch_activate(_width, _height, _time)
 /// @description Activates the shader and sets required uniforms.
 /// @param {real} _width
 /// @param {real} _height
-function bktglitch_activate(_width, _height) {
+/// @param {real} _time
+function bktglitch_activate(_width, _height, _time) {
 	/*	   
 	    By default, the shader adapts to the resolution of the application surface.
 	    You can override this by providing your own values via the arguments of this function.
@@ -126,7 +127,7 @@ function bktglitch_activate(_width, _height) {
 	}
 
 	// Passes global timer to shader, setting this to zero results in everything being static.
-	bktglitch_set_time(current_time * 0.06);
+	bktglitch_set_time(_time == null ? current_time * 0.05 : _time);
 }
 
 /// @function bktglitch_config_preset(_preset)

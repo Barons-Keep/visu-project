@@ -359,8 +359,8 @@ function VEAccordion(_editor, config = null) constructor {
   send = method(this, EventPumpUtil.send())
 
   ///@private
-  ///@params {Struct} context
-  ///@params {Boolean} enable
+  ///@param {Struct} context
+  ///@param {Boolean} enable
   updateContainerObject = function(context, enable) {
     static updateContainer = function(container) {
       static updateItem = function(item) {

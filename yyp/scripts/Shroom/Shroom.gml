@@ -12,39 +12,77 @@
 function ShroomTemplate(_name, json) constructor {
 
   ///@type {String}
-  name = Assert.isType(_name, String)
+  name = Assert.isType(_name, String,
+    "ShroomTemplate::name must be type of String")
   
   ///@type {Struct}
-  sprite = Assert.isType(Struct.get(json, "sprite"), Struct)
+  sprite = Assert.isType(Struct.get(json, "sprite"), Struct,
+    "ShroomTemplate::sprite must be type of Struct")
 
   ///@type {?Struct}
-  mask = Struct.getIfType(json, "mask", Struct, null)
+  mask = Struct.getIfType(json, "mask", Struct)
 
-  ///@type {?Number}
+  ///@type {Number}
   lifespanMax = Struct.getIfType(json, "lifespanMax", Number, 15.0)
 
-  ///@type {?Number}
+  ///@type {Number}
   healthPoints = Struct.getIfType(json, "healthPoints", Number, 1.0)
   
   ///@type {Boolean}
   hostile = Struct.getIfType(json, "hostile", Boolean, true)
 
   ///@type {GMArray}
-  inherit = Struct.getIfType(json, "inherit", GMArray, [ ])
+  inherit = Struct.getIfType(json, "inherit", GMArray, [])
 
-  ///@type {Struct}
-  //gameModes = Struct.appendUnique(
-  //  Struct.filter(Struct.getDefault(json, "gameModes", {}), function(gameMode, key) { 
-  //    return Core.isType(gameMode, Struct) && Core.isEnum(key, GameMode)
-  //  }),
-  //  SHROOM_GAME_MODES
-  //)
-  var _bulletHell = Struct.get(Struct.get(json, "gameModes"), "bulletHell")
-  gameModes = {
-    bulletHell: _bulletHell != null ? _bulletHell : {},
-    platformer: {},
-    racing: {}
-  }
+  ///@type {GMArray}
+  onDamage = Struct.getIfType(json, "onDamage", GMArray, [])
+
+  ///@type {GMArray}
+  onDeath = Struct.getIfType(json, "onDeath", GMArray, [])
+
+  ///@type {GMArray}
+  queue = Struct.getIfType(json, "queue", GMArray, [])
+
+  ///@type {GMArray}
+  features = Struct.getIfType(json, "features", GMArray, [])
+
+  /* migrate to onDamage and onDeath
+  features = []
+  var _features = Struct.getIfType(json, "features", GMArray, [])
+  GMArray.forEach(_features, function(entry, idx, template) {
+    var type = Struct.get(entry, "type")
+    if (!Core.isType(type, String)) {
+      return
+    }
+
+    Core.print("parse", idx, "type", type)
+    switch (type) {
+      case "LifespanFeature":
+        break
+      case "CoinFeature":
+        GMArray.add(template.onDeath, {
+          type: type,
+          conditions: [],
+          data: Struct.getIfType(entry, "data", Struct, {}),
+        })
+        break
+      case "ParticleFeature":
+        GMArray.add(String.contains(entry.data.particle, "death") ? template.onDeath : template.onDamage, {
+          type: type,
+          conditions: [],
+          data: Struct.getIfType(entry, "data", Struct, {}),
+        })
+        break
+      default:
+        GMArray.add(template.features, {
+          type: type,
+          conditions: Struct.getIfType(entry, "conditions", GMArray, []),
+          data: Struct.getIfType(entry, "data", Struct, {}),
+        })
+        break
+    }
+  }, this)
+  */
 
   ///@type {Boolean}
   use_shroom_mask = Struct.getIfType(json, "use_shroom_mask", Boolean, this.mask != null)
@@ -57,6 +95,15 @@ function ShroomTemplate(_name, json) constructor {
 
   ///@type {Boolean}
   use_shroom_inherit = Struct.getIfType(json, "use_shroom_inherit", Boolean, true)
+
+  ///@type {Boolean}
+  use_shroom_on_damage = Struct.getIfType(json, "use_shroom_on_damage", Boolean, true)
+
+  ///@type {Boolean}
+  use_shroom_on_death = Struct.getIfType(json, "use_shroom_on_death", Boolean, true)
+
+  ///@type {Boolean}
+  use_shroom_queue = Struct.getIfType(json, "use_shroom_queue", Boolean, true)
 
   ///@type {Boolean}
   use_shroom_features = Struct.getIfType(json, "use_shroom_features", Boolean, true)
@@ -74,6 +121,15 @@ function ShroomTemplate(_name, json) constructor {
   shroom_hide_inherit = Struct.getIfType(json, "shroom_hide_inherit", Boolean, true)
 
   ///@type {Boolean}
+  shroom_hide_on_damage = Struct.getIfType(json, "shroom_hide_on_damage", Boolean, true)
+
+  ///@type {Boolean}
+  shroom_hide_on_death = Struct.getIfType(json, "shroom_hide_on_death", Boolean, true)
+
+  ///@type {Boolean}
+  shroom_hide_queue = Struct.getIfType(json, "shroom_hide_queue", Boolean, true)
+
+  ///@type {Boolean}
   shroom_hide_features = Struct.getIfType(json, "shroom_hide_features", Boolean, true)
 
   //@return {Struct}
@@ -85,25 +141,31 @@ function ShroomTemplate(_name, json) constructor {
       lifespanMax: this.lifespanMax,
       healthPoints: this.healthPoints,
       hostile: this.hostile,
-      gameModes: this.serializeGameModes(),
+      onDamage: JSON.clone(this.onDamage).getContainer(),
+      onDeath: JSON.clone(this.onDeath).getContainer(),
+      queue: JSON.clone(this.queue).getContainer(),
+      features: JSON.clone(this.features).getContainer(),
       inherit: this.inherit,
+
       use_shroom_mask: this.use_shroom_mask,
       use_shroom_lifespan: this.use_shroom_lifespan,
       use_shroom_healthPoints: this.use_shroom_healthPoints,
       use_shroom_inherit: this.use_shroom_inherit,
       use_shroom_features: this.use_shroom_features,
+      use_shroom_queue: this.use_shroom_queue,
+      use_shroom_on_damage: this.use_shroom_on_damage,
+      use_shroom_on_death: this.use_shroom_on_death,
       shroom_hide: this.shroom_hide,
       shroom_hide_texture: this.shroom_hide_texture,
       shroom_hide_mask: this.shroom_hide_mask,
       shroom_hide_inherit: this.shroom_hide_inherit,
       shroom_hide_features: this.shroom_hide_features,
+      shroom_hide_queue: this.shroom_hide_queue,
+      shroom_hide_on_damage: this.shroom_hide_on_damage,
+      shroom_hide_on_death: this.shroom_hide_on_death,
     }
   }
 
-  serializeGameModes = function() {
-    return JSON.clone(this.gameModes)
-  }
-  
   serializeSpawn = function(x, y, speed, angle, uid, lifespan = null, hp = null) {
     return {
       name: this.name,
@@ -112,7 +174,10 @@ function ShroomTemplate(_name, json) constructor {
       lifespanMax: lifespan != null ? lifespan : (this.use_shroom_lifespan ? this.lifespanMax : 15),
       healthPoints: hp != null ? hp : (this.use_shroom_healthPoints ? this.healthPoints : 1),
       hostile: this.hostile,
-      gameModes: this.use_shroom_features ? JSON.clone(this.gameModes) : { bulletHell: {} },
+      onDamage: this.use_shroom_on_damage ? JSON.clone(this.onDamage).getContainer() : [],
+      onDeath: this.use_shroom_on_death ? JSON.clone(this.onDeath).getContainer() : [],
+      queue: this.use_shroom_queue ? JSON.clone(this.queue).getContainer() : [],
+      features: this.use_shroom_features ? JSON.clone(this.features).getContainer() : [],
       inherit: this.use_shroom_inherit ? GMArray.clone(this.inherit) : [],
       x: x,
       y: y,
@@ -127,6 +192,23 @@ function ShroomTemplate(_name, json) constructor {
 ///@param {Struct} template
 function Shroom(template): GridItem(template) constructor {
 
+  ///@private
+  ///@param {GMArray<GridItemFeature>} features
+  ///@return {Array<GridItemFeature>}
+  static parseFeatures = function(features) {
+    static parseFeature = function(json, index, features) {
+      var featureName = Struct.get(json, "type")
+      var feature = Callable.get(featureName)
+      return feature != null
+        ? features.add(new feature(json))
+        : Logger.warn("Shroom", $"Found unsupported feature: '{featureName}'")
+    }
+
+    var parsed = new Array(Struct)
+    GMArray.forEach(features, parseFeature, parsed)
+    return parsed
+  }
+
   ///@type {Number}
   lifespanMax = template.lifespanMax
 
@@ -136,54 +218,75 @@ function Shroom(template): GridItem(template) constructor {
   ///@type {Boolean}
   hostile = template.hostile
 
-  ///@type {Array<Struct>}
-  features = new Array(Struct)
-  if (Struct.contains(template.gameModes.bulletHell, "features")) {
-    GMArray.forEach(template.gameModes.bulletHell.features, function(json, index, features) {
-      var featureName = Struct.get(json, "feature")
-      var feature = Callable.get(featureName)
-      if (!Optional.is(feature)) {
-        Logger.warn("GridItem", $"Found unsupported feature '{featureName}'")
-        return
-      }
+  ///@type {Array<GridItemFeature>}
+  onDamage = parseFeatures(template.onDamage)
 
-      features.add(new feature(json))
-    }, this.features)
-  }
+  ///@type {Array<GridItemFeature>}
+  onDeath = parseFeatures(template.onDeath)
 
-  static updateFeatures = function(item, controller) {
+  ///@type {Queue<GridItemFeature>}
+  queue = new Queue(GridItemFeature, parseFeatures(template.queue).getContainer())
+
+  ///@type {Array<GridItemFeature>}
+  features = parseFeatures(template.features)
+
+  ///@private
+  ///@param {GridItem} item
+  ///@param {VisuController} controller
+  ///@param {Array<GridItemFeature} features
+  ///@return {Shroom}
+  static updateGridItemFeatures = function(item, controller, features) {
     gml_pragma("forceinline")
-    var features = item.features
     var size = features.size()
     for (var index = 0; index < size; index++) {
       var feature = features.get(index)
-      if (feature.updateTimer() && feature.checkConditions(item, controller)) {
+      if (feature.checkConditions(item, controller)) {
         feature.update(item, controller)
       }
     }
     return this
   }
 
+  ///@private
+  ///@param {GridItem} item
+  ///@param {VisuController} controller
+  ///@param {Queue<GridItemFeature} queue
+  ///@return {Shroom}
+  static updateGridItemFeatureQueue = function(item, controller, queue) {
+    var feature = queue.peek()
+    if (feature == null) {
+      return item
+    }
+    
+    feature.update(item, controller)
+    if (feature.updateTimer()) {
+      queue.pop()
+    }
+
+    return item
+  }
+
   ///@param {VisuController} controller
   ///@return {Shroom}
   static update = function(controller) {
     gml_pragma("forceinline")
-    //if (Optional.is(this.gameMode)) {
-    //  gameMode.update(this, controller)
-    //}
     if (this.healthPoints == 0) {
       this.signal("kill")
     }
 
     if (this.signals.damage && !this.signals.kill) {
+      this.updateGridItemFeatures(this, controller, this.onDamage)
       controller.sfxService.play("shroom-damage")
     }
 
     if (this.signals.kill && (this.signals.bulletCollision 
       || this.signals.playerCollision)) {
+      this.updateGridItemFeatures(this, controller, this.onDeath)
       controller.sfxService.play("shroom-die")
     }
-    this.updateFeatures(this, controller)
+
+    this.updateGridItemFeatures(this, controller, this.features)
+    this.updateGridItemFeatureQueue(this, controller, this.queue)
 
     #region @Implement component Lifespan
     this.lifespan += DeltaTime.apply(FRAME_MS)
@@ -208,10 +311,4 @@ function Shroom(template): GridItem(template) constructor {
 
     return this
   }
-
-  //this.gameModes.set(GameMode.BULLETHELL, ShroomBulletHellGameMode(template.gameModes.bulletHell))
-  //this.gameModes
-    //.set(GameMode.BULLETHELL, ShroomBulletHellGameMode(Struct.getDefault(Struct.get(template, "gameModes"), "bulletHell", {})))
-    //.set(GameMode.RACING, ShroomRacingGameMode(Struct.getDefault(Struct.get(template, "gameModes"), "racing", {})))
-    //.set(GameMode.PLATFORMER, ShroomPlatformerGameMode(Struct.getDefault(Struct.get(template, "gameModes"), "platformer", {})))
 }

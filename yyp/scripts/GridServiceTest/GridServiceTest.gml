@@ -7,6 +7,6 @@ function GridServiceTest(): Test() constructor {
     name = "Test GridService.gml"
 
     ///@override
-    ///@type {Struct[]}
+    ///@type {GMArray<Struct>}
     cases = []
 }

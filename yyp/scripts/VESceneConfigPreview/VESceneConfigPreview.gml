@@ -216,13 +216,6 @@ function VESceneConfigPreview(_config = null) constructor {
         + $"      Color: {properties.separatorsSecondaryColor.toHex()}\n"
         + $"  Focus:\n"
         + $"    Enabled: {properties.renderSupportGrid}\n"
-        + $"    BlendMode:\n"
-        + $"      Source: {BlendModeExt.getKey(properties.supportGridBlendConfig.source)}\n"
-        + $"      Target: {BlendModeExt.getKey(properties.supportGridBlendConfig.target)}\n"
-        + $"      Equation: {BlendEquation.getKey(properties.supportGridBlendConfig.equation)}\n"
-      if (Optional.is(properties.supportGridBlendConfig.equationAlpha)) {
-        grid = $"{grid}      EquationAlpha: {BlendEquation.getKey(properties.supportGridBlendConfig.equationAlpha)}\n"
-      }
   
       grid = $"{grid}    BlendColor: {properties.supportGridBlendColor.toHex(false)}\n"
         + $"    Treshold: {properties.supportGridTreshold}\n"

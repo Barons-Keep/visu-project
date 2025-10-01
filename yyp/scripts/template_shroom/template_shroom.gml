@@ -62,9 +62,9 @@ function template_shroom(json) {
         type: Boolean,
         value: Struct.getIfType(json, "use_shroom_inherit", Boolean, true),
       },
-      "shroom_game-mode_bullet-hell_features": {
+      "shroom_features": {
         type: String,
-        value: JSON.stringify(Struct.getIfType(json.gameModes.bulletHell, "features", GMArray, []), { pretty: true }),
+        value: JSON.stringify(Struct.getIfType(json, "features", GMArray, []), { pretty: true }),
         serialize: UIUtil.serialize.getStringGMArray(),
         passthrough: UIUtil.passthrough.getStringGMArray(),
       },
@@ -72,17 +72,35 @@ function template_shroom(json) {
         type: Boolean,
         value: Struct.getIfType(json, "use_shroom_features", Boolean, true),
       },
-      "shroom_game-mode_platformer_features": {
+      "shroom_queue": {
         type: String,
-        value: JSON.stringify(Struct.getIfType(json.gameModes.platformer, "features", GMArray, []), { pretty: true }),
+        value: JSON.stringify(Struct.getIfType(json, "queue", GMArray, []), { pretty: true }),
         serialize: UIUtil.serialize.getStringGMArray(),
         passthrough: UIUtil.passthrough.getStringGMArray(),
       },
-      "shroom_game-mode_racing_features": {
+      "shroom_on_damage": {
         type: String,
-        value: JSON.stringify(Struct.getIfType(json.gameModes.racing, "features", GMArray, []), { pretty: true }),
+        value: JSON.stringify(Struct.getIfType(json, "onDamage", GMArray, []), { pretty: true }),
         serialize: UIUtil.serialize.getStringGMArray(),
         passthrough: UIUtil.passthrough.getStringGMArray(),
+      },
+      "shroom_on_death": {
+        type: String,
+        value: JSON.stringify(Struct.getIfType(json, "onDeath", GMArray, []), { pretty: true }),
+        serialize: UIUtil.serialize.getStringGMArray(),
+        passthrough: UIUtil.passthrough.getStringGMArray(),
+      },
+      "use_shroom_queue": {
+        type: Boolean,
+        value: Struct.getIfType(json, "use_shroom_queue", Boolean, true),
+      },
+      "use_shroom_on_damage": {
+        type: Boolean,
+        value: Struct.getIfType(json, "use_shroom_on_damage", Boolean, true),
+      },
+      "use_shroom_on_death": {
+        type: Boolean,
+        value: Struct.getIfType(json, "use_shroom_on_death", Boolean, true),
       },
       "shroom_hide": {
         type: Boolean,
@@ -103,6 +121,18 @@ function template_shroom(json) {
       "shroom_hide_features": {
         type: Boolean,
         value: Struct.getIfType(json, "shroom_hide_features", Boolean, false),
+      },
+      "shroom_hide_queue": {
+        type: Boolean,
+        value: Struct.getIfType(json, "shroom_hide_queue", Boolean, false),
+      },
+      "shroom_hide_on_damage": {
+        type: Boolean,
+        value: Struct.getIfType(json, "shroom_hide_on_damage", Boolean, false),
+      },
+      "shroom_hide_on_death": {
+        type: Boolean,
+        value: Struct.getIfType(json, "shroom_hide_on_death", Boolean, false),
       },
     }),
     components: new Array(Struct, [
@@ -673,7 +703,7 @@ function template_shroom(json) {
         },
       },
       {
-        name: "shroom_game-mode_bullet-hell",
+        name: "shroom_features-title",
         template: VEComponents.get("property"),
         layout: VELayouts.get("property"),
         config: { 
@@ -681,16 +711,13 @@ function template_shroom(json) {
           label: { 
             text: "Features",
             enable: { key: "use_shroom_features" },
-            //backgroundColor: VETheme.color.accentShadow,
           },
           checkbox: { 
             spriteOn: { name: "visu_texture_checkbox_show" },
             spriteOff: { name: "visu_texture_checkbox_hide" },
             store: { key: "shroom_hide_features" },
-            //backgroundColor: VETheme.color.accentShadow,
           },
           input: {
-            //backgroundColor: VETheme.color.accentShadow,
             spriteOn: { name: "visu_texture_checkbox_switch_on" },
             spriteOff: { name: "visu_texture_checkbox_switch_off" },
             store: { key: "use_shroom_features" },
@@ -698,13 +725,13 @@ function template_shroom(json) {
         },
       },
       {
-        name: "shroom_game-mode_bullet-hell_features",
+        name: "shroom_features",
         template: VEComponents.get("text-area"),
         layout: VELayouts.get("text-area"),
         config: { 
           layout: { type: UILayoutType.VERTICAL },
           field: { 
-            store: { key: "shroom_game-mode_bullet-hell_features" },
+            store: { key: "shroom_features" },
             enable: { key: "use_shroom_features" },
             hidden: { key: "shroom_hide_features" },
             updateCustom: UIItemUtils.textField.getUpdateJSONTextArea(),
@@ -714,68 +741,171 @@ function template_shroom(json) {
         },
       },
       {
-        name: "shroom_game-mode_bullet-hell_features-line-h",
+        name: "shroom_features-line-h",
         template: VEComponents.get("line-h"),
         layout: VELayouts.get("line-h"),
         config: {
           layout: {
             type: UILayoutType.VERTICAL,
-            //margin: { top: 0, bottom: 0 },
-            //height: function() { return 0 },
           },
           image: { 
-            //hidden: { key: "shroom_hide_inherit" },
             hidden: { key: "shroom_hide_features" },
-            //backgroundAlpha: 0.0,
           },
         },
       },
-      /*
       {
-        name: "shroom_game-mode_platformer",
+        name: "shroom_queue-title",
         template: VEComponents.get("property"),
         layout: VELayouts.get("property"),
         config: { 
           layout: { type: UILayoutType.VERTICAL },
-          label: { text: "Platformer" },
+          label: { 
+            text: "Queue",
+            enable: { key: "use_shroom_queue" },
+          },
+          checkbox: { 
+            spriteOn: { name: "visu_texture_checkbox_show" },
+            spriteOff: { name: "visu_texture_checkbox_hide" },
+            store: { key: "shroom_hide_queue" },
+          },
+          input: {
+            spriteOn: { name: "visu_texture_checkbox_switch_on" },
+            spriteOff: { name: "visu_texture_checkbox_switch_off" },
+            store: { key: "use_shroom_queue" },
+          },
         },
       },
       {
-        name: "shroom_game-mode_platformer_features",
+        name: "shroom_queue",
         template: VEComponents.get("text-area"),
         layout: VELayouts.get("text-area"),
         config: { 
           layout: { type: UILayoutType.VERTICAL },
           field: { 
+            store: { key: "shroom_queue" },
+            enable: { key: "use_shroom_queue" },
+            hidden: { key: "shroom_hide_queue" },
+            updateCustom: UIItemUtils.textField.getUpdateJSONTextArea(),
             v_grow: true,
             w_min: 570,
-            store: { key: "shroom_game-mode_platformer_features" },
           },
         },
       },
       {
-        name: "shroom_game-mode_racing",
+        name: "shroom_queue-line-h",
+        template: VEComponents.get("line-h"),
+        layout: VELayouts.get("line-h"),
+        config: {
+          layout: {
+            type: UILayoutType.VERTICAL,
+          },
+          image: { 
+            hidden: { key: "shroom_hide_queue" },
+          },
+        },
+      },
+      {
+        name: "shroom_on_damage-title",
         template: VEComponents.get("property"),
         layout: VELayouts.get("property"),
         config: { 
           layout: { type: UILayoutType.VERTICAL },
-          label: { text: "Racing" },
+          label: { 
+            text: "On damage",
+            enable: { key: "use_shroom_on_damage" },
+          },
+          checkbox: { 
+            spriteOn: { name: "visu_texture_checkbox_show" },
+            spriteOff: { name: "visu_texture_checkbox_hide" },
+            store: { key: "shroom_hide_on_damage" },
+          },
+          input: {
+            spriteOn: { name: "visu_texture_checkbox_switch_on" },
+            spriteOff: { name: "visu_texture_checkbox_switch_off" },
+            store: { key: "use_shroom_on_damage" },
+          },
         },
       },
       {
-        name: "shroom_game-mode_racing_features",
+        name: "shroom_on_damage",
         template: VEComponents.get("text-area"),
         layout: VELayouts.get("text-area"),
         config: { 
           layout: { type: UILayoutType.VERTICAL },
           field: { 
+            store: { key: "shroom_on_damage" },
+            enable: { key: "use_shroom_on_damage" },
+            hidden: { key: "shroom_hide_on_damage" },
+            updateCustom: UIItemUtils.textField.getUpdateJSONTextArea(),
             v_grow: true,
             w_min: 570,
-            store: { key: "shroom_game-mode_racing_features" },
           },
         },
       },
-      */
+      {
+        name: "shroom_on_damage-line-h",
+        template: VEComponents.get("line-h"),
+        layout: VELayouts.get("line-h"),
+        config: {
+          layout: {
+            type: UILayoutType.VERTICAL,
+          },
+          image: { 
+            hidden: { key: "shroom_hide_on_damage" },
+          },
+        },
+      },
+      {
+        name: "shroom_on_death-title",
+        template: VEComponents.get("property"),
+        layout: VELayouts.get("property"),
+        config: { 
+          layout: { type: UILayoutType.VERTICAL },
+          label: { 
+            text: "On death",
+            enable: { key: "use_shroom_on_death" },
+          },
+          checkbox: { 
+            spriteOn: { name: "visu_texture_checkbox_show" },
+            spriteOff: { name: "visu_texture_checkbox_hide" },
+            store: { key: "shroom_hide_on_death" },
+          },
+          input: {
+            spriteOn: { name: "visu_texture_checkbox_switch_on" },
+            spriteOff: { name: "visu_texture_checkbox_switch_off" },
+            store: { key: "use_shroom_on_death" },
+          },
+        },
+      },
+      {
+        name: "shroom_on_death",
+        template: VEComponents.get("text-area"),
+        layout: VELayouts.get("text-area"),
+        config: { 
+          layout: { type: UILayoutType.VERTICAL },
+          field: { 
+            store: { key: "shroom_on_death" },
+            enable: { key: "use_shroom_on_death" },
+            hidden: { key: "shroom_hide_on_death" },
+            updateCustom: UIItemUtils.textField.getUpdateJSONTextArea(),
+            v_grow: true,
+            w_min: 570,
+          },
+        },
+      },
+      {
+        name: "shroom_on_death-line-h",
+        template: VEComponents.get("line-h"),
+        layout: VELayouts.get("line-h"),
+        config: {
+          layout: {
+            type: UILayoutType.VERTICAL,
+          },
+          image: { 
+            hidden: { key: "shroom_hide_on_death" },
+          },
+        },
+      },
     ]),
   }
 }
