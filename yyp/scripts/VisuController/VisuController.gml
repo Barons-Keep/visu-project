@@ -633,7 +633,7 @@ function VisuController(layerName) constructor {
   update = function() {
     this.updateDebugTimer.start()
     this.updateGCFrameTime()
-    this.updateDebugFPS()
+    //this.updateDebugFPS()
     var state = this.fsm.getStateName()
     if (state != "splashscreen") {
       this.updateUIService()
