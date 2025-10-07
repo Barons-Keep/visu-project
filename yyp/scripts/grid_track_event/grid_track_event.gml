@@ -30,11 +30,310 @@ global.__GridMode = new _GridMode()
 #macro GridMode global.__GridMode
 
 
+///@enum
+function _GridTextureLine(): Enum() constructor {
+  SIMPLE = "SIMPLE"
+  MAGIC_1 = "MAGIC_1"
+  
+  ///@override
+  ///@return {Array<String>}
+  keys = function() {
+    static filterKeys = function(key) {
+      return key != "_keys"
+          && key != "keys"
+          && key != "get"
+          && key != "getKey"
+          && key != "findKey"
+          && key != "contains"
+          && key != "containsKey"
+    }
+
+    if (this._keys == null) {
+      this._keys = new Array(String, GMArray.sort(GMArray.filter(Struct.keys(this), filterKeys)))
+    }
+
+    return this._keys
+  }
+}
+global.__GridTextureLine = new _GridTextureLine()
+#macro GridTextureLine global.__GridTextureLine
+
+
 ///@static
 ///@type {Struct}
 global.__grid_track_event = {
-  brush_grid_area: event_grid_area,
-  brush_grid_column: event_grid_column,
+  brush_grid_area: {
+    parse: function(data) {
+      return {
+        "icon": Struct.parse.sprite(data, "icon"),
+        "gr-area_hide-h": Struct.parse.boolean(data, "gr-area_hide-h", TRACK_EVENT_DEFAULT_HIDDEN_VALUE),
+        "gr-area_hide-h-length": Struct.parse.boolean(data, "gr-area_hide-h-length", TRACK_EVENT_DEFAULT_HIDDEN_VALUE),
+        "gr-area_hide-h-size": Struct.parse.boolean(data, "gr-area_hide-h-size", TRACK_EVENT_DEFAULT_HIDDEN_VALUE),
+        "gr-area_hide-h-alpha": Struct.parse.boolean(data, "gr-area_hide-h-alpha", TRACK_EVENT_DEFAULT_HIDDEN_VALUE),
+        "gr-area_hide-h-col": Struct.parse.boolean(data, "gr-area_hide-h-col", TRACK_EVENT_DEFAULT_HIDDEN_VALUE),
+        "gr-area_hide-v": Struct.parse.boolean(data, "gr-area_hide-v", TRACK_EVENT_DEFAULT_HIDDEN_VALUE),
+        "gr-area_hide-v-length": Struct.parse.boolean(data, "gr-area_hide-v-length", TRACK_EVENT_DEFAULT_HIDDEN_VALUE),
+        "gr-area_hide-v-size": Struct.parse.boolean(data, "gr-area_hide-v-size", TRACK_EVENT_DEFAULT_HIDDEN_VALUE),
+        "gr-area_hide-v-alpha": Struct.parse.boolean(data, "gr-area_hide-v-alpha", TRACK_EVENT_DEFAULT_HIDDEN_VALUE),
+        "gr-area_hide-v-col": Struct.parse.boolean(data, "gr-area_hide-v-col", TRACK_EVENT_DEFAULT_HIDDEN_VALUE),
+        "gr-area_use-h": Struct.parse.boolean(data, "gr-area_use-h"),
+        "gr-area_h": Struct.parse.numberTransformer(data, "gr-area_h", {
+          clampValue: { from: 0.0, to: 100.0 },
+          clampTarget: { from: 0.0, to: 100.0 },
+        }),
+        "gr-area_change-h": Struct.parse.boolean(data, "gr-area_change-h"),
+        "gr-area_use-h-col": Struct.parse.boolean(data, "gr-area_use-h-col"),
+        "gr-area_h-col": Struct.parse.color(data, "gr-area_h-col"),
+        "gr-area_h-col-spd": Struct.parse.number(data, "gr-area_h-col-spd", 0.0, 0.0, 999.9),
+        "gr-area_use-h-alpha": Struct.parse.boolean(data, "gr-area_use-h-alpha"),
+        "gr-area_h-alpha": Struct.parse.normalizedNumberTransformer(data, "gr-area_h-alpha"),
+        "gr-area_change-h-alpha": Struct.parse.boolean(data, "gr-area_change-h-alpha"),
+        "gr-area_use-h-size": Struct.parse.boolean(data, "gr-area_use-h-size"),
+        "gr-area_h-size": Struct.parse.numberTransformer(data, "gr-area_h-size", {
+          clampValue: { from: 0.0, to: 9999.9 },
+          clampTarget: { from: 0.0, to: 9999.9 },
+        }),
+        "gr-area_change-h-size": Struct.parse.boolean(data, "gr-area_change-h-size"),
+        "gr-area_use-v": Struct.parse.boolean(data, "gr-area_use-v"),
+        "gr-area_v": Struct.parse.numberTransformer(data, "gr-area_v", {
+          clampValue: { from: 0.0, to: 100.0 },
+          clampTarget: { from: 0.0, to: 100.0 },
+        }),
+        "gr-area_change-v": Struct.parse.boolean(data, "gr-area_change-v"),
+        "gr-area_use-v-col": Struct.parse.boolean(data, "gr-area_use-v-col"),
+        "gr-area_v-col": Struct.parse.color(data, "gr-area_v-col"),
+        "gr-area_v-col-spd": Struct.parse.number(data, "gr-area_v-col-spd", 0.0, 0.0, 999.9),
+        "gr-area_use-v-alpha": Struct.parse.boolean(data, "gr-area_use-v-alpha"),
+        "gr-area_v-alpha": Struct.parse.normalizedNumberTransformer(data, "gr-area_v-alpha"),
+        "gr-area_change-v-alpha": Struct.parse.boolean(data, "gr-area_change-v-alpha"),
+        "gr-area_use-v-size": Struct.parse.boolean(data, "gr-area_use-v-size"),
+        "gr-area_v-size": Struct.parse.numberTransformer(data, "gr-area_v-size", {
+          clampValue: { from: 0.0, to: 9999.9 },
+          clampTarget: { from: 0.0, to: 9999.9 },
+        }),
+        "gr-area_change-v-size": Struct.parse.boolean(data, "gr-area_change-v-size"),
+      }
+    },
+    run: function(data, channel) {
+      var controller = Beans.get(BeanVisuController)
+      if (!controller.isChannelDifficultyValid(channel)) {
+        return
+      }
+
+      var gridService = controller.gridService
+      var properties = gridService.properties
+      var pump = gridService.dispatcher
+      var executor = gridService.executor
+
+      ///@description feature TODO grid.area.h
+      Visu.resolveNumberTransformerTrackEvent(data, 
+        "gr-area_use-h",
+        "gr-area_h",
+        "gr-area_change-h",
+        "borderHorizontalLength",
+        properties, pump, executor)
+
+      ///@description feature TODO grid.area.h.color
+      Visu.resolveColorTransformerTrackEvent(data, 
+        "gr-area_use-h-col",
+        "gr-area_h-col",
+        "gr-area_h-col-spd",
+        "borderVerticalColor",
+        properties, pump, executor)
+
+      ///@description feature TODO grid.area.h.alpha
+      Visu.resolveNumberTransformerTrackEvent(data, 
+        "gr-area_use-h-alpha",
+        "gr-area_h-alpha",
+        "gr-area_change-h-alpha",
+        "borderVerticalAlpha",
+        properties, pump, executor)
+
+      ///@description feature TODO grid.area.h.size
+      Visu.resolveNumberTransformerTrackEvent(data, 
+        "gr-area_use-h-size",
+        "gr-area_h-size",
+        "gr-area_change-h-size",
+        "borderVerticalThickness",
+        properties, pump, executor)
+
+      ///@description feature TODO grid.area.v
+      Visu.resolveNumberTransformerTrackEvent(data, 
+        "gr-area_use-v",
+        "gr-area_v",
+        "gr-area_change-v",
+        "borderVerticalLength",
+        properties, pump, executor)
+
+      ///@description feature TODO grid.area.v.color
+      Visu.resolveColorTransformerTrackEvent(data, 
+        "gr-area_use-v-col",
+        "gr-area_v-col",
+        "gr-area_v-col-spd",
+        "borderHorizontalColor",
+        properties, pump, executor)
+
+      ///@description feature TODO grid.area.v.alpha
+      Visu.resolveNumberTransformerTrackEvent(data, 
+        "gr-area_use-v-alpha",
+        "gr-area_v-alpha",
+        "gr-area_change-v-alpha",
+        "borderHorizontalAlpha",
+        properties, pump, executor)
+
+      ///@description feature TODO grid.area.v.size
+      Visu.resolveNumberTransformerTrackEvent(data, 
+        "gr-area_use-v-size",
+        "gr-area_v-size",
+        "gr-area_change-v-size",
+        "borderHorizontalThickness",
+        properties, pump, executor)
+    },
+  },
+  brush_grid_column: {
+    parse: function(data) {
+      return {
+        "icon": Struct.parse.sprite(data, "icon"),
+        "gr-c_hide": Struct.parse.boolean(data, "gr-c_hide", TRACK_EVENT_DEFAULT_HIDDEN_VALUE),
+        "gr-c_hide-main": Struct.parse.boolean(data, "gr-c_hide-main", TRACK_EVENT_DEFAULT_HIDDEN_VALUE),
+        "gr-c_hide-main-amount": Struct.parse.boolean(data, "gr-c_hide-main-amount", TRACK_EVENT_DEFAULT_HIDDEN_VALUE),
+        "gr-c_hide-main-tx": Struct.parse.boolean(data, "gr-c_hide-main-tx", TRACK_EVENT_DEFAULT_HIDDEN_VALUE),
+        "gr-c_hide-main-col": Struct.parse.boolean(data, "gr-c_hide-main-col", TRACK_EVENT_DEFAULT_HIDDEN_VALUE),
+        "gr-c_hide-main-alpha": Struct.parse.boolean(data, "gr-c_hide-main-alpha", TRACK_EVENT_DEFAULT_HIDDEN_VALUE),
+        "gr-c_hide-main-size": Struct.parse.boolean(data, "gr-c_hide-main-size", TRACK_EVENT_DEFAULT_HIDDEN_VALUE),
+        "gr-c_hide-side": Struct.parse.boolean(data, "gr-c_hide-side", TRACK_EVENT_DEFAULT_HIDDEN_VALUE),
+        "gr-c_hide-side-amount": Struct.parse.boolean(data, "gr-c_hide-side-amount", TRACK_EVENT_DEFAULT_HIDDEN_VALUE),
+        "gr-c_hide-side-tx": Struct.parse.boolean(data, "gr-c_hide-side-tx", TRACK_EVENT_DEFAULT_HIDDEN_VALUE),
+        "gr-c_hide-side-col": Struct.parse.boolean(data, "gr-c_hide-side-col", TRACK_EVENT_DEFAULT_HIDDEN_VALUE),
+        "gr-c_hide-side-alpha": Struct.parse.boolean(data, "gr-c_hide-side-alpha", TRACK_EVENT_DEFAULT_HIDDEN_VALUE),
+        "gr-c_hide-side-size": Struct.parse.boolean(data, "gr-c_hide-side-size", TRACK_EVENT_DEFAULT_HIDDEN_VALUE),
+        "gr-c_use-mode": Struct.parse.boolean(data, "gr-c_use-mode"),
+        "gr-c_mode": Struct.parse.enumerableKey(data, "gr-c_mode", GridMode, GridMode.DUAL),
+        "gr-c_use-amount": Struct.parse.boolean(data, "gr-c_use-amount"),
+        "gr-c_amount": Struct.parse.numberTransformer(data, "gr-c_amount", {
+          clampValue: { from: 0.0, to: 999.9 },
+          clampTarget: { from: 0.0, to: 999.9 },
+        }),
+        "gr-c_change-amount": Struct.parse.boolean(data, "gr-c_change-amount"),
+        "gr-c_use-main-tx": Struct.parse.boolean(data, "gr-c_use-main-tx"),
+        "gr-c_main-tx": Struct.parse.enumerableKey(data, "gr-c_main-tx", GridTextureLine, GridTextureLine.SIMPLE),
+        "gr-c_use-main-col": Struct.parse.boolean(data, "gr-c_use-main-col"),
+        "gr-c_main-col": Struct.parse.color(data, "gr-c_main-col"),
+        "gr-c_main-col-spd": Struct.parse.number(data, "gr-c_main-col-spd", 0.0, 0.0, 999.9),
+        "gr-c_use-main-alpha": Struct.parse.boolean(data, "gr-c_use-main-alpha"),
+        "gr-c_main-alpha": Struct.parse.normalizedNumberTransformer(data, "gr-c_main-alpha"),
+        "gr-c_change-main-alpha": Struct.parse.boolean(data, "gr-c_change-main-alpha"),
+        "gr-c_use-main-size": Struct.parse.boolean(data, "gr-c_use-main-size"),
+        "gr-c_main-size": Struct.parse.numberTransformer(data, "gr-c_main-size", {
+          clampValue: { from: 0.0, to: 9999.9 },
+          clampTarget: { from: 0.0, to: 9999.9 },
+        }),
+        "gr-c_change-main-size": Struct.parse.boolean(data, "gr-c_change-main-size"),
+        "gr-c_use-side-tx": Struct.parse.boolean(data, "gr-c_use-side-tx"),
+        "gr-c_side-tx": Struct.parse.enumerableKey(data, "gr-c_side-tx", GridTextureLine, GridTextureLine.SIMPLE),
+        "gr-c_use-side-col": Struct.parse.boolean(data, "gr-c_use-side-col"),
+        "gr-c_side-col": Struct.parse.color(data, "gr-c_side-col"),
+        "gr-c_side-col-spd": Struct.parse.number(data, "gr-c_side-col-spd", 0.0, 0.0, 999.9),
+        "gr-c_use-side-alpha": Struct.parse.boolean(data, "gr-c_use-side-alpha"),
+        "gr-c_side-alpha": Struct.parse.normalizedNumberTransformer(data, "gr-c_side-alpha"),
+        "gr-c_change-side-alpha": Struct.parse.boolean(data, "gr-c_change-side-alpha"),
+        "gr-c_use-side-size": Struct.parse.boolean(data, "gr-c_use-side-size"),
+        "gr-c_side-size": Struct.parse.numberTransformer(data, "gr-c_side-size", {
+          clampValue: { from: 0.0, to: 9999.9 },
+          clampTarget: { from: 0.0, to: 9999.9 },
+        }),
+        "gr-c_change-side-size": Struct.parse.boolean(data, "gr-c_change-side-size"),
+      }
+    },
+    run: function(data, channel) {
+      var controller = Beans.get(BeanVisuController)
+      if (!controller.isChannelDifficultyValid(channel)) {
+        return
+      }
+
+      var gridService = controller.gridService
+      var properties = gridService.properties
+      var pump = gridService.dispatcher
+      var executor = gridService.executor
+
+      ///@description feature TODO grid.column.mode
+      Visu.resolvePropertyTrackEvent(data,
+        "gr-c_use-mode",
+        "gr-c_mode",
+        "channelsMode",
+        properties)
+      
+      ///@description feature TODO grid.column.amount
+      Visu.resolveNumberTransformerTrackEvent(data, 
+        "gr-c_use-amount",
+        "gr-c_amount",
+        "gr-c_change-amount",
+        "channels",
+        properties, pump, executor)
+
+      ///@description feature TODO grid.column.main.tx
+      Visu.resolvePropertyTrackEvent(data,
+        "gr-c_use-main-tx",
+        "gr-c_main-tx",
+        "channelsPrimaryTextureLine",
+        properties)
+
+      ///@description feature TODO grid.column.main.color
+      Visu.resolveColorTransformerTrackEvent(data, 
+        "gr-c_use-main-col",
+        "gr-c_main-col",
+        "gr-c_main-col-spd",
+        "channelsPrimaryColor",
+        properties, pump, executor)
+
+      ///@description feature TODO grid.column.main.alpha
+      Visu.resolveNumberTransformerTrackEvent(data, 
+        "gr-c_use-main-alpha",
+        "gr-c_main-alpha",
+        "gr-c_change-main-alpha",
+        "channelsPrimaryAlpha",
+        properties, pump, executor)
+
+      ///@description feature TODO grid.column.main.size
+      Visu.resolveNumberTransformerTrackEvent(data, 
+        "gr-c_use-main-size",
+        "gr-c_main-size",
+        "gr-c_change-main-size",
+        "channelsPrimaryThickness",
+        properties, pump, executor)
+
+      ///@description feature TODO grid.column.side.tx
+      Visu.resolvePropertyTrackEvent(data,
+        "gr-c_use-side-tx",
+        "gr-c_side-tx",
+        "channelsSecondaryTextureLine",
+        properties)
+
+      ///@description feature TODO grid.column.side.color
+      Visu.resolveColorTransformerTrackEvent(data, 
+        "gr-c_use-side-col",
+        "gr-c_side-col",
+        "gr-c_side-col-spd",
+        "channelsSecondaryColor",
+        properties, pump, executor)
+
+      ///@description feature TODO grid.column.side.alpha
+      Visu.resolveNumberTransformerTrackEvent(data, 
+        "gr-c_use-side-alpha",
+        "gr-c_side-alpha",
+        "gr-c_change-side-alpha",
+        "channelsSecondaryAlpha",
+        properties, pump, executor)
+      
+      ///@description feature TODO grid.column.side.size
+      Visu.resolveNumberTransformerTrackEvent(data, 
+        "gr-c_use-side-size",
+        "gr-c_side-size",
+        "gr-c_change-side-size",
+        "channelsSecondaryThickness",
+        properties, pump, executor)
+    },
+  },
   brush_grid_row: {
     parse: function(data) {
       return {
@@ -42,11 +341,13 @@ global.__grid_track_event = {
         "gr-r_hide": Struct.parse.boolean(data, "gr-r_hide", TRACK_EVENT_DEFAULT_HIDDEN_VALUE),
         "gr-r_hide-main": Struct.parse.boolean(data, "gr-r_hide-main", TRACK_EVENT_DEFAULT_HIDDEN_VALUE),
         "gr-r_hide-main-amount": Struct.parse.boolean(data, "gr-r_hide-main-amount", TRACK_EVENT_DEFAULT_HIDDEN_VALUE),
+        "gr-r_hide-main-tx": Struct.parse.boolean(data, "gr-r_hide-main-tx", TRACK_EVENT_DEFAULT_HIDDEN_VALUE),
         "gr-r_hide-main-col": Struct.parse.boolean(data, "gr-r_hide-main-col", TRACK_EVENT_DEFAULT_HIDDEN_VALUE),
         "gr-r_hide-main-alpha": Struct.parse.boolean(data, "gr-r_hide-main-alpha", TRACK_EVENT_DEFAULT_HIDDEN_VALUE),
         "gr-r_hide-main-size": Struct.parse.boolean(data, "gr-r_hide-main-size", TRACK_EVENT_DEFAULT_HIDDEN_VALUE),
         "gr-r_hide-side": Struct.parse.boolean(data, "gr-r_hide-side", TRACK_EVENT_DEFAULT_HIDDEN_VALUE),
         "gr-r_hide-side-amount": Struct.parse.boolean(data, "gr-r_hide-side-amount", TRACK_EVENT_DEFAULT_HIDDEN_VALUE),
+        "gr-r_hide-side-tx": Struct.parse.boolean(data, "gr-r_hide-side-tx", TRACK_EVENT_DEFAULT_HIDDEN_VALUE),
         "gr-r_hide-side-col": Struct.parse.boolean(data, "gr-r_hide-side-col", TRACK_EVENT_DEFAULT_HIDDEN_VALUE),
         "gr-r_hide-side-alpha": Struct.parse.boolean(data, "gr-r_hide-side-alpha", TRACK_EVENT_DEFAULT_HIDDEN_VALUE),
         "gr-r_hide-side-size": Struct.parse.boolean(data, "gr-r_hide-side-size", TRACK_EVENT_DEFAULT_HIDDEN_VALUE),
@@ -59,6 +360,8 @@ global.__grid_track_event = {
         }),
         "gr-r_change-amount": Struct.parse.boolean(data, "gr-r_change-amount"),
         "gr-r_hide-amount": Struct.parse.boolean(data, "gr-r_hide-amount"),
+        "gr-r_use-main-tx": Struct.parse.boolean(data, "gr-r_use-main-tx"),
+        "gr-r_main-tx": Struct.parse.enumerableKey(data, "gr-r_main-tx", GridTextureLine, GridTextureLine.SIMPLE),
         "gr-r_use-main-col": Struct.parse.boolean(data, "gr-r_use-main-col"),
         "gr-r_main-col": Struct.parse.color(data, "gr-r_main-col"),
         "gr-r_main-col-spd": Struct.parse.number(data, "gr-r_main-col-spd", 0.0, 0.0, 999.9),
@@ -71,6 +374,8 @@ global.__grid_track_event = {
           clampTarget: { from: 0.0, to: 9999.9 },
         }),
         "gr-r_change-main-size": Struct.parse.boolean(data, "gr-r_change-main-size"),
+        "gr-r_use-side-tx": Struct.parse.boolean(data, "gr-r_use-side-tx"),
+        "gr-r_side-tx": Struct.parse.enumerableKey(data, "gr-r_side-tx", GridTextureLine, GridTextureLine.SIMPLE),
         "gr-r_use-side-col": Struct.parse.boolean(data, "gr-r_use-side-col"),
         "gr-r_side-col": Struct.parse.color(data, "gr-r_side-col"),
         "gr-r_side-col-spd": Struct.parse.number(data, "gr-r_side-col-spd", 0.0, 0.0, 999.9),
@@ -111,6 +416,13 @@ global.__grid_track_event = {
         "separators",
         properties, pump, executor)
 
+      ///@description feature TODO grid.row.main.tx
+      Visu.resolvePropertyTrackEvent(data,
+        "gr-r_use-main-tx",
+        "gr-r_main-tx",
+        "separatorsPrimaryTextureLine",
+        properties)
+
       ///@description feature TODO grid.row.main.color
       Visu.resolveColorTransformerTrackEvent(data, 
         "gr-r_use-main-col",
@@ -134,6 +446,13 @@ global.__grid_track_event = {
         "gr-r_change-main-size",
         "separatorsPrimaryThickness",
         properties, pump, executor)
+
+      ///@description feature TODO grid.row.side.tx
+      Visu.resolvePropertyTrackEvent(data,
+        "gr-r_use-side-tx",
+        "gr-r_side-tx",
+        "separatorsSecondaryTextureLine",
+        properties)
 
       ///@description feature TODO grid.row.side.color
       Visu.resolveColorTransformerTrackEvent(data, 

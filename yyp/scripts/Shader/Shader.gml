@@ -728,6 +728,17 @@ function Shader(_asset, json) constructor {
       },
       this.asset
     )
+
+  samplers = Struct
+    .toMap(
+      Struct.getIfType(json, "samplers", Struct, { }), 
+      String, 
+      ShaderSampler,
+      function(update, name, asset) {
+        return new ShaderSampler(asset, name, update)
+      },
+      this.asset
+    )
 }
 
 

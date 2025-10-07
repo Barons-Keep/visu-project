@@ -1,131 +1,11 @@
 ///@package io.alkapivo.visu.editor.service.brush.grid
 
-///@static
-global.__event_grid_column = {
-  parse: function(data) {
-    return {
-      "icon": Struct.parse.sprite(data, "icon"),
-      "gr-c_hide": Struct.parse.boolean(data, "gr-c_hide", TRACK_EVENT_DEFAULT_HIDDEN_VALUE),
-      "gr-c_hide-main": Struct.parse.boolean(data, "gr-c_hide-main", TRACK_EVENT_DEFAULT_HIDDEN_VALUE),
-      "gr-c_hide-main-amount": Struct.parse.boolean(data, "gr-c_hide-main-amount", TRACK_EVENT_DEFAULT_HIDDEN_VALUE),
-      "gr-c_hide-main-col": Struct.parse.boolean(data, "gr-c_hide-main-col", TRACK_EVENT_DEFAULT_HIDDEN_VALUE),
-      "gr-c_hide-main-alpha": Struct.parse.boolean(data, "gr-c_hide-main-alpha", TRACK_EVENT_DEFAULT_HIDDEN_VALUE),
-      "gr-c_hide-main-size": Struct.parse.boolean(data, "gr-c_hide-main-size", TRACK_EVENT_DEFAULT_HIDDEN_VALUE),
-      "gr-c_hide-side": Struct.parse.boolean(data, "gr-c_hide-side", TRACK_EVENT_DEFAULT_HIDDEN_VALUE),
-      "gr-c_hide-side-amount": Struct.parse.boolean(data, "gr-c_hide-side-amount", TRACK_EVENT_DEFAULT_HIDDEN_VALUE),
-      "gr-c_hide-side-col": Struct.parse.boolean(data, "gr-c_hide-side-col", TRACK_EVENT_DEFAULT_HIDDEN_VALUE),
-      "gr-c_hide-side-alpha": Struct.parse.boolean(data, "gr-c_hide-side-alpha", TRACK_EVENT_DEFAULT_HIDDEN_VALUE),
-      "gr-c_hide-side-size": Struct.parse.boolean(data, "gr-c_hide-side-size", TRACK_EVENT_DEFAULT_HIDDEN_VALUE),
-      "gr-c_use-mode": Struct.parse.boolean(data, "gr-c_use-mode"),
-      "gr-c_mode": Struct.parse.enumerableKey(data, "gr-c_mode", GridMode, GridMode.DUAL),
-      "gr-c_use-amount": Struct.parse.boolean(data, "gr-c_use-amount"),
-      "gr-c_amount": Struct.parse.numberTransformer(data, "gr-c_amount", {
-        clampValue: { from: 0.0, to: 999.9 },
-        clampTarget: { from: 0.0, to: 999.9 },
-      }),
-      "gr-c_change-amount": Struct.parse.boolean(data, "gr-c_change-amount"),
-      "gr-c_use-main-col": Struct.parse.boolean(data, "gr-c_use-main-col"),
-      "gr-c_main-col": Struct.parse.color(data, "gr-c_main-col"),
-      "gr-c_main-col-spd": Struct.parse.number(data, "gr-c_main-col-spd", 0.0, 0.0, 999.9),
-      "gr-c_use-main-alpha": Struct.parse.boolean(data, "gr-c_use-main-alpha"),
-      "gr-c_main-alpha": Struct.parse.normalizedNumberTransformer(data, "gr-c_main-alpha"),
-      "gr-c_change-main-alpha": Struct.parse.boolean(data, "gr-c_change-main-alpha"),
-      "gr-c_use-main-size": Struct.parse.boolean(data, "gr-c_use-main-size"),
-      "gr-c_main-size": Struct.parse.numberTransformer(data, "gr-c_main-size", {
-        clampValue: { from: 0.0, to: 9999.9 },
-        clampTarget: { from: 0.0, to: 9999.9 },
-      }),
-      "gr-c_change-main-size": Struct.parse.boolean(data, "gr-c_change-main-size"),
-      "gr-c_use-side-col": Struct.parse.boolean(data, "gr-c_use-side-col"),
-      "gr-c_side-col": Struct.parse.color(data, "gr-c_side-col"),
-      "gr-c_side-col-spd": Struct.parse.number(data, "gr-c_side-col-spd", 0.0, 0.0, 999.9),
-      "gr-c_use-side-alpha": Struct.parse.boolean(data, "gr-c_use-side-alpha"),
-      "gr-c_side-alpha": Struct.parse.normalizedNumberTransformer(data, "gr-c_side-alpha"),
-      "gr-c_change-side-alpha": Struct.parse.boolean(data, "gr-c_change-side-alpha"),
-      "gr-c_use-side-size": Struct.parse.boolean(data, "gr-c_use-side-size"),
-      "gr-c_side-size": Struct.parse.numberTransformer(data, "gr-c_side-size", {
-        clampValue: { from: 0.0, to: 9999.9 },
-        clampTarget: { from: 0.0, to: 9999.9 },
-      }),
-      "gr-c_change-side-size": Struct.parse.boolean(data, "gr-c_change-side-size"),
-    }
-  },
-  run: function(data, channel) {
-    var controller = Beans.get(BeanVisuController)
-    if (!controller.isChannelDifficultyValid(channel)) {
-      return
-    }
-
-    var gridService = controller.gridService
-    var properties = gridService.properties
-    var pump = gridService.dispatcher
-    var executor = gridService.executor
-
-    ///@description feature TODO grid.column.mode
-    Visu.resolvePropertyTrackEvent(data,
-      "gr-c_use-mode",
-      "gr-c_mode",
-      "channelsMode",
-      properties)
-    
-    ///@description feature TODO grid.column.amount
-    Visu.resolveNumberTransformerTrackEvent(data, 
-      "gr-c_use-amount",
-      "gr-c_amount",
-      "gr-c_change-amount",
-      "channels",
-      properties, pump, executor)
-
-    ///@description feature TODO grid.column.main.color
-    Visu.resolveColorTransformerTrackEvent(data, 
-      "gr-c_use-main-col",
-      "gr-c_main-col",
-      "gr-c_main-col-spd",
-      "channelsPrimaryColor",
-      properties, pump, executor)
-
-    ///@description feature TODO grid.column.main.alpha
-    Visu.resolveNumberTransformerTrackEvent(data, 
-      "gr-c_use-main-alpha",
-      "gr-c_main-alpha",
-      "gr-c_change-main-alpha",
-      "channelsPrimaryAlpha",
-      properties, pump, executor)
-
-    ///@description feature TODO grid.column.main.size
-    Visu.resolveNumberTransformerTrackEvent(data, 
-      "gr-c_use-main-size",
-      "gr-c_main-size",
-      "gr-c_change-main-size",
-      "channelsPrimaryThickness",
-      properties, pump, executor)
-
-    ///@description feature TODO grid.column.side.color
-    Visu.resolveColorTransformerTrackEvent(data, 
-      "gr-c_use-side-col",
-      "gr-c_side-col",
-      "gr-c_side-col-spd",
-      "channelsSecondaryColor",
-      properties, pump, executor)
-
-    ///@description feature TODO grid.column.side.alpha
-    Visu.resolveNumberTransformerTrackEvent(data, 
-      "gr-c_use-side-alpha",
-      "gr-c_side-alpha",
-      "gr-c_change-side-alpha",
-      "channelsSecondaryAlpha",
-      properties, pump, executor)
-    
-    ///@description feature TODO grid.column.side.size
-    Visu.resolveNumberTransformerTrackEvent(data, 
-      "gr-c_use-side-size",
-      "gr-c_side-size",
-      "gr-c_change-side-size",
-      "channelsSecondaryThickness",
-      properties, pump, executor)
-  },
-  store: function(json) {
-    return new Map(String, Struct, {
+///@param {Struct} json
+///@return {Struct}
+function brush_grid_column(json) {
+  return {
+    name: "brush_grid_column",
+    store: new Map(String, Struct, {
       "gr-c_use-mode": {
         type: Boolean,
         value: Struct.get(json, "gr-c_use-mode"),
@@ -149,6 +29,16 @@ global.__event_grid_column = {
       "gr-c_change-amount": {
         type: Boolean,
         value: Struct.get(json, "gr-c_change-amount"),
+      },
+      "gr-c_use-main-tx": {
+        type: Boolean,
+        value: Struct.get(json, "gr-c_use-main-tx"),
+      },
+      "gr-c_main-tx": {
+        type: String,
+        value: Struct.get(json, "gr-c_main-tx"),
+        passthrough: UIUtil.passthrough.getArrayValue(),
+        data: GridTextureLine.keys(),
       },
       "gr-c_use-main-col": {
         type: Boolean,
@@ -190,6 +80,16 @@ global.__event_grid_column = {
       "gr-c_change-main-size": {
         type: Boolean,
         value: Struct.get(json, "gr-c_change-main-size"),
+      },
+      "gr-c_use-side-tx": {
+        type: Boolean,
+        value: Struct.get(json, "gr-c_use-side-tx"),
+      },
+      "gr-c_side-tx": {
+        type: String,
+        value: Struct.get(json, "gr-c_side-tx"),
+        passthrough: UIUtil.passthrough.getArrayValue(),
+        data: GridTextureLine.keys(),
       },
       "gr-c_use-side-col": {
         type: Boolean,
@@ -240,6 +140,10 @@ global.__event_grid_column = {
         type: Boolean,
         value: Struct.get(json, "gr-c_hide-main"),
       },
+      "gr-c_hide-main-tx": {
+        type: Boolean,
+        value: Struct.get(json, "gr-c_hide-main-tx"),
+      },
       "gr-c_hide-main-amount": {
         type: Boolean,
         value: Struct.get(json, "gr-c_hide-main-amount"),
@@ -260,6 +164,10 @@ global.__event_grid_column = {
         type: Boolean,
         value: Struct.get(json, "gr-c_hide-side"),
       },
+      "gr-c_hide-side-tx": {
+        type: Boolean,
+        value: Struct.get(json, "gr-c_hide-side-tx"),
+      },
       "gr-c_hide-side-amount": {
         type: Boolean,
         value: Struct.get(json, "gr-c_hide-side-amount"),
@@ -276,10 +184,8 @@ global.__event_grid_column = {
         type: Boolean,
         value: Struct.get(json, "gr-c_hide-side-size"),
       },
-    })
-  },
-  components: function(json) {
-    return new Array(Struct, [
+    }),
+    components: new Array(Struct, [
       VETitleComponent("gr-c_title", {
         label: { text: "Properties" },
         input: { },
@@ -343,6 +249,30 @@ global.__event_grid_column = {
           spriteOff: { name: "visu_texture_checkbox_hide" },
           store: { key: "gr-c_hide-main" },
         },
+      }),
+      VETitleComponent("gr-c_main-tx-title", {
+        hidden: { key: "gr-c_hide-main" },
+        label: { text: "Texture line" },
+        input: {
+          spriteOn: { name: "visu_texture_checkbox_switch_on" },
+          spriteOff: { name: "visu_texture_checkbox_switch_off" },
+          store: { key: "gr-c_use-main-tx" },
+        },
+        checkbox: {
+          spriteOn: { name: "visu_texture_checkbox_show" },
+          spriteOff: { name: "visu_texture_checkbox_hide" },
+          store: { key: "gr-c_hide-main-tx" },
+        },
+      }),
+      VESpinSelectComponent("gr-c_main-tx", {
+        hidden: {
+          keys: [
+            { key: "gr-c_hide-main" },
+            { key: "gr-c_hide-main-tx" }
+          ]
+        },
+        enable: { key: "gr-c_use-main-tx" },
+        store: { key: "gr-c_main-tx" },
       }),
       VETitleComponent("gr-c_main-size-title", {
         hidden: { key: "gr-c_hide-main" },
@@ -490,6 +420,30 @@ global.__event_grid_column = {
           store: { key: "gr-c_hide-side" },
         },
       }),
+      VETitleComponent("gr-c_side-tx-title", {
+        hidden: { key: "gr-c_hide-side" },
+        label: { text: "Texture line" },
+        input: {
+          spriteOn: { name: "visu_texture_checkbox_switch_on" },
+          spriteOff: { name: "visu_texture_checkbox_switch_off" },
+          store: { key: "gr-c_use-side-tx" },
+        },
+        checkbox: {
+          spriteOn: { name: "visu_texture_checkbox_show" },
+          spriteOff: { name: "visu_texture_checkbox_hide" },
+          store: { key: "gr-c_hide-side-tx" },
+        },
+      }),
+      VESpinSelectComponent("gr-c_side-tx", {
+        hidden: {
+          keys: [
+            { key: "gr-c_hide-side" },
+            { key: "gr-c_hide-side-tx" }
+          ]
+        },
+        enable: { key: "gr-c_use-side-tx" },
+        store: { key: "gr-c_side-tx" },
+      }),
       VETitleComponent("gr-c_side-size-title", {
         hidden: { key: "gr-c_hide-side" },
         label: { text: "Thickness" },
@@ -627,18 +581,6 @@ global.__event_grid_column = {
           ]
         },
       }),
-    ])
-  },
-}
-#macro event_grid_column global.__event_grid_column
-
-
-///@param {Struct} json
-///@return {Struct}
-function brush_grid_column(json) {
-  return {
-    name: "brush_grid_column",
-    store: event_grid_column.store(json),
-    components: event_grid_column.components(json),
+    ]),
   }
 }

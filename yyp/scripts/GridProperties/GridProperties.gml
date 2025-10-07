@@ -29,6 +29,12 @@ function GridProperties(config = null) constructor {
   channelsSecondaryThickness = Struct.getIfType(config, "properties.channelsSecondaryThickness", Number, 6.0)
 
   ///@type {String}
+  channelsPrimaryTextureLine = Struct.getIfType(config, "properties.channelsPrimaryTextureLine", String, "SIMPLE")
+
+  ///@type {String}
+  channelsSecondaryTextureLine = Struct.getIfType(config, "properties.channelsSecondaryTextureLine", String, "SIMPLE")
+
+  ///@type {String}
   channelsMode = Struct.getIfType(config, "properties.channelsMode", String, "DUAL")
   #endregion
 
@@ -60,6 +66,12 @@ function GridProperties(config = null) constructor {
   ///@type {Number}
   separatorsSecondaryThickness = Assert.isType(Struct
     .getDefault(config, "properties.separatorsSecondaryThickness", 6), Number)
+
+  ///@type {String}
+  separatorsPrimaryTextureLine = Struct.getIfType(config, "properties.separatorsPrimaryTextureLine", String, "SIMPLE")
+
+  ///@type {String}
+  separatorsSecondaryTextureLine = Struct.getIfType(config, "properties.separatorsSecondaryTextureLine", String, "SIMPLE")
 
   ///@type {String}
   separatorsMode = Assert.isType(Struct

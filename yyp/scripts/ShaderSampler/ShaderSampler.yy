@@ -1,0 +1,13 @@
+{
+  "$GMScript":"v1",
+  "%Name":"ShaderSampler",
+  "isCompatibility":false,
+  "isDnD":false,
+  "name":"ShaderSampler",
+  "parent":{
+    "name":"shader",
+    "path":"folders/io.alkapivo.core/src/renderer/shader.yy",
+  },
+  "resourceType":"GMScript",
+  "resourceVersion":"2.0",
+}

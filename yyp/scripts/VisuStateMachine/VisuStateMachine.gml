@@ -206,7 +206,7 @@ function VisuStateMachine(context, name) {
           var controller = Beans.get(BeanVisuController)
           var gridService = controller.gridService
           if (!Optional.is(controller.ostSound)) {
-            var sound = SoundUtil.fetch("sound_nfract_amphetamine", { loop: true })
+            var sound = SoundUtil.fetch("sound_twig_main_menu", { loop: true })
             controller.ostSound = Core.isType(sound, Sound)
               ? sound 
               : controller.ostSound

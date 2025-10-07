@@ -109,6 +109,7 @@ function _Core() constructor {
         case GMObjectType: return result == "ref" && object_exists(object)
         case GMShader: return result == "ref" && shader_is_compiled(object)
         case GMShaderUniform: return (result == "number" || result == "ref") && object != -1
+        case GMShaderSampler: return (result == "number" || result == "ref") && object != -1
         case GMScene: return result == "ref" && asset_get_type(object) == asset_room
         case GMSound: return (result == "number" || result == "ref") && audio_exists(object)
         case GMSurface: return result == "ref" && surface_exists(object)

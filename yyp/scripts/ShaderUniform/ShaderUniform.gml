@@ -2,6 +2,7 @@
 
 #macro GMShaderUniform "GMShaderUniform"
 
+
 ///@enum
 function _ShaderUniformType(): Enum() constructor {
   COLOR = ShaderUniformColor
@@ -23,10 +24,10 @@ global.__ShaderUniformType = new _ShaderUniformType()
 function ShaderUniform(_asset, _name, _type) constructor {
 
   ///@type {String}
-  name = Assert.isType(_name, String)
+  name = Assert.isType(_name, String, "ShaderUniform name must be type of String")
 
   ///@type {ShaderUniformType}
-  type = Assert.isEnumKey(_type, ShaderUniformType)
+  type = Assert.isEnumKey(_type, ShaderUniformType, "ShaderUniform type must be type of ShaderUniformType")
 
   ///@type {GMShaderUniform}
   asset = Assert.isType(shader_get_uniform(_asset, this.name), GMShaderUniform, $"Cannot parse uniform {name}")

@@ -1113,6 +1113,8 @@ function _Visu() constructor {
 
   ///@return {Visu}
   static initShaders = function() {
+    ShaderBKTGlitch.install(SHADERS, SHADER_CONFIGS)
+
     ShaderArcRunner.install(SHADERS, SHADER_CONFIGS)
     ShaderAstralFlow.install(SHADERS, SHADER_CONFIGS)
     ShaderCloudySky.install(SHADERS, SHADER_CONFIGS)
@@ -1126,6 +1128,7 @@ function _Visu() constructor {
     ShaderWavyMesh.install(SHADERS, SHADER_CONFIGS)
     ShaderWavySpectrum.install(SHADERS, SHADER_CONFIGS)
     ShaderWormholeVortex.install(SHADERS, SHADER_CONFIGS)
+
     return this
   }
 

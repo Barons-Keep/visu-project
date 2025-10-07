@@ -1,6 +1,6 @@
 {
   "version": "1",
-  "model": "io.alkapivo.visu.TestSuite",
+  "model": "io.alkapivo.core.test.TestSuite",
   "data":{
     "name": "Test PlayerService",
     "stopAfterFailure": false,

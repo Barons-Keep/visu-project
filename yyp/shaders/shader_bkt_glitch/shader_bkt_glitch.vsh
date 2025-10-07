@@ -1,5 +1,4 @@
 //////////////////////////////////
-//   -> FRAGMENT SHADER ->      //
 //                              //
 //   bktGlitch 1.3.2            //
 //    Written by Jan Vorisek    //
@@ -9,7 +8,6 @@
 //                              //
 //     "Here we go again."      //
 //                              //
-//   -> FRAGMENT SHADER ->      //
 //////////////////////////////////
 
 attribute vec3 in_Position;                  // (x,y,z)

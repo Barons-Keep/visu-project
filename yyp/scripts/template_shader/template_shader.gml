@@ -489,147 +489,21 @@ global.__ShaderUniformTemplates = new Map(String, Callable)
             },
           },
         },
-        {
-          name: $"shader-uniform_{uniform.name}",
-          template: VEComponents.get("transform-numeric-uniform"),
-          layout: VELayouts.get("transform-numeric-uniform"),
-          config: Struct.appendRecursive({
-            layout: { type: UILayoutType.VERTICAL },
-            value: {
-              label: { 
-                text: "Value",
-                hidden: { key: $"{uniform.name}_hide" },
-              },
-              field: {
-                store: { key: $"{uniform.name}" },
-                hidden: { key: $"{uniform.name}_hide" },
-              },
-              increase: {
-                store: { key: $"{uniform.name}" },
-                hidden: { key: $"{uniform.name}_hide" },
-              },
-              decrease: {
-                store: { key: $"{uniform.name}" },
-                hidden: { key: $"{uniform.name}_hide" },
-              },
-              slider: {
-                store: { key: $"{uniform.name}" },
-                hidden: { key: $"{uniform.name}_hide" },
-                factor: 0.01,
-              },
-            },
-            target: {
-              label: {
-                text: "Target",
-                hidden: { key: $"{uniform.name}_hide" },
-              },
-              field: {
-                store: { key: $"{uniform.name}" },
-                hidden: { key: $"{uniform.name}_hide" },
-              },
-              increase: {
-                store: { key: $"{uniform.name}" },
-                hidden: { key: $"{uniform.name}_hide" },
-              },
-              decrease: {
-                store: { key: $"{uniform.name}" },
-                hidden: { key: $"{uniform.name}_hide" },
-              },
-              slider: {
-                store: { key: $"{uniform.name}" },
-                hidden: { key: $"{uniform.name}_hide" },
-                factor: 0.01,
-              },
-            },
-            factor: {
-              label: {
-                text: "Factor",
-                hidden: { key: $"{uniform.name}_hide" },
-              },
-              field: {
-                store: { key: $"{uniform.name}" },
-                hidden: { key: $"{uniform.name}_hide" },
-              },
-              increase: {
-                store: { key: $"{uniform.name}" },
-                hidden: { key: $"{uniform.name}_hide" },
-              },
-              decrease: {
-                store: { key: $"{uniform.name}" },
-                hidden: { key: $"{uniform.name}_hide" },
-              },
-              slider: {
-                store: { key: $"{uniform.name}" },
-                hidden: { key: $"{uniform.name}_hide" },
-                factor: 0.001,
-              },
-            },
-            increase: {
-              label: {
-                text: "Increase",
-                hidden: { key: $"{uniform.name}_hide" },
-              },
-              field: {
-                store: { key: $"{uniform.name}" },
-                hidden: { key: $"{uniform.name}_hide" },
-              },
-              increase: {
-                store: { key: $"{uniform.name}" },
-                hidden: { key: $"{uniform.name}_hide" },
-              },
-              decrease: {
-                store: { key: $"{uniform.name}" },
-                hidden: { key: $"{uniform.name}_hide" },
-              },
-              slider: {
-                store: { key: $"{uniform.name}" },
-                hidden: { key: $"{uniform.name}_hide" },
-                factor: 0.0001,
-              },
-            },
-            duration: {
-              label: {
-                text: "Duration",
-                hidden: { key: $"{uniform.name}_hide" },
-              },
-              field: {
-                store: { key: $"{uniform.name}" },
-                hidden: { key: $"{uniform.name}_hide" },
-              },
-              increase: {
-                store: { key: $"{uniform.name}" },
-                hidden: { key: $"{uniform.name}_hide" },
-              },
-              decrease: {
-                store: { key: $"{uniform.name}" },
-                hidden: { key: $"{uniform.name}_hide" },
-              },
-              slider: {
-                store: { key: $"{uniform.name}" },
-                hidden: { key: $"{uniform.name}_hide" },
-                factor: 0.01,
-              },
-            },
-            ease: {
-              label: {
-                text: "Ease",
-                hidden: { key: $"{uniform.name}_hide" },
-              },
-              previous: {
-                store: { key: $"{uniform.name}" },
-                hidden: { key: $"{uniform.name}_hide" },
-              },
-              preview: {
-                store: { key: $"{uniform.name}" },
-                hidden: { key: $"{uniform.name}_hide" },
-              },
-              next: {
-                store: { key: $"{uniform.name}" },
-                hidden: { key: $"{uniform.name}_hide" },
-              },
-            },
-          }, componentsConfig, false),
-        },
+        VENumberTransformerComponent($"shader-uniform_{uniform.name}", Struct.appendRecursive({
+          hidden: { key: $"{uniform.name}_hide" },
+          store: {
+            value: { key: $"{uniform.name}" },
+          },
+          value: {
+            text: "Value",
+            factor: 0.1,
+            stick: { factor: 0.1 },
+          },
+          duration: {
+            factor: 0.1,
+            stick: { factor: 0.1 },
+          },
+        }, componentsConfig, false)),
         {
           name: $"shader-uniform_{uniform.name}-line-h",
           template: VEComponents.get("line-h"),

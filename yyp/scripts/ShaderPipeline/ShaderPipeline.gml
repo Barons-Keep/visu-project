@@ -316,6 +316,10 @@ function ShaderPipeline(config = {}) constructor {
       property.uniform.set(value)
     }
 
+    static updateSampler = function(sampler, key, shader) {
+      sampler.update(shader, sampler)
+    }
+
     var size = this.executor.tasks.size()
     for (var index = 0; index < size; index++) {
       var task = this.executor.tasks.get(index)
@@ -331,6 +335,7 @@ function ShaderPipeline(config = {}) constructor {
       var properties = task.state.get("properties")
       GPU.set.shader(shader)
       properties.forEach(setShaderProperty, this)
+      shader.samplers.forEach(updateSampler, shader)
       handler(task, index, data)
       GPU.reset.shader()
 
