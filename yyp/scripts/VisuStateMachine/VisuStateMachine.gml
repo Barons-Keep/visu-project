@@ -60,7 +60,7 @@ function VisuStateMachine(context, name) {
                   .scaleToFill(GuiWidth() + 400, GuiHeight() + 400)
                   .setScaleX(task.state.bkg.getScaleX() + task.state.bkgFactor)
                   .setScaleY(task.state.bkg.getScaleY() + task.state.bkgFactor)
-                  .setBlend(ColorUtil.parse("#ff00f7ff").toGMColor())
+                  //.setBlend(ColorUtil.parse("#ff00f7ff").toGMColor())
                   .setAlpha(clamp(5.0 * task.state.bkgFactor * (1.0 - task.state.fadeOut.getProgress()), 0.0, 1.0))
                   .setAngle(45.0 * task.state.bkgFactor)
                   .render(
@@ -206,14 +206,15 @@ function VisuStateMachine(context, name) {
           var controller = Beans.get(BeanVisuController)
           var gridService = controller.gridService
           if (!Optional.is(controller.ostSound)) {
-            var sound = SoundUtil.fetch("sound_twig_main_menu", { loop: true })
+            var sound = SoundUtil.fetch("sound_goetia_cerecloth", { loop: true })
             controller.ostSound = Core.isType(sound, Sound)
               ? sound 
               : controller.ostSound
           } else {
             var ostVolume = Visu.settings.getValue("visu.audio.ost-volume")
             if (!controller.ostSound.isLoaded()) {
-              controller.ostSound.play(0.0).rewind(random(90.0)).setVolume(ostVolume, 2.0)
+              //controller.ostSound.play(0.0).rewind(random(90.0)).setVolume(ostVolume, 2.0)
+              controller.ostSound.play(0.0).setVolume(ostVolume, 2.0)
             } else if (controller.ostSound.isPaused()) {
               controller.ostSound.resume().setVolume(ostVolume, 2.0)
             } else if (controller.ostSound.isPlaying()
@@ -239,16 +240,16 @@ function VisuStateMachine(context, name) {
               "#081179ff",
               "#000000",
               "#480564ff",
-              "#0a1a17ff",
+              "#0e1e1bff",
               "#8e0a0aff",
               "#000000",
-              "#21670eff",
-              "#32162cff",
-              "#c70a68ff",
+              //"#21670eff",
+              "#1a1748ff",
+              //"#c70a68ff",
               "#000000",
-              "#d31c44ff",
+              //"#d31c44ff",
               "#000000",
-              "#470e57ff"
+              "#570e4eff"
             ]))
             Visu.resolveColorTransformerTrackEvent(
               {
@@ -299,7 +300,7 @@ function VisuStateMachine(context, name) {
                 .execute(new Event("pause-track")),
             })
 
-            if (Optional.is(fsm.context.videoService.video)) {
+            if (Optional.is(fsm.context.videoService.getVideo())) {
               promises.set("video", fsm.context.videoService.dispatcher
                 .execute(new Event("pause-video")))
             }
@@ -345,9 +346,11 @@ function VisuStateMachine(context, name) {
               controller.ostSound = null
             }
 
+            var staticSounds = GMArray.toMap(VISU_SFX_AUDIO_NAMES, String, Boolean, Lambda.returnTrue, null, Lambda.passthrough)
+
             audio_stop_all()
             controller.visuRenderer.gridRenderer.clear()
-            Beans.get(BeanSoundService).free()
+            Beans.get(BeanSoundService).free(staticSounds)
             Beans.get(BeanTextureService).free()
             
             controller.trackService.dispatcher.execute(new Event("close-track"))
@@ -389,7 +392,7 @@ function VisuStateMachine(context, name) {
             fsmState.state.set("promises", promises)
 
             var videoService = controller.videoService
-            if (Optional.is(videoService.video)) {
+            if (Optional.is(videoService.getVideo())) {
               promises.set("video", videoService.send(new Event("resume-video")))
             }
 
@@ -446,7 +449,7 @@ function VisuStateMachine(context, name) {
                 .send(new Event("pause-track")),
             })
 
-            if (Optional.is(fsm.context.videoService.video)) {
+            if (Optional.is(fsm.context.videoService.getVideo())) {
               promises.set("video", fsm.context.videoService
                 .send(new Event("pause-video")))
             }
@@ -470,7 +473,7 @@ function VisuStateMachine(context, name) {
               name: "paused", 
               data: this.state.get("menuEvent"),
             }))
-            //Assert.areEqual(fsm.context.videoService.video.getStatus(), VideoStatus.PAUSED)
+            //Assert.areEqual(fsm.context.videoService.getVideo().getStatus(), VideoStatus.PAUSED)
             //Assert.areEqual(fsm.context.trackService.track.getStatus(), TrackStatus.PAUSED)
           } catch (exception) {
             var message = $"'fsm::update' (state: 'pause') fatal error: {exception.message}"
@@ -519,7 +522,7 @@ function VisuStateMachine(context, name) {
             })
 
             var trackDuration = fsm.context.trackService.duration
-            var video = fsm.context.videoService.video
+            var video = fsm.context.videoService.getVideo()
             if (Optional.is(video) && trackDuration > 0.0) {
               var videoData = JSON.clone(data)
               var videoDuration = video.getDuration()
@@ -580,8 +583,8 @@ function VisuStateMachine(context, name) {
               }
 
               this.state.set("promises-resolved", "success")
+            } else {
               fsm.context.send(new Event(this.state.get("resume") ? "play" : "pause"))
-              return
             }
           } catch (exception) {
             var message = $"'fsm::update' (state: 'rewind') fatal error: {exception.message}"

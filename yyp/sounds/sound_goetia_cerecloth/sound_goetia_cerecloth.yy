@@ -1,0 +1,25 @@
+{
+  "$GMSound":"",
+  "%Name":"sound_goetia_cerecloth",
+  "audioGroupId":{
+    "name":"audiogroup_default",
+    "path":"audiogroups/audiogroup_default",
+  },
+  "bitDepth":1,
+  "bitRate":128,
+  "compression":1,
+  "conversionMode":0,
+  "duration":316.01337,
+  "name":"sound_goetia_cerecloth",
+  "parent":{
+    "name":"goetia",
+    "path":"folders/io.alkapivo.visu/resource/sound/ost/goetia.yy",
+  },
+  "preload":false,
+  "resourceType":"GMSound",
+  "resourceVersion":"2.0",
+  "sampleRate":44100,
+  "soundFile":"sound_goetia_cerecloth.ogg",
+  "type":0,
+  "volume":1.0,
+}

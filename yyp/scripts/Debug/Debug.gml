@@ -123,3 +123,85 @@ function DebugNumericKeyboardValue(config) constructor {
     return this
   }
 }
+
+
+///@param {Struct} config
+function DebugBlendModesKeyboard(config) constructor {
+  
+  ///@private
+  ///@type {Struct}
+  blendModes = {
+    source: BlendModeExt.ZERO,
+    target: BlendModeExt.ZERO,
+    equation: BlendEquation.ADD,
+    blendModesExt: BlendModeExt.keys(),
+    blendEquation: BlendEquation.keys(),
+    sourceKey: new DebugNumericKeyboardValue({
+      name: "sourceKey",
+      value: 0,
+      factor: 1,
+      minValue: 0,
+      maxValue: 10,
+      keyIncrement: ord("T"),
+      keyDecrement: ord("G"),
+      pressed: true,
+    }),
+    targetKey: new DebugNumericKeyboardValue({
+      name: "targetKey",
+      value: 0,
+      factor: 1,
+      minValue: 0,
+      maxValue: 10,
+      keyIncrement: ord("Y"),
+      keyDecrement: ord("H"),
+      pressed: true,
+    }),
+    equationKey: new DebugNumericKeyboardValue({
+      name: "equationKey",
+      value: 0,
+      factor: 1,
+      minValue: 0,
+      maxValue: 4,
+      keyIncrement: ord("U"),
+      keyDecrement: ord("J"),
+      pressed: true,
+    }),
+    update: function() {
+      var sourceIndex = this.sourceKey.update().value
+      var targetIndex = this.targetKey.update().value
+      var equationIndex = this.equationKey.update().value
+
+      var source = BlendModeExt.get(this.blendModesExt.get(sourceIndex))
+      var target = BlendModeExt.get(this.blendModesExt.get(targetIndex))
+      var equation = BlendEquation.get(this.blendEquation.get(equationIndex))
+
+      if (source != this.source 
+          || target != this.target 
+          || equation != this.equation) {
+        Core.print(
+          $"# {irandom(99) + 99}|", 
+          "Source:", this.blendModesExt.get(sourceIndex), 
+          "Target:", this.blendModesExt.get(targetIndex), 
+          "Equation:", this.blendEquation.get(equationIndex)
+        )
+      }
+
+      this.source = source
+      this.target = target
+      this.equation = equation
+      /*
+      GPU.set.blendModeExt(this.blendModes.source, this.blendModes.target)
+      GPU.set.blendEquation(this.blendModes.equation)
+
+      GPU.reset.blendMode()
+      GPU.reset.blendEquation()
+      */
+    }
+  }
+
+  ///@return {DebugBlendModesKeyboard}
+  update = function() {
+    this.blendModes.update()
+    return this
+  }
+}

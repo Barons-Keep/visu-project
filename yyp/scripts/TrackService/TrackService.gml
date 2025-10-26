@@ -84,7 +84,7 @@ function TrackService(_context, config = {}): Service() constructor {
         this.state.track.task.update(executor)
         if (this.state.track.task.status == TaskStatus.FULLFILLED) {
           this.state.trackService.track = this.state.track
-          this.state.trackService.duration = this.state.track.audio.getLength()
+          this.state.trackService.duration = this.state.track.audio.getDuration()
           this.fullfill()
           Logger.info("TrackService", "Track was opened successfully")
         } else if (this.state.track.task.status == TaskStatus.REJECTED) {
@@ -139,7 +139,7 @@ function TrackService(_context, config = {}): Service() constructor {
   ///@param {Number} timestamp
   ///@return {TrackService}
   rewind = function(timestamp) {
-    if (!this.isTrackLoaded) {
+    if (!this.isTrackLoaded()) {
       return this
     } 
 

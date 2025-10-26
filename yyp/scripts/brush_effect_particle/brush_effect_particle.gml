@@ -116,10 +116,16 @@ function brush_effect_particle(json) {
             var store = null
             if (Core.isType(this.context.state.get("brush"), VEBrush)) {
               store = this.context.state.get("brush").store
+              if (store == null || !store.getValue("ef-part_preview")) {
+                Beans.get(BeanVisuController).shroomService.particleArea = null
+              }
             }
             
             if (Core.isType(this.context.state.get("event"), VEEvent)) {
               store = this.context.state.get("event").store
+              if (store == null || !store.getValue("ef-part_preview")) {
+                Beans.get(BeanVisuController).shroomService.particleAreaEvent = null
+              }
             }
 
             if (!Optional.is(store) || !store.getValue("ef-part_preview")) {

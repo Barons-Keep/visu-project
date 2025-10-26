@@ -60,6 +60,7 @@ function VisuTrack(_path, json) constructor {
   saveProject = function(manifestPath) {
     var controller = Beans.get(BeanVisuController)
     var fileService = Beans.get(BeanFileService)
+    var soundService = Beans.get(BeanSoundService)
     var previousPath = this.path
     var path = Assert.isType(FileUtil.getDirectoryFromPath(manifestPath), String)
     var manifest = {
@@ -101,10 +102,16 @@ function VisuTrack(_path, json) constructor {
       "version": "1",
       "data": {}
     }
-    Beans.get(BeanSoundService).intents
-      .forEach(function(intent, name, data) {
-        Struct.set(data, name, intent.serialize())
-      }, sound.data)
+
+    var soundIntentName = controller.trackService.track.audio.name
+    var soundIntent = Assert.isType(soundService.intents.get(soundIntentName), SoundIntent, 
+      "VisuTrack::sound soundIntent must be type of SoundIntent")
+    Struct.set(sound.data, soundIntentName, soundIntent.serialize())
+
+    //soundService.intents
+    //  .forEach(function(intent, name, data) {
+    //    Struct.set(data, name, intent.serialize())
+    //  }, sound.data)
 
     var bullet = {
       "model": "Collection<io.alkapivo.visu.service.bullet.BulletTemplate>",

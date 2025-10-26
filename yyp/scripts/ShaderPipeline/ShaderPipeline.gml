@@ -5,6 +5,21 @@ global.__DEFAULT_SHADER_PIPELINE_LIMIT = 32
 #macro DEFAULT_SHADER_PIPELINE_LIMIT global.__DEFAULT_SHADER_PIPELINE_LIMIT
 
 
+///@type {Number}
+global.__SHADER_AUDIO_WAVEFORM_DEFAULT_VALUE = [ 
+  1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
+  1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
+  1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
+  1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0
+]
+#macro SHADER_AUDIO_WAVEFORM_DEFAULT_VALUE global.__SHADER_AUDIO_WAVEFORM_DEFAULT_VALUE
+
+
+///@type {Number}
+global.__SHADER_AUDIO_WAVEFORM_VALUE = SHADER_AUDIO_WAVEFORM_DEFAULT_VALUE
+#macro SHADER_AUDIO_WAVEFORM_VALUE global.__SHADER_AUDIO_WAVEFORM_VALUE
+
+
 ///@enum
 function _ShaderPipelineTaskTransformerType(): Enum() constructor {
   COLOR = ColorTransformer
@@ -14,6 +29,7 @@ function _ShaderPipelineTaskTransformerType(): Enum() constructor {
   VECTOR3 = Vector3Transformer
   VECTOR4 = Vector4Transformer
   RESOLUTION = ResolutionTransformer
+  AUDIO_WAVEFORM = AudioWaveformTransformer
 }
 global.__ShaderPipelineTaskTransformerType = new _ShaderPipelineTaskTransformerType()
 #macro ShaderPipelineTaskTransformerType global.__ShaderPipelineTaskTransformerType

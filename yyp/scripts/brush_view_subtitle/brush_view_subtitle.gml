@@ -460,12 +460,18 @@ function brush_view_subtitle(json = null) {
               var store = null
               if (Core.isType(this.context.state.get("brush"), VEBrush)) {
                 store = this.context.state.get("brush").store
+                if (store == null || !store.getValue("vw-sub_use-area-preview")) {
+                  Beans.get(BeanVisuController).shroomService.subtitlesArea = null
+                }
               }
               
               if (Core.isType(this.context.state.get("event"), VEEvent)) {
                 store = this.context.state.get("event").store
+                if (store == null || !store.getValue("vw-sub_use-area-preview")) {
+                  Beans.get(BeanVisuController).shroomService.subtitlesAreaEvent = null
+                }
               }
-
+              
               if (!Optional.is(store) || !store.getValue("vw-sub_use-area-preview")) {
                 return
               }

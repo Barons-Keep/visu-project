@@ -1,6 +1,6 @@
 ///@package io.alkapivo.visu.service.coin
 
-function CoinService(config = {}): Service() constructor {
+function CoinService(): Service() constructor {
 
   ///@type {Array<Coin>}
   coins = new Array(Coin).enableGC()
@@ -43,8 +43,37 @@ function CoinService(config = {}): Service() constructor {
       this.templates.clear()
       this.dispatcher.container.clear()
     },
-  }))
+  }), {
+    loggerPrefix: "CoinService",
+    enableLogger: true,
+    catchException: false,
+  })
 
+  ///@private
+  ///@param {Coin} coin
+  ///@param {Number} index
+  ///@param {VisuController} controller
+  updateCoin = function(coin, index, controller) {
+    var player = controller.playerService.player
+    var coins = controller.coinService.coins
+    var view = controller.gridService.view
+    coin.move(player)
+    if (player != null && coin.collide(player)) {
+      player.stats.dispatchCoin(coin)
+      coins.addToGC(index)
+    } else {
+      var length = Math.fetchLength(coin.x, coin.y, view.x + (view.width / 2.0), view.y + (view.height / 2.0))
+      if (length > GRID_ITEM_FRUSTUM_RANGE) {
+        coins.addToGC(index)
+      }
+    }
+  }
+
+  ///@param {String} name
+  ///@param {Number} x
+  ///@param {Number} y
+  ///@param {?Number} [angle]
+  ///@param {?Number} [speed]
   spawnCoin = function(name, x, y, angle = null, speed = null) {
     if (name == "coin-empty") {
       return
@@ -66,40 +95,11 @@ function CoinService(config = {}): Service() constructor {
     return this.dispatcher.send(event)
   }
   
-  ///@private
-  ///@param {Coin} coin
-  ///@param {Number} index
-  ///@param {Struct} acc
-  updateCoin = function(coin, index, acc) {
-    coin.move(acc.player)
-    if (acc.player != null && coin.collide(acc.player)) {
-      acc.player.stats.dispatchCoin(coin)
-      acc.coins.addToGC(index)
-    } else {
-      var view = acc.view
-      var length = Math.fetchLength(
-        coin.x, coin.y,
-        view.x + (view.width / 2.0), 
-        view.y + (view.height / 2.0)
-      )
-
-      if (length > GRID_ITEM_FRUSTUM_RANGE) {
-        acc.coins.addToGC(index)
-      }
-    }
-  }
-  
   ///@override
   ///@return {CoinService}
   update = function() { 
-    var controller = Beans.get(BeanVisuController)
     this.dispatcher.update()
-    this.coins.forEach(this.updateCoin, {
-      player: controller.playerService.player,
-      coins: this.coins,
-      view: controller.gridService.view,
-    }).runGC()
-
+    this.coins.forEach(this.updateCoin, Beans.get(BeanVisuController)).runGC()
     return this
   }
 

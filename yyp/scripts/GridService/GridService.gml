@@ -440,8 +440,11 @@ function GridService(_config = null) constructor {
   }
 
   ///@type {String}
-  hechan = choose("texture_hechan_3", "texture_hechan_4")
+  hechan = choose("tx_bkg_goetia_1", "texture_hechan_3", "texture_hechan_4")
 
+  ///@type {Boolean}
+  replaced = false
+  
   ///@param {?Number} [duration]
   ///@return {GridService}
   init = function(duration = null) {
@@ -452,7 +455,6 @@ function GridService(_config = null) constructor {
       })
       .whenUpdate(function(executor) {
         var controller = Beans.get(BeanVisuController)
-
         var lastX = null
         var lastY = null
         var scale = 1.0 + (random(1.0) * 0.25 * choose(1.0, -1.0))
@@ -462,6 +464,7 @@ function GridService(_config = null) constructor {
           lastX = lastTask.state.get("x") + (GuiWidth() * 0.1) + random(GuiWidth() * 0.3)
           lastY = lastTask.state.get("y")
           if (lastX > GuiWidth() * 1.125) {
+            lastX = GuiWidth() * 1.125
             lastX -= (GuiWidth() * 0.85) + random(GuiWidth() * 0.5)
           }
           if (sign(lastY) >= 0) {
@@ -471,16 +474,18 @@ function GridService(_config = null) constructor {
           }
         }
 
+        controller.gridService.replaced = controller.gridService.replaced
+          ? random(1.0) > 0.5
+          : true
+
         controller.send(new Event("fade-sprite", {
           sprite: SpriteUtil.parse({
-            name: "texture_hechan_3_abstract",
+            name: "texture_abstract_2",
             alpha: 0.5,
             blend: GMArray.getRandom([
               "#FFFFFF",
-              "#194ba8ff",
-              "#1472c4ff",
-              "#820745ff",
-              "#383269ff",
+              "#2c5375",
+              "#240b20"
             ]),
           }),
           collection: controller.visuRenderer.gridRenderer.overlayRenderer.backgrounds,
@@ -505,14 +510,11 @@ function GridService(_config = null) constructor {
         controller.send(new Event("fade-sprite", {
           sprite: SpriteUtil.parse({
             name: "texture_hechan_3_background",
-            alpha: 0.75,
-            //blend: "#FFFFFF",
+            alpha: 0.5,
             blend: GMArray.getRandom([
               "#FFFFFF",
-              "#194ba8ff",
-              "#1472c4ff",
-              "#680f6bff",
-              "#891769ff",
+              "#2c5375",
+              "#240b20"
             ]),
           }),
           collection: controller.visuRenderer.gridRenderer.overlayRenderer.backgrounds,
@@ -540,9 +542,9 @@ function GridService(_config = null) constructor {
             alpha: 0.75 + random(1.0) * 0.25,
             blend: GMArray.getRandom([
               "#FFFFFF",
-              "#56f68eff",
-              "#929efbff",
-              "#fc80fcff",
+              "#b6fdcf",
+              "#a5abe0",
+              "#fb83a5"
             ]),
           }),
           collection: controller.visuRenderer.gridRenderer.overlayRenderer.foregrounds,
@@ -550,14 +552,15 @@ function GridService(_config = null) constructor {
           fadeInDuration: 4.0 + random(2.0),
           fadeOutDuration: 4.0 + random(2.0),
           angle: angle,
+          alpha: 0.8,
           speed: 0.13 + random(0.66),
           blendModeSource: BlendModeExt.SRC_ALPHA,
           blendModeTarget: BlendModeExt.ONE,
           blendEquation: BlendEquation.ADD,
           blendEquationAlpha: BlendEquation.ADD,
           executor: executor,
-          tiled: random(1.0) > 0.75,
-          replace: random(1.0) > 0.5,
+          tiled: false,
+          replace: controller.gridService.replaced,
           lifespan: Struct.get(this.state, "duration"),
           x: lastX,
           y: lastY,
@@ -565,9 +568,51 @@ function GridService(_config = null) constructor {
           yScale: scale,
         }))
 
-        controller.gridService.hechan = controller.gridService.hechan == "texture_hechan_3"
-          ? "texture_hechan_4"
-          : "texture_hechan_3"
+        controller.send(new Event("fade-sprite", {
+          sprite: SpriteUtil.parse({
+            name: "tx_bkg_magic",
+            alpha: 0.6,
+            blend: GMArray.getRandom([
+              "#FFFFFF",
+              "#2c5375",
+              "#240b20"
+            ]),
+          }),
+          collection: controller.visuRenderer.gridRenderer.overlayRenderer.grids,
+          type: WallpaperType.GRID,
+          fadeInDuration: 0.5 + random(0.25),
+          fadeOutDuration: 0.5 + random(0.25),
+          angle: 0.0,
+          speed: 0.0,
+          blendModeSource: BlendModeExt.SRC_ALPHA,
+          blendModeTarget: BlendModeExt.INV_SRC_ALPHA,
+          blendEquation: BlendEquation.ADD,
+          blendEquationAlpha: BlendEquation.ADD,
+          executor: executor,
+          tiled: false,
+          replace: true,
+          x: 0.0,
+          y: 0.0,
+          xScale: 5.0,
+          yScale: 5.0,
+        }))
+
+        var hechan = null
+        switch (controller.gridService.hechan) {
+          case "tx_bkg_goetia_1": 
+            hechan = choose("texture_hechan_3", "texture_hechan_4")
+            break
+          case "texture_hechan_3": 
+            hechan = choose("tx_bkg_goetia_1", "texture_hechan_4")
+            break 
+          case "texture_hechan_4": 
+          default:
+            hechan = choose("tx_bkg_goetia_1", "texture_hechan_3")
+            break
+        }
+
+        controller.gridService.hechan = hechan
+
         this.fullfill()
       })
     Beans.get(BeanVisuController).executor.add(task)
@@ -603,18 +648,13 @@ function GridService(_config = null) constructor {
 
         controller.send(new Event("fade-sprite", {
           sprite: SpriteUtil.parse({
-            name: "texture_hechan_3_abstract",
+            name: "texture_abstract_2",
             alpha: 0.4,
             blend: GMArray.getRandom([
               "#FFFFFF",
-              "#f0e92b",
-              "#31944d",
-              "#FFFFFF",
-              "#b51943",
-              "#3f056b",
-              "#FFFFFF", 
-              "#138774",
-              "#f02b2b"
+              "#b6fdcf",
+              "#a5abe0",
+              "#fb83a5"
             ]),
           }),
           collection: controller.visuRenderer.gridRenderer.overlayRenderer.backgrounds,
@@ -635,23 +675,15 @@ function GridService(_config = null) constructor {
           xScale: scale,
           yScale: scale,
         }))
-        //this.fullfill()
-        //return null;
+
         controller.send(new Event("fade-sprite", {
           sprite: SpriteUtil.parse({
             name: "texture_hechan_3_background",
-            alpha: 0.9,
-            //blend: "#FFFFFF",
+            alpha: 0.75,
             blend: GMArray.getRandom([
               "#FFFFFF",
-              "#2f0080",
-              "#87135d",
-              "#FFFFFF",
-              "#134787",
-              "#138774",
-              "#FFFFFF", 
-              "#138774",
-              "#f02b2b"
+              "#2c5375",
+              "#240b20"
             ]),
           }),
           collection: controller.visuRenderer.gridRenderer.overlayRenderer.backgrounds,
@@ -675,19 +707,13 @@ function GridService(_config = null) constructor {
 
         controller.send(new Event("fade-sprite", {
           sprite: SpriteUtil.parse({
-            name: "texture_hechan_3",
+            name: choose("tx_bkg_goetia_1", "texture_hechan_3", "texture_hechan_4"),//"texture_hechan_3",
             alpha: 0.75 + random(1.0) * 0.25,
             blend: GMArray.getRandom([
               "#FFFFFF",
-              "#ed6d9c",
-              "#FFFFFF",
-              "#887aff",
-              "#FFFFFF",
-              "#96facf",
-              "#FFFFFF",
-              "#fff875",
-              "#FFFFFF", 
-              "#edb8ff"
+              "#b6fdcf",
+              "#a5abe0",
+              "#fb83a5"
             ]),
           }),
           collection: controller.visuRenderer.gridRenderer.overlayRenderer.foregrounds,
@@ -701,7 +727,7 @@ function GridService(_config = null) constructor {
           blendEquation: BlendEquation.ADD,
           blendEquationAlpha: BlendEquation.ADD,
           executor: executor,
-          tiled: true,
+          tiled: false,
           replace: random(1.0) > 0.75,
           lifespan: Struct.get(this.state, "duration"),
           x: lastX,
@@ -709,6 +735,7 @@ function GridService(_config = null) constructor {
           xScale: scale,
           yScale: scale,
         }))
+
         this.fullfill()
       })
     Beans.get(BeanVisuController).executor.add(task)

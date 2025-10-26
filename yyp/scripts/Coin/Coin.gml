@@ -29,27 +29,31 @@ function _CoinCategory(): Enum() constructor {
 global.__CoinCategory = new _CoinCategory()
 #macro CoinCategory global.__CoinCategory
 
+
 ///@param {String} _name
 ///@param {Struct} json
 function CoinTemplate(_name, json) constructor {
 
   ///@type {String}
-  name = Assert.isType(_name, String)
+  name = Assert.isType(_name, String,
+    "CoinTemplate::name must be type of String")
 
   ///@type {CoinCategory}
-  category = Assert.isEnum(json.category, CoinCategory)
+  category = Assert.isEnum(json.category, CoinCategory,
+    "CoinTemplate::category must be type of CoinCategory")
 
   ///@type {Struct}
-  sprite = Assert.isType(json.sprite, Struct)
+  sprite = Assert.isType(json.sprite, Struct,
+    "CoinTemplate::sprite must be type of Struct")
 
-  ///@type {Optional<Struct>}
-  mask = Core.isType(Struct.get(json, "mask"), Struct) ? json.mask : null
+  ///@type {?Struct}
+  mask = Struct.getIfType(json, "mask", Struct)
 
-  ///@type {Optional<Number>}
-  amount = Core.isType(Struct.get(json, "amount"), Number) ? json.amount : null
+  ///@type {?Number}
+  amount = Struct.getIfType(json, "amount", Number)
 
-  ///@type {Optional<Struct>}
-  speed = Core.isType(Struct.get(json, "speed"), Struct) ? json.speed : null
+  ///@type {?Struct}
+  speed = Struct.getIfType(json, "speed", Struct)
 
   ///@type {Boolean}
   useSpeed = Struct.getIfType(json, "useSpeed", Boolean, false)
@@ -65,7 +69,7 @@ function CoinTemplate(_name, json) constructor {
       sprite: this.sprite,
       useSpeed: this.useSpeed,
       changeSpeed: this.changeSpeed,
-      mask: this.mask,
+      mask: this.mask != null ? JSON.clone(this.mask) : null,
       amount: this.amount,
       speed: this.speed != null ? JSON.clone(this.speed) : null,
     }
@@ -92,6 +96,7 @@ function CoinTemplate(_name, json) constructor {
     }
   }
 }
+
 
 ///@param {Struct} config
 function Coin(config) constructor {
@@ -124,7 +129,7 @@ function Coin(config) constructor {
   ///@type {Number}
   amount = Struct.getIfType(config, "amount", Number, 1)
 
-  if (Optional.is(Struct.getIfType(config, "speed", Struct))) {
+  if (Struct.getIfType(config, "speed", Struct) != null) {
     if (!Struct.getIfType(config, "useSpeed", Boolean, false)) {
       Struct.set(config.speed, "value", -3.0)
     }
@@ -137,7 +142,7 @@ function Coin(config) constructor {
   }
 
   ///@type {NumberTransformer}
-  speed = new NumberTransformer(Optional.is(Struct.getIfType(config, "speed", Struct))
+  speed = new NumberTransformer(Struct.getIfType(config, "speed", Struct) != null
     ? config.speed
     : {
         value: -3.0,
@@ -198,9 +203,9 @@ function Coin(config) constructor {
       this.angle = this.simpleAngle && !this.magnet ? dir : Math.lerpAngle(this.angle, dir, 0.06)
     }
 
-    value = abs(value) + this.magnetSpeed
-    this.x += Math.fetchCircleX(DeltaTime.apply(value), this.angle)
-    this.y += Math.fetchCircleY(DeltaTime.apply(value), this.angle)
+    value = DeltaTime.apply(abs(value) + this.magnetSpeed)
+    this.x += Math.fetchCircleX(value, this.angle)
+    this.y += Math.fetchCircleY(value, this.angle)
     return this
   }
 }

@@ -865,6 +865,20 @@ function VisuEditorController() constructor {
   }
 
   ///@private
+  ///@return {VisuEditorController}
+  updateServices = function() {
+    this.services.forEach(this.updateService, this)
+    return this
+  }
+
+  ///@private
+  ///@return {VisuEditorController}
+  updateSelectedEvent = function() {
+    this.store.get("selected-event").resolveLazyNotify()
+    return this
+  }
+
+  ///@private
   ///@param {UI}
   resetUITimer = function(ui) {
     ui.surfaceTick.skip()
@@ -876,16 +890,16 @@ function VisuEditorController() constructor {
   send = function(event) {
     return this.dispatcher.send(event)
   }
-
+  
   ///@return {VisuEditorController}
   update = function() {
     this.updateDebugTimer.start()
     this.updateDispatcher()
     this.updateExecutor()
     this.updateUIService()
-    this.services.forEach(this.updateService, this)
+    this.updateServices()
     this.updateLayout()
-    this.store.get("selected-event").resolveLazyNotify()
+    this.updateSelectedEvent()
     this.updateDebugTimer.finish()
     return this
   }

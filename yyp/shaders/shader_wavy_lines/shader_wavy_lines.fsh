@@ -21,7 +21,9 @@ const mat3 yiq2rgb = mat3(
 
 
 // Shader constants
-#define ITERATIONS 50.0
+#define ITERATIONS 32.0
+#define FFT 64
+#define FFT_MINUS_EPSILON 63.9999
 
 // Varying Outputs
 varying vec2 v_texcoord;
@@ -29,24 +31,25 @@ varying vec4 v_color;
 
 
 // Uniforms
-uniform float u_amplitude;    // Default: 1.0
-uniform float u_angle;        // Default: 0.0
-uniform float u_bpm;          // Default: 76.0
-uniform float u_brightness;   // Default: 1.0
-uniform float u_corners;      // Default: 1.0
-uniform float u_density;      // Default: 1.0
-uniform float u_direction;    // Default: 1.0
-uniform float u_hue;          // Default: 0.0
-uniform float u_sat;          // Default: 1.0
-uniform float u_seed;         // Default: 0.0
-uniform float u_shift;        // Default: 1.0
-uniform float u_size;         // Default: 3.0
-uniform float u_thickness;    // Default: 5.0
-uniform float u_time;         // Default: 0.0, where 1.0=1sec
-uniform float u_zoom;         // Default: 1.0
-uniform vec2 u_offset;        // Default: vec2(0.5, 0.5)
-uniform vec2 u_resolution;    // Default: (GuiWidth(), GuiHeight())
-uniform vec3 u_tint;          // Default: vec3(0.0, 0.0, 0.0)
+uniform float u_amplitude;            // Default: 1.0
+//uniform float u_audio_waveform[FFT];  // Default: 1.0
+uniform float u_angle;                // Default: 0.0
+uniform float u_bpm;                  // Default: 76.0
+uniform float u_brightness;           // Default: 1.0
+uniform float u_corners;              // Default: 1.0
+uniform float u_density;              // Default: 1.0
+uniform float u_direction;            // Default: 1.0
+uniform float u_hue;                  // Default: 0.0
+uniform float u_sat;                  // Default: 1.0
+uniform float u_seed;                 // Default: 0.0
+uniform float u_shift;                // Default: 1.0
+uniform float u_size;                 // Default: 3.0
+uniform float u_thickness;            // Default: 5.0
+uniform float u_time;                 // Default: 0.0, where 1.0=1sec
+uniform float u_zoom;                 // Default: 1.0
+uniform vec2 u_offset;                // Default: vec2(0.5, 0.5)
+uniform vec2 u_resolution;            // Default: (GuiWidth(), GuiHeight())
+uniform vec3 u_tint;                  // Default: vec3(0.0, 0.0, 0.0)
 
 
 // Base methods
@@ -107,16 +110,35 @@ vec3 apply_hue(vec3 color, float hue) {
 
 // Shader methods
 float line(vec2 uv, float density, float height, float time, float corners, float thickness) {
-  uv.y += smoothstep(2.0, 0.0, abs(uv.x)) * sin(time + uv.x * density) * height;
+  uv.y += smoothstep(2.0, 0.0, abs(uv.x))
+    * sin(time + uv.x * density)
+    * height;
   return smoothstep(2.0, 0.05, abs(uv.x))
     * smoothstep((corners * 0.05) * smoothstep(0.2, 1.0, abs(uv.x)), 0.0, abs(uv.y) - (0.005 * thickness));
 }
+
+/*
+float interpolateArray(float arr[FFT], float index) {
+  index = clamp(index, 0.0, FFT_MINUS_EPSILON);
+  int i0 = int(floor(index));
+  int i1 = i0 + 1 > FFT - 1 ? FFT - 1 : i0 + 1;
+  float t = fract(index);
+  return mix(arr[i0], arr[i1], t);
+}
+
+float circle(vec2 uv, vec2 offset, float radius){
+  vec2 dist = uv - offset;
+	return 1.0 - smoothstep(radius - (radius * 0.01), radius + (radius * 0.01), dot(dist, dist) * 4.0);
+}
+*/
+
 
 void main() {
 //void mainImage(out vec4 fragColor, in vec2 v_texcoord) {
   /*
   vec4 v_color = vec4(1.0);
   float u_amplitude = 1.5;
+  //float u_audio_waveform[FFT] = float[FFT](1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0);
   float u_angle = 0.0;
   float u_bpm = 76.0;
   float u_brightness = 1.0;
@@ -139,6 +161,9 @@ void main() {
   float bpm = (u_bpm / 60.0) * u_direction;
   float time = (u_time + u_seed) * (TAU * bpm);
   vec2 uv = rotated_uv_resolution(v_texcoord, u_resolution, u_offset, u_angle) * (u_zoom == 0.0 ? 0.0 : (1.0 / u_zoom));
+  //float audio_waveform = interpolateArray(u_audio_waveform, v_texcoord.x * float(FFT));
+  //float wave = clamp(smoothstep(0.0, 0.25, abs(audio_waveform - uv.y)), 0.0, 1.0);
+  //time += wave * TAU;
   vec3 color = vec3(0.0);
   for (float idx = 1.0; idx <= ITERATIONS; idx += 1.0) {
     if (idx > u_size) {
@@ -155,10 +180,11 @@ void main() {
       u_corners,
       u_thickness * idx / u_size
     );
-
     color += u_tint * factor * shift;
   }
-  
+
+  //color += wave;
+
   //fragColor = vec4(color, 1.0);
   //vec4 texture = vec4(0.0, 0.0, 0.0, 1.0);
   //vec4 texture = texture(iChannel0, v_texcoord / iResolution.xy);

@@ -12,27 +12,27 @@
   "edgeFiltering":false,
   "For3D":false,
   "frames":[
-    {"$GMSpriteFrame":"","%Name":"c74b4f43-b64c-4644-bd1f-e786ddee34e2","name":"c74b4f43-b64c-4644-bd1f-e786ddee34e2","resourceType":"GMSpriteFrame","resourceVersion":"2.0",},
+    {"$GMSpriteFrame":"","%Name":"dc870a34-101a-4cf6-b774-cb81c636c15c","name":"dc870a34-101a-4cf6-b774-cb81c636c15c","resourceType":"GMSpriteFrame","resourceVersion":"2.0",},
   ],
   "gridX":0,
   "gridY":0,
   "height":1536,
   "HTile":false,
   "layers":[
-    {"$GMImageLayer":"","%Name":"87d9d757-0917-42f0-944e-7319e3f53358","blendMode":0,"displayName":"default","isLocked":false,"name":"87d9d757-0917-42f0-944e-7319e3f53358","opacity":100.0,"resourceType":"GMImageLayer","resourceVersion":"2.0","visible":true,},
+    {"$GMImageLayer":"","%Name":"54cf6d33-ca88-477f-8e36-da2516fa47f5","blendMode":0,"displayName":"default","isLocked":false,"name":"54cf6d33-ca88-477f-8e36-da2516fa47f5","opacity":100.0,"resourceType":"GMImageLayer","resourceVersion":"2.0","visible":true,},
   ],
   "name":"texture_hechan_4",
   "nineSlice":null,
   "origin":0,
   "parent":{
-    "name":"wallpaper",
-    "path":"folders/io.alkapivo.visu/resource/texture/wallpaper.yy",
+    "name":"bkg",
+    "path":"folders/io.alkapivo.visu/resource/texture/bkg.yy",
   },
   "preMultiplyAlpha":false,
   "resourceType":"GMSprite",
   "resourceVersion":"2.0",
   "sequence":{
-    "$GMSequence":"v1",
+    "$GMSequence":"",
     "%Name":"texture_hechan_4",
     "autoRecord":true,
     "backdropHeight":768,
@@ -68,7 +68,9 @@
     "timeUnits":1,
     "tracks":[
       {"$GMSpriteFramesTrack":"","builtinName":0,"events":[],"inheritsTrackColour":true,"interpolation":1,"isCreationTrack":false,"keyframes":{"$KeyframeStore<SpriteFrameKeyframe>":"","Keyframes":[
-            {"$Keyframe<SpriteFrameKeyframe>":"","Channels":{"0":{"$SpriteFrameKeyframe":"","Id":{"name":"c74b4f43-b64c-4644-bd1f-e786ddee34e2","path":"sprites/texture_hechan_4/texture_hechan_4.yy",},"resourceType":"SpriteFrameKeyframe","resourceVersion":"2.0",},},"Disabled":false,"id":"a351a021-132e-414c-af23-cb5774f3fcc5","IsCreationKey":false,"Key":0.0,"Length":1.0,"resourceType":"Keyframe<SpriteFrameKeyframe>","resourceVersion":"2.0","Stretch":false,},
+            {"$Keyframe<SpriteFrameKeyframe>":"","Channels":{
+                "0":{"$SpriteFrameKeyframe":"","Id":{"name":"dc870a34-101a-4cf6-b774-cb81c636c15c","path":"sprites/texture_hechan_4/texture_hechan_4.yy",},"resourceType":"SpriteFrameKeyframe","resourceVersion":"2.0",},
+              },"Disabled":false,"id":"12da6b76-de1f-491a-b20d-c0f6a13e0876","IsCreationKey":false,"Key":0.0,"Length":1.0,"resourceType":"Keyframe<SpriteFrameKeyframe>","resourceVersion":"2.0","Stretch":false,},
           ],"resourceType":"KeyframeStore<SpriteFrameKeyframe>","resourceVersion":"2.0",},"modifiers":[],"name":"frames","resourceType":"GMSpriteFramesTrack","resourceVersion":"2.0","spriteId":null,"trackColour":0,"tracks":[],"traits":0,},
     ],
     "visibleRange":null,

@@ -1,14 +1,11 @@
 ///@package com.alkapivo.core.component.video.VideoService
 
+
 ///@param {Struct} [config]
 function VideoService(config = {}): Service() constructor {
   
   VideoUtil.runGC()
   
-  ///@private
-  ///@type {?Video}
-  video = null
-
   ///@private
   ///@param {Task} task
   rejectExistingTask = function(task) {
@@ -157,7 +154,8 @@ function VideoService(config = {}): Service() constructor {
                 ? position >= video.timestamp
                 : position <= video.timestamp
 
-              if (result) {
+              if (result || video.videoStart) {
+                video.videoStart = false
                 task.state.set("stage", "quit").get("timer").reset()
               }
             },
@@ -266,13 +264,13 @@ function VideoService(config = {}): Service() constructor {
 
   ///@return {?Video}
   getVideo = function() {
-    return !Core.isType(this.video, Video) ? null : this.video
+    return !Core.isType(VIDEO_CONTEXT, Video) ? null : VIDEO_CONTEXT
   }
 
   ///@param {?Video}
   ///@return {VideoService}
   setVideo = function(video = null) {
-    this.video = video != null ? Assert.isType(video, Video) : video
+    VIDEO_CONTEXT = Core.isType(video, Video) ? video : null 
     return this
   }
 

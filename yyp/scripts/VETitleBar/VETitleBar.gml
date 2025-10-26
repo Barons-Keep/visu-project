@@ -514,6 +514,24 @@ function VETitleBar(_editor) constructor {
                     },
                   },
                   {
+                    name: "file_reload-sfx",
+                    config: {
+                      label: { text: "Reload SFX" },
+                      shortcut: { text: "CTRL + R" },
+                      callback: function() {
+                        if (Core.getRuntimeType() == RuntimeType.GXGAMES) {
+                          Beans.get(BeanVisuController).send(new Event("spawn-popup", 
+                            { message: $"Feature 'file_reload-sfx' is not available on wasm-yyc target" }))
+                          return
+                        }
+
+                        Visu.initDebugSFX()
+                        Beans.get(BeanVisuController).send(new Event("spawn-popup", 
+                          { message: $"Feature 'file_reload-sfx' dispatched successfully" }))
+                      },
+                    },
+                  },
+                  {
                     name: "file_exit",
                     config: {
                       label: { text: "Exit" },

@@ -1485,9 +1485,18 @@ global.__VisuTemplateContainers = new Map(String, Callable, {
                           layout: VELayouts.get("template-entry"),
                           config: {
                             settings: { 
-                              sprite: { name: "visu_texture_checkbox_off" },
-                              spriteOn: { name: "visu_texture_checkbox_on" },
-                              spriteOff: { name: "visu_texture_checkbox_off" },
+                              sprite: {
+                                name: "visu_texture_checkbox_off",
+                                blend: VETheme.color.textShadow,
+                              },
+                              spriteOn: {
+                                name: "visu_texture_checkbox_on",
+                                blend: VETheme.color.textFocus,
+                              },
+                              spriteOff: {
+                                name: "visu_texture_checkbox_off",
+                                blend: VETheme.color.textShadow,
+                              },
                               selected: false,
                               isAsset: false,
                               templateName: template.name,
@@ -1552,9 +1561,18 @@ global.__VisuTemplateContainers = new Map(String, Callable, {
                           layout: VELayouts.get("template-entry"),
                           config: {
                             settings: {
-                              sprite: { name: "visu_texture_checkbox_off" },
-                              spriteOn: { name: "visu_texture_checkbox_on" },
-                              spriteOff: { name: "visu_texture_checkbox_off" },
+                              sprite: {
+                                name: "visu_texture_checkbox_off",
+                                blend: VETheme.color.textShadow,
+                              },
+                              spriteOn: {
+                                name: "visu_texture_checkbox_on",
+                                blend: VETheme.color.textFocus,
+                              },
+                              spriteOff: {
+                                name: "visu_texture_checkbox_off",
+                                blend: VETheme.color.textShadow,
+                              },
                               selected: false,
                               isAsset: true,
                               templateName: template.name,
@@ -1641,9 +1659,18 @@ global.__VisuTemplateContainers = new Map(String, Callable, {
                           layout: VELayouts.get("template-entry"),
                           config: {
                               settings: { 
-                              sprite: { name: "visu_texture_checkbox_off" },
-                              spriteOn: { name: "visu_texture_checkbox_on" },
-                              spriteOff: { name: "visu_texture_checkbox_off" },
+                              sprite: {
+                                name: "visu_texture_checkbox_off",
+                                blend: VETheme.color.textShadow,
+                              },
+                              spriteOn: {
+                                name: "visu_texture_checkbox_on",
+                                blend: VETheme.color.textFocus,
+                              },
+                              spriteOff: {
+                                name: "visu_texture_checkbox_off",
+                                blend: VETheme.color.textShadow,
+                              },
                               selected: false,
                               isAsset: false,
                               templateName: template.name,
@@ -1708,9 +1735,18 @@ global.__VisuTemplateContainers = new Map(String, Callable, {
                           layout: VELayouts.get("template-entry"),
                           config: {
                             settings: {
-                              sprite: { name: "visu_texture_checkbox_off" },
-                              spriteOn: { name: "visu_texture_checkbox_on" },
-                              spriteOff: { name: "visu_texture_checkbox_off" },
+                              sprite: {
+                                name: "visu_texture_checkbox_off",
+                                blend: VETheme.color.textShadow,
+                              },
+                              spriteOn: {
+                                name: "visu_texture_checkbox_on",
+                                blend: VETheme.color.textFocus,
+                              },
+                              spriteOff: {
+                                name: "visu_texture_checkbox_off",
+                                blend: VETheme.color.textShadow,
+                              },
                               selected: false,
                               isAsset: true,
                               templateName: template.name,
@@ -1797,9 +1833,18 @@ global.__VisuTemplateContainers = new Map(String, Callable, {
                           layout: VELayouts.get("template-entry"),
                           config: {
                             settings: { 
-                              sprite: { name: "visu_texture_checkbox_off" },
-                              spriteOn: { name: "visu_texture_checkbox_on" },
-                              spriteOff: { name: "visu_texture_checkbox_off" },
+                              sprite: {
+                                name: "visu_texture_checkbox_off",
+                                blend: VETheme.color.textShadow,
+                              },
+                              spriteOn: {
+                                name: "visu_texture_checkbox_on",
+                                blend: VETheme.color.textFocus,
+                              },
+                              spriteOff: {
+                                name: "visu_texture_checkbox_off",
+                                blend: VETheme.color.textShadow,
+                              },
                               selected: false,
                               isAsset: false,
                               templateName: template.name,
@@ -1864,9 +1909,18 @@ global.__VisuTemplateContainers = new Map(String, Callable, {
                           layout: VELayouts.get("template-entry"),
                           config: {
                             settings: {
-                              sprite: { name: "visu_texture_checkbox_off" },
-                              spriteOn: { name: "visu_texture_checkbox_on" },
-                              spriteOff: { name: "visu_texture_checkbox_off" },
+                              sprite: {
+                                name: "visu_texture_checkbox_off",
+                                blend: VETheme.color.textShadow,
+                              },
+                              spriteOn: {
+                                name: "visu_texture_checkbox_on",
+                                blend: VETheme.color.textFocus,
+                              },
+                              spriteOff: {
+                                name: "visu_texture_checkbox_off",
+                                blend: VETheme.color.textShadow,
+                              },
                               selected: false,
                               isAsset: true,
                               templateName: template.name,
@@ -1953,9 +2007,18 @@ global.__VisuTemplateContainers = new Map(String, Callable, {
                           layout: VELayouts.get("template-entry"),
                           config: {
                             settings: { 
-                              sprite: { name: "visu_texture_checkbox_off" },
-                              spriteOn: { name: "visu_texture_checkbox_on" },
-                              spriteOff: { name: "visu_texture_checkbox_off" },
+                              sprite: {
+                                name: "visu_texture_checkbox_off",
+                                blend: VETheme.color.textShadow,
+                              },
+                              spriteOn: {
+                                name: "visu_texture_checkbox_on",
+                                blend: VETheme.color.textFocus,
+                              },
+                              spriteOff: {
+                                name: "visu_texture_checkbox_off",
+                                blend: VETheme.color.textShadow,
+                              },
                               selected: false,
                               isAsset: false,
                               templateName: template.name,
@@ -2030,9 +2093,18 @@ global.__VisuTemplateContainers = new Map(String, Callable, {
                           layout: VELayouts.get("template-entry"),
                           config: {
                             settings: {
-                              sprite: { name: "visu_texture_checkbox_off" },
-                              spriteOn: { name: "visu_texture_checkbox_on" },
-                              spriteOff: { name: "visu_texture_checkbox_off" },
+                              sprite: {
+                                name: "visu_texture_checkbox_off",
+                                blend: VETheme.color.textShadow,
+                              },
+                              spriteOn: {
+                                name: "visu_texture_checkbox_on",
+                                blend: VETheme.color.textFocus,
+                              },
+                              spriteOff: {
+                                name: "visu_texture_checkbox_off",
+                                blend: VETheme.color.textShadow,
+                              },
                               selected: false,
                               isAsset: true,
                               templateName: template.name,
@@ -2119,9 +2191,18 @@ global.__VisuTemplateContainers = new Map(String, Callable, {
                           layout: VELayouts.get("template-entry"),
                           config: {
                             settings: { 
-                              sprite: { name: "visu_texture_checkbox_off" },
-                              spriteOn: { name: "visu_texture_checkbox_on" },
-                              spriteOff: { name: "visu_texture_checkbox_off" },
+                              sprite: {
+                                name: "visu_texture_checkbox_off",
+                                blend: VETheme.color.textShadow,
+                              },
+                              spriteOn: {
+                                name: "visu_texture_checkbox_on",
+                                blend: VETheme.color.textFocus,
+                              },
+                              spriteOff: {
+                                name: "visu_texture_checkbox_off",
+                                blend: VETheme.color.textShadow,
+                              },
                               selected: false,
                               isAsset: false,
                               templateName: template.name,
@@ -2186,9 +2267,18 @@ global.__VisuTemplateContainers = new Map(String, Callable, {
                           layout: VELayouts.get("template-entry"),
                           config: {
                             settings: {
-                              sprite: { name: "visu_texture_checkbox_off" },
-                              spriteOn: { name: "visu_texture_checkbox_on" },
-                              spriteOff: { name: "visu_texture_checkbox_off" },
+                              sprite: {
+                                name: "visu_texture_checkbox_off",
+                                blend: VETheme.color.textShadow,
+                              },
+                              spriteOn: {
+                                name: "visu_texture_checkbox_on",
+                                blend: VETheme.color.textFocus,
+                              },
+                              spriteOff: {
+                                name: "visu_texture_checkbox_off",
+                                blend: VETheme.color.textShadow,
+                              },
                               selected: false,
                               isAsset: true,
                               templateName: template.name,
@@ -2275,9 +2365,18 @@ global.__VisuTemplateContainers = new Map(String, Callable, {
                           layout: VELayouts.get("template-entry"),
                           config: {
                             settings: { 
-                              sprite: { name: "visu_texture_checkbox_off" },
-                              spriteOn: { name: "visu_texture_checkbox_on" },
-                              spriteOff: { name: "visu_texture_checkbox_off" },
+                              sprite: {
+                                name: "visu_texture_checkbox_off",
+                                blend: VETheme.color.textShadow,
+                              },
+                              spriteOn: {
+                                name: "visu_texture_checkbox_on",
+                                blend: VETheme.color.textFocus,
+                              },
+                              spriteOff: {
+                                name: "visu_texture_checkbox_off",
+                                blend: VETheme.color.textShadow,
+                              },
                               selected: false,
                               isAsset: false,
                               templateName: template.name,
@@ -2342,9 +2441,18 @@ global.__VisuTemplateContainers = new Map(String, Callable, {
                           layout: VELayouts.get("template-entry"),
                           config: {
                             settings: {
-                              sprite: { name: "visu_texture_checkbox_off" },
-                              spriteOn: { name: "visu_texture_checkbox_on" },
-                              spriteOff: { name: "visu_texture_checkbox_off" },
+                              sprite: {
+                                name: "visu_texture_checkbox_off",
+                                blend: VETheme.color.textShadow,
+                              },
+                              spriteOn: {
+                                name: "visu_texture_checkbox_on",
+                                blend: VETheme.color.textFocus,
+                              },
+                              spriteOff: {
+                                name: "visu_texture_checkbox_off",
+                                blend: VETheme.color.textShadow,
+                              },
                               selected: false,
                               isAsset: true,
                               templateName: template.name,
@@ -2430,9 +2538,18 @@ global.__VisuTemplateContainers = new Map(String, Callable, {
                           layout: VELayouts.get("template-entry"),
                           config: {
                             settings: { 
-                              sprite: { name: "visu_texture_checkbox_off" },
-                              spriteOn: { name: "visu_texture_checkbox_on" },
-                              spriteOff: { name: "visu_texture_checkbox_off" },
+                              sprite: {
+                                name: "visu_texture_checkbox_off",
+                                blend: VETheme.color.textShadow,
+                              },
+                              spriteOn: {
+                                name: "visu_texture_checkbox_on",
+                                blend: VETheme.color.textFocus,
+                              },
+                              spriteOff: {
+                                name: "visu_texture_checkbox_off",
+                                blend: VETheme.color.textShadow,
+                              },
                               selected: false,
                               isAsset: false,
                               templateName: template.name,
@@ -2497,9 +2614,18 @@ global.__VisuTemplateContainers = new Map(String, Callable, {
                           layout: VELayouts.get("template-entry"),
                           config: {
                             settings: {
-                              sprite: { name: "visu_texture_checkbox_off" },
-                              spriteOn: { name: "visu_texture_checkbox_on" },
-                              spriteOff: { name: "visu_texture_checkbox_off" },
+                              sprite: {
+                                name: "visu_texture_checkbox_off",
+                                blend: VETheme.color.textShadow,
+                              },
+                              spriteOn: {
+                                name: "visu_texture_checkbox_on",
+                                blend: VETheme.color.textFocus,
+                              },
+                              spriteOff: {
+                                name: "visu_texture_checkbox_off",
+                                blend: VETheme.color.textShadow,
+                              },
                               selected: false,
                               isAsset: true,
                               templateName: template.name,

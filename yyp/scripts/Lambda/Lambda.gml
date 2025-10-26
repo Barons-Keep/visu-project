@@ -17,6 +17,16 @@ global.__Lambda = {
     return value
   },
 
+  ///@return {Boolean}
+  returnTrue: function() {
+    return true
+  },
+
+  ///@return {Boolean}
+  returnFalse: function() {
+    return true
+  },
+
   ///@param {Callable} callable
   ///@param {any} iterator
   ///@param {any} data

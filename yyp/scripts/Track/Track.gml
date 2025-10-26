@@ -22,17 +22,113 @@ global.__TrackStatus = new _TrackStatus()
 #macro TrackStatus global.__TrackStatus
 
 
+///@interface
+///@param {?Struct} [config]
+function TimeSource(config = null) constructor {
+  
+  ///@return {TimeSource}
+  play = method(this, Struct.getIfType(config, "play", Callable) != null ? config.play : function() { return this })
+  
+  ///@return {TimeSource}
+  stop = method(this, Struct.getIfType(config, "stop", Callable) != null ? config.stop : function() { return this })
+  
+  ///@return {TimeSource}
+  pause = method(this, Struct.getIfType(config, "pause", Callable) != null ? config.pause : function() { return this })
+  
+  ///@param {Number} timestamp
+  ///@return {TimeSource}
+  rewind = method(this, Struct.getIfType(config, "rewind", Callable) != null ? config.rewind : function(timestamp) { return this })
+  
+  ///@return {TimeSource}
+  resume = method(this, Struct.getIfType(config, "resume", Callable) != null ? config.resume : function() { return this })
+  
+  ///@return {Boolean}
+  isLoaded = method(this, Struct.getIfType(config, "isLoaded", Callable) != null ? config.isLoaded : function() { return false })
+  
+  ///@return {Boolean}
+  isPaused = method(this, Struct.getIfType(config, "isPaused", Callable) != null ? config.isPaused : function() { return false })
+  
+  ///@return {Boolean}
+  isPlaying = method(this, Struct.getIfType(config, "isPlaying", Callable) != null ? config.isPlaying : function() { return false })
+  
+  ///@return {Number}
+  getPosition = method(this, Struct.getIfType(config, "getPosition", Callable) != null ? config.getPosition : function() { return 0.0 })
+  
+  ///@return {Number}
+  getDuration = method(this, Struct.getIfType(config, "getDuration", Callable) != null ? config.getDuration : function() { return 0.0 })
+
+  ///@return {TimeSource}
+  update = method(this, Struct.getIfType(config, "update", Callable) != null ? config.getDuration : function() { return this })
+
+  Struct.appendUnique(this, config)
+}
+
+/* AudioTimeSource
+new TimeSource({
+  sound: Assert.isType(SoundUtil.fetch(Struct.get(json, "audio"), { loop: false }), Sound, "Track.sound must be type of Sound")
+  play: function() {
+    this.sound.play()
+    return this
+  },
+  stop: function() {
+    this.sound.stop()
+    return this
+  },
+  pause: function() {
+    this.sound.pause()
+    return this
+  },
+  rewind: function(timestamp) {
+    this.sound.rewind(timestamp)
+    return this
+  },
+  resume: function() {
+    this.sound.resume()
+    return this
+  },
+  isLoaded: function() {
+    return this.sound.isLoaded()
+  },
+  isPaused: function() {
+    return this.sound.isPaused()
+  },
+  isPlaying: function() {
+    return this.sound.isPlaying()
+  },
+  getPosition: function() {
+    return this.sound.getPosition()
+  },
+  getDuration: function() {
+    return this.sound.getDuration()
+  },
+  update: function() {
+    if (!this.isPlaying()) {
+      return this
+    }
+
+    var sound = this.sound
+    var volume = Visu.settings.getValue("visu.audio.ost-volume")
+    if (sound.getVolume() != volume) {
+      sound.setVolume(volume)
+    }
+    
+    return this
+  }
+})
+*/
+
+
 ///@param {Struct} json
 ///@param {?Struct} [config]
 function Track(json, config = null) constructor {
 
   ///@type {String}
   name = Assert.isType(Struct.get(json, "name"), String,
-    "Track.name must be type of String")
+    "Track::name must be type of String")
 
   ///@type {Sound}
   audio = Assert.isType(SoundUtil.fetch(Struct.get(json, "audio"), { loop: false }), Sound,
-    "Track.sound must be type of Sound")
+    "Track::audio must be type of Sound")
 
   ///@type {Map<String, TrackChannel>}
   channels = new Map(String, TrackChannel)

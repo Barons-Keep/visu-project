@@ -12,6 +12,7 @@ function _ShaderUniformType(): Enum() constructor {
   VECTOR3 = ShaderUniformVector3
   VECTOR4 = ShaderUniformVector4
   RESOLUTION = ShaderUniformResolution
+  AUDIO_WAVEFORM = ShaderUniformAudioWaveform
 }
 global.__ShaderUniformType = new _ShaderUniformType()
 #macro ShaderUniformType global.__ShaderUniformType
@@ -123,5 +124,18 @@ function ShaderUniformResolution(_asset, _name, _type = ShaderUniformType.RESOLU
   ///@param {Vector2} vec2
   static set = function(vec2) {
     shader_set_uniform_f(this.asset, vec2.x, vec2.y)
+  }
+}
+
+
+///@param {GMShader} _asset
+///@param {String} _name
+///@param {ShaderUniformType} _type
+function ShaderUniformAudioWaveform(_asset, _name, _type = ShaderUniformType.AUDIO_WAVEFORM): ShaderUniform(_asset, _name, _type) constructor {
+
+  ///@override
+  ///@param {Number} value
+  static set = function(value) {
+    shader_set_uniform_f_array(this.asset, SHADER_AUDIO_WAVEFORM_VALUE)
   }
 }

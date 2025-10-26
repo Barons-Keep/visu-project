@@ -137,6 +137,14 @@ function brush_view_config(json = null) {
         type: Boolean,
         value: Struct.get(json, "vw-cfg_hide-video-alpha"),
       },
+      "vw-cfg_cls-grid-texture": {
+        type: Boolean,
+        value: Struct.get(json, "vw-cfg_cls-grid-texture"),
+      },
+      "vw-cfg_cls-grid-col": {
+        type: Boolean,
+        value: Struct.get(json, "vw-cfg_cls-grid-col"),
+      },
     }),
     components: new Array(Struct, [
       {
@@ -319,6 +327,46 @@ function brush_view_config(json = null) {
             spriteOn: { name: "visu_texture_checkbox_on" },
             spriteOff: { name: "visu_texture_checkbox_off" },
             store: { key: "vw-cfg_cls-bkg-col" },
+            hidden: { key: "vw-cfg_hide-cls" },
+          },
+          input: { },
+        },
+      },
+      {
+        name: "vw-cfg_cls-grid-texture",
+        template: VEComponents.get("property"),
+        layout: VELayouts.get("property"),
+        config: { 
+          layout: { type: UILayoutType.VERTICAL },
+          label: { 
+            text: "Grid texture",
+            enable: { key: "vw-cfg_cls-grid-texture" },
+            hidden: { key: "vw-cfg_hide-cls" },
+          },
+          checkbox: { 
+            spriteOn: { name: "visu_texture_checkbox_on" },
+            spriteOff: { name: "visu_texture_checkbox_off" },
+            store: { key: "vw-cfg_cls-grid-texture" },
+            hidden: { key: "vw-cfg_hide-cls" },
+          },
+          input: { },
+        },
+      },
+      {
+        name: "vw-cfg_cls-grid-col",
+        template: VEComponents.get("property"),
+        layout: VELayouts.get("property"),
+        config: { 
+          layout: { type: UILayoutType.VERTICAL },
+          label: { 
+            text: "Grid color",
+            enable: { key: "vw-cfg_cls-grid-col" },
+            hidden: { key: "vw-cfg_hide-cls" },
+          },
+          checkbox: { 
+            spriteOn: { name: "visu_texture_checkbox_on" },
+            spriteOff: { name: "visu_texture_checkbox_off" },
+            store: { key: "vw-cfg_cls-grid-col" },
             hidden: { key: "vw-cfg_hide-cls" },
           },
           input: { },

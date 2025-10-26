@@ -13,10 +13,12 @@
 function BulletTemplate(_name, json) constructor {
 
   ///@type {String}
-  name = Assert.isType(_name, String)
+  name = Assert.isType(_name, String,
+    "BulletTemplate::name must be type of String")
 
   ///@type {Struct}
-  sprite = Assert.isType(Struct.get(json, "sprite"), Struct)
+  sprite = Assert.isType(Struct.get(json, "sprite"), Struct,
+    "BulletTemplate::sprite must be type of Struct")
 
   ///@type {?Struct}
   mask = Struct.getIfType(json, "mask", Struct)
@@ -152,7 +154,10 @@ function BulletTemplate(_name, json) constructor {
   ///@param {?Number} [lifespan]
   ///@param {?Number} [damage]
   ///@return {Struct}
-  serializeSpawn = function(uid, producer, x, y, angle, speed, angleOffset = null, angleOffsetRng = null, sumAngleOffset = null, speedOffset = null, sumSpeedOffset = null, lifespan = null, damage = null) {
+  serializeSpawn = function(uid, producer, x, y, angle, speed, angleOffset = null, 
+      angleOffsetRng = null, sumAngleOffset = null, speedOffset = null, 
+      sumSpeedOffset = null, lifespan = null, damage = null) {
+
     return {
       uid: uid,
       producer: producer,
@@ -208,88 +213,89 @@ function Bullet(template): GridItem(template) constructor {
   producer = template.producer
 
   ///@type {Number}
-  lifespanMax = Struct.get(template, "lifespanMax")
+  lifespanMax = template.lifespanMax
   
   ///@type {Number}
-  damage = Struct.get(template, "damage")
+  damage = template.damage
 
   ///@type {Boolean}
-  wiggle = Struct.get(template, "wiggle")
+  wiggle = template.wiggle
 
   ///@type {Boolean}
-  wiggleTimeRng = Struct.get(template, "wiggleTimeRng")
+  wiggleTimeRng = template.wiggleTimeRng
 
   ///@type {Number}
   wiggleTime = this.wiggleTimeRng
-    ? random(Struct.get(template, "wiggleTime"))
-    : Struct.get(template, "wiggleTime")
+    ? random(template.wiggleTime)
+    : template.wiggleTime
   
   ///@type {Boolean}
-  wiggleDirRng = Struct.get(template, "wiggleDirRng")
+  wiggleDirRng = template.wiggleDirRng
 
   ///@type {Number}
-  this.wiggleFrequency = Struct.get(template, "wiggleFrequency")
+  this.wiggleFrequency = template.wiggleFrequency
     * (this.wiggleDirRng ? choose(1.0, -1.0) : 1.0)
 
   ///@type {Number}
-  wiggleAmplitude = Struct.get(template, "wiggleAmplitude")
+  wiggleAmplitude = template.wiggleAmplitude
 
   ///@type {?NumberTransformer}
-  angleOffset = Struct.get(template, "angleOffset") != null && Struct.get(template, "useAngleOffset")
-    ? new NumberTransformer(Struct.get(template, "changeAngleOffset")
+  angleOffset = template.angleOffset != null && template.useAngleOffset
+    ? new NumberTransformer(template.changeAngleOffset
       ? template.angleOffset 
       : Struct.get(template.angleOffset, "value"))
     : null
 
   ///@type {Boolean}
-  angleOffsetRng = Struct.get(template, "angleOffsetRng")
+  angleOffsetRng = template.angleOffsetRng
 
   ///@type {Boolean}
-  sumAngleOffset = Struct.get(template, "sumAngleOffset")
+  sumAngleOffset = template.sumAngleOffset
 
   ///@param {Number}
   angleOffsetDir = this.angleOffsetRng ? choose(1.0, -1.0) : 1.0
 
   ///@type {?NumberTransformer}
-  speedOffset = Struct.get(template, "speedOffset") != null && Struct.get(template, "useSpeedOffset")
-    ? new NumberTransformer(Struct.get(template, "changeSpeedOffset")
+  speedOffset = template.speedOffset != null && template.useSpeedOffset
+    ? new NumberTransformer(template.changeSpeedOffset
       ? template.speedOffset 
       : Struct.get(template.speedOffset, "value"))
     : null
 
   ///@type {Boolean}
-  sumSpeedOffset = Struct.get(template, "sumSpeedOffset")
+  sumSpeedOffset = template.sumSpeedOffset
   
   ///@type {?String}
-  onDeath = Struct.get(template, "onDeath")
+  onDeath = template.onDeath
 
   ///@type {?Number}
-  onDeathAmount = Struct.get(template, "onDeathAmount")
+  onDeathAmount = template.onDeathAmount
 
   ///@type {?Number}
-  onDeathAngle = Struct.get(template, "onDeathAngle")
+  onDeathAngle = template.onDeathAngle
 
   ///@type {?Boolean}
-  onDeathAngleRng = Struct.get(template, "onDeathAngleRng")
+  onDeathAngleRng = template.onDeathAngleRng
 
   ///@type {?Number}
-  onDeathAngleStep = Struct.get(template, "onDeathAngleStep")
+  onDeathAngleStep = template.onDeathAngleStep
 
   ///@type {?Number}
-  onDeathAngleIncrease = Struct.get(template, "onDeathAngleIncrease")
+  onDeathAngleIncrease = template.onDeathAngleIncrease
 
   ///@type {?Number}
-  onDeathRngStep = Struct.get(template, "onDeathRngStep")
+  onDeathRngStep = template.onDeathRngStep
 
   ///@type {?Number}
-  onDeathSpeed = Struct.get(template, "onDeathSpeed")
+  onDeathSpeed = template.onDeathSpeed
 
   ///@type {?Boolean}
-  onDeathSpeedMerge = Struct.get(template, "onDeathSpeedMerge")
+  onDeathSpeedMerge = template.onDeathSpeedMerge
 
   ///@type {?Number}
-  onDeathRngSpeed = Struct.get(template, "onDeathRngSpeed")
+  onDeathRngSpeed = template.onDeathRngSpeed
 
+  ///@override
   ///@param {VisuController} controller
   ///@return {Bullet}
   static update = function(controller) {

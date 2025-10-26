@@ -3,6 +3,13 @@
 ///@description https://github.com/YoYoGames/GameMaker-Bugs/issues/2543
 #macro GMVideoSurface "GMVideoSurface"
 
+
+///@static
+///@type {?Video}
+global.__VIDEO_CONTEXT = null
+#macro VIDEO_CONTEXT global.__VIDEO_CONTEXT
+
+
 ///@enum
 function _VideoStatus(): Enum() constructor {
   CLOSED = video_status_closed
@@ -139,6 +146,9 @@ function Video(json) constructor {
   ///@type {Surface}
   surface = Assert.isType(new VideoSurface(), VideoSurface)
 
+  ///@type {Boolean}
+  videoStart = false
+
   ///@return {VideoStatus}
   getStatus = function() {
     return video_get_status()
@@ -222,6 +232,7 @@ function Video(json) constructor {
   seek = function(timestamp) {
     var time = clamp(floor(timestamp * 1000), 0, floor(this.getDuration() * 1000))
     Logger.debug("Video", $"seek to: {time}")
+    this.videoStart = false
     video_seek_to(time)
     return this
   }
@@ -250,6 +261,7 @@ function _VideoUtil() constructor {
   runGC = function() {
     Logger.debug("Video", $"gcVideo, video status before: {VideoStatusNames.get(video_get_status())}")
     video_close()
+    VIDEO_CONTEXT = null
     Logger.debug("Video", $"gcVideo, video status after: {VideoStatusNames.get(video_get_status())}")
     return this
   }

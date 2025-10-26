@@ -6,11 +6,17 @@
 function SoundIntent(json) constructor {
 
   ///@type {String}
-  file = Assert.isType(json.file, String)
+  file = Assert.isType(Struct.get(json, "file"), String, "SoundIntent::file must be type of String")
+
+  ///@type {?Struct}
+  waveform = Struct.getIfType(json, "waveform", Struct)
 
   ///@return {Struct}
   serialize = function() {
-    return { file: this.file }
+    return {
+      file: this.file,
+      waveform: this.waveform,
+    }
   }
 }
 
@@ -18,16 +24,17 @@ function SoundIntent(json) constructor {
 function SoundTemplate(json) constructor {
 
   ///@type {String}
-  name = Assert.isType(Struct.get(json, "name"), String)
+  name = Assert.isType(Struct.get(json, "name"), String,
+    "SoundTemplate::name must be type of String")
 
   ///@type {Boolean}
-  loop = Assert.isType(Struct.getDefault(config, "loop", false), Boolean)
+  loop = Struct.getIfType(config, "loop", Boolean, false)
 
   ///@type {Number}
-  priority = Assert.isType(Struct.getDefault(config, "priority", 100), Number)
+  priority = Struct.getIfType(config, "priority", Number, 100)
 
   ///@type {Number}
-  timestamp = Assert.isType(Struct.getDefault(json, "timestamp", 0.0), Number)
+  timestamp = Struct.getIfType(json, "timestamp", Number, 0.0)
 }
 
 ///@type {GMSound} _asset
@@ -36,21 +43,21 @@ function Sound(_asset, config = {}) constructor {
 
   ///@private
   ///@type
-  asset = Assert.isType(_asset, GMSound)
+  asset = Assert.isType(_asset, GMSound, "Sound::asset must be type of GMSound")
 
   ///@type {String}
-  name = Assert.isType(Struct.contains(config, "name") 
+  name = Assert.isType((Struct.contains(config, "name") 
     ? config.name 
-    : audio_get_name(this.asset), String)
+    : audio_get_name(this.asset)), String, "Sound::name must be type of String")
 
   ///@type {Number}
   duration = audio_sound_length(this.asset)
 
   ///@type {Boolean}
-  loop = Assert.isType(Struct.getDefault(config, "loop", false), Boolean)
+  loop = Struct.getIfType(config, "loop", Boolean, false)
 
   ///@type {Number}
-  priority = Assert.isType(Struct.getDefault(config, "priority", 100), Number)
+  priority = Struct.getIfType(config, "priority", Number, 100)
 
   ///@type {?Number}
   cachedTimestamp = null
@@ -143,7 +150,7 @@ function Sound(_asset, config = {}) constructor {
   }
 
   ///@return {Number}
-  getLength = function() {
+  getDuration = function() {
     return audio_sound_length(this.asset)
   }
 
@@ -193,9 +200,9 @@ function _SoundUtil() constructor {
   fetch = function(name, _config = null) {
     var config = Struct.set(Core.isType(_config, Struct) ? _config : { name: name }, "name", name)
     var soundService = Beans.get(BeanSoundService)
-    if (Optional.is(soundService)) {
+    if (soundService != null) {
       var sound = soundService.sounds.get(name)
-      if (Optional.is(sound)) {
+      if (sound != null) {
         return new Sound(sound, config)
       }
     }

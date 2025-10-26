@@ -177,10 +177,16 @@ function brush_entity_coin(json) {
               var store = null
               if (Core.isType(this.context.state.get("brush"), VEBrush)) {
                 store = this.context.state.get("brush").store
+                if (store == null || !store.getValue("en-coin_preview")) {
+                  Beans.get(BeanVisuController).shroomService.spawner = null
+                }
               }
               
               if (Core.isType(this.context.state.get("event"), VEEvent)) {
                 store = this.context.state.get("event").store
+                if (store == null || !store.getValue("en-coin_preview")) {
+                  Beans.get(BeanVisuController).shroomService.spawnerEvent = null
+                }
               }
 
               if (!Optional.is(store) || !store.getValue("en-coin_preview")) {

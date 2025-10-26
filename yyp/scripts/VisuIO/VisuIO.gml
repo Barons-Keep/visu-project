@@ -46,13 +46,14 @@ function VisuIO() constructor {
 
     if (this.keyboard.keys.fullscreen.pressed) {
       var fullscreen = controller.displayService.getFullscreen()
-      Logger.debug(BeanVisuIO, fullscreen ? "Window" : "Fullscreen")
+      Logger.debug(BeanVisuIO, String.template("DisplayService::setFullscreen({0})", fullscreen ? "false" : "true"))
+      
       controller.displayService.setFullscreen(!fullscreen)
-      Visu.settings.setValue("visu.fullscreen", !fullscreen).save()
-
       if (fullscreen && Visu.settings.getValue("visu.borderless-window")) {
         controller.displayService.center()
       }
+
+      Visu.settings.setValue("visu.fullscreen", !fullscreen).save()
     }
 
     return this
@@ -63,9 +64,11 @@ function VisuIO() constructor {
   ///@return {VisuIO}
   functionKeyboardEvent = function(controller) {
     var menu = controller.menu
-    if (this.keyboard.keys.openMenu.pressed && !Optional.is(menu.remapKey)) {
+    if (this.keyboard.keys.openMenu.pressed 
+        && controller.visuRenderer.initTimer.finished
+        && menu.remapKey == null) {
+
       var state = controller.fsm.getStateName()
-      
       switch (state) {
         case "idle":
           if (menu.containers.size() > 0) {
@@ -90,6 +93,7 @@ function VisuIO() constructor {
           if (Optional.is(editor) && editor.renderUI) {
             break
           }
+
           controller.send(new Event("pause", { data: menu.factoryOpenMainMenuEvent() }))
           break
         case "paused":
@@ -180,6 +184,7 @@ function VisuIO() constructor {
     } catch (exception) {
       var message = $"'VisuIO::update' fatal error: {exception.message}"
       Logger.error(BeanVisuIO, message)
+      Core.printStackTrace()
 
       var controller = Beans.get(BeanVisuController)
       if (Core.isType(controller, VisuController)) {

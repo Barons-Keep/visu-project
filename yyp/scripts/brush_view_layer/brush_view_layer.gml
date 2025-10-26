@@ -152,6 +152,26 @@ function brush_view_layer(json = null) {
         type: Boolean,
         value: Struct.get(json, "vw-layer_texture-reset-pos"),
       },
+      "vw-layer_use-tx-x": {
+        type: Boolean,
+        value: Struct.get(json, "vw-layer_use-tx-x"),
+      },
+      "vw-layer_tx-x": {
+        type: Number,
+        value: Struct.get(json, "vw-layer_tx-x"),
+        passthrough: UIUtil.passthrough.getClampedStringNumber(),
+        data: new Vector2(-99999.9, 99999.9),
+      },
+      "vw-layer_use-tx-y": {
+        type: Boolean,
+        value: Struct.get(json, "vw-layer_use-tx-y"),
+      },
+      "vw-layer_tx-y": {
+        type: Number,
+        value: Struct.get(json, "vw-layer_tx-y"),
+        passthrough: UIUtil.passthrough.getClampedStringNumber(),
+        data: new Vector2(-99999.9, 99999.9),
+      },
       "vw-layer_texture-use-lifespan": {
         type: Boolean,
         value: Struct.get(json, "vw-layer_texture-use-lifespan"),
@@ -814,6 +834,101 @@ function brush_view_layer(json = null) {
             enable: { key: "vw-layer_use-texture" },
             hidden: { key: "vw-layer_hide-tx-layer" },
           },
+        },
+      },
+      {
+        name: "vw-layer_tx-x",
+        template: VEComponents.get("numeric-input"),
+        layout: VELayouts.get("div"),
+        config: { 
+          layout: { type: UILayoutType.VERTICAL },
+          label: { 
+            text: "X",
+            enable: { key: "vw-layer_use-tx-x" },
+            hidden: { key: "vw-layer_hide-tx-layer" },
+          },  
+          field: { 
+            store: { key: "vw-layer_tx-x" },
+            enable: { key: "vw-layer_use-tx-x" },
+            hidden: { key: "vw-layer_hide-tx-layer" },
+          },
+          decrease: {
+            store: { key: "vw-layer_tx-x" },
+            enable: { key: "vw-layer_use-tx-x" },
+            hidden: { key: "vw-layer_hide-tx-layer" },
+            factor: -1.0,
+          },
+          increase: {
+            store: { key: "vw-layer_tx-x" },
+            enable: { key: "vw-layer_use-tx-x" },
+            hidden: { key: "vw-layer_hide-tx-layer" },
+            factor: 1.0,
+          },
+          stick: {
+            store: { key: "vw-layer_tx-x" },
+            enable: { key: "vw-layer_use-tx-x" },
+            hidden: { key: "vw-layer_hide-tx-layer" },
+            factor: 1.0,
+            treshold: 128.0,
+          },
+          checkbox: {
+            store: { key: "vw-layer_use-tx-x" },
+            spriteOn: { name: "visu_texture_checkbox_on" },
+            spriteOff: { name: "visu_texture_checkbox_off" },
+            hidden: { key: "vw-layer_hide-tx-layer" },
+          },
+          title: {
+            text: "Override",
+            enable: { key: "vw-layer_use-tx-x" },
+            hidden: { key: "vw-layer_hide-tx-layer" },
+          }
+        },
+      },
+      {
+        name: "vw-layer_tx-y",
+        template: VEComponents.get("numeric-input"),
+        layout: VELayouts.get("div"),
+        config: { 
+          layout: { type: UILayoutType.VERTICAL },
+          label: { 
+            text: "Y",
+            enable: { key: "vw-layer_use-tx-y" },
+            hidden: { key: "vw-layer_hide-tx-layer" },
+          },  
+          field: { 
+            store: { key: "vw-layer_tx-y" },
+            enable: { key: "vw-layer_use-tx-y" },
+            hidden: { key: "vw-layer_hide-tx-layer" },
+          },
+          decrease: {
+            store: { key: "vw-layer_tx-y" },
+            enable: { key: "vw-layer_use-tx-y" },
+            hidden: { key: "vw-layer_hide-tx-layer" },
+            factor: -1.0,
+          },
+          increase: {
+            store: { key: "vw-layer_tx-y" },
+            enable: { key: "vw-layer_use-tx-y" },
+            hidden: { key: "vw-layer_hide-tx-layer" },
+            factor: 1.0,
+          },
+          stick: {
+            store: { key: "vw-layer_tx-y" },
+            enable: { key: "vw-layer_use-tx-y" },
+            hidden: { key: "vw-layer_hide-tx-layer" },
+            factor: 1.0,
+          },
+          checkbox: {
+            store: { key: "vw-layer_use-tx-y" },
+            spriteOn: { name: "visu_texture_checkbox_on" },
+            spriteOff: { name: "visu_texture_checkbox_off" },
+            hidden: { key: "vw-layer_hide-tx-layer" },
+          },
+          title: {
+            text: "Override",
+            enable: { key: "vw-layer_use-tx-y" },
+            hidden: { key: "vw-layer_hide-tx-layer" },
+          }
         },
       },
       {

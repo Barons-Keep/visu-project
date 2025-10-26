@@ -1,6 +1,6 @@
 ///@package io.alkapivo.visu.service.brush
 
-function VEBrushService() constructor {
+function VEBrushService(): Service() constructor {
 
   ///@type {Map<String, Array>}
   templates = new Map(String, Array)
@@ -13,8 +13,7 @@ function VEBrushService() constructor {
   ///@param {BrushType} type
   ///@return {?Array}
   fetchTemplates = function(type) {
-    var templates = this.templates.get(type)
-    return Optional.is(templates) ? Assert.isType(templates, Array) : null
+    return this.templates.get(type)
   }
 
   ///@param {VEBrushTemplate}
@@ -22,12 +21,12 @@ function VEBrushService() constructor {
   ///@return {VEBrushService}
   saveTemplate = function(template, idx = null) {
     if (!Core.isType(template, VEBrushTemplate)) {
-      Logger.warn("VEBrushService::saveTemplate", $"Template must be type of VEBrushTemplate")
+      Logger.warn("VEBrushService", "saveTemplate(): Template must be type of VEBrushTemplate")
       return this
     }
 
     var templates = this.templates.get(template.type)
-    if (!Core.isType(templates, Array)) {
+    if (templates == null) {
       Logger.warn("VEBrushService", $"Unable to find template for type '{template.type}'")
       return this
     }
@@ -36,7 +35,7 @@ function VEBrushService() constructor {
       return template.name == name
     }, template.name)
 
-    if (Optional.is(index)) {
+    if (index != null) {
       //Logger.info("VEBrushService", $"Template of type '{template.type}' updated: '{template.name}'")
       templates.set(index, template)
     } else {
@@ -55,13 +54,13 @@ function VEBrushService() constructor {
   ///@return {VEBrushService}
   removeTemplate = function(template) {
     if (!Core.isType(template, VEBrushTemplate)) {
-      Logger.warn("VEBrushService::removeTemplate", $"Template must be type of VEBrushTemplate")
+      Logger.warn("VEBrushService", "removeTemplate(): Template must be type of VEBrushTemplate")
       return this
     }
 
     var templates = this.templates.get(template.type)
-    if (!Core.isType(templates, Array)) {
-      Logger.warn("VEBrushService::removeTemplate", $"Unable to find template for type '{template.type}'")
+    if (templates == null) {
+      Logger.warn("VEBrushService", $"removeTemplate(): Unable to find template for type '{template.type}'")
       return this
     }
 
@@ -69,11 +68,11 @@ function VEBrushService() constructor {
       return template.name == name
     }, template.name)
 
-    if (Optional.is(index)) {
-      Logger.info("VEBrushService::removeTemplate", $"Template of type '{template.type}' removed: '{template.name}'")
+    if (index != null) {
+      Logger.info("VEBrushService", $"removeTemplate(): Template of type '{template.type}' removed: '{template.name}'")
       templates.remove(index)
     } else {
-      Logger.warn("VEBrushService::removeTemplate", $"Template of type '{template.type}' wasn't found: '{template.name}'")
+      Logger.warn("VEBrushService", $"removeTemplate(): Template of type '{template.type}' wasn't found: '{template.name}'")
     }
 
     return this
@@ -84,6 +83,7 @@ function VEBrushService() constructor {
     this.templates.forEach(function(array) {
       array.clear()
     })
+
     return this
   }
 }

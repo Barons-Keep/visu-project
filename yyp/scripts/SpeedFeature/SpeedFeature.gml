@@ -4,12 +4,45 @@
 function SpeedFeature(json): GridItemFeature(json) constructor {
   var data = Struct.get(json, "data")
 
-  ///@override
   ///@type {String}
   type = "SpeedFeature"
 
+  ///@type {GenericTransformer}
+  genericTransformer = new GenericTransformer({
+    onValue: Struct.get(data, "onValue"),
+    onTarget: Struct.get(data, "onTarget"),
+    transform: Struct.get(data, "transform"),
+    increase: Struct.get(data, "increase"),
+    get: function(item, controller) {
+      return item.speed * GRID_ITEM_SPEED_SCALE
+    },
+    set: function(item, controller, value) {
+      item.setSpeed(value / GRID_ITEM_SPEED_SCALE)
+    },
+  })
+
+  ///@override
+  ///@param {GridItem} item
+  ///@param {VisuController} controller
+  static update = function(item, controller) {
+    this.genericTransformer.update(item, controller)
+  }
+}
+
+
+///@param {Struct} json
+function DeprecatedSpeedFeature(json): GridItemFeature(json) constructor {
+  var data = Struct.get(json, "data")
+
+  ///@override
+  ///@type {String}
+  type = "DeprecatedSpeedFeature"
+
   ///@type {Boolean}
   isRelative = Core.getIfType(GMArray.resolveRandom(Struct.get(data, "isRelative")), Boolean, true)
+
+  ///@type {Boolean}
+  merge = Core.getIfType(GMArray.resolveRandom(Struct.get(data, "merge")), Boolean, true)
 
   ///@type {Boolean}
   isSpeedSet = false
@@ -44,7 +77,7 @@ function SpeedFeature(json): GridItemFeature(json) constructor {
   static update = function(item, controller) {
     if (this.transform != null) {
       if (!this.isSpeedSet) {
-        this.transform.value = (this.isRelative
+        this.transform.value = (this.merge
           ? this.transform.value + (item.speed * GRID_ITEM_SPEED_SCALE) 
           : this.transform.value)
         this.transform.startValue = this.transform.value

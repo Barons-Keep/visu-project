@@ -211,6 +211,8 @@ global.__EVENT_DISPATCHERS = {
       
       var _x = Struct.getIfType(event.data, "x", Number, 0.0)
       var _y = Struct.getIfType(event.data, "y", Number, 0.0)
+      var surfaceWidth = Struct.get(event.data, "surfaceWidth")
+      var surfaceHeight = Struct.get(event.data, "surfaceHeight")
 
       var tiled = Struct.getIfType(event.data, "tiled", Boolean, false)
       var replace = Struct.getIfType(event.data, "replace", Boolean, false)
@@ -241,6 +243,8 @@ global.__EVENT_DISPATCHERS = {
           tiled: tiled,
           replace: replace,
           lifespan: lifespanTimer,
+          surfaceWidth: surfaceWidth,
+          surfaceHeight: surfaceHeight,
         }))
         .whenUpdate(function() {
           var stage = this.state.get("stage")

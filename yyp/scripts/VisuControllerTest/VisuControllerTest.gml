@@ -107,7 +107,7 @@ function TestEvent_VisuController_playback(json = {}) {
           }
 
           var track = controller.trackService.track
-          var video = controller.videoService.video
+          var video = controller.videoService.getVideo()
           if (Optional.is(video) && track.getStatus() == TrackStatus.PLAYING) {
             if (video.getStatus() != VideoStatus.PLAYING) {
               task.state.videoLimit.update()

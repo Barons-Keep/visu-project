@@ -5,7 +5,8 @@
 function VisuController(layerName) constructor {
 
   ///@type {GMLayer}
-  layerId = Assert.isType(Scene.getLayer(layerName), GMLayer)
+  layerId = Assert.isType(Scene.getLayer(layerName), GMLayer,
+    "VisuController::layerID must be type of GMLayer")
 
   ///@type {Difficulty}
   difficulty = Difficulty.NORMAL
@@ -105,7 +106,8 @@ function VisuController(layerName) constructor {
           && (stateName == "play" 
           || stateName == "pause" 
           || stateName == "paused"
-          || stateName == "game-over") 
+          || stateName == "game-over"
+          || stateName == "rewind") 
     },
   })
 
@@ -200,12 +202,14 @@ function VisuController(layerName) constructor {
     "fade-sprite": Callable.run(Struct.get(EVENT_DISPATCHERS, "fade-sprite")),
     "fade-color": Callable.run(Struct.get(EVENT_DISPATCHERS, "fade-color")),
   }), {
+    loggerPrefix: BeanVisuController,
     enableLogger: true,
     catchException: false,
   })
 
   ///@type {TaskExecutor}
   executor = new TaskExecutor(this, {
+    loggerPrefix: BeanVisuController,
     enableLogger: true,
     catchException: false,
   })
@@ -235,61 +239,6 @@ function VisuController(layerName) constructor {
   watchdogPromise = null
 
   ///@private
-  ///@return {VisuController}
-  watchdog = function() {
-    try {
-      this.difficulty = Visu.settings.getValue("visu.difficulty")
-      if (!Core.isEnumKey(this.difficulty, Difficulty)) {
-        this.difficulty = Difficulty.NORMAL
-        Visu.settings.setValue("visu.difficulty", this.difficulty).save()
-      }
-
-      if (this.trackService.isTrackLoaded()) {
-        var ost = this.trackService.track.audio
-        var ostVolume = Visu.settings.getValue("visu.audio.ost-volume")
-        if (ost.isPlaying() && ost.getVolume() != ostVolume) {
-          ost.setVolume(ostVolume)
-        }
-      }
-
-      var sfxVolume = Visu.settings.getValue("visu.audio.sfx-volume")
-      if (this.sfxService.getVolume() != sfxVolume) {
-        this.sfxService.setVolume(sfxVolume)
-      }
-
-      if (Optional.is(this.watchdogPromise)) {
-        this.watchdogPromise = this.watchdogPromise.status == PromiseStatus.PENDING
-          ? this.watchdogPromise
-          : null
-        return this
-      }
-
-      if (!Optional.is(this.watchdogPromise)
-        && this.trackService.isTrackLoaded()
-        && !this.trackService.track.audio.isLoaded() 
-        && 1 > abs(this.trackService.time - this.trackService.duration)
-        && this.fsm.getStateName() == "play") {
-        
-        Logger.info("VisuController", $"Track finished at {this.trackService.time}")
-        this.watchdogPromise = this.send(new Event("pause").setPromise(new Promise()))
-        this.menu.send(this.menu.factoryOpenMainMenuEvent({ disableResume: true }))
-      }
-
-      if (this.fsm.getStateName() != "idle" && Optional.is(this.ostSound)) {
-        this.ostSound.stop()
-        this.ostSound = null
-      }
-    } catch (exception) {
-      var message = $"'watchdog' fatal error: {exception.message}"
-      Logger.error(BeanVisuController, message)
-      Core.printStackTrace()
-      this.send(new Event("spawn-popup", { message: message }))
-    }
-
-    return this
-  }
-
-  ///@private
   ///@type {Number}
   gcFrameTime = Core.getProperty("core.gc.frame-time", 100)
 
@@ -303,7 +252,8 @@ function VisuController(layerName) constructor {
     "executor",
     "videoService",
     "sfxService",
-    "menu"
+    "menu",
+    "visuRenderer"
   ], function(name, index, controller) {
     Logger.debug(BeanVisuController, $"Load service '{name}'")
     return {
@@ -387,71 +337,18 @@ function VisuController(layerName) constructor {
         || Visu.assets().subtitleTemplates.contains(name)
   }  
   
-  ///@param {String} message
-  exceptionDebugHandler = function(message) {
-    Logger.error(BeanVisuController, message)
-    Core.printStackTrace()
-    this.send(new Event("spawn-popup", { message: message }))
-
-    var stateName = this.trackService.isTrackLoaded() ? "pause" : "idle"
-    this.fsm.dispatcher.send(new Event("transition", { name: stateName }))
-
-    var editorIOConstructor = Core.getConstructor(Visu.modules().editor.io)
-    if (Optional.is(editorIOConstructor)) {
-      if (!Beans.exists(Visu.modules().editor.io)) {
-        Beans.add(Beans.factory(Visu.modules().editor.io, GMServiceInstance, layerId,
-          new editorIOConstructor()))
-      }
-    }
-
-    var editorConstructor = Core.getConstructor(Visu.modules().editor.controller)
-    if (Optional.is(editorConstructor)) {
-      if (!Beans.exists(Visu.modules().editor.controller)) {
-        Beans.add(Beans.factory(Visu.modules().editor.controller, GMServiceInstance, layerId,
-          new editorConstructor()))
-      }
-    }
-    
-    var editor = Beans.get(Visu.modules().editor.controller)
-    if (Optional.is(editor)) {
-      editor.send(new Event("open"))
-      editor.renderUI = true
-      editor.store.get("update-services").set(false)
-    }
-  }
-
-  ///@param {TrackChannel}
-  ///@return {Boolean}
-  isChannelDifficultyValid = function(channel) {
-    var difficulties = Struct.get(Struct.get(channel, "settings"), "difficulty")
-    return !Optional.is(difficulties) || Struct.get(difficulties, this.difficulty) != false
-  }
-  
-  ///@return {Boolean}
-  isGameplayRunning = function() {
-    var state = this.fsm.getStateName()
-    var editor = Beans.get(Visu.modules().editor.controller)
-    return (this.menu.containers.size() == 0) 
-        && (state != "splashscreen")
-        && (state != "game-over")
-        && (state != "paused" 
-        || (Optional.is(editor) && editor.store.getValue("update-services")))
-  }
-
   ///@private
   ///@return {VisuController}
   init = function() {
-    this.displayService.setCaption(game_display_name)
-    Core.debugOverlay(Assert.isType(Visu.settings.getValue("visu.debug", false), Boolean))
-    var fullscreen = Assert.isType(Visu.settings.getValue("visu.fullscreen", false), Boolean)
-    var borderlessWindow = Assert.isType(Visu.settings.getValue("visu.borderless-window", false), Boolean)
+    var width = Visu.settings.getValue("visu.window.width", 1440),
+    var height = Visu.settings.getValue("visu.window.height", 900)
+    var fullscreen = Visu.settings.getValue("visu.fullscreen", false)
+    var borderlessWindow = Visu.settings.getValue("visu.borderless-window", false)
     this.displayService
-      .resize(
-        Assert.isType(Visu.settings.getValue("visu.window.width", 1440), Number),
-        Assert.isType(Visu.settings.getValue("visu.window.height", 900), Number)
-      )
+      .resize(width, height)
       .setBorderlessWindow(borderlessWindow)
       .setFullscreen(fullscreen)
+      .setCaption(game_display_name)
       .setCursor(Cursor.DEFAULT)
       .center()
     
@@ -466,9 +363,9 @@ function VisuController(layerName) constructor {
       .set("shroom-die", new SFX("sound_sfx_shroom_die", 3))
       .set("shroom-damage", new SFX("sound_sfx_shroom_damage", 3))
       .set("shroom-shoot", new SFX("sound_sfx_shroom_shoot", 3))
-      .set("menu-move-cursor", new SFX("sound_sfx_player_collect_point_or_force"), 1)
-      .set("menu-select-entry", new SFX("sound_sfx_player_shoot"), 1)
-      .set("menu-use-entry", new SFX("sound_sfx_shroom_damage"), 1)
+      .set("menu-move-cursor", new SFX("sound_sfx_menu_move_cursor"), 1)
+      .set("menu-select-entry", new SFX("sound_sfx_menu_select_entry"), 1)
+      .set("menu-use-entry", new SFX("sound_sfx_menu_use_entry"), 1)
       .set("menu-splashscreen", new SFX("sound_sfx_intro"), 1)
     
 
@@ -490,7 +387,7 @@ function VisuController(layerName) constructor {
             Visu._serverVersion = current.version
           } catch (exception) {
             Visu._serverVersion = null
-            Logger.error("VisuController", $"serverVersion fatal error: {exception.message}")
+            Logger.error(BeanVisuController, $"serverVersion fatal error: {exception.message}")
             Core.printStackTrace()
           }
         },
@@ -572,6 +469,22 @@ function VisuController(layerName) constructor {
   }
 
   ///@private
+  ///@param {Struct} service
+  ///@param {Number} iterator
+  ///@param {VisuController} controller
+  updateGameplayService = function(service, iterator, controller) {
+    try {
+      if (service.name == "trackService") {
+        service.struct.update()
+      } else if (controller.fsm.getStateName() != "rewind") {
+        service.struct.update()
+      }
+    } catch (exception) {
+      controller.exceptionDebugHandler($"'{service.name}::update' fatal error: {exception.message}")
+    }
+  }
+
+  ///@private
   ///@return {VisuController}
   updateUIService = function() {
     try {
@@ -609,18 +522,167 @@ function VisuController(layerName) constructor {
       if (irandom(100) > 40) {
         var spd = 15 + irandom(keyboard_check(ord("N")) ? 15 : 45)
         game_set_speed(spd, gamespeed_fps)
-        Core.print("set spd", spd, "DT", DeltaTime.get())
+        Logger.info(BeanVisuController, $"Set debugFPSSpeed: {spd}, DeltaTime: {DeltaTime.get()}")
+        
       }
     } else {
       var spd = game_get_speed(gamespeed_fps)
       if (game_get_speed(gamespeed_fps) < 60) {
         spd = clamp(spd + choose(1, 0, 1, 0, 0, 2, 0, 1, 0, 0, 0, 0, -1, 0, 1, 1, 0, -1, 1), 15, 60)
         game_set_speed(spd, gamespeed_fps)
-        Core.print("restore spd60:", spd, "DT", DeltaTime.get())
+        Logger.info(BeanVisuController, $"Restore debugFPSSpeed: {spd}, DeltaTime: {DeltaTime.get()}")
       }
     }
 
     return this
+  }
+
+  ///@private
+  ///@return {VisuController}
+  updateUIServices = function() {
+    var state = this.fsm.getStateName()
+    if (state != "splashscreen") {
+      this.updateUIService()
+    }
+
+    return this
+  }
+
+  ///@private
+  ///@return {VisuController}
+  updateServices = function() {
+    this.services.forEach(this.updateService, this)
+
+    return this
+  }
+
+  ///@private
+  ///@return {VisuController}
+  updateGameplayServices = function() {
+    if (this.isGameplayRunning()) {
+      this.gameplayServices.forEach(this.updateGameplayService, this)
+    }
+
+    return this
+  }
+
+  ///@private
+  ///@return {VisuController}
+  updateWatchdog = function() {
+    try {
+      this.difficulty = Visu.settings.getValue("visu.difficulty")
+      if (!Core.isEnumKey(this.difficulty, Difficulty)) {
+        this.difficulty = Difficulty.NORMAL
+        Visu.settings.setValue("visu.difficulty", this.difficulty).save()
+      }
+
+      if (this.trackService.isTrackLoaded()) {
+        var ost = this.trackService.track.audio
+        var ostVolume = Visu.settings.getValue("visu.audio.ost-volume")
+        if (ost.isPlaying() && ost.getVolume() != ostVolume) {
+          ost.setVolume(ostVolume)
+        }
+
+        SHADER_AUDIO_WAVEFORM_VALUE = SHADER_AUDIO_WAVEFORM_DEFAULT_VALUE
+        var soundIntent = Beans.get(BeanSoundService).intents.get(ost.name)
+        if (soundIntent != null && soundIntent.waveform != null) {
+          var step = Struct.getIfType(soundIntent.waveform, "step", Number)
+          var data = Struct.getIfType(soundIntent.waveform, "data", GMArray)
+          if (step != null && step > 0.0 && data != null) {
+            var pointer = floor(ost.getPosition() / step)
+            if (pointer < GMArray.size(data)) {
+              SHADER_AUDIO_WAVEFORM_VALUE = data[pointer]
+            }
+          }
+        }
+      }
+
+      var sfxVolume = Visu.settings.getValue("visu.audio.sfx-volume")
+      if (this.sfxService.getVolume() != sfxVolume) {
+        this.sfxService.setVolume(sfxVolume)
+      }
+
+      if (Optional.is(this.watchdogPromise)) {
+        this.watchdogPromise = this.watchdogPromise.status == PromiseStatus.PENDING
+          ? this.watchdogPromise
+          : null
+        return this
+      }
+
+      if (!Optional.is(this.watchdogPromise)
+        && this.trackService.isTrackLoaded()
+        && !this.trackService.track.audio.isLoaded() 
+        && 1 > abs(this.trackService.time - this.trackService.duration)
+        && this.fsm.getStateName() == "play") {
+        
+        Logger.info("VisuController", $"Track finished at {this.trackService.time}")
+        this.watchdogPromise = this.send(new Event("pause").setPromise(new Promise()))
+        this.menu.send(this.menu.factoryOpenMainMenuEvent({ disableResume: true }))
+      }
+
+      if (this.fsm.getStateName() != "idle" && Optional.is(this.ostSound)) {
+        this.ostSound.stop()
+        this.ostSound = null
+      }
+    } catch (exception) {
+      var message = $"'watchdog' fatal error: {exception.message}"
+      Logger.error(BeanVisuController, message)
+      Core.printStackTrace()
+      this.send(new Event("spawn-popup", { message: message }))
+    }
+
+    return this
+  }
+
+  ///@param {String} message
+  exceptionDebugHandler = function(message) {
+    Logger.error(BeanVisuController, message)
+    Core.printStackTrace()
+    this.send(new Event("spawn-popup", { message: message }))
+
+    var stateName = this.trackService.isTrackLoaded() ? "pause" : "idle"
+    this.fsm.dispatcher.send(new Event("transition", { name: stateName }))
+
+    var editorIOConstructor = Core.getConstructor(Visu.modules().editor.io)
+    if (Optional.is(editorIOConstructor)) {
+      if (!Beans.exists(Visu.modules().editor.io)) {
+        Beans.add(Beans.factory(Visu.modules().editor.io, GMServiceInstance, layerId,
+          new editorIOConstructor()))
+      }
+    }
+
+    var editorConstructor = Core.getConstructor(Visu.modules().editor.controller)
+    if (Optional.is(editorConstructor)) {
+      if (!Beans.exists(Visu.modules().editor.controller)) {
+        Beans.add(Beans.factory(Visu.modules().editor.controller, GMServiceInstance, layerId,
+          new editorConstructor()))
+      }
+    }
+    
+    var editor = Beans.get(Visu.modules().editor.controller)
+    if (Optional.is(editor)) {
+      editor.send(new Event("open"))
+      editor.renderUI = true
+      editor.store.get("update-services").set(false)
+    }
+  }
+
+  ///@param {TrackChannel}
+  ///@return {Boolean}
+  isChannelDifficultyValid = function(channel) {
+    var difficulties = Struct.get(Struct.get(channel, "settings"), "difficulty")
+    return !Optional.is(difficulties) || Struct.get(difficulties, this.difficulty) != false
+  }
+  
+  ///@return {Boolean}
+  isGameplayRunning = function() {
+    var state = this.fsm.getStateName()
+    var editor = Beans.get(Visu.modules().editor.controller)
+    return (this.menu.containers.size() == 0) 
+        && (state != "splashscreen")
+        && (state != "game-over")
+        && (state != "paused" 
+        || (Optional.is(editor) && editor.store.getValue("update-services")))
   }
 
   ///@param {Event}
@@ -632,25 +694,13 @@ function VisuController(layerName) constructor {
   ///@return {VisuController}
   update = function() {
     this.updateDebugTimer.start()
+    this.updateDebugFPS()
     this.updateGCFrameTime()
-    //this.updateDebugFPS()
-    var state = this.fsm.getStateName()
-    if (state != "splashscreen") {
-      this.updateUIService()
-    }
-    
-    this.services.forEach(this.updateService, this)
-    
+    this.updateUIServices()
+    this.updateServices()
     this.updateCursor()
-
-    if (this.isGameplayRunning()) {
-      this.gameplayServices.forEach(this.updateService, this)
-    }
-
-    this.visuRenderer.update()
-
-    this.watchdog()
-
+    this.updateGameplayServices()
+    this.updateWatchdog()
     updateDebugTimer.finish()
     return this
   }
@@ -710,7 +760,7 @@ function VisuController(layerName) constructor {
 
   ///@return {VisuController}
   onSceneEnter = function() {
-    Logger.info("VisuController", "onSceneEnter")
+    Logger.info(BeanVisuController, "onSceneEnter")
     audio_stop_all()
     VideoUtil.runGC()
     if (Core.getProperty("visu.manifest.load-on-start", false)) {
@@ -774,7 +824,7 @@ function VisuController(layerName) constructor {
 
   ///@return {VisuController}
   onSceneLeave = function() {
-    Logger.info("VisuController", "onSceneLeave")
+    Logger.info(BeanVisuController, "onSceneLeave")
     audio_stop_all()
     VideoUtil.runGC()
     return this
@@ -782,6 +832,7 @@ function VisuController(layerName) constructor {
 
   ///@return {VisuController}
   onNetworkEvent = function() {
+    Logger.info(BeanVisuController, "onNetworkEvent")
     try {
       var event = JSON.parse(json_encode(async_load))
       Logger.debug(BeanVisuController, $"'onNetworkEvent' incoming event: {event}")
@@ -805,7 +856,10 @@ function VisuController(layerName) constructor {
 
   onSocialEvent = function(json) {
     var type = Struct.get(json, "type")
-    Core.print("VIDEO STATUS:", type)
+    Logger.info(BeanVisuController, $"onSocialEvent | type: {type}")
+    if (type == "video_start" && VIDEO_CONTEXT != null) {
+      VIDEO_CONTEXT.videoStart = true
+    }
   }
 
   ///@return {VisuController}
@@ -834,26 +888,6 @@ function VisuController(layerName) constructor {
 
   this.init()
 }
-
-/*
-Simulate FPS drops with:
-```
-if (keyboard_check(ord("B"))) {
-  if (irandom(100) > 40) {
-    var spd = 15 + irandom(keyboard_check(ord("N")) ? 15 : 45)
-    game_set_speed(spd, gamespeed_fps)
-    Core.print("set spd", spd, "DT", DeltaTime.get())
-  }
-} else {
-  var spd = game_get_speed(gamespeed_fps)
-  if (game_get_speed(gamespeed_fps) < 60) {
-    spd = clamp(spd + choose(1, 0, 1, 0, 0, 2, 0, 1, 0, 0, 0, 0, -1, 0, 1, 1, 0, -1, 1), 15, 60)
-    game_set_speed(spd, gamespeed_fps)
-    Core.print("restore spd60:", spd, "DT", DeltaTime.get())
-  }
-}
-```
-*/
 
 /* 
 Example game save

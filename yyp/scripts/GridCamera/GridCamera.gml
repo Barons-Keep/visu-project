@@ -105,12 +105,13 @@ function GridCamera(config = null) constructor {
     var enableEditor = Optional.is(editor) && editor.renderUI
     var enableDebugOverlay = is_debug_overlay_open()
     if ((enableEditor || enableDebugOverlay) && this.enableMouseLook && keyboard_check(vk_alt)) {
+      var scale = Beans.get(BeanVisuController).displayService.scale
       var _x = layout.x()
       var _y = layout.y()
       var width = layout.width()
       var height = layout.height()
-      var offsetX = MouseUtil.getMouseX() - _x - (width / 2.0)
-      var offsetY = MouseUtil.getMouseY() - _y - (height / 2.0)
+      var offsetX = (MouseUtil.getMouseX() * scale) - _x - (width / 2.0)
+      var offsetY = (MouseUtil.getMouseY() * scale) - _y - (height / 2.0)
       var factor = 24.0
 			this.angle = clamp(this.angle - ((abs(offsetX) <= 1.0 ? 0.0 : offsetX) / factor), -360.0, 360.0)
 			this.pitch = clamp(this.pitch - ((abs(offsetY) <= 1.0 ? 0.0 : offsetY) / factor), -89.0, 89.0)

@@ -19,7 +19,7 @@
   "resourceType":"GMSound",
   "resourceVersion":"2.0",
   "sampleRate":44100,
-  "soundFile":"sound_sfx_shroom_damage.wav",
+  "soundFile":"sound_sfx_shroom_damage.ogg",
   "type":0,
   "volume":1.0,
 }

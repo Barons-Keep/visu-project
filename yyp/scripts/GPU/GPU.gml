@@ -391,17 +391,19 @@ function _GPU() constructor {
       return GPU
     },
 
+    ///@param {Number} x
+    ///@param {Number} y
     ///@param {Number} width
     ///@param {Number} height
     ///@param {GMColor} [color]
     ///@param {Number} [alpha]
     ///@return {GPU}
-    fillColor: function(width, height, color = c_white, alpha = 1.0) {
+    fillColor: function(x, y, width, height, color = c_white, alpha = 1.0) {
       if (width == 0 || height == 0) {
         return GPU
       }
 
-      draw_sprite_ext(texture_white, 0.0, 0, 0, width / 32.0, height / 32.0, 0.0, color, alpha)
+      draw_sprite_ext(texture_white, 0.0, x, y, width / 64.0, height / 64.0, 0.0, color, alpha)
       return GPU
     },
 

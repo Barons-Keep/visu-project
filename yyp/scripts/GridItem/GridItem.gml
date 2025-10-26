@@ -47,34 +47,30 @@ function GridItemSignals() constructor {
 
 ///@param {?Struct} [json]
 ///@param {Boolean} [useScale]
-function GridItemMovement(json = null, _useScale = true) constructor {
+function GridItemMovement(json = null) constructor {
   
-  ///@todo Make it deprecated
-  ///@type {Boolean}
-  useScale = _useScale
+  ///@type {Number}
+  speed = Struct.getIfType(json, "speed", Number, 0.0) / 100.0
+  
+  ///@type {Number}
+  speedMax = Struct.getIfType(json, "speedMax", Number, 2.1) / 100.0
 
   ///@type {Number}
-  speed = Struct.getIfType(json, "speed", Number, 0.0) / (this.useScale ? 100.0 : 1.0)
+  speedMaxFocus = Struct.getIfType(json, "speedMaxFocus", Number, 0.66) / 100.0
   
   ///@type {Number}
-  speedMax = Struct.getIfType(json, "speedMax", Number, 2.1) / (this.useScale ? 100.0 : 1.0)
-
-  ///@type {Number}
-  speedMaxFocus = Struct.getIfType(json, "speedMaxFocus", Number, 0.66) / (this.useScale ? 100.0 : 1.0)
+  acceleration = Struct.getIfType(json, "acceleration", Number, 1.92) / GRID_ITEM_SPEED_SCALE
   
   ///@type {Number}
-  acceleration = Struct.getIfType(json, "acceleration", Number, 1.92) / (this.useScale ? GRID_ITEM_SPEED_SCALE : 1.0)
-  
-  ///@type {Number}
-  friction = Struct.getIfType(json, "friction", Number, 9.3) / (this.useScale ? 10000.0 : 1.0)
+  friction = Struct.getIfType(json, "friction", Number, 9.3) / 10000.0
 
   ///@return {Struct}
   serialize = function() {
     return {
-      speed: this.speed * (this.useScale ? 100.0 : 1.0),
-      speedMax: this.speedMax * (this.useScale ? 100.0 : 1.0),
-      acceleration: this.acceleration * (this.useScale ? GRID_ITEM_SPEED_SCALE : 1.0),
-      friction: this.friction * (this.useScale ? 10000.0 : 1.0),
+      speed: this.speed * 100.0,
+      speedMax: this.speedMax * 100.0,
+      acceleration: this.acceleration * GRID_ITEM_SPEED_SCALE,
+      friction: this.friction * 10000.0,
     }
   }
 }
@@ -256,13 +252,13 @@ function GridItemEmitter(json = null) constructor {
   ///@type {any}
   state = Struct.get(json, "state")
 
-  ///@type {?Callable} function(item, controller, emitter) { }
+  ///@type {?Callable} function(item, controller, emitter)
   preCallback = Struct.getIfType(json, "preCallback", Callable)
 
-  ///@type {?Callable} function(item, controller, emitter, idx, arrIdx, x, y, angle, speed) { }
+  ///@type {?Callable} function(item, controller, emitter, idx, arrIdx, x, y, angle, speed)
   callback = Struct.getIfType(json, "callback", Callable)
 
-  ///@type {?Callable} function(item, controller, emitter) { }
+  ///@type {?Callable} function(item, controller, emitter)
   postCallback = Struct.getIfType(json, "postCallback", Callable)
 
   ///@type {Number}
@@ -381,13 +377,16 @@ function GridItemEmitter(json = null) constructor {
 function GridItem(config) constructor {
 
   ///@type {String}
-  uid = Assert.isType(config.uid, String, "GridItem.uid must be type of String")
+  uid = Assert.isType(config.uid, String,
+    "GridItem::uid must be type of String")
 
   ///@type {Number}
-  x = Assert.isType(Struct.get(config, "x"), Number, "GridItem.x must be type of Number")
+  x = Assert.isType(Struct.get(config, "x"), Number,
+    "GridItem::x must be type of Number")
 
   ///@type {Number}
-  y = Assert.isType(Struct.get(config, "y"), Number, "GridItem.y must be type of Number")
+  y = Assert.isType(Struct.get(config, "y"), Number,
+    "GridItem::y must be type of Number")
 
   ///@type {Number}
   z = Struct.getIfType(config, "z", Number, 0.0)

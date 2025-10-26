@@ -62,17 +62,65 @@ function SoundService(): Service() constructor {
     return this
   }
 
-  ///@override
+  ///@param {String} name
+  ///@param {String} path
+  ///@param {?SoundIntent} [intent]
   ///@return {SoundService}
-  free = function() {
-    this.sounds.forEach(function(sound, name) {
+  loadOGG = function(name, path, intent = null) {
+    Logger.debug(BeanSoundService, $"Load ogg sound {name} from {path}")
+    var stream = audio_create_stream(path)
+    this.sounds.add(stream, name)
+
+    var soundIntent = Core.isType(intent, SoundIntent)
+      ? intent
+      : new SoundIntent({ file: path })
+    this.intents.add(soundIntent, name)
+
+    return this
+  }
+
+  ///@param {String} name
+  ///@return {SoundService}
+  freeOGG = function(name) {
+    var sound = this.sounds.get(name)
+    if (Core.isType(sound, GMSound)) {
+      Logger.debug(BeanSoundService, $"Free ogg sound '{name}'")
+      audio_destroy_stream(sound)
+      this.sounds.remove(name)
+    }
+
+    var intent = this.intents.get(name)
+    if (Core.isType(intent, SoundIntent)) {
+      this.intents.remove(name)
+    }
+    
+    return this
+  }
+
+  ///@param {?Map<String, Boolean>} [staticSounds]
+  ///@return {SoundService}
+  free = function(staticSounds = null) {
+    this.sounds.forEach(function(sound, name, staticSounds) {
       try {
+        if (staticSounds != null && staticSounds.get(name) == true) {
+          Logger.debug("SoundService", $"Keep sound '{name}'")
+          return
+        }
         Logger.debug("SoundService", $"Free sound '{name}'")
         audio_destroy_stream(sound)
       } catch (exception) {
         Logger.error("SoundService", $"Free sound '{name}' exception: {exception.message}")
       }
-    }).clear()
+    }, staticSounds)
+
+    this.sounds.keys()
+      .filter(function(key, idx, staticSounds) {
+        return staticSounds == null || staticSounds.get(key) != true
+      }, staticSounds)
+      .forEach(function(key, idx, sounds) {
+        sounds.remove(key)
+      }, this.sounds)
+
     this.audioGroups.forEach(function(audioGroupId, name) {
       try {
         Logger.debug("SoundService", $"Free audioGroupId '{name}'")
@@ -80,8 +128,15 @@ function SoundService(): Service() constructor {
       } catch (exception) {
         Logger.error("SoundService", $"Free audioGroupId '{name}' exception: {exception.message}")
       }
-    }).clear()
-    this.intents.clear()
+    }, staticSounds).clear()
+
+    this.intents.keys()
+      .filter(function(key, idx, staticSounds) {
+        return staticSounds == null || staticSounds.get(key) != true
+      }, staticSounds)
+      .forEach(function(key, idx, intents) {
+        intents.remove(key)
+      }, this.intents)
     return this
   }
 }

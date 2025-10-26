@@ -545,3 +545,146 @@ function ResolutionTransformer(json = null) constructor {
     return this
   }
 }
+
+
+///@param {?Struct} [json]
+function AudioWaveformTransformer(json = null) constructor {
+
+  ///@type {Number}
+  value = SHADER_AUDIO_WAVEFORM_VALUE
+
+  ///@type {Boolean}
+  finished = false
+
+  ///@type {Boolean}
+  overrideValue = Struct.getDefault(json, "overrideValue", true)
+
+  ///@return {any}
+  static get = function() {
+    return SHADER_AUDIO_WAVEFORM_VALUE
+  }
+
+  ///@return {any}
+  static set = function(value) {
+    this.value = SHADER_AUDIO_WAVEFORM_VALUE
+    return this
+  }
+
+    ///@return {Vector2}
+  static update = function() {
+    this.value = SHADER_AUDIO_WAVEFORM_VALUE
+    return this
+  }
+
+  ///@return {Struct} 
+  static serialize = function() {
+    return { }
+  }
+
+  ///@return {ResolutionTransformer}
+  static reset = function() {
+    this.finished = false 
+    return this
+  }
+}
+
+
+///@param {Struct} [config]
+function GenericTransformer(config) constructor {
+
+  ///@type {String}  
+  onValue = String.toUpperCase(Struct.getIfType(config, "onValue", String, "INHERIT"))
+  
+  ///@type {String}
+  onTarget = String.toUpperCase(Struct.getIfType(config, "onTarget", String, "INHERIT"))
+
+  ///@type {?Struct}
+  transformIntent = Struct.get(config, "transform")
+
+  ///@type {?Struct}
+  increaseIntent = Struct.get(config, "increase")
+
+  ///@type {?NumberTransformer}
+  transform = null
+
+  ///@type {?NumberTransformer}
+  increase = null
+
+  ///@private
+  ///@type {Boolean}
+  initialized = false
+
+  ///@type {Callable}
+  get = Assert.isType(Struct.get(config, "get"), Callable,
+    "GenericTransformer::get must be type of Callable")
+
+  ///@type {Callable}
+  set = Assert.isType(Struct.get(config, "set"), Callable,
+    "GenericTransformer::set must be type of Callable")
+
+  ///@param {Struct} item
+  ///@param {Struct} controller
+  ///@return {GenericTransformer}
+  static update = function(item, controller) {
+    static parseTransform = function(context, item, controller) {
+      var intent = context.transformIntent
+      if (intent == null) {
+        return
+      }
+
+      var value = Struct.getIfType(intent, "value", Number, 0.0)
+        + random(Struct.getIfType(intent, "rngValue", Number, 0.0))
+      if (context.onValue == "MERGE") {
+        value = value + context.get(item, controller)
+      } else if (context.onValue != "OVERRIDE") {
+        value = context.get(item, controller)
+      }
+
+      var target = Struct.getIfType(intent, "target", Number, 0.0)
+        + random(Struct.getIfType(intent, "rngTarget", Number, 0.0))
+      if (context.onTarget == "MERGE") {
+        target = target + context.get(item, controller)
+      }
+
+      context.transform = new NumberTransformer({
+        value: value,
+        target: target,
+        duration: Struct.get(intent, "duration"),
+        ease: Struct.getDefault(intent, "ease", "LINEAR"),
+      })
+    }
+
+    static parseIncrease = function(context, item) {
+      var intent = context.increaseIntent
+      if (intent == null) {
+        return
+      }
+
+      if (Struct.getIfType(intent, "value", Number) != null) {
+        intent.value = intent.value + random(Struct.getIfType(intent, "rngValue", Number, 0.0))
+      }
+      
+      if (Struct.getIfType(intent, "target", Number) != null) {
+        intent.target = intent.target + random(Struct.getIfType(intent, "rngTarget", Number, 0.0))
+      }
+
+      context.increase = new NumberTransformer(intent)
+    }
+
+    if (!this.initialized) {
+      this.initialized = true
+      parseTransform(this, item, controller)
+      parseIncrease(this, item, controller)
+    }
+
+    if (this.transform != null) {
+      this.set(item, controller, this.transform.update().value)
+    }
+
+    if (this.increase != null) {
+      this.set(item, controller, this.get(item, controller) + this.increase.update().value)
+    }
+
+    return this
+  }
+}

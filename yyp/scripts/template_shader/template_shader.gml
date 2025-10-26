@@ -2175,6 +2175,19 @@ global.__ShaderUniformTemplates = new Map(String, Callable)
       store: store,
     }
   })
+  .set(ShaderUniformType.findKey(ShaderUniformType.AUDIO_WAVEFORM), function(uniform, json, config = null) {
+    var store = {}
+    var storeConfig = Struct.get(config, "store")
+    var componentsConfig = Struct.get(config, "components")
+    Struct.set(store, uniform.name, {
+      type: AudioWaveformTransformer,
+      value: new AudioWaveformTransformer(),
+    })
+
+    return {
+      store: store,
+    }
+  })
 #macro ShaderUniformTemplates global.__ShaderUniformTemplates
 
 

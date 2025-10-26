@@ -36,6 +36,137 @@ function SpriteFeature(json): GridItemFeature(json) constructor {
     })
     : null
 
+  ///@type {?GenericTransformer}
+  scaleX = Struct.get(data, "scaleX") != null
+    ? new GenericTransformer({
+      onValue: Struct.get(data.scaleX, "onValue"),
+      onTarget: Struct.get(data.scaleX, "onTarget"),
+      transform: Struct.get(data.scaleX, "transform"),
+      increase: Struct.get(data.scaleX, "increase"),
+      get: function(item, controller) {
+        return item.sprite.scaleX
+      },
+      set: function(item, controller, value) {
+        item.sprite.setScaleX(value)
+      },
+    })
+    : null
+
+  ///@type {?GenericTransformer}
+  scaleY = Struct.get(data, "scaleY") != null
+    ? new GenericTransformer({
+      onValue: Struct.get(data.scaleY, "onValue"),
+      onTarget: Struct.get(data.scaleY, "onTarget"),
+      transform: Struct.get(data.scaleY, "transform"),
+      increase: Struct.get(data.scaleY, "increase"),
+      get: function(item, controller) {
+        return item.sprite.scaleY
+      },
+      set: function(item, controller, value) {
+        item.sprite.setScaleY(value)
+      },
+    })
+    : null
+
+  ///@type {?GenericTransformer}
+  angle = Struct.get(data, "angle") != null
+    ? new GenericTransformer({
+      onValue: Struct.get(data.angle, "onValue"),
+      onTarget: Struct.get(data.angle, "onTarget"),
+      transform: Struct.get(data.angle, "transform"),
+      increase: Struct.get(data.angle, "increase"),
+      get: function(item, controller) {
+        return item.sprite.angle
+      },
+      set: function(item, controller, value) {
+        item.sprite.setAngle(value)
+      },
+    })
+    : null
+    
+  ///@type {?GenericTransformer}
+  alpha = Struct.get(data, "alpha") != null
+    ? new GenericTransformer({
+      onValue: Struct.get(data.alpha, "onValue"),
+      onTarget: Struct.get(data.alpha, "onTarget"),
+      transform: Struct.get(data.alpha, "transform"),
+      increase: Struct.get(data.alpha, "increase"),
+      get: function(item, controller) {
+        return item.sprite.alpha
+      },
+      set: function(item, controller, value) {
+        item.sprite.setAlpha(value)
+      },
+    })
+    : null
+
+  ///@override
+  ///@param {GridItem} item
+  ///@param {VisuController} controller
+  static update = function(item, controller) {
+    if (this.sprite != null) {
+      item.setSprite(this.sprite)
+    }
+
+    if (this.mask != null) {
+      item.setMask(this.mask)
+    }
+
+    if (this.scaleX != null) {
+      this.scaleX.update(item, controller)
+    }
+
+    if (this.scaleY != null) {
+      this.scaleY.update(item, controller)
+    }
+
+    if (this.angle != null) {
+      this.angle.update(item, controller)
+    }
+
+    if (this.alpha != null) {
+      this.alpha.update(item, controller)
+    }
+  }
+}
+
+
+///@param {Struct} json
+function DeprecatedSpriteFeature(json): GridItemFeature(json) constructor {
+  var data = Struct.get(json, "data")
+
+  ///@override
+  ///@type {String}
+  type = "SpriteFeature"
+
+  var _sprite = Struct.getIfType(data, "sprite", Struct)
+  ///@type {?Sprite}
+  sprite = _sprite != null
+    ? Assert.isType(SpriteUtil.parse({
+      name: Core.getIfType(GMArray.resolveRandom(Struct.get(_sprite, "name")), String, "texture_missing"),
+      frame: Core.getIfType(GMArray.resolveRandom(Struct.get(_sprite, "frame")), Number, 0.0),
+      speed: Core.getIfType(GMArray.resolveRandom(Struct.get(_sprite, "speed")), Number, 1.0),
+      scaleX: Core.getIfType(GMArray.resolveRandom(Struct.get(_sprite, "scaleX")), Number, 1.0),
+      scaleY: Core.getIfType(GMArray.resolveRandom(Struct.get(_sprite, "scaleY")), Number, 1.0),
+      alpha: Core.getIfType(GMArray.resolveRandom(Struct.get(_sprite, "alpha")), Number, 1.0),
+      angle: Core.getIfType(GMArray.resolveRandom(Struct.get(_sprite, "angle")), Number, 0.0),
+      blend: Core.getIfType(GMArray.resolveRandom(Struct.get(_sprite, "blend")), String, "#ffffff"),
+      animate: Core.getIfType(GMArray.resolveRandom(Struct.get(_sprite, "animate")), Boolean, true),
+      randomFrame: Core.getIfType(GMArray.resolveRandom(Struct.get(_sprite, "randomFrame")), Boolean, false),
+    }), Sprite, "sprite must be type of Struct")
+    : null
+
+  var _mask = Struct.getIfType(data, "mask", Struct)
+  ///@type {?Rectangle}
+  mask = _mask != null
+    ? new Rectangle({
+      x: Core.getIfType(GMArray.resolveRandom(Struct.get(_mask, "x")), Number, 0.0),
+      y: Core.getIfType(GMArray.resolveRandom(Struct.get(_mask, "y")), Number, 0.0),
+      width: Core.getIfType(GMArray.resolveRandom(Struct.get(_mask, "width")), Number, 0.0),
+      height: Core.getIfType(GMArray.resolveRandom(Struct.get(_mask, "height")), Number, 0.0),
+    })
+    : null
+
   ///@type {?Struct}
   scaleX = Core.isType(Struct.get(data, "scaleX"), Struct)
     ? {

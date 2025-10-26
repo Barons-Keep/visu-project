@@ -108,18 +108,18 @@ global.__BRUSH_TEXTURES = [
 function VEBrushTemplate(json) constructor {
   
   ///@type {String}
-  name = Assert.isType(json.name, String)
+  name = Assert.isType(json.name, String,
+    "VEBrushTemplate::name must be type of String")
   
   ///@type {BrushType}
-  type = Assert.isEnum(json.type, BrushType)
+  type = Assert.isEnum(json.type, BrushType,
+    "VEBrushTemplate::type must be type of BrushType")
   
   ///@type {String}
-  color = Core.isType(Struct.get(json, "color"), String)
-    ? ColorUtil.fromHex(json.color, ColorUtil.WHITE).toHex()
-    : "#ffffff"
+  color = ColorUtil.fromHex(Struct.get(json, "color"), ColorUtil.WHITE).toHex()
   
   ///@type {String}
-  texture = (Core.isType(Struct.get(json, "texture"), String) 
+  texture = (Struct.get(json, "texture") != null
     && GMArray.contains(BRUSH_TEXTURES, json.texture)) 
       ? json.texture
       : BRUSH_TEXTURES[0]
@@ -128,9 +128,7 @@ function VEBrushTemplate(json) constructor {
   hidden = Struct.getIfType(json, "hidden", Boolean, false)
 
   ///@type {?Struct}
-  properties = Core.isType(Struct.get(json, "properties"), Struct) 
-    ? json.properties
-    : null
+  properties = Struct.getIfType(json, "properties", Struct)
 
   ///@return {Struct}
   static toStruct = function() {
@@ -142,7 +140,7 @@ function VEBrushTemplate(json) constructor {
       hidden: this.hidden,
     }
 
-    if (Optional.is(this.properties)) {
+    if (this.properties != null) {
       Struct.set(struct, "properties", this.properties)
     }
 

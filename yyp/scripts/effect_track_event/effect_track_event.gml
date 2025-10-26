@@ -364,14 +364,14 @@ global.__effect_track_event = {
         "ef-cfg_use-render-part": Struct.parse.boolean(data, "ef-cfg_use-render-part"),
         "ef-cfg_render-part": Struct.parse.boolean(data, "ef-cfg_render-part"),
         "ef-cfg_cls-part": Struct.parse.boolean(data, "ef-cfg_cls-part"),
-        "ef-cfg_use-cls-frame": Struct.parse.boolean(data, "ef-cfg_use-cls-frame"),
-        "ef-cfg_cls-frame": Struct.parse.boolean(data, "ef-cfg_cls-frame"),
-        "ef-cfg_use-cls-frame-col": Struct.parse.boolean(data, "ef-cfg_use-cls-frame-col"),
-        "ef-cfg_cls-frame-col": Struct.parse.color(data, "ef-cfg_cls-frame-col"),
-        "ef-cfg_cls-frame-col-spd": Struct.parse.number(data, "ef-cfg_cls-frame-col-spd", 1.0, 0.0, 999.9),
-        "ef-cfg_cls-frame-alpha": Struct.parse.normalizedNumberTransformer(data, "ef-cfg_cls-frame-alpha"),
-        "ef-cfg_use-cls-frame-alpha": Struct.parse.boolean(data, "ef-cfg_use-cls-frame-alpha"),
-        "ef-cfg_change-cls-frame-alpha": Struct.parse.boolean(data, "ef-cfg_change-cls-frame-alpha"),
+        //"ef-cfg_use-cls-frame": Struct.parse.boolean(data, "ef-cfg_use-cls-frame"),
+        //"ef-cfg_cls-frame": Struct.parse.boolean(data, "ef-cfg_cls-frame"),
+        //"ef-cfg_use-cls-frame-col": Struct.parse.boolean(data, "ef-cfg_use-cls-frame-col"),
+        //"ef-cfg_cls-frame-col": Struct.parse.color(data, "ef-cfg_cls-frame-col"),
+        //"ef-cfg_cls-frame-col-spd": Struct.parse.number(data, "ef-cfg_cls-frame-col-spd", 1.0, 0.0, 999.9),
+        //"ef-cfg_cls-frame-alpha": Struct.parse.normalizedNumberTransformer(data, "ef-cfg_cls-frame-alpha"),
+        //"ef-cfg_use-cls-frame-alpha": Struct.parse.boolean(data, "ef-cfg_use-cls-frame-alpha"),
+        //"ef-cfg_change-cls-frame-alpha": Struct.parse.boolean(data, "ef-cfg_change-cls-frame-alpha"),
         "ef-cfg_use-particle-z": Struct.parse.boolean(data, "ef-cfg_use-particle-z", false),
         "ef-cfg_particle-z": Struct.parse.numberTransformer(data, "ef-cfg_particle-z", {
           value: 2045,
@@ -421,6 +421,7 @@ global.__effect_track_event = {
         controller.particleService.dispatcher)
 
       ///@description feature TODO effect.shader.all.render
+      /*
       Visu.resolveBooleanTrackEvent(data,
         "ef-cfg_use-cls-frame",
         "ef-cfg_cls-frame",
@@ -442,6 +443,7 @@ global.__effect_track_event = {
         "ef-cfg_change-cls-frame-alpha",
         "shaderClearFrameAlpha",
         properties, pump, executor)
+      */
 
       ///@description feature TODO shader-pipeline.background.clear
       Visu.resolveSendEventTrackEvent(data, 

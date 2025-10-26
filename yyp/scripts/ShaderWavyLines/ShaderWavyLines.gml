@@ -8,6 +8,7 @@ global.__ShaderWavyLines = {
       type: "GLSL_ES",
       uniforms: {
         u_amplitude: "FLOAT",
+        //u_audio_waveform: "AUDIO_WAVEFORM",
         u_angle: "FLOAT",
         u_bpm: "CONST_FLOAT",
         u_brightness: "FLOAT",

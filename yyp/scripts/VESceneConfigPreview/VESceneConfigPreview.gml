@@ -91,9 +91,6 @@ function VESceneConfigPreview(_config = null) constructor {
       //var bktGlitchService = controller.visuRenderer.gridRenderer.glitchService
       var effect = $"Effect:\n"
         + $"  Shader:\n"
-        + $"    ClearFrame: \n"
-        + $"      Enabled: {properties.shaderClearFrame}\n"
-        + $"      Color: {properties.shaderClearColor.toHex(false)}\n"
         + $"    Background:\n"
         + $"      Enabled: {properties.renderBackgroundShaders}\n"
         + $"      ShaderTemplates: \n"

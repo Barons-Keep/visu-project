@@ -47,17 +47,6 @@ global.__VISU_GRID_CONDITIONS = {
       }
     }
   },
-  "player-landed": function() {
-    return function(shroom, controller) {
-      return Optional.is(shroom.signals.playerCollision) 
-        && shroom.signals.playerLanded
-    }
-  },
-  "player-leave": function() {
-    return function(shroom, controller) {
-      return shroom.signals.playerLeave
-    }
-  },
   "lifespan": function() {
     return function(item, controller) {
       var value = this.data.value
@@ -121,7 +110,8 @@ global.__VISU_GRID_CONDITIONS = {
 function GridItemCondition(json) constructor {
 
   ///@type {String}
-  type = Assert.isType(json.type, String, "type must be type of String")
+  type = Assert.isType(json.type, String,
+    "GridItemCondition::type must be type of String")
 
   ///@type {any}
   data = Struct.get(json, "data")
@@ -129,6 +119,6 @@ function GridItemCondition(json) constructor {
   ///@param {GridItem} item
   ///@param {VisuController} controller
   ///@return {Boolean}
-  check = method(this, Assert.isType(Callable.run(Struct
-    .get(VISU_GRID_CONDITIONS, this.type)), Callable, "check must be type of Callable"))
+  check = method(this, Assert.isType(Callable.run(Struct.get(VISU_GRID_CONDITIONS, this.type)), Callable,
+    "GridItemCondition::check must be type of Callable"))
 }

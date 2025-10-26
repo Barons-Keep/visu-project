@@ -14,7 +14,7 @@ function GridItemFeature(json) constructor {
   type = "GridItemFeature"
   
   ///@type {?Array<GridItemCondition>}
-  conditions = Struct.contains(json, "conditions")
+  conditions = Struct.getIfType(json, "conditions", GMArray) != null
     ? new Array(GridItemCondition, GMArray.map(json.conditions, parseCondition))
     : null
 

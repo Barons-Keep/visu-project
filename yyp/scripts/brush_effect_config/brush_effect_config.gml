@@ -90,6 +90,7 @@ function brush_effect_config(json) {
         type: Boolean,
         value: Struct.get(json, "ef-cfg_cls-part"),
       },
+      /*
       "ef-cfg_use-cls-frame": {
         type: Boolean,
         value: Struct.get(json, "ef-cfg_use-cls-frame"),
@@ -125,6 +126,7 @@ function brush_effect_config(json) {
         type: Boolean,
         value: Struct.get(json, "ef-cfg_change-cls-frame-alpha"),
       },
+      */
       "ef-cfg_use-particle-z": {
         type: Boolean,
         value: Struct.get(json, "ef-cfg_use-particle-z"),
@@ -580,6 +582,7 @@ function brush_effect_config(json) {
           },
         },
       },
+      /*
       {
         name: "ef-cfg_cls-frame",
         template: VEComponents.get("property"),
@@ -1255,8 +1258,9 @@ function brush_effect_config(json) {
           },
         },
       },
+      */
       {
-        name: "ef-cfg_aparticle-z-col-title",
+        name: "ef-cfg_particle-z-col-title",
         template: VEComponents.get("property"),
         layout: VELayouts.get("property"),
         config: { 

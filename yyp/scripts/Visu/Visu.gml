@@ -31,6 +31,27 @@ global.__FLIP_VALUE = 1
 #macro EVENT_INSPECTOR_ENTRY_STEP global.__BRUSH_TOOLBAR_ENTRY_STEP
 
 
+///@static
+///@type {String[]}
+global.__VISU_SFX_AUDIO_NAMES = [
+  "sound_sfx_intro",
+  "sound_sfx_menu_move_cursor",
+  "sound_sfx_menu_select_entry",
+  "sound_sfx_menu_use_entry",
+  "sound_sfx_player_collect_bomb",
+  "sound_sfx_player_collect_life",
+  "sound_sfx_player_collect_point_or_force",
+  "sound_sfx_player_die",
+  "sound_sfx_player_force_level_up",
+  "sound_sfx_player_shoot",
+  "sound_sfx_player_use_bomb",
+  "sound_sfx_shroom_damage",
+  "sound_sfx_shroom_die",
+  "sound_sfx_shroom_shoot"
+]
+#macro VISU_SFX_AUDIO_NAMES global.__VISU_SFX_AUDIO_NAMES
+
+
 ///@enum
 function _Difficulty(): Enum() constructor {
   EASY = "EASY"
@@ -750,8 +771,8 @@ function _Visu() constructor {
       "asset": texture_hechan_3_background,
       "file": "",
     },
-    "texture_hechan_3_abstract": {
-      "asset": texture_hechan_3_abstract,
+    "texture_abstract_2": {
+      "asset": texture_abstract_2,
       "file": "",
     },
     "texture_hechan_4": {
@@ -826,8 +847,12 @@ function _Visu() constructor {
       "asset": texture_abstract_1,
       "file": "",
     },
-    "texture_abstract_2": {
-      "asset": texture_abstract_2,
+    "tx_bkg_goetia_1": {
+      "asset": tx_bkg_goetia_1,
+      "file": "",
+    },
+    "tx_bkg_magic": {
+      "asset": tx_bkg_magic,
       "file": "",
     },
   } 
@@ -1144,8 +1169,13 @@ function _Visu() constructor {
   static loadProperties = function() {
     //Logger.info("Visu", "run::loadProperties()")
     Core.loadProperties(FileUtil.get($"{working_directory}core-properties.json"))
+
     Core.loadProperties(FileUtil.get($"{working_directory}visu-properties.json"))
-    Core.loadProperties(FileUtil.get($"{working_directory}visu-editor-properties.json"))
+
+    var editorConstructor = Core.getConstructor("VisuEditorController")
+    if (Optional.is(editorConstructor)) {
+      Core.loadProperties(FileUtil.get($"{working_directory}visu-editor-properties.json"))
+    }
 
     MAGIC_NUMBER_TASK = Core.getProperty("visu.const.MAGIC_NUMBER_TASK", MAGIC_NUMBER_TASK)
     SYNC_UI_STORE_STEP = Core.getProperty("visu.const.SYNC_UI_STORE_STEP", SYNC_UI_STORE_STEP)
@@ -1304,6 +1334,47 @@ function _Visu() constructor {
     }
   }
 
+  static initDebugSFX = function() {
+    if (Core.getRuntimeType() == RuntimeType.GXGAMES) {
+      return
+    }
+
+    var sfxs = Core.getProperty("visu.sfx")
+    if (!Core.isType(sfxs, Struct)) {
+      return
+    }
+
+    GMArray.forEach(VISU_SFX_AUDIO_NAMES, function(name, idx, sfxs) {
+      var value = Struct.get(sfxs, name)
+      if (!Core.isType(value, String)) {
+        return
+      }
+
+      var soundService = Beans.get(BeanSoundService)
+      if (soundService == null) {
+        Logger.warn("Visu::initDebugSFX", $"Found nullable bean of SoundService while parsing sfx {name}")
+        return
+      }
+
+      var path = $"{working_directory}{value}"
+      if (!FileUtil.fileExists(path)) {
+        Logger.warn("Visu::initDebugSFX", $"File {path} for SFX {name} doesn't exists")
+        return
+      }
+
+      if (!String.contains(value, ".ogg")) {
+        Logger.warn("Visu::initDebugSFX", $"File {path} format must be .ogg")
+        return
+      }
+
+      if (soundService.sounds.contains(name)) {
+        soundService.freeOGG(name)
+      }
+      
+      soundService.loadOGG(name, path)
+    }, sfxs)
+  }
+
   static initHTTPService = function(layerId) {
     //Logger.info("Visu", "run::initHTTPService()")
     if (!Beans.exists(BeanHTTPService)) {
@@ -1378,6 +1449,10 @@ function _Visu() constructor {
     }
   }
 
+  static initDebug = function() {
+    Core.debugOverlay(Visu.settings.getValue("visu.debug", false))
+  }
+
   static parseCli = function() {
     //Logger.info("Visu", "run::parseCli()")
     this.cliParser().parse()
@@ -1405,6 +1480,8 @@ function _Visu() constructor {
     this.initTestRunner(layerId)
     this.initEditor(layerId)
     this.initVisu(layerId, layerName)
+    this.initDebugSFX()
+    this.initDebug()
     this.parseCli()
 
     return this

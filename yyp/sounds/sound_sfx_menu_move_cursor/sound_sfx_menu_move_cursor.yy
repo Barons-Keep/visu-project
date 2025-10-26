@@ -1,0 +1,25 @@
+{
+  "$GMSound":"",
+  "%Name":"sound_sfx_menu_move_cursor",
+  "audioGroupId":{
+    "name":"audiogroup_default",
+    "path":"audiogroups/audiogroup_default",
+  },
+  "bitDepth":1,
+  "bitRate":128,
+  "compression":0,
+  "conversionMode":0,
+  "duration":0.1,
+  "name":"sound_sfx_menu_move_cursor",
+  "parent":{
+    "name":"sfx",
+    "path":"folders/io.alkapivo.visu/resource/sound/sfx.yy",
+  },
+  "preload":false,
+  "resourceType":"GMSound",
+  "resourceVersion":"2.0",
+  "sampleRate":44100,
+  "soundFile":"sound_sfx_menu_move_cursor.ogg",
+  "type":0,
+  "volume":1.0,
+}

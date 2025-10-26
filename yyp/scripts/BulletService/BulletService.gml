@@ -1,11 +1,11 @@
 ///@package io.alkapivo.visu.service.bullet.BulletService
 
 ///@param {VisuController} _controller
-///@param {Struct} [config]
-function BulletService(_controller, config = {}): Service() constructor {
+function BulletService(_controller): Service() constructor {
 
   ///@type {VisuController}
-  controller = Assert.isType(_controller, VisuController)
+  controller = Assert.isType(_controller, VisuController,
+    "BulletService::controller must be type of VisuController")
 
   ///@type {Array<Bullet>}
   bullets = new Array(Bullet).enableGC()
@@ -15,6 +15,9 @@ function BulletService(_controller, config = {}): Service() constructor {
 
   ///@type {GridItemChunkService}
   chunkService = new GridItemChunkService(GRID_ITEM_CHUNK_SERVICE_SIZE)
+  
+  ///@param {Boolean}
+  optimalizationSortEntitiesByTxGroup = false
 
   ///@param {String} name
   ///@return {?BulletTemplate}
@@ -24,9 +27,6 @@ function BulletService(_controller, config = {}): Service() constructor {
       ? Visu.assets().bulletTemplates.get(name)
       : template
   }
-
-  ///@param {Boolean}
-  optimalizationSortEntitiesByTxGroup = false
 
   ///@type {EventPump}
   dispatcher = new EventPump(this, new Map(String, Callable, {
@@ -65,16 +65,20 @@ function BulletService(_controller, config = {}): Service() constructor {
       this.templates.clear()
       this.dispatcher.container.clear()
     },
-  }))
+  }), {
+    loggerPrefix: "BulletService",
+    enableLogger: true,
+    catchException: false,
+  })
 
   ///@type {TaskExecutor}
   executor = new TaskExecutor(this, { 
-    loggerPrefix: "BulletServiceExecutor",
+    loggerPrefix: "BulletService",
     enableLogger: true,
     catchException: true,
     exceptionCallback: function(task, exception) {
-      Beans.get(BeanVisuController).exceptionDebugHandler(
-        $"'BulletService::executor' (task.name: {task.name}), fatal error: {exception.message}")
+      var message = $"'BulletService::executor' (task.name: {task.name}), fatal error: {exception.message}"
+      Beans.get(BeanVisuController).exceptionDebugHandler(message)
     },
   })
 
@@ -92,7 +96,10 @@ function BulletService(_controller, config = {}): Service() constructor {
   ///@param {?Number} [lifespan]
   ///@param {?Number} [damage]
   ///@param {Boolean} [onDeath]
-  static spawnBullet = function(name, producer, x, y, angle, speed, angleOffset = null, angleOffsetRng = null, sumAngleOffset = null, speedOffset = null, sumSpeedOffset = null, lifespan = null, damage = null, onDeath = false) {
+  static spawnBullet = function(name, producer, x, y, angle, speed, angleOffset = null, 
+      angleOffsetRng = null, sumAngleOffset = null, speedOffset = null, 
+      sumSpeedOffset = null, lifespan = null, damage = null, onDeath = false) {
+
     var template = this.getTemplate(name).serializeSpawn(
       this.controller.gridService.generateUID(),
       producer,
@@ -108,6 +115,7 @@ function BulletService(_controller, config = {}): Service() constructor {
       lifespan,
       damage
     )
+
     if (producer == Shroom && !onDeath) {
       controller.sfxService.play("shroom-shoot")
     }
@@ -133,7 +141,7 @@ function BulletService(_controller, config = {}): Service() constructor {
   ///@return {BulletService}
   static spawnBulletEmitter = function(item, emitter) {
     var task = new Task("bullet-emitter")
-      .setTimeout(60.0)
+      .setTimeout(999.9)
       .setState({
         item: item,
         emitter: new GridItemEmitter(Struct.appendRecursive({
@@ -176,14 +184,8 @@ function BulletService(_controller, config = {}): Service() constructor {
         this.state.emitter.update(this.state.item, Beans.get(BeanVisuController))
       })
     this.executor.add(task)
-    return this
-  }
 
-  ///@param {Event} event
-  ///@return {?Promise}
-  static send = function(event) {
-    gml_pragma("forceinline")
-    return this.dispatcher.send(event)
+    return this
   }
 
   static updateBullet = function(bullet, index, context) {
@@ -237,6 +239,13 @@ function BulletService(_controller, config = {}): Service() constructor {
         onDeath
       )
     }
+  }
+
+  ///@param {Event} event
+  ///@return {?Promise}
+  send = function(event) {
+    gml_pragma("forceinline")
+    return this.dispatcher.send(event)
   }
 
   ///@return {BulletService}

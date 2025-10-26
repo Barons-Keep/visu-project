@@ -29,6 +29,9 @@ function VisuEditorIO() constructor {
     brushTool: "B",
     cloneTool: "C",
     snapToGrid: "Q",
+
+    reloadSFX: "R", // + ctrl
+
     zoomIn: KeyboardKeyType.PLUS,
     zoomOut: KeyboardKeyType.MINUS,
     numZoomIn: KeyboardKeyType.NUM_PLUS,
@@ -416,6 +419,19 @@ function VisuEditorIO() constructor {
         var message = $"Cannot save the project: {exception.message}"
         controller.send(new Event("spawn-popup", { message: message }))
         Logger.error("VETitleBar", message)
+      }
+    }
+
+    if (this.keyboard.keys.reloadSFX.pressed) {
+      if (Core.getRuntimeType() == RuntimeType.GXGAMES) {
+        controller.send(new Event("spawn-popup", {
+          message: $"Feature 'file_reload-sfx' is not available on wasm-yyc target"
+        }))
+      } else {
+        Visu.initDebugSFX()
+        controller.send(new Event("spawn-popup", {
+          message: $"Feature 'file_reload-sfx' dispatched successfully"
+        }))
       }
     }
 

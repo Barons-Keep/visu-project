@@ -267,6 +267,10 @@ global.__view_track_event = {
         "vw-layer_change-scale-y": Struct.parse.boolean(data, "vw-layer_change-scale-y"),
         "vw-layer_use-texture-tiled": Struct.parse.boolean(data, "vw-layer_use-texture-tiled", true),
         "vw-layer_use-texture-replace": Struct.parse.boolean(data, "vw-layer_use-texture-replace", true),
+        "vw-layer_use-tx-x": Struct.parse.boolean(data, "vw-layer_use-tx-x", false),
+        "vw-layer_tx-x": Struct.parse.number(data, "vw-layer_tx-x", 0.0, -99999.9, 99999.9),
+        "vw-layer_use-tx-y": Struct.parse.boolean(data, "vw-layer_use-tx-y", false),
+        "vw-layer_tx-y": Struct.parse.number(data, "vw-layer_tx-y", 0.0, -99999.9, 99999.9),
         "vw-layer_texture-reset-pos": Struct.parse.boolean(data, "vw-layer_texture-reset-pos", true),
         "vw-layer_texture-use-lifespan": Struct.parse.boolean(data, "vw-layer_texture-use-lifespan"),
         "vw-layer_texture-lifespan": Struct.parse.number(data, "vw-layer_texture-lifespan", 0.0, 0.0, 9999.9),
@@ -304,6 +308,8 @@ global.__view_track_event = {
         return
       }
 
+      var editor = Beans.get(Visu.modules().editor.controller)
+      var layout = editor == null ? controller.visuRenderer.layout : editor.layout.nodes.preview
       var gridService = controller.gridService
       var pump = gridService.dispatcher
       var executor = gridService.executor
@@ -322,9 +328,7 @@ global.__view_track_event = {
         {
           executor: executor,
           type: type,
-          collection: type == WallpaperType.BACKGROUND
-            ? overlayRenderer.backgroundColors
-            : overlayRenderer.foregroundColors,
+          collection: overlayRenderer.getColors(type),
           color: Struct.get(data, "vw-layer_col"),
           fadeInDuration: Struct.get(data, "vw-layer_fade-in"),
           fadeOutDuration: Struct.get(data, "vw-layer_fade-out"),
@@ -341,9 +345,7 @@ global.__view_track_event = {
         executor.tasks.forEach(fadeOutSpriteTask, type)
       }
 
-      var collection = type == WallpaperType.BACKGROUND
-        ? overlayRenderer.backgrounds
-        : overlayRenderer.foregrounds,
+      var collection = overlayRenderer.getTextures(type)
       var lastTask = collection.getLast()
       var lastSpeed = 0.0
       var lastAngle = 0.0
@@ -366,6 +368,14 @@ global.__view_track_event = {
 
         lastX = lastTask.state.get("x")
         lastY = lastTask.state.get("y")
+      }
+
+      if (Struct.get(data, "vw-layer_use-tx-x")) {
+        lastX = -1.0 * Struct.get(data, "vw-layer_tx-x")
+      }
+
+      if (Struct.get(data, "vw-layer_use-tx-y")) {
+        lastY = -1.0 * Struct.get(data, "vw-layer_tx-y")
       }
 
       var useAngleTransformer = Struct.get(data, "vw-layer_use-dir")
@@ -451,6 +461,8 @@ global.__view_track_event = {
           xScaleTransformer: xScaleTransformer,
           yScale: yScaleTransformer.value,
           yScaleTransformer: yScaleTransformer,
+          surfaceWidth: layout.width(),
+          surfaceHeight: layout.height(),
           x: Struct.get(data, "vw-layer_texture-reset-pos") ? null : lastX,
           y: Struct.get(data, "vw-layer_texture-reset-pos") ? null : lastY,
           tiled: Struct.get(data, "vw-layer_use-texture-tiled"),
@@ -610,6 +622,8 @@ global.__view_track_event = {
         "vw-cfg_cls-subtitle": Struct.parse.boolean(data, "vw-cfg_cls-subtitle"),
         "vw-cfg_cls-bkg-texture": Struct.parse.boolean(data, "vw-cfg_cls-bkg-texture"),
         "vw-cfg_cls-bkg-col": Struct.parse.boolean(data, "vw-cfg_cls-bkg-col"),
+        "vw-cfg_cls-grid-texture": Struct.parse.boolean(data, "vw-cfg_cls-grid-texture"),
+        "vw-cfg_cls-grid-col": Struct.parse.boolean(data, "vw-cfg_cls-grid-col"),
         "vw-cfg_cls-frg-texture": Struct.parse.boolean(data, "vw-cfg_cls-frg-texture"),
         "vw-cfg_cls-frg-col": Struct.parse.boolean(data, "vw-cfg_cls-frg-col"),
         "vw-cfg_use-video-alpha": Struct.parse.boolean(data, "vw-cfg_use-video-alpha"),
@@ -682,6 +696,16 @@ global.__view_track_event = {
       ///@description feature TODO view.bkg-col.clear
       if (Struct.get(data, "vw-cfg_cls-bkg-col")) {
         overlayRenderer.backgroundColors.clear()
+      }
+
+      ///@description feature TODO view.grid-texture.clear
+      if (Struct.get(data, "vw-cfg_cls-grid-texture")) {
+        overlayRenderer.grids.clear()
+      }
+
+      ///@description feature TODO view.grid-col.clear
+      if (Struct.get(data, "vw-cfg_cls-grid-col")) {
+        overlayRenderer.gridColors.clear()
       }
 
       ///@description feature TODO view.frg-texture.clear

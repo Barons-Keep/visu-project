@@ -4,9 +4,39 @@
 function AngleFeature(json): GridItemFeature(json) constructor {
   var data = Struct.get(json, "data")
 
-  ///@override
   ///@type {String}
   type = "AngleFeature"
+
+  ///@type {GenericTransformer}
+  genericTransformer = new GenericTransformer({
+    onValue: Struct.get(data, "onValue"),
+    onTarget: Struct.get(data, "onTarget"),
+    transform: Struct.get(data, "transform"),
+    increase: Struct.get(data, "increase"),
+    get: function(item, controller) {
+      return item.angle
+    },
+    set: function(item, controller, value) {
+      item.setAngle(value)
+    },
+  })
+
+  ///@override
+  ///@param {GridItem} item
+  ///@param {VisuController} controller
+  static update = function(item, controller) {
+    this.genericTransformer.update(item, controller)
+  }
+}
+
+
+///@param {Struct} json
+function DeprecatedAngleFeature(json): GridItemFeature(json) constructor {
+  var data = Struct.get(json, "data")
+
+  ///@override
+  ///@type {String}
+  type = "DeprecatedAngleFeature"
 
   ///@type {Boolean}
   isRelative = Core.getIfType(GMArray.resolveRandom(Struct.get(data, "isRelative")), Boolean, true)

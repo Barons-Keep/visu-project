@@ -518,7 +518,14 @@ function VEEventInspector(_editor) constructor {
                 layout: {
                   height: function() { return 40 },
                 },
-                callback: function() { 
+                callback: function() {
+                  if (Core.isType(GMTFContext.get(), GMTF)) {
+                    if (Core.isType(GMTFContext.get().uiItem, UIItem)) {
+                      GMTFContext.get().uiItem.update()
+                    }
+                    GMTFContext.get().unfocus()
+                  }
+                  
                   var eventInspector = this.context.eventInspector
                   var event = eventInspector.store.getValue("event")
                   if (!Core.isType(event, VEEvent)) {
@@ -616,6 +623,13 @@ function VEEventInspector(_editor) constructor {
                   height: function() { return 40 },
                 },
                 callback: function() { 
+                  if (Core.isType(GMTFContext.get(), GMTF)) {
+                    if (Core.isType(GMTFContext.get().uiItem, UIItem)) {
+                      GMTFContext.get().uiItem.update()
+                    }
+                    GMTFContext.get().unfocus()
+                  }
+
                   var eventInspector = this.context.eventInspector
                   var event = eventInspector.store.getValue("event")
                   if (!Core.isType(event, VEEvent)) {

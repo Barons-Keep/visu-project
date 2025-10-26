@@ -43,7 +43,7 @@ function VisuTrackLoader(_controller): Service() constructor {
             }
             
             if (Core.isType(data, String)) {
-              Logger.info("VisuTrackLoader", $"message: '{data}'")
+              Logger.info("VisuTrackLoader", $"FSM::onStart(idle): '{data}'")
             }
           },
         },
@@ -62,13 +62,6 @@ function VisuTrackLoader(_controller): Service() constructor {
               function() { Beans.get(BeanVisuController).brushService.clearTemplates() },
               function() { Beans.get(BeanVisuController).visuRenderer.executor.tasks.forEach(TaskUtil.fullfill).clear() },
               function() { Beans.get(BeanVisuController).visuRenderer.gridRenderer.clear() },
-              function() {
-                var editor = Beans.get(Visu.modules().editor.controller)
-                if (Optional.is(editor)) {
-                  editor.popupQueue.dispatcher.execute(new Event("clear"))
-                  editor.dispatcher.execute(new Event("close"))
-                }
-              },
               function() { Beans.get(BeanVisuController).trackService.dispatcher.execute(new Event("close-track")) },
               function() { Beans.get(BeanVisuController).videoService.dispatcher.execute(new Event("close-video")) },              
               function() { Beans.get(BeanVisuController).gridService.executor.tasks.forEach(TaskUtil.fullfill).clear() },
@@ -84,6 +77,13 @@ function VisuTrackLoader(_controller): Service() constructor {
               function() { Beans.get(BeanVisuController).shaderBackgroundPipeline.dispatcher.execute(new Event("clear-shaders")).execute(new Event("reset-templates")) },
               function() { Beans.get(BeanVisuController).shaderCombinedPipeline.dispatcher.execute(new Event("clear-shaders")).execute(new Event("reset-templates")) },
               function() { Beans.get(BeanTextureService).dispatcher.execute(new Event("free")) },
+              function() {
+                var editor = Beans.get(Visu.modules().editor.controller)
+                if (Optional.is(editor)) {
+                  editor.popupQueue.dispatcher.execute(new Event("clear"))
+                  editor.dispatcher.execute(new Event("close"))
+                }
+              },
             ]))
           }
         },
@@ -100,9 +100,10 @@ function VisuTrackLoader(_controller): Service() constructor {
             }
           } catch (exception) {
             var message = $"'clear-state' fatal error: {exception.message}"
-            Beans.get(BeanVisuController).send(new Event("spawn-popup", { message: message }))
             Logger.error("VisuTrackLoader", message)
+            Core.printStackTrace()
             fsm.dispatcher.send(new Event("transition", { name: "idle" }))
+            Beans.get(BeanVisuController).send(new Event("spawn-popup", { message: message }))
           }
         },
         transitions: {
@@ -168,9 +169,10 @@ function VisuTrackLoader(_controller): Service() constructor {
             }))
           } catch (exception) {
             var message = $"'parse-manifest' fatal error: {exception.message}"
-            Beans.get(BeanVisuController).send(new Event("spawn-popup", { message: message }))
             Logger.error("VisuTrackLoader", message)
+            Core.printStackTrace()
             fsm.dispatcher.send(new Event("transition", { name: "idle" }))
+            Beans.get(BeanVisuController).send(new Event("spawn-popup", { message: message }))
           }
         },
         transitions: { 
@@ -182,11 +184,13 @@ function VisuTrackLoader(_controller): Service() constructor {
         actions: {
           onStart: function(fsm, fsmState, data) {
             var controller = fsm.context.controller
+            controller.track = data.manifest
+
+            var promises = new Map(String, Promise)
             var callback = function(promises, name, data) {
               promises.set(name, Beans.get(BeanFileService).send(data))
             }
 
-            controller.track = data.manifest
             var events = new Stack(Struct, [
               {
                 name: "texture",
@@ -232,8 +236,8 @@ function VisuTrackLoader(_controller): Service() constructor {
                     .setState({ 
                       callback: function(prototype, json, key, acc) {
                         //Logger.debug("VisuTrackLoader", $"Load sound intent '{key}'")
-                        var soundIntent = new prototype(json)
                         var soundService = acc.soundService
+                        var soundIntent = new prototype(json)
                         var visuWASM = Callable.run("VisuWASM")
                         if (Core.getRuntimeType() == RuntimeType.GXGAMES && Core.isType(visuWASM, Struct)) {
                           Assert.isTrue(audio_group_is_loaded(visuWASM.getAudioGroup()), "audiogroup must be loaded")
@@ -248,9 +252,7 @@ function VisuTrackLoader(_controller): Service() constructor {
                         Assert.fileExists(path)
                         Assert.isFalse(soundService.sounds.contains(key), "GMSound already loaded")
 
-                        var stream = audio_create_stream(path)
-                        soundService.sounds.add(stream, key)
-                        soundService.intents.add(soundIntent, key)
+                        soundService.loadOGG(key, path, soundIntent)
                       },
                       acc: {
                         soundService: Beans.get(BeanSoundService),
@@ -413,9 +415,9 @@ function VisuTrackLoader(_controller): Service() constructor {
               }
             ])
 
-            var promises = new Map(String, Promise)
-
-            var promises = new Map(String, Promise)
+            fsmState.state.set("promises", promises)
+            fsmState.state.set("events", events)
+            
             if (Core.isType(Struct.get(data.manifest, "video"), String)) {
               fsmState.state.set("video", new Event("open-video", {
                 video: {
@@ -485,9 +487,6 @@ function VisuTrackLoader(_controller): Service() constructor {
                 events: events,
               })
             }
-          
-            fsmState.state.set("promises", promises)
-            fsmState.state.set("events", events)
           },
         },
         update: function(fsm) {
@@ -527,7 +526,6 @@ function VisuTrackLoader(_controller): Service() constructor {
             var message = $"'create-parser-tasks' fatal error: {exception.message}"
             Logger.error("VisuTrackLoader", message)
             Core.printStackTrace()
-
             fsm.dispatcher.send(new Event("transition", { name: "idle" }))
             Beans.get(BeanVisuController).send(new Event("spawn-popup", { message: message }))
           }
@@ -582,9 +580,10 @@ function VisuTrackLoader(_controller): Service() constructor {
             }))
           } catch (exception) {
             var message = $"'parse-primary-assets' fatal error: {exception.message}"
-            Beans.get(BeanVisuController).send(new Event("spawn-popup", { message: message }))
             Logger.error("VisuTrackLoader", message)
+            Core.printStackTrace()
             fsm.dispatcher.send(new Event("transition", { name: "idle" }))
+            Beans.get(BeanVisuController).send(new Event("spawn-popup", { message: message }))
           }
         },
         transitions: {
@@ -599,7 +598,9 @@ function VisuTrackLoader(_controller): Service() constructor {
             var addTask = fsm.context.utils.addTask
             var executor = fsm.context.executor
             var promises = new Map(String, Promise)
+
             fsmState.state.set("tasks", acc.tasks).set("promises", promises)
+
             if (Core.isType(acc.video, Event)) {
               fsmState.state
                 .get("promises")
@@ -621,9 +622,10 @@ function VisuTrackLoader(_controller): Service() constructor {
             }))
           } catch (exception) {
             var message = $"'parse-video' fatal error: {exception.message}"
-            Beans.get(BeanVisuController).send(new Event("spawn-popup", { message: message }))
             Logger.error("VisuTrackLoader", message)
+            Core.printStackTrace()
             fsm.dispatcher.send(new Event("transition", { name: "idle" }))
+            Beans.get(BeanVisuController).send(new Event("spawn-popup", { message: message }))
           }
         },
         transitions: {
@@ -681,9 +683,10 @@ function VisuTrackLoader(_controller): Service() constructor {
             fsm.dispatcher.send(new Event("transition", { name: "cooldown" }))
           } catch (exception) {
             var message = $"'parse-secondary-assets' fatal error: {exception.message}"
-            Beans.get(BeanVisuController).send(new Event("spawn-popup", { message: message }))
             Logger.error("VisuTrackLoader", message)
+            Core.printStackTrace()
             fsm.dispatcher.send(new Event("transition", { name: "idle" }))
+            Beans.get(BeanVisuController).send(new Event("spawn-popup", { message: message }))
           }
         },
         transitions: {
@@ -698,6 +701,7 @@ function VisuTrackLoader(_controller): Service() constructor {
             Beans.get(BeanTextureService).templates.forEach(function(template, name, stack) {
               stack.push(template)
             }, stack)
+
             Visu.assets().textures.forEach(function(template, name, stack) {
               stack.push(template)
             }, stack)
@@ -744,11 +748,12 @@ function VisuTrackLoader(_controller): Service() constructor {
                   this.reject()
                 }
               })
-            Beans.get(BeanVisuController).visuRenderer.executor.add(textureLoadTask)
+
             fsmState.state.set("texture-load-task", textureLoadTask)
             fsmState.state.set("cooldown-timer", new Timer(0.125))
 
             var controller = Beans.get(BeanVisuController)
+            controller.visuRenderer.executor.add(textureLoadTask)
             controller.executor.tasks.forEach(function(task) {
               if (task.name != "fade-color" && task.name != "fade-sprite") {
                 return
@@ -819,7 +824,8 @@ function VisuTrackLoader(_controller): Service() constructor {
             if (textureLoadTask.promise.status == PromiseStatus.PENDING) {
               return
             }
-            Assert.isTrue(textureLoadTask.promise.status != PromiseStatus.REJECTED, "textureLoadTask.promise.status must be fullfilled")
+            Assert.isTrue(textureLoadTask.promise.status != PromiseStatus.REJECTED,
+              "textureLoadTask.promise.status must be fullfilled")
             
             var timer = this.state.get("cooldown-timer")
             var editorIO = Beans.get(Visu.modules().editor.io)
@@ -840,9 +846,10 @@ function VisuTrackLoader(_controller): Service() constructor {
             }
           } catch (exception) {
             var message = $"'cooldown' fatal error: {exception.message}"
-            Beans.get(BeanVisuController).send(new Event("spawn-popup", { message: message }))
             Logger.error("VisuTrackLoader", message)
+            Core.printStackTrace()
             fsm.dispatcher.send(new Event("transition", { name: "idle" }))
+            Beans.get(BeanVisuController).send(new Event("spawn-popup", { message: message }))
           }
         },
         transitions: {
@@ -865,8 +872,9 @@ function VisuTrackLoader(_controller): Service() constructor {
             //var pathTrack = new PathTrack()
             //pathTrack.build(controller.trackService.duration)
             //controller.visuRenderer.gridRenderer.pathTrack = pathTrack
-            controller.send(new Event("spawn-popup", 
-              { message: $"Project '{Beans.get(BeanVisuController).trackService.track.name}' loaded successfully" }))
+
+            var message = $"Project '{Beans.get(BeanVisuController).trackService.track.name}' loaded successfully"
+            controller.send(new Event("spawn-popup", { message: message }))
           }
         },
         transitions: {
@@ -879,27 +887,45 @@ function VisuTrackLoader(_controller): Service() constructor {
 
   ///@private
   ///@type {TaskExecutor}
-  executor = new TaskExecutor(this, { catchException: false })
+  executor = new TaskExecutor(this, {
+    loggerPrefix: "VisuTrackLoader",
+    enableLogger: true,
+    catchException: false
+  })
 
-  ///@return {FSM}
-  update = function() {
+  ///@return {VisuTrackLoader}
+  updateFSM = function() {
     try {
       this.fsm.update()
     } catch (exception) {
-      var message = $"VisuTrackLoader FSM fatal error: {exception.message}"
+      var message = $"VisuTrackLoader::FSM fatal error: {exception.message}"
+      Logger.error("VisuTrackLoader", message)
+      Core.printStackTrace()
       Beans.get(BeanVisuController).send(new Event("spawn-popup", { message: message }))
-      Logger.error("VisuController", message)
     }
 
+    return this
+  }
+
+  updateExecutor = function() {    
     try {
       this.executor.update()
     } catch (exception) {
+      var message = $"VisuTrackLoader::executor fatal error: {exception.message}"
+      Logger.error("VisuTrackLoader", message)
+      Core.printStackTrace()
       this.executor.tasks.clear()
-      var message = $"VisuTrackLoader executor fatal error: {exception.message}"
-      Beans.get(BeanVisuController).send(new Event("spawn-popup", { message: message }))
-      Logger.error("VisuController", message)
       this.fsm.dispatcher.send(new Event("transition", { name: "idle" }))
+      Beans.get(BeanVisuController).send(new Event("spawn-popup", { message: message }))
     }
+
+    return this
+  }
+
+  ///@return {FSM}
+  update = function() {
+    this.updateFSM()
+    this.updateExecutor()
     return this
   }
 }

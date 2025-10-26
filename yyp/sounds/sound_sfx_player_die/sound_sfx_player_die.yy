@@ -19,7 +19,7 @@
   "resourceType":"GMSound",
   "resourceVersion":"2.0",
   "sampleRate":44100,
-  "soundFile":"sound_sfx_player_die.wav",
+  "soundFile":"sound_sfx_player_die.ogg",
   "type":0,
   "volume":1.0,
 }
