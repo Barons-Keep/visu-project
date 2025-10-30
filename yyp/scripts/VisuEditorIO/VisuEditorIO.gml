@@ -31,6 +31,9 @@ function VisuEditorIO() constructor {
     snapToGrid: "Q",
 
     reloadSFX: "R", // + ctrl
+    autosaveTrack: "L", // + ctrl
+    timelineFollow: "F", // + ctrl
+    timelineUpdate: "U", // + ctrl
 
     zoomIn: KeyboardKeyType.PLUS,
     zoomOut: KeyboardKeyType.MINUS,
@@ -44,10 +47,10 @@ function VisuEditorIO() constructor {
     removeTimelineSelectedEvents: KeyboardKeyType.BACKSPACE,
     removeTimelineSelectedEvents2: KeyboardKeyType.DELETE,
     
-    renderLeftPane: KeyboardKeyType.F2,
-    renderBottomPane: KeyboardKeyType.F3,
-    renderRightPane: KeyboardKeyType.F4,
-    renderTrackControl: KeyboardKeyType.F1,
+    renderLeftPane: KeyboardKeyType.F1,
+    renderBottomPane: KeyboardKeyType.F2,
+    renderRightPane: KeyboardKeyType.F3,
+    renderTrackControl: KeyboardKeyType.F4,
     renderSceneConfigPreview: KeyboardKeyType.F12,
     renderUI: KeyboardKeyType.F5,
     renderEventInspector: KeyboardKeyType.F6,
@@ -55,12 +58,16 @@ function VisuEditorIO() constructor {
     cameraKeyboardLook: KeyboardKeyType.F8,
     cameraMouseLook: KeyboardKeyType.F9,
 
-    clearGridShaders:  "1", // + ctrl
-    clearBackgroundShaders:  "2", // + ctrl
-    clearCombinedShaders:  "3", // + ctrl
-    clearBackgroundTextures:  "4", // + ctrl
-    clearForegroundTextures:  "5", // + ctrl
-    clearShrooms: "6", // + ctrl
+    clearGridShaders: ord("1"), // + ctrl
+    clearBackgroundShaders: ord("2"), // + ctrl
+    clearCombinedShaders: ord("3"), // + ctrl
+    clearBackgroundTextures: ord("4"), // + ctrl
+    clearGridTextures: ord("5"), // + ctrl
+    clearForegroundTextures: ord("6"), // + ctrl
+    clearShrooms: ord("7"), // + ctrl
+    clearBullets: ord("8"), // + ctrl
+    clearCoins: ord("9"), // + ctrl
+    clearParticles: ord("0"), // + ctrl
   })
 
   ///@type {Mouse}
@@ -116,6 +123,25 @@ function VisuEditorIO() constructor {
             controller.trackService.duration),
         }))
       }
+
+      if (this.keyboard.keys.autosaveTrack.pressed) {
+        editor.autosave.value = !editor.autosave.value
+        Visu.settings.setValue("visu.editor.autosave", editor.autosave.value).save()
+        if (!editor.autosave.value) {
+          editor.autosave.timer.time = 0
+        }
+      }
+
+      if (this.keyboard.keys.timelineFollow.pressed) {
+        var timelineFollow = editor.store.get("timeline-follow")
+        timelineFollow.set(!timelineFollow.get())
+      }
+
+      if (this.keyboard.keys.timelineUpdate.pressed) {
+        var timelineUpdate = editor.store.get("update-services")
+        timelineUpdate.set(!timelineUpdate.get())
+      }
+
     }
 
     if (this.keyboard.keys.controlLeft.on 
@@ -451,12 +477,28 @@ function VisuEditorIO() constructor {
       controller.visuRenderer.gridRenderer.overlayRenderer.backgrounds.clear()
     }
 
+    if (this.keyboard.keys.clearGridTextures.pressed) {
+      controller.visuRenderer.gridRenderer.overlayRenderer.grids.clear()
+    }
+
     if (this.keyboard.keys.clearForegroundTextures.pressed) {
       controller.visuRenderer.gridRenderer.overlayRenderer.foregrounds.clear()
     }
 
     if (this.keyboard.keys.clearShrooms.pressed) {
       controller.shroomService.send(new Event("clear-shrooms"))
+    }
+
+    if (this.keyboard.keys.clearBullets.pressed) {
+      controller.bulletService.send(new Event("clear-bullets"))
+    }
+
+    if (this.keyboard.keys.clearCoins.pressed) {
+      controller.coinService.send(new Event("clear-coins"))
+    }
+
+    if (this.keyboard.keys.clearParticles.pressed) {
+      controller.particleService.send(new Event("clear-particles"))
     }
 
     return this

@@ -106,42 +106,47 @@ function VisuEditorController() constructor {
     "render-event": {
       type: Boolean,
       value: false,
+      //value: Visu.settings.getValue("visu.editor.render-event", false) == true,
     },
     "_render-event": {
       type: Boolean,
-      value: Assert.isType(Visu.settings.getValue("visu.editor.render-event", false), Boolean)
+      value: Visu.settings.getValue("visu.editor.render-event", false) == true,
     },
     "render-timeline": {
       type: Boolean,
       value: false,
+      //value:Visu.settings.getValue("visu.editor.render-timeline", false) == true,
     },
     "_render-timeline": {
       type: Boolean,
-      value:Assert.isType(Visu.settings.getValue("visu.editor.render-timeline", false), Boolean)
+      value:Visu.settings.getValue("visu.editor.render-timeline", false) == true,
     },
     "render-brush": {
       type: Boolean,
       value: false,
+      //value: Visu.settings.getValue("visu.editor.render-brush", false) == true,
     },
     "_render-brush": {
       type: Boolean,
-      value: Assert.isType(Visu.settings.getValue("visu.editor.render-brush", false), Boolean)
+      value: Visu.settings.getValue("visu.editor.render-brush", false) == true,
     },
     "render-trackControl": {
       type: Boolean,
       value: false,
+      //value: Visu.settings.getValue("visu.editor.render-track-control", false) == true,
     },
     "_render-trackControl": {
       type: Boolean,
-      value: Assert.isType(Visu.settings.getValue("visu.editor.render-track-control", false), Boolean)
+      value: Visu.settings.getValue("visu.editor.render-track-control", false) == true,
     },
     "render-sceneConfigPreview": {
       type: Boolean,
       value: false,
+      //value: Visu.settings.getValue("visu.editor.render-scene-config-preview", false) == true,
     },
     "_render-sceneConfigPreview": {
       type: Boolean,
-      value: Assert.isType(Visu.settings.getValue("visu.editor.render-scene-config-preview", false), Boolean)
+      value: Visu.settings.getValue("visu.editor.render-scene-config-preview", false) == true,
     },
     "new-channel-name": {
       type: String,
@@ -236,10 +241,11 @@ function VisuEditorController() constructor {
   ///@type {EventPump}
   dispatcher = new EventPump(this, new Map(String, Callable, {
     "open": function(event) {
-      //this.store.get("render-event").set(this.store.getValue("_render-event"))
-      //this.store.get("render-timeline").set(this.store.getValue("_render-timeline"))
-      //this.store.get("render-brush").set(this.store.getValue("_render-brush"))
-      //this.store.get("render-trackControl").set(this.store.getValue("_render-trackControl"))
+      this.store.get("render-event").set(this.store.getValue("_render-event"))
+      this.store.get("render-timeline").set(this.store.getValue("_render-timeline"))
+      this.store.get("render-brush").set(this.store.getValue("_render-brush"))
+      this.store.get("render-trackControl").set(this.store.getValue("_render-trackControl"))
+      this.store.get("render-sceneConfigPreview").set(this.store.getValue("_render-sceneConfigPreview"))
 
       this.requestOpenUI = true
     },
@@ -304,7 +310,8 @@ function VisuEditorController() constructor {
   layout = null
 
   ///@type {Boolean}
-  renderUI = Assert.isType(Core.getProperty("visu.editor.renderUI", false), Boolean)
+  renderUI = (Visu.settings.getValue("visu.editor.render", false)
+    || Core.getProperty("visu.editor.force-render", false)) == true
 
   ///@private
   ///@type {Boolean}
@@ -509,8 +516,8 @@ function VisuEditorController() constructor {
   ///@return {VisuEditorController}
   init = function() {
     if (Core.getProperty("visu.editor.edit-theme")) {
-      Struct.forEach(this.settings.getValue("visu.editor.theme"), function(hex, name) {
-        Struct.set(VETheme, name, hex)
+      Struct.forEach(Visu.settings.getValue("visu.editor.theme"), function(hex, name) {
+        Struct.set(VETheme.color, name, hex)
       })
 
       VEStyles = generateVEStyles()

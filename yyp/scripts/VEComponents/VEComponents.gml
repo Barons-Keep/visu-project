@@ -5927,10 +5927,11 @@ global.__VEComponents = new Map(String, Callable, {
     ///@param {?Struct} [config]
     ///@return {Array<UIItem>}
     static factoryTextFieldIncreaseStickCheckbox = function(name, layout, config) {
+      var fieldLayout = Struct.getIfType(config, "fieldLayout", String, "text-field-increase-stick-checkbox")
       return new UIComponent({
         name: name,
         template: VEComponents.get("text-field-increase-stick-checkbox"),
-        layout: VELayouts.get("text-field-increase-stick-checkbox"),
+        layout: VELayouts.get(fieldLayout),
         config: Struct.appendRecursive(
           {
             field: {

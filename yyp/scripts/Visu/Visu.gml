@@ -25,6 +25,16 @@ global.__FLIP_VALUE = 1
 #macro FLIP_VALUE global.__FLIP_VALUE
 
 
+///@type {Boolean}
+global.__VISU_MANIFEST_LOAD_ON_START_DISPATCHED = false
+#macro VISU_MANIFEST_LOAD_ON_START_DISPATCHED global.__VISU_MANIFEST_LOAD_ON_START_DISPATCHED
+
+
+///@type {Boolean}
+global.__VISU_FORCE_GOD_MODE_DISPATCHED = false
+#macro VISU_FORCE_GOD_MODE_DISPATCHED global.__VISU_FORCE_GOD_MODE_DISPATCHED
+
+
 ///@hack
 #macro TEMPLATE_ENTRY_STEP global.__BRUSH_ENTRY_STEP
 #macro TEMPLATE_TOOLBAR_ENTRY_STEP global.__BRUSH_TOOLBAR_ENTRY_STEP
@@ -1233,6 +1243,7 @@ function _Visu() constructor {
       .set(new SettingEntry({ name: "visu.editor.bpm-count", type: SettingTypes.NUMBER, defaultValue: 0 }))
       .set(new SettingEntry({ name: "visu.editor.bpm-sub", type: SettingTypes.NUMBER, defaultValue: 2 }))
       .set(new SettingEntry({ name: "visu.editor.snap", type: SettingTypes.BOOLEAN, defaultValue: true }))
+      .set(new SettingEntry({ name: "visu.editor.render", type: SettingTypes.BOOLEAN, defaultValue: false }))
       .set(new SettingEntry({ name: "visu.editor.render-event", type: SettingTypes.BOOLEAN, defaultValue: false }))
       .set(new SettingEntry({ name: "visu.editor.render-timeline", type: SettingTypes.BOOLEAN, defaultValue: false }))
       .set(new SettingEntry({ name: "visu.editor.render-track-control", type: SettingTypes.BOOLEAN, defaultValue: false }))
@@ -1285,6 +1296,11 @@ function _Visu() constructor {
           }
         }))
       .load()
+
+    if (Core.getProperty("visu.player.force-god-mode", false) && !VISU_FORCE_GOD_MODE_DISPATCHED) {
+      this.settings.setValue("visu.god-mode", true).save()
+      VISU_FORCE_GOD_MODE_DISPATCHED = true
+    }
   }
 
   static initDisplay = function() {
@@ -1304,6 +1320,7 @@ function _Visu() constructor {
   static initEditor = function(layerId) {
     //Logger.info("Visu", "run::initEditor()")
     var enableEditor = this.settings.getValue("visu.editor.enable", false)
+      || Core.getProperty("visu.editor.force-init", false)
     var editorIOConstructor = Core.getConstructor("VisuEditorIO")
     if (Optional.is(editorIOConstructor)) {
       if (!Beans.exists(Visu.modules().editor.io) && enableEditor) {

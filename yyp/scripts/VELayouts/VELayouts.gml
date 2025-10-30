@@ -784,6 +784,71 @@ global.__VELayouts = new Map(String, Callable, {
     }
   },
 
+    ///@param {?Struct} [config]
+  ///@return {Struct}
+  "text-field-increase-stick": function(config = null) {
+    return {
+      name: "text-field-increase-stick",
+      type: Assert.isEnum(Struct.getDefault(config, "type", UILayoutType.NONE), UILayoutType),
+      height: function() { return 28 },
+      propagateHidden: Struct.getIfType(config, "propagateHidden", Boolean, false),
+      nodes: {
+        label: {
+          name: "text-field-increase-stick.label",
+          width: function() { return 72 - this.__margin.left - this.__margin.right },
+          margin: { top: 2, bottom: 2, left: 5 },
+        },
+        field: {
+          name: "text-field-increase-stick.field",
+          x: function() { return this.context.nodes.label.right() + this.__margin.left },
+          //width: function() { return ((this.context.width() - this.context.nodes.label.right()) / 2.0)
+          //  - this.context.nodes.increase.width() - 10 - 7 - this.__margin.left - this.__margin.right },
+          width: function() { return this.context.width() - this.context.nodes.label.right()
+            - this.context.nodes.increase.width() - 32 - this.__margin.left - this.__margin.right },
+          margin: { top: 2.0000, bottom: 2.0000, left: 5, right: 2 },
+          propagateHidden: Struct.getIfType(Struct.get(config, "field"), "propagateHidden", Boolean, true),
+        },
+        increase: {
+          name: "text-field-increase-stick.increase",
+          x: function() { return this.context.nodes.field.right() },
+          width: Core.getProperty("visu.editor.ui.components.numeric-button")
+            ? function() { return 14 }
+            : function() { return 0 },
+          height: function() { return round(this.context.height() / 2.0) - this.__margin.top - this.__margin.bottom },
+          margin: { top: 2.0000, bottom: 1.0000, left: 0, right: 5 },
+        },
+        decrease: {
+          name: "text-field-increase-stick.decrease",
+          x: function() { return this.context.nodes.field.right() },
+          y: function() { return this.context.nodes.increase.bottom() + this.__margin.top },
+          width: Core.getProperty("visu.editor.ui.components.numeric-button")
+            ? function() { return 14 }
+            : function() { return 0 },
+          height: function() { return round(this.context.height() / 2.0) - this.__margin.top - this.__margin.bottom },
+          margin: { top: 1.0000, bottom: 2.0000, left: 0, right: 5 },
+        },
+        stick: {
+          name: "text-field-increase-stick.stick",
+          x: function() { return this.context.nodes.decrease.right() + this.__margin.left },
+          width: function() { return 30 - this.__margin.left - this.__margin.right },
+          margin: { top: 2, bottom: 2, left: 5, right: 10 },
+        },
+        checkbox: {
+          name: "text-field-increase-stick.checkbox",
+          x: function() { return this.context.nodes.stick.right() },
+          width: function() { return 0 },
+          margin: { top: 2, bottom: 2 },
+        },
+        title: {
+          name: "text-field-increase-stick.title",
+          x: function() { return this.context.nodes.checkbox.right() },
+          width: function() { return 0 },
+          margin: { top: 2, bottom: 2, left: 0 },
+        },
+      }
+    }
+  },
+
   ///@param {?Struct} [config]
   ///@return {Struct}
   "text-field-increase-slider-checkbox": function(config = null) {

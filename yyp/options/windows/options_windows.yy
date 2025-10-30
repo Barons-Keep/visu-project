@@ -27,10 +27,10 @@
   "option_windows_splash_screen":"${options_dir}/windows/splash/splash.png",
   "option_windows_start_fullscreen":false,
   "option_windows_steam_use_alternative_launcher":false,
-  "option_windows_texture_page":"4096x4096",
+  "option_windows_texture_page":"2048x2048",
   "option_windows_use_splash":true,
-  "option_windows_version":"0.25.10.26",
-  "option_windows_vsync":true,
+  "option_windows_version":"0.25.10.30",
+  "option_windows_vsync":false,
   "resourceType":"GMWindowsOptions",
   "resourceVersion":"2.0",
 }

@@ -2,7 +2,9 @@
 
 //@param {String} name
 //@param {?Struct} [config]
-function VENumberTransformerComponent(name, config = null) {
+function VENumberTransformerComponent(name, config = null) {  
+  var layout = Struct.getIfType(config, "layout", String, "number-transformer-increase-checkbox")
+  var fieldLayout = Struct.getIfType(config, "fieldLayout", String, "text-field-increase-stick-checkbox")
   var enableConfig = Struct.get(config, "enable")
   var storeConfig = Struct.get(config, "store"),
   var valueConfig = Struct.get(config, "value")
@@ -22,6 +24,7 @@ function VENumberTransformerComponent(name, config = null) {
   }
   
   var value = {
+    fieldLayout: fieldLayout,
     label: {
       text: Struct.getIfType(valueConfig, "text", String, "Value"),
       hidden: hidden,
@@ -53,8 +56,8 @@ function VENumberTransformerComponent(name, config = null) {
       hidden: hidden,
       enable: enable.use,
       store: store.use,
-      spriteOn: { name: "visu_texture_checkbox_on" },
-      spriteOff: { name: "visu_texture_checkbox_off" },
+      spriteOn: Struct.getIfType(Struct.get(config, "use"), "spriteOn", Struct, { name: "visu_texture_checkbox_on" }),
+      spriteOff: Struct.getIfType(Struct.get(config, "use"), "spriteOff", Struct, { name: "visu_texture_checkbox_off" }),
     },
     title: {
       hidden: hidden,
@@ -65,6 +68,7 @@ function VENumberTransformerComponent(name, config = null) {
   }
 
   var target = {
+    fieldLayout: fieldLayout,
     label: {
       text: Struct.getIfType(targetConfig, "text", String, "Target"),
       hidden: hidden,
@@ -96,8 +100,8 @@ function VENumberTransformerComponent(name, config = null) {
       hidden: hidden,
       enable: enable.change,
       store: store.change,
-      spriteOn: { name: "visu_texture_checkbox_on" },
-      spriteOff: { name: "visu_texture_checkbox_off" },
+      spriteOn: Struct.getIfType(Struct.get(config, "change"), "spriteOn", Struct, { name: "visu_texture_checkbox_on" }),
+      spriteOff: Struct.getIfType(Struct.get(config, "change"), "spriteOff", Struct, { name: "visu_texture_checkbox_off" }),
     },
     title: {
       hidden: hidden,
@@ -108,6 +112,7 @@ function VENumberTransformerComponent(name, config = null) {
   }
 
   var duration = {
+    fieldLayout: fieldLayout,
     label: {
       text: Struct.getIfType(durationConfig, "text", String, "Duration"),
       hidden: hidden,
@@ -174,7 +179,7 @@ function VENumberTransformerComponent(name, config = null) {
   return {
     name: name,
     template: VEComponents.get("number-transformer"),
-    layout: VELayouts.get("number-transformer-increase-checkbox"),
+    layout: VELayouts.get(layout),
     config: { 
       layout: { type: UILayoutType.VERTICAL },
       value: value,

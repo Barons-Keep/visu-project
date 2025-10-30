@@ -977,8 +977,10 @@ function VETrackControl(_editor) constructor {
             onMouseHoverOut: function(event) {
               this.backgroundColor = ColorUtil.fromHex(this.backgroundColorOut).toGMColor()
             },
-            description: "Autosave",
+            description: "Autosave (CTRL + L)",
             render: function() {
+              this.value = Beans.get(BeanVisuEditorController).autosave.value
+
               if (Optional.is(this.preRender)) {
                 this.preRender()
               }
@@ -1052,7 +1054,7 @@ function VETrackControl(_editor) constructor {
             onMouseHoverOut: function(event) {
               this.backgroundColor = ColorUtil.fromHex(this.backgroundColorOut).toGMColor()
             },
-            description: "Update",
+            description: "Update (CTRL + U)",
             render: function() {
               if (Optional.is(this.preRender)) {
                 this.preRender()
@@ -1127,7 +1129,7 @@ function VETrackControl(_editor) constructor {
             onMouseHoverOut: function(event) {
               this.backgroundColor = ColorUtil.fromHex(this.backgroundColorOut).toGMColor()
             },
-            description: "Follow",
+            description: "Follow (CTRL + F)",
             render: function() {
               if (Optional.is(this.preRender)) {
                 this.preRender()

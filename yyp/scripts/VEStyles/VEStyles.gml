@@ -271,7 +271,7 @@ function generateVEStyles() {
       backgroundColor: VETheme.color.sideDark,
       backgroundMargin: { top: 1, bottom: 1, left: 1, right: 1 },
       colorHoverOver: VETheme.color.primaryShadow,
-      colorHoverOut: VETheme.color.primaryDark,
+      colorHoverOut: VETheme.color.sideDark,
       label: {
         font: "font_inter_10_bold",
         color: VETheme.color.textFocus,

@@ -727,22 +727,10 @@ function VETitleBar(_editor) constructor {
                 name: "ve-title-bar_view_context-menu",
                 components: [
                   {
-                    name: "view_controls",
-                    config: {
-                      label: { text: "Controls" },
-                      shortcut: { text: "F1" },
-                      callback: function() {
-                        var editor = Beans.get(BeanVisuEditorController)
-                        var key = "render-trackControl"
-                        editor.store.get(key).set(!editor.store.getValue(key))
-                      },
-                    },
-                  },
-                  {
                     name: "view_inspector",
                     config: {
                       label: { text: "Inspectors" },
-                      shortcut: { text: "F2" },
+                      shortcut: { text: "F1" },
                       callback: function() {
                         var editor = Beans.get(BeanVisuEditorController)
                         var key = "render-event"
@@ -754,7 +742,7 @@ function VETitleBar(_editor) constructor {
                     name: "view_timeline",
                     config: {
                       label: { text: "Timeline" },
-                      shortcut: { text: "F3" },
+                      shortcut: { text: "F2" },
                       callback: function() {
                         var editor = Beans.get(BeanVisuEditorController)
                         var key = "render-timeline"
@@ -766,10 +754,22 @@ function VETitleBar(_editor) constructor {
                     name: "view_brushes",
                     config: {
                       label: { text: "Brushes" },
-                      shortcut: { text: "F4" },
+                      shortcut: { text: "F3" },
                       callback: function() {
                         var editor = Beans.get(BeanVisuEditorController)
                         var key = "render-brush"
+                        editor.store.get(key).set(!editor.store.getValue(key))
+                      },
+                    },
+                  },
+                  {
+                    name: "view_controls",
+                    config: {
+                      label: { text: "Controls" },
+                      shortcut: { text: "F4" },
+                      callback: function() {
+                        var editor = Beans.get(BeanVisuEditorController)
+                        var key = "render-trackControl"
                         editor.store.get(key).set(!editor.store.getValue(key))
                       },
                     },
@@ -931,10 +931,20 @@ function VETitleBar(_editor) constructor {
                     },
                   },
                   {
+                    name: "clear_grid-l",
+                    config: {
+                      label: { text: "Clear grid layers" },
+                      shortcut: { text: "CTRL + 5" },
+                      callback: function() { 
+                        Beans.get(BeanVisuController).visuRenderer.gridRenderer.overlayRenderer.grids.clear()
+                      },
+                    },
+                  },
+                  {
                     name: "clear_frg-l",
                     config: {
                       label: { text: "Clear foreground layers" },
-                      shortcut: { text: "CTRL + 5" },
+                      shortcut: { text: "CTRL + 6" },
                       callback: function() { 
                         Beans.get(BeanVisuController).visuRenderer.gridRenderer.overlayRenderer.foregrounds.clear()
                       },
@@ -944,7 +954,7 @@ function VETitleBar(_editor) constructor {
                     name: "clear_shrooms",
                     config: {
                       label: { text: "Clear shrooms" },
-                      shortcut: { text: "CTRL + 6" },
+                      shortcut: { text: "CTRL + 7" },
                       callback: function() { 
                         Beans.get(BeanVisuController).shroomService.send(new Event("clear-shrooms"))
                       },
@@ -954,9 +964,29 @@ function VETitleBar(_editor) constructor {
                     name: "clear_bullets",
                     config: {
                       label: { text: "Clear bullets" },
-                      shortcut: { text: "" },
+                      shortcut: { text: "CTRL + 8" },
                       callback: function() { 
                         Beans.get(BeanVisuController).bulletService.send(new Event("clear-bullets"))
+                      },
+                    },
+                  },
+                  {
+                    name: "clear_coins",
+                    config: {
+                      label: { text: "Clear coins" },
+                      shortcut: { text: "CTRL + 9" },
+                      callback: function() { 
+                        Beans.get(BeanVisuController).coinService.send(new Event("clear-coins"))
+                      },
+                    },
+                  },
+                  {
+                    name: "clear_particles",
+                    config: {
+                      label: { text: "Clear particles" },
+                      shortcut: { text: "CTRL + 0" },
+                      callback: function() { 
+                        Beans.get(BeanVisuController).particleService.send(new Event("clear-particles"))
                       },
                     },
                   },
@@ -971,31 +1001,11 @@ function VETitleBar(_editor) constructor {
                     },
                   },
                   {
-                    name: "clear_coins",
-                    config: {
-                      label: { text: "Clear coins" },
-                      shortcut: { text: "" },
-                      callback: function() { 
-                        Beans.get(BeanVisuController).coinService.send(new Event("clear-coins"))
-                      },
-                    },
-                  },
-                  {
                     name: "clear_subtitles",
                     config: {
                       label: { text: "Clear subtitles" },
                       callback: function() { 
                         Beans.get(BeanVisuController).subtitleService.send(new Event("clear-subtitle"))
-                      },
-                    },
-                  },
-                  {
-                    name: "clear_particles",
-                    config: {
-                      label: { text: "Clear particles" },
-                      shortcut: { text: "" },
-                      callback: function() { 
-                        Beans.get(BeanVisuController).particleService.send(new Event("clear-particles"))
                       },
                     },
                   },

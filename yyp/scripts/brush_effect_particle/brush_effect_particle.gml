@@ -31,10 +31,10 @@ function brush_effect_particle(json) {
         type: Rectangle,
         value: Struct.get(json, "ef-part_area"),
         passthrough: function(value) {
-          value.x = clamp(value.x, -5.0, 5.0)
-          value.y = clamp(value.y, -5.0, 5.0)
-          value.z = clamp(value.z, 0.0, 10.0)
-          value.a = clamp(value.a, 0.0, 10.0)
+          value.x = clamp(value.x, -10.0, 10.0)
+          value.y = clamp(value.y, -10.0, 10.0)
+          value.z = clamp(value.z, 0.0, 20.0)
+          value.a = clamp(value.a, 0.0, 20.0)
           return value
         }
       },
@@ -88,8 +88,6 @@ function brush_effect_particle(json) {
         hidden: { key: "ef-part_hide" },
       }),
       VETitleComponent("ef-part_area-title", {
-        hidden: { key: "gr-c_hide-side" },
-        enable: { key: "gr-c_use-side-col" },
         label: { 
           text: "Emitter",
           updateCustom: function() {
@@ -257,7 +255,7 @@ function brush_effect_particle(json) {
         background: VETheme.color.side,
         hidden: { key: "ef-part_hide-area" },
         enable: { key: "ef-part_preview" },
-        label: { text: "Show emitter" },
+        label: { text: "Show emitter area" },
         checkbox: {
           spriteOn: { name: "visu_texture_checkbox_on" },
           spriteOff: { name: "visu_texture_checkbox_off" },
@@ -284,9 +282,9 @@ function brush_effect_particle(json) {
               hidden: { key: "ef-part_hide-area" },
             },
             slider: {
-              snapValue: 0.01 / 10.0,
-              minValue: -5.0,
-              maxValue: 5.0,
+              snapValue: 0.01 / 20.0,
+              minValue: -10.0,
+              maxValue: 10.0,
               store: { key: "ef-part_area" },
               hidden: { key: "ef-part_hide-area" },
             },
@@ -311,9 +309,9 @@ function brush_effect_particle(json) {
               hidden: { key: "ef-part_hide-area" },
             },
             slider: {
-              snapValue: 0.01 / 10.0,
-              minValue: -5.0,
-              maxValue: 5.0,
+              snapValue: 0.01 / 20.0,
+              minValue: -10.0,
+              maxValue: 10.0,
               store: { key: "ef-part_area" },
               hidden: { key: "ef-part_hide-area" },
             },
@@ -338,9 +336,9 @@ function brush_effect_particle(json) {
               hidden: { key: "ef-part_hide-area" },
             },
             slider: {
-              snapValue: 0.01 / 10.0,
+              snapValue: 0.01 / 20.0,
               minValue: 0.0,
-              maxValue: 10.0,
+              maxValue: 20.0,
               store: { key: "ef-part_area" },
               hidden: { key: "ef-part_hide-area" },
             },
@@ -365,9 +363,9 @@ function brush_effect_particle(json) {
               hidden: { key: "ef-part_hide-area" },
             },
             slider: {
-              snapValue: 0.01 / 10.0,
+              snapValue: 0.01 / 20.0,
               minValue: 0.0,
-              maxValue: 10.0,
+              maxValue: 20.0,
               store: { key: "ef-part_area" },
               hidden: { key: "ef-part_hide-area" },
             },

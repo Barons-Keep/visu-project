@@ -329,7 +329,14 @@ function VisuRenderer() constructor {
     this.dialogueRenderer.render(layout)
 
     var editor = Beans.get(Visu.modules().editor.controller)
-    if (this.renderEditorMode && editor != null && !editor.renderUI) {
+    var state = controller.fsm.getStateName() 
+    if (this.renderEditorMode 
+        && editor != null 
+        && !editor.renderUI 
+        && (state == "idle"
+          || state == "play"
+          || state == "pause"
+          || state == "paused")) {
       var _x = layout.x()
       var _y = layout.y()
       var _width = layout.width()

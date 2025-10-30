@@ -490,9 +490,19 @@ global.__ShaderUniformTemplates = new Map(String, Callable)
           },
         },
         VENumberTransformerComponent($"shader-uniform_{uniform.name}", Struct.appendRecursive({
+          layout: "transform-numeric-uniform",
+          fieldLayout: "text-field-increase-stick",
           hidden: { key: $"{uniform.name}_hide" },
-          store: {
-            value: { key: $"{uniform.name}" },
+          store: { value: { key: $"{uniform.name}" } },
+          use: {
+            spriteOn: { name: "texture_empty" },
+            spriteOff: { name: "texture_empty" },
+            text: "",
+          },
+          change: {
+            spriteOn: { name: "texture_empty" },
+            spriteOff: { name: "texture_empty" },
+            text: "",
           },
           value: {
             text: "Value",

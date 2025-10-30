@@ -3179,37 +3179,48 @@ global.__VisuTemplateContainers = new Map(String, Callable, {
         var store = this.templateToolbar.store
         var type = store.getValue("type")
         var template = store.getValue("template")
-        if (type == VETemplateType.PARTICLE
-          && Optional.is(template)
-          && this.particleTimer.update().finished) {
+        if (type != VETemplateType.PARTICLE || template == null) {
+          return
+        }
+        
+        var interval = template.store.getValue("particle_interval-preview")
+        if (this.particleTimer.duration != interval) {
+          this.particleTimer.setDuration(interval)
+        }
 
-          var preview = template.store.getValue("particle_use-preview")
-          if (preview) {
-            var particleName = template.store.getValue("template-name")
-            var particleService = Beans.get(BeanVisuController).particleService
-            particleService.spawnParticleEmitter(
-              "main",
-              particleName,
-              (GuiWidth() / 2) - 32,
-              (GuiHeight() / 2) - 32,
-              (GuiWidth() / 2) + 32,
-              (GuiHeight() / 2) + 32,
-              0.0,
-              10.0
-            )
+        var preview = template.store.getValue("particle_use-preview")
+        if (this.particleTimer.update().finished && preview) {
+          var particleName = template.store.getValue("template-name")
+          var amount = template.store.getValue("particle_amount-preview")
+          var area = template.store.getValue("particle_area-preview")
+          var shape = ParticleEmitterShape.get(template.store.getValue("particle_shape-preview"))
+          var distribution = ParticleEmitterDistribution.get(template.store.getValue("particle_distribution-preview"))
+          var particleService = Beans.get(BeanVisuController).particleService
+          particleService.spawnParticleEmitter(
+            "main",
+            particleName,
+            area.getX() * GRID_SERVICE_PIXEL_WIDTH,
+            area.getY() * GRID_SERVICE_PIXEL_HEIGHT,
+            (area.getX() + area.getWidth()) * GRID_SERVICE_PIXEL_WIDTH,
+            (area.getY() + area.getHeight()) * GRID_SERVICE_PIXEL_HEIGHT,
+            interval,
+            amount,
+            interval,
+            shape,
+            distribution
+          )
 
-            /*
-            var event = particleService.factoryEventSpawnParticleEmitter({
-              particleName: particleName,
-              beginX: (GuiWidth() / 2) - 32,
-              beginY: (GuiHeight() / 2) - 32,
-              endX: (GuiWidth() / 2) + 32,
-              endY: (GuiHeight() / 2) + 32,
-              amount: 10,
-            })
-            particleService.send(event)
-            */
-          }
+          /*
+          var event = particleService.factoryEventSpawnParticleEmitter({
+            particleName: particleName,
+            beginX: (GuiWidth() / 2) - 32,
+            beginY: (GuiHeight() / 2) - 32,
+            endX: (GuiWidth() / 2) + 32,
+            endY: (GuiHeight() / 2) + 32,
+            amount: 10,
+          })
+          particleService.send(event)
+          */
         }
       },
       render: Callable.run(UIUtil.renderTemplates.get("renderDefault")),

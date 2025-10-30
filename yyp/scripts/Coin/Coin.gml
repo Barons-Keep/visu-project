@@ -70,8 +70,10 @@ function CoinTemplate(_name, json) constructor {
       useSpeed: this.useSpeed,
       changeSpeed: this.changeSpeed,
       mask: this.mask != null ? JSON.clone(this.mask) : null,
+      //mask: this.mask,
       amount: this.amount,
       speed: this.speed != null ? JSON.clone(this.speed) : null,
+      //speed: this.speed,
     }
   }
 
@@ -81,6 +83,7 @@ function CoinTemplate(_name, json) constructor {
   ///@param {?Struct} [speed]
   serializeSpawn = function(x, y, angle = null, speed = null) {
     var _speed = this.speed != null ? JSON.clone(this.speed) : null
+    //var _speed = this.speed
     return {
       name: this.name,
       category: this.category,
@@ -88,6 +91,7 @@ function CoinTemplate(_name, json) constructor {
       useSpeed: this.useSpeed,
       changeSpeed: this.changeSpeed,
       mask: this.mask != null ? JSON.clone(this.mask) : null,
+      //mask: this.mask,
       amount: this.amount,
       x: x,
       y: y,

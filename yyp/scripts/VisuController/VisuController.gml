@@ -763,14 +763,17 @@ function VisuController(layerName) constructor {
     Logger.info(BeanVisuController, "onSceneEnter")
     audio_stop_all()
     VideoUtil.runGC()
-    if (Core.getProperty("visu.manifest.load-on-start", false)) {
+    if (Core.getProperty("visu.manifest.load-on-start", false) && !VISU_MANIFEST_LOAD_ON_START_DISPATCHED) {
       var task = new Task("load-manifest")
         .setTimeout(60.0)
         .setState({
           cooldown: new Timer(1.0),
           event: new Event("load", {
-            manifest: FileUtil.get(Core.getProperty("visu.manifest.path")),
-            autoplay: Assert.isType(Core.getProperty("visu.manifest.play-on-start", false), Boolean),
+            manifest: FileUtil.get(String.concat(
+              String.replaceAll(String.replaceAll(working_directory, "\\", "/"), "//", "/"),
+              Core.getProperty("visu.manifest.path")
+            )),
+            autoplay: Core.getProperty("visu.manifest.play-on-start", false),
           }),
         })
         .whenUpdate(function() {
@@ -791,6 +794,8 @@ function VisuController(layerName) constructor {
         })
       
       this.executor.add(task)
+      VISU_MANIFEST_LOAD_ON_START_DISPATCHED = true
+
     } else if (Core.getProperty("visu.menu.open-on-start", false)) {
       var event = this.menu.factoryOpenMainMenuEvent()
       var task = new Task("load-manifest")

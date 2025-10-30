@@ -1,15 +1,11 @@
 ///@package io.alkapivo.visu.editor.api.template
 
-///@param {Struct} json
+///@param {?Struct} [json]
 ///@return {Struct}
 function template_particle(json = null) {
   var template = {
     name: Assert.isType(json.name, String),
     store: new Map(String, Struct, {
-      "particle_use-preview": {
-        type: Boolean,
-        value: Struct.getIfType(json, "particle_use-preview", Boolean, false),
-      },
       "particle-template": {
         type: ParticleTemplate,
         value: new ParticleTemplate(json.name, json),
@@ -44,30 +40,292 @@ function template_particle(json = null) {
           ? Struct.getIfType(json.sprite, "stretch", Boolean, false)
           : false,
       },
+      "particle_hide-preview": {
+        type: Boolean,
+        value: Struct.getIfType(json, "particle_hide-preview", Boolean, false),
+      },
+      "particle_use-preview": {
+        type: Boolean,
+        value: Struct.getIfType(json, "particle_use-preview", Boolean, false),
+      },
+      "particle_render-preview": {
+        type: Boolean,
+        value: Struct.getIfType(json, "particle_render-preview", Boolean, false),
+      },
+      "particle_interval-preview": {
+        type: Number,
+        value: Struct.getIfType(json, "particle_interval-preview", Number, 1.0),
+        passthrough: UIUtil.passthrough.getClampedStringNumber(),
+        data: new Vector2(0.0, 999.9),
+      },
+      "particle_amount-preview": {
+        type: Number,
+        value: Struct.getIfType(json, "particle_amount-preview", Number, 1),
+        passthrough: UIUtil.passthrough.getClampedStringInteger(),
+        data: new Vector2(1, 999),
+      },
+      "particle_area-preview": {
+        type: Rectangle,
+        value: Struct.parse.rectangle(json, "particle_area-preview", { width: 1.0, height: 1.0 }),
+        passthrough: function(value) {
+          value.x = clamp(value.x, -10.0, 10.0)
+          value.y = clamp(value.y, -10.0, 10.0)
+          value.z = clamp(value.z, 0.0, 20.0)
+          value.a = clamp(value.a, 0.0, 20.0)
+          return value
+        }
+      },
+      "particle_shape-preview": {
+        type: String,
+        value: Struct.parse.enumerableKey(json, "particle_shape-preview", 
+          ParticleEmitterShape, ParticleEmitterShape.RECTANGLE),
+        passthrough: UIUtil.passthrough.getArrayValue(),
+        data: ParticleEmitterShape.keys(),
+      },
+      "particle_distribution-preview": {
+        type: String,
+        value: Struct.parse.enumerableKey(json, "particle_distribution-preview",
+          ParticleEmitterDistribution, ParticleEmitterDistribution.LINEAR),
+        passthrough: UIUtil.passthrough.getArrayValue(),
+        data: ParticleEmitterDistribution.keys(),
+      },
     }),
     components: new Array(Struct, [
+      VETitleComponent("particle_use-preview", {
+        label: { 
+          text: "Emitter",
+          updateCustom: function() {
+            this.preRender()
+            if (Core.isType(this.context.updateTimer, Timer)) {
+              var shroomService = Beans.get(BeanVisuController).shroomService
+              if (shroomService.particleTemplate != null) {
+                shroomService.particleTemplate.timeout = ceil(this.context.updateTimer.duration * 60)
+              }
+            }
+          },
+          preRender: function() {
+            var shroomService = Beans.get(BeanVisuController).shroomService
+            var store = this.context.state.get("template").store
+            if (store == null || !store.getValue("particle_render-preview")) {
+              shroomService.particleTemplate = null
+              return
+            }
+
+            var area = store.getValue("particle_area-preview")
+            if (!Core.isType(area, Rectangle)) {
+              return
+            }
+
+            shroomService.particleTemplate = {
+              topLeft: shroomService.factorySpawner({
+                x: area.getX() + 0.0000,
+                y: area.getY() + 0.0000,
+                sprite: SpriteUtil.parse({ name: "texture_bazyl" }),
+              }),
+              topRight: shroomService.factorySpawner({
+                x: area.getX() + area.getWidth() + 0.0000,
+                y: area.getY() + 0.0000,
+                sprite: SpriteUtil.parse({ name: "texture_bazyl" }),
+              }),
+              bottomLeft: shroomService.factorySpawner({
+                x: area.getX() + 0.0000,
+                y: area.getY() + area.getHeight() + 0.0000,
+                sprite: SpriteUtil.parse({ name: "texture_bazyl" }),
+              }),
+              bottomRight: shroomService.factorySpawner({
+                x: area.getX() + area.getWidth() + 0.0000,
+                y: area.getY() + area.getHeight() + 0.0000,
+                sprite: SpriteUtil.parse({ name: "texture_bazyl" }),
+              }),
+              timeout: 5.0,
+            }
+          },
+        },
+        input: {
+          spriteOn: { name: "visu_texture_checkbox_switch_on" },
+          spriteOff: { name: "visu_texture_checkbox_switch_off" },
+          store: { key: "particle_use-preview" },
+        },
+        checkbox: {
+          spriteOn: { name: "visu_texture_checkbox_show" },
+          spriteOff: { name: "visu_texture_checkbox_hide" },
+          store: { key: "particle_hide-preview" },
+        },
+      }),
+      VENumberInputComponent("particle_amount-preview", {
+        hidden: { key: "particle_hide-preview" },
+        store: { key: "particle_amount-preview" },
+        value: {
+          text: "Amount",
+          factor: 1.0,
+          GMTF_DECIMAL: 0,
+          stick: {
+            factor: 1.0,
+            step: 10.0,
+          },
+        },
+        checkbox: { },
+      }),
+      VENumberInputComponent("particle_interval-preview", {
+        hidden: { key: "particle_hide-preview" },
+        store: { key: "particle_interval-preview" },
+        value: {
+          text: "Interval",
+          factor: 0.001,
+          stick: { factor: 0.001 },
+        },
+        checkbox: { },
+      }),
+      VELineHComponent("particle_interval-preview-line-h", {
+        hidden: { key: "particle_hide-preview" },
+      }),
+      VESpinSelectComponent("particle_shape-preview", {
+        hidden: { key: "particle_hide-preview" },
+        store: { key: "particle_shape-preview" },
+        layout: { margin: { top: 2, bottom: 2 } },
+        label: { text: "Shape" },
+      }),
+      VESpinSelectComponent("particle_distribution-preview", {
+        hidden: { key: "particle_hide-preview" },
+        store: { key: "particle_distribution-preview" },
+        layout: { margin: { top: 2, bottom: 2 } },
+        label: { text: "Distribution" },
+      }),
+      VETitleComponent("particle_render-preview", {
+        background: VETheme.color.side,
+        hidden: { key: "particle_hide-preview" },
+        enable: { key: "particle_render-preview" },
+        label: { text: "Show emitter area" },
+        checkbox: {
+          spriteOn: { name: "visu_texture_checkbox_on" },
+          spriteOff: { name: "visu_texture_checkbox_off" },
+          store: { key: "particle_render-preview" },
+        },
+        input: { },
+      }),
       {
-        name: "particle_use-preview",
-        template: VEComponents.get("property"),
-        layout: VELayouts.get("property"),
+        name: "particle_area-preview",
+        template: VEComponents.get("vec4-slider-increase"),
+        layout: VELayouts.get("vec4"),
         config: { 
-          layout: { type: UILayoutType.VERTICAL },
-          label: { 
-            text: "Emit particle preview",
-            enable: { key: "particle_use-preview" },
-            backgroundColor: VETheme.color.accentShadow,
+          layout: { 
+            type: UILayoutType.VERTICAL,
+            margin: { top: 4 },
           },
-          checkbox: { 
-            spriteOn: { name: "visu_texture_checkbox_on" },
-            spriteOff: { name: "visu_texture_checkbox_off" },
-            store: { key: "particle_use-preview" },
-            backgroundColor: VETheme.color.accentShadow,
+          x: {
+            label: {
+              text: "X",
+              hidden: { key: "particle_hide-preview" },
+            },
+            field: {
+              store: { key: "particle_area-preview" },
+              hidden: { key: "particle_hide-preview" },
+            },
+            slider: {
+              snapValue: 0.01 / 20.0,
+              minValue: -10.0,
+              maxValue: 10.0,
+              store: { key: "particle_area-preview" },
+              hidden: { key: "particle_hide-preview" },
+            },
+            decrease: {
+              store: { key: "particle_area-preview" },
+              hidden: { key: "particle_hide-preview" },
+              factor: -0.01,
+            },
+            increase: {
+              store: { key: "particle_area-preview" },
+              hidden: { key: "particle_hide-preview" },
+              factor: 0.01,
+            },
           },
-          input: {
-            backgroundColor: VETheme.color.accentShadow,
-          }
+          y: {
+            label: {
+              text: "Y",
+              hidden: { key: "particle_hide-preview" },
+            },
+            field: {
+              store: { key: "particle_area-preview" },
+              hidden: { key: "particle_hide-preview" },
+            },
+            slider: {
+              snapValue: 0.01 / 20.0,
+              minValue: -10.0,
+              maxValue: 10.0,
+              store: { key: "particle_area-preview" },
+              hidden: { key: "particle_hide-preview" },
+            },
+            decrease: {
+              store: { key: "particle_area-preview" },
+              hidden: { key: "particle_hide-preview" },
+              factor: -0.01,
+            },
+            increase: {
+              store: { key: "particle_area-preview" },
+              hidden: { key: "particle_hide-preview" },
+              factor: 0.01,
+            },
+          },
+          z: {
+            label: {
+              text: "Width",
+              hidden: { key: "particle_hide-preview" },
+            },
+            field: {
+              store: { key: "particle_area-preview" },
+              hidden: { key: "particle_hide-preview" },
+            },
+            slider: {
+              snapValue: 0.01 / 20.0,
+              minValue: 0.0,
+              maxValue: 20.0,
+              store: { key: "particle_area-preview" },
+              hidden: { key: "particle_hide-preview" },
+            },
+            decrease: {
+              store: { key: "particle_area-preview" },
+              hidden: { key: "particle_hide-preview" },
+              factor: -0.01,
+            },
+            increase: {
+              store: { key: "particle_area-preview" },
+              hidden: { key: "particle_hide-preview" },
+              factor: 0.01,
+            },
+          },
+          a: {
+            label: {
+              text: "Height",
+              hidden: { key: "particle_hide-preview" },
+            },
+            field: {
+              store: { key: "particle_area-preview" },
+              hidden: { key: "particle_hide-preview" },
+            },
+            slider: {
+              snapValue: 0.01 / 20.0,
+              minValue: 0.0,
+              maxValue: 20.0,
+              store: { key: "particle_area-preview" },
+              hidden: { key: "particle_hide-preview" },
+            },
+            decrease: {
+              store: { key: "particle_area-preview" },
+              hidden: { key: "particle_hide-preview" },
+              factor: -0.01,
+            },
+            increase: {
+              store: { key: "particle_area-preview" },
+              hidden: { key: "particle_hide-preview" },
+              factor: 0.01,
+            },
+          },
         },
       },
+      VELineHComponent("particle_render-preview-line-h", {
+        hidden: { key: "particle_hide-preview" },
+      }),
+      
       {
         name: "particle_blend",
         template: VEComponents.get("property"),

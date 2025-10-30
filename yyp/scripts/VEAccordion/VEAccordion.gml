@@ -23,13 +23,11 @@ function VEAccordion(_editor, config = null) constructor {
   store = new Store({
     "render-template-toolbar": {
       type: Boolean,
-      value: Assert.isType(Visu.settings
-        .getValue("visu.editor.accordion.render-template-toolbar", false), Boolean),
+      value: Visu.settings.getValue("visu.editor.accordion.render-template-toolbar", false) == true,
     },
     "render-event-inspector": {
       type: Boolean,
-      value: Assert.isType(Visu.settings
-        .getValue("visu.editor.accordion.render-event-inspector", false), Boolean),
+      value: Visu.settings.getValue("visu.editor.accordion.render-event-inspector", false) == true,
     },
   })
 

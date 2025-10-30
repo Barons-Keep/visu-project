@@ -2565,9 +2565,11 @@ function VisuMenu(_config = null) constructor {
             label: { 
               text: "Restart game",
               callback: new BindIntent(function() {
+                VISU_MANIFEST_LOAD_ON_START_DISPATCHED = false
+                VISU_FORCE_GOD_MODE_DISPATCHED = false
                 Scene.open("scene_visu", {
                   VisuController: {
-                    initialState: { name: "splashscreen" },
+                    initialState: { name: Core.getProperty("visu.skip-splashscreen") ? "idle" : "splashscreen", },
                   },
                 })
                 return new Event("close")

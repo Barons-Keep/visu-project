@@ -411,6 +411,7 @@ function GridRenderer() constructor {
     var backgroundAlpha = 0.6
     var colorBrush = c_fuchsia
     var colorEvent = c_blue
+    var colorTemplate = c_black
     var particleArea = shroomService.particleArea
     if (Core.isType(particleArea, Struct)) {
       GPU.render.rectangle(
@@ -504,6 +505,54 @@ function GridRenderer() constructor {
       shroomService.particleAreaEvent.timeout--
       if (shroomService.particleAreaEvent.timeout <= 0) {
         shroomService.particleAreaEvent = null
+      }
+    }
+
+    var particleTemplate = shroomService.particleTemplate
+    if (Core.isType(particleTemplate, Struct)) {
+      GPU.render.rectangle(
+        particleTemplate.topLeft.x * GRID_SERVICE_PIXEL_WIDTH, 
+        particleTemplate.topLeft.y * GRID_SERVICE_PIXEL_HEIGHT, 
+        particleTemplate.bottomRight.x * GRID_SERVICE_PIXEL_WIDTH,
+        particleTemplate.bottomRight.y * GRID_SERVICE_PIXEL_HEIGHT,
+        false, colorTemplate, colorTemplate, colorTemplate, colorTemplate, backgroundAlpha
+      )
+
+      GPU.render.texturedLine(
+        particleTemplate.topLeft.x * GRID_SERVICE_PIXEL_WIDTH, 
+        particleTemplate.topLeft.y * GRID_SERVICE_PIXEL_HEIGHT, 
+        particleTemplate.topRight.x * GRID_SERVICE_PIXEL_WIDTH, 
+        particleTemplate.topRight.y * GRID_SERVICE_PIXEL_HEIGHT, 
+        lineThickness, lineAlpha, colorTemplate
+      )
+
+      GPU.render.texturedLine(
+        particleTemplate.topRight.x * GRID_SERVICE_PIXEL_WIDTH, 
+        particleTemplate.topRight.y * GRID_SERVICE_PIXEL_HEIGHT, 
+        particleTemplate.bottomRight.x * GRID_SERVICE_PIXEL_WIDTH,
+        particleTemplate.bottomRight.y * GRID_SERVICE_PIXEL_HEIGHT,
+        lineThickness, lineAlpha, colorTemplate
+      )
+
+      GPU.render.texturedLine(
+        particleTemplate.bottomRight.x * GRID_SERVICE_PIXEL_WIDTH,
+        particleTemplate.bottomRight.y * GRID_SERVICE_PIXEL_HEIGHT,
+        particleTemplate.bottomLeft.x * GRID_SERVICE_PIXEL_WIDTH,
+        particleTemplate.bottomLeft.y * GRID_SERVICE_PIXEL_HEIGHT,
+        lineThickness, lineAlpha, colorTemplate
+      )
+
+      GPU.render.texturedLine(
+        particleTemplate.topLeft.x * GRID_SERVICE_PIXEL_WIDTH, 
+        particleTemplate.topLeft.y * GRID_SERVICE_PIXEL_HEIGHT, 
+        particleTemplate.bottomLeft.x * GRID_SERVICE_PIXEL_WIDTH,
+        particleTemplate.bottomLeft.y * GRID_SERVICE_PIXEL_HEIGHT,
+        lineThickness, lineAlpha, colorTemplate
+      )
+
+      shroomService.particleTemplate.timeout--
+      if (shroomService.particleTemplate.timeout <= 0) {
+        shroomService.particleTemplate = null
       }
     }
 
@@ -1118,6 +1167,36 @@ function GridRenderer() constructor {
   ///@private
   ///@param {GridService} gridService
   ///@param {PlayerService} playerService
+  ///@return {GridRenderer}
+  entityRenderPlayerShadow = function(gridService, playerService) {
+    var player = playerService.player
+    if (!gridService.properties.playerShadowEnable
+        || !gridService.properties.renderPlayer
+        || !Core.isType(player, Player)
+        || player.sprite.texture.asset == texture_empty) {
+
+      return this
+    }
+
+    var focusCooldown = Struct.get(player.handler, "focusCooldown")
+    var focusTime = Struct.get(focusCooldown, "time")
+    var focusDuration = Struct.get(focusCooldown, "duration")
+    var focusFactor = focusTime != null && focusDuration != null ? focusTime / focusDuration : 0.0
+    var scaleFactor = clamp(player.stats.godModeCooldown, 1.0, 10.0)
+    var alpha = player.sprite.getAlpha() * player.fadeIn * 0.75
+    var swing = (sin(this.playerZTimer.update().time * 5.0) + 1.0) / 2.0
+    var scaleX = ((player.sprite.texture.width * player.sprite.scaleX) / sprite_get_width(texture_player_shadow)) * (3.0 + (1.5 * focusFactor)) * (scaleFactor + swing)
+    var scaleY = ((player.sprite.texture.height * player.sprite.scaleY) / sprite_get_height(texture_player_shadow)) * (3.0 + (1.5 * focusFactor)) * (scaleFactor + swing)
+    var _x = (player.x - ((player.sprite.texture.width * player.sprite.scaleX) / (2.0 * GRID_SERVICE_PIXEL_WIDTH)) + ((player.sprite.texture.offsetX * player.sprite.scaleX) / GRID_SERVICE_PIXEL_WIDTH) - gridService.view.x) * GRID_SERVICE_PIXEL_WIDTH,
+    var _y = (player.y - ((player.sprite.texture.height * player.sprite.scaleY) / (2.0 * GRID_SERVICE_PIXEL_HEIGHT)) + ((player.sprite.texture.offsetY * player.sprite.scaleY) / GRID_SERVICE_PIXEL_HEIGHT) - gridService.view.y) * GRID_SERVICE_PIXEL_HEIGHT
+    draw_sprite_ext(texture_player_shadow, 0, _x, _y, scaleX, scaleY, 0.0, this.playerShadowColor.toGMColor(), alpha)
+
+    return this
+  }
+
+  ///@private
+  ///@param {GridService} gridService
+  ///@param {PlayerService} playerService
   ///@param {Number} baseX
   ///@param {Number} baseY
   ///@return {GridRenderer}
@@ -1156,24 +1235,8 @@ function GridRenderer() constructor {
         .setScaleY(scaleY)
       shader_reset()
     } else {
-      var focus = Struct.get(player.handler, "focus") == true
-      var focusCooldown = Struct.get(player.handler, "focusCooldown")
-      var focusTime = Struct.get(focusCooldown, "time")
-      var focusDuration = Struct.get(focusCooldown, "duration")
-      var focusFactor = Optional.is(focusTime) && Optional.is(focusDuration) ? focusTime / focusDuration : 0.0
-
       var _x = (player.x - ((player.sprite.texture.width * player.sprite.scaleX) / (2.0 * GRID_SERVICE_PIXEL_WIDTH)) + ((player.sprite.texture.offsetX * player.sprite.scaleX) / GRID_SERVICE_PIXEL_WIDTH) - gridService.view.x) * GRID_SERVICE_PIXEL_WIDTH,
       var _y = (player.y - ((player.sprite.texture.height * player.sprite.scaleY) / (2.0 * GRID_SERVICE_PIXEL_HEIGHT)) + ((player.sprite.texture.offsetY * player.sprite.scaleY) / GRID_SERVICE_PIXEL_HEIGHT) - gridService.view.y) * GRID_SERVICE_PIXEL_HEIGHT
-
-      var _swing = (sin(this.playerZTimer.update().time * 5.0) + 1.0) / 2.0
-
-      var _scaleX = ((player.sprite.getWidth() * player.sprite.getScaleX()) / sprite_get_width(texture_player_shadow)) * (3.0 + (1.5 * focusFactor)) * (scaleFactor + _swing)
-      var _scaleY = ((player.sprite.getHeight() * player.sprite.getScaleY()) / sprite_get_height(texture_player_shadow)) * (3.0 + (1.5 * focusFactor)) * (scaleFactor + _swing)
-      var _alpha = alpha * player.fadeIn * 0.75
-      if (gridService.properties.playerShadowEnable && _alpha > 0 && player.sprite.texture.asset != texture_empty) {
-        draw_sprite_ext(texture_player_shadow, 0, _x, _y, _scaleX, _scaleY, 0.0, this.playerShadowColor.toGMColor(), _alpha)
-      }
-      
       player.sprite
         .setAlpha(alpha * ((cos(player.stats.godModeCooldown * 15.0) + 2.0) / 3.0) * player.fadeIn)
         .setAngle(angle - 90.0 - (360.0 * player.stats.godModeCooldown))
@@ -1196,13 +1259,12 @@ function GridRenderer() constructor {
   ///@return {GridRenderer}
   entityRenderShrooms = function(gridService, shroomService) {
     static renderShroom = function(shroom, index, gridService) {
+      var _x = (shroom.x - ((shroom.sprite.texture.width * shroom.sprite.scaleX) / (2.0 * GRID_SERVICE_PIXEL_WIDTH)) + ((shroom.sprite.texture.offsetX * shroom.sprite.scaleX) / GRID_SERVICE_PIXEL_WIDTH)  - gridService.view.x) * GRID_SERVICE_PIXEL_WIDTH
+      var _y = (shroom.y - ((shroom.sprite.texture.height * shroom.sprite.scaleY) / (2.0 * GRID_SERVICE_PIXEL_HEIGHT)) + ((shroom.sprite.texture.offsetY * shroom.sprite.scaleY) / GRID_SERVICE_PIXEL_HEIGHT) - gridService.view.y) * GRID_SERVICE_PIXEL_HEIGHT
       var alpha = shroom.sprite.getAlpha()
       shroom.sprite
         .setAlpha(alpha * shroom.fadeIn)
-        .render(
-          (shroom.x - ((shroom.sprite.texture.width * shroom.sprite.scaleX) / (2.0 * GRID_SERVICE_PIXEL_WIDTH)) + ((shroom.sprite.texture.offsetX * shroom.sprite.scaleX) / GRID_SERVICE_PIXEL_WIDTH)  - gridService.view.x) * GRID_SERVICE_PIXEL_WIDTH,
-          (shroom.y - ((shroom.sprite.texture.height * shroom.sprite.scaleY) / (2.0 * GRID_SERVICE_PIXEL_HEIGHT)) + ((shroom.sprite.texture.offsetY * shroom.sprite.scaleY) / GRID_SERVICE_PIXEL_HEIGHT) - gridService.view.y) * GRID_SERVICE_PIXEL_HEIGHT
-        )
+        .render(_x, _y)
         .setAlpha(alpha)
     }
 
@@ -1221,14 +1283,13 @@ function GridRenderer() constructor {
   ///@return {GridRenderer}
   entityRenderBullets = function(gridService, bulletService) {
     static renderBullet = function(bullet, index, gridService) {
+      var _x = (bullet.x - ((bullet.sprite.texture.width * bullet.sprite.scaleX) / (2.0 * GRID_SERVICE_PIXEL_WIDTH)) + ((bullet.sprite.texture.offsetX * bullet.sprite.scaleX) / GRID_SERVICE_PIXEL_WIDTH) - gridService.view.x) * GRID_SERVICE_PIXEL_WIDTH
+      var _y = (bullet.y - ((bullet.sprite.texture.height * bullet.sprite.scaleY) / (2.0 * GRID_SERVICE_PIXEL_HEIGHT)) + ((bullet.sprite.texture.offsetY * bullet.sprite.scaleY) / GRID_SERVICE_PIXEL_HEIGHT) - gridService.view.y) * GRID_SERVICE_PIXEL_HEIGHT
       var alpha = bullet.sprite.getAlpha()
       bullet.sprite
         .setAlpha(alpha * bullet.fadeIn)
         .setAngle(bullet.angle - 90.0)
-        .render(
-          (bullet.x - ((bullet.sprite.texture.width * bullet.sprite.scaleX) / (2.0 * GRID_SERVICE_PIXEL_WIDTH)) + ((bullet.sprite.texture.offsetX * bullet.sprite.scaleX) / GRID_SERVICE_PIXEL_WIDTH) - gridService.view.x) * GRID_SERVICE_PIXEL_WIDTH,
-          (bullet.y - ((bullet.sprite.texture.height * bullet.sprite.scaleY) / (2.0 * GRID_SERVICE_PIXEL_HEIGHT)) + ((bullet.sprite.texture.offsetY * bullet.sprite.scaleY) / GRID_SERVICE_PIXEL_HEIGHT) - gridService.view.y) * GRID_SERVICE_PIXEL_HEIGHT
-        )
+        .render(_x, _y)
         .setAlpha(alpha)
     }
     
@@ -1479,6 +1540,7 @@ function GridRenderer() constructor {
     var height = layout.height()
     var renderDebugMasks = Visu.settings.getValue("visu.debug.render-entities-mask", false)
     var renderDebugChunks = Visu.settings.getValue("visu.debug.render-debug-chunks", false)
+    var _renderPlayerShadow = this.entityRenderPlayerShadow
     var _renderPlayer = this.entityRenderPlayer
     var _renderShrooms = this.entityRenderShrooms
     var _renderBullets = this.entityRenderBullets
@@ -1534,6 +1596,13 @@ function GridRenderer() constructor {
     gpu_set_ztestenable(true)
     gpu_set_zwriteenable(true)
     gpu_set_alphatestenable(true)
+
+    matrix_set(matrix_world, matrix_build(
+      baseX, baseY, min(depths.coinZ, depths.bulletZ, depths.shroomZ, depths.playerZ) - 1, 
+      global.cameraRollSpeed, global.cameraPitchSpeed, global.cameraYawSpeed,
+      1, 1, 1
+    ))
+    _renderPlayerShadow(gridService, playerService)
 
     matrix_set(matrix_world, matrix_build(
       baseX, baseY, depths.coinZ, 
@@ -1634,14 +1703,15 @@ function GridRenderer() constructor {
 
     GPU.render.clear(color, colorAlpha)
 
+    this.gridSurface.renderStretched(width, height, 0, 0, gridAlpha, color, blendConfig)
     if (shader_is_compiled(shader_gaussian_blur)) {
       shader_set(shader_gaussian_blur)
       shader_set_uniform_f(shader_get_uniform(shader_gaussian_blur, "size"), width, height, size)
-      this.gridSurface.renderStretched(width, height, 0, 0, gridAlpha, color, blendConfig)
+      //this.gridSurface.renderStretched(width, height, 0, 0, gridAlpha, color, blendConfig)
       this.gridItemSurface.renderStretched(width, height, 0, 0, gridAlpha, color, blendConfig)
       shader_reset()
     } else {
-      this.gridSurface.renderStretched(width, height, 0, 0, gridAlpha, color, blendConfig)
+      //this.gridSurface.renderStretched(width, height, 0, 0, gridAlpha, color, blendConfig)
       this.gridItemSurface.renderStretched(width, height, 0, 0, gridAlpha, color, blendConfig)
     }
 

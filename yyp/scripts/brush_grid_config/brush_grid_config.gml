@@ -134,7 +134,7 @@ function brush_grid_config(json) {
         type: NumberTransformer,
         value: Struct.get(json, "gr-cfg_focus-grid-treshold"),
         passthrough: UIUtil.passthrough.getClampedNumberTransformer(),
-        data: new Vector2(0.0, 99.9),
+        data: new Vector2(0.0, 100.0),
       },
       "gr-cfg_change-focus-grid-treshold": {
         type: Boolean,
