@@ -1586,11 +1586,9 @@ global.__VisuBrushContainers = new Map(String, Callable, {
         }
 
         var surfaceAlpha = this.state.getIfType("surface-alpha", Number, 1.0)
-        //if (this.executor.tasks.size() > 0) {
-        //  //this.state.set("surface-alpha", clamp(surfaceAlpha - DeltaTime.apply(0.066), 0.5, 1.0))
-        //} else
         if (surfaceAlpha < 1.0) {
-          this.state.set("surface-alpha", clamp(surfaceAlpha + DeltaTime.apply(0.066), 0.0, 1.0))
+          this.state.set("surface-alpha", clamp(surfaceAlpha + DELTA_TIME * 0.066, 0.0, 1.0))
+          //this.state.set("surface-alpha", clamp(surfaceAlpha + DeltaTime.apply(0.066), 0.0, 1.0))
         }
 
         this.renderDefaultScrollable()

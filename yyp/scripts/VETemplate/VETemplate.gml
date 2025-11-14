@@ -320,6 +320,19 @@ function VETemplate(json) constructor {
     } else {
       Struct.set(template, "sprite", null)
     }
+
+    var emitter = {
+      hide: this.store.getValue("particle_hide-preview"),
+      use: this.store.getValue("particle_use-preview"),
+      render: this.store.getValue("particle_render-preview"),
+      interval: this.store.getValue("particle_interval-preview"),
+      amount: this.store.getValue("particle_amount-preview"),
+      area: this.store.getValue("particle_area-preview"),
+      shape: this.store.getValue("particle_shape-preview"),
+      distribution: this.store.getValue("particle_distribution-preview"),
+    }
+
+    Struct.set(template, "emitter", emitter)
     
     return template
   }

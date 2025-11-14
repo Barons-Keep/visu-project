@@ -540,7 +540,7 @@ function VisuEditorController() constructor {
 
     var controller = Beans.get(BeanVisuController)
     if (this.renderUI && controller != null) {
-      this.renderUI = controller.menu.containers.size() == 0
+      this.renderUI = !controller.menu.enabled
     }
     
     return this
@@ -842,7 +842,7 @@ function VisuEditorController() constructor {
   ///@return {VisuEditorController}
   updateUIService = function() {
     if (this.renderUI) {
-      this.renderUI = Beans.get(BeanVisuController).menu.containers.size() == 0
+      this.renderUI = !Beans.get(BeanVisuController).menu.enabled
     }
     
     if (this.renderUI && this.requestOpenUI) {

@@ -250,6 +250,9 @@ function ParticleTemplate(_name, json) constructor {
   ///@type {?Particle}
   particle = null
 
+  ///@type {?Struct}
+  emitter = Struct.getIfType(json, "emitter", Struct)
+
   ///@return {Struct}
   serialize = function() {
     var json = {
@@ -267,8 +270,12 @@ function ParticleTemplate(_name, json) constructor {
       particle: null,
     }
 
-    if (Optional.is(this.sprite)) {
+    if (this.sprite != null) {
       Struct.set(json, "sprite", this.sprite)
+    }
+
+    if (this.emitter != null) {
+      Struct.set(json, "emitter", this.emitter)
     }
 
     return json

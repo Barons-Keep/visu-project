@@ -8,6 +8,4 @@
   
   ///@type {?String}
   __bean = null
-  
 
-	

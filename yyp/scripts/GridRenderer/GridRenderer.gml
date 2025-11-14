@@ -21,7 +21,19 @@ function GridRenderer() constructor {
   overlayRenderer = new GridOverlayRenderer(this)
 
   ///@type {Color}
-  playerShadowColor = new Color(1.0, 1.0, 1.0)
+  playerBackgroundShadowColor = new Color(1.0, 1.0, 1.0, 1.0)
+
+    ///@type {Color}
+  playerShaderBackgroundShadowColor = new Color(1.0, 1.0, 1.0, 1.0)
+  
+  ///@type {Color}
+  playerGridShadowColor = new Color(1.0, 1.0, 1.0, 1.0)
+
+  ///@type {Color}
+  playerShadowColor = new Color(1.0, 1.0, 1.0, 1.0)
+
+  ///@type {Number}
+  playerShadowColorTick = 0
 
   ///@private
   ///@type {Surface}
@@ -1178,18 +1190,25 @@ function GridRenderer() constructor {
       return this
     }
 
+    
+    
+    
+    var luminance = (0.2126 * this.playerShadowColor.red * 255.0) + (0.7152 * this.playerShadowColor.green * 255.0) + (0.0722 * this.playerShadowColor.blue * 255.0)
+    var contrastGMColor = luminance > 128 ? c_black : c_white
+
     var focusCooldown = Struct.get(player.handler, "focusCooldown")
     var focusTime = Struct.get(focusCooldown, "time")
     var focusDuration = Struct.get(focusCooldown, "duration")
     var focusFactor = focusTime != null && focusDuration != null ? focusTime / focusDuration : 0.0
     var scaleFactor = clamp(player.stats.godModeCooldown, 1.0, 10.0)
-    var alpha = player.sprite.getAlpha() * player.fadeIn * 0.75
-    var swing = (sin(this.playerZTimer.update().time * 5.0) + 1.0) / 2.0
-    var scaleX = ((player.sprite.texture.width * player.sprite.scaleX) / sprite_get_width(texture_player_shadow)) * (3.0 + (1.5 * focusFactor)) * (scaleFactor + swing)
-    var scaleY = ((player.sprite.texture.height * player.sprite.scaleY) / sprite_get_height(texture_player_shadow)) * (3.0 + (1.5 * focusFactor)) * (scaleFactor + swing)
+    var alpha = player.fadeIn
+    var swing = (sin(this.playerZTimer.update().time * 5.0) + 1.0) / 3.0
+    var scaleX = ((player.sprite.texture.width * player.sprite.scaleX) / sprite_get_width(texture_player_shadow)) * (4.0 + (0.0 * focusFactor)) * (scaleFactor + swing)
+    var scaleY = ((player.sprite.texture.height * player.sprite.scaleY) / sprite_get_height(texture_player_shadow)) * (4.0 + (0.0 * focusFactor)) * (scaleFactor + swing)
     var _x = (player.x - ((player.sprite.texture.width * player.sprite.scaleX) / (2.0 * GRID_SERVICE_PIXEL_WIDTH)) + ((player.sprite.texture.offsetX * player.sprite.scaleX) / GRID_SERVICE_PIXEL_WIDTH) - gridService.view.x) * GRID_SERVICE_PIXEL_WIDTH,
     var _y = (player.y - ((player.sprite.texture.height * player.sprite.scaleY) / (2.0 * GRID_SERVICE_PIXEL_HEIGHT)) + ((player.sprite.texture.offsetY * player.sprite.scaleY) / GRID_SERVICE_PIXEL_HEIGHT) - gridService.view.y) * GRID_SERVICE_PIXEL_HEIGHT
-    draw_sprite_ext(texture_player_shadow, 0, _x, _y, scaleX, scaleY, 0.0, this.playerShadowColor.toGMColor(), alpha)
+    draw_sprite_ext(texture_player_shadow, 0, _x, _y, scaleX * 0.75, scaleY * 0.75, 0.0, contrastGMColor, alpha * 1.0)
+    draw_sprite_ext(texture_player_shadow, 0, _x, _y, scaleX * 2.0, scaleY * 2.0, 0.0, this.playerShadowColor.toGMColor(), alpha * 0.9)
 
     return this
   }
@@ -1700,21 +1719,13 @@ function GridRenderer() constructor {
     var gridAlpha = properties.supportGridAlpha
     var focusAlpha = properties.supportFocusAlpha
     var blendConfig = properties.supportBlendConfig
-
+    var shaderGaussianBlur = controller.visuRenderer.shaderGaussianBlur
     GPU.render.clear(color, colorAlpha)
 
     this.gridSurface.renderStretched(width, height, 0, 0, gridAlpha, color, blendConfig)
-    if (shader_is_compiled(shader_gaussian_blur)) {
-      shader_set(shader_gaussian_blur)
-      shader_set_uniform_f(shader_get_uniform(shader_gaussian_blur, "size"), width, height, size)
-      //this.gridSurface.renderStretched(width, height, 0, 0, gridAlpha, color, blendConfig)
-      this.gridItemSurface.renderStretched(width, height, 0, 0, gridAlpha, color, blendConfig)
-      shader_reset()
-    } else {
-      //this.gridSurface.renderStretched(width, height, 0, 0, gridAlpha, color, blendConfig)
-      this.gridItemSurface.renderStretched(width, height, 0, 0, gridAlpha, color, blendConfig)
-    }
-
+    shaderGaussianBlur.setShader().setSize(width, height, size)
+    this.gridItemSurface.renderStretched(width, height, 0, 0, gridAlpha, color, blendConfig)
+    shaderGaussianBlur.resetShader()
     this.gridItemSurface.renderStretched(width, height, 0, 0, focusAlpha, focusColor, blendConfig)
 
     return this
@@ -1811,6 +1822,59 @@ function GridRenderer() constructor {
   ///@param {UILayout} layout
   ///@return {GridRenderer}
   renderGameSurface = function(layout) {
+    static updatePlayerGridShadowColor = function(context, layout) {
+      return null;
+      if (context.playerShadowColorTick != 0) {
+        return
+      }
+
+      var controller = Beans.get(BeanVisuController)
+      var properties = controller.gridService.properties
+      var middleSurface = context.gridSurface.asset
+      if (!surface_exists(middleSurface)) {
+        return
+      }
+
+      var playerService = controller.playerService
+      var player = playerService.player
+      var width = layout.width()
+      var height = layout.height()
+      var configX = layout.x()
+      var configY = layout.y()
+      var _x = configX + (width / 2.0)
+      var _y = configY + (height / 2.0)
+      var player = playerService.player
+      if (player != null && player2DCoords.x != null && player2DCoords.y != null) {
+        _x = configX + clamp(
+          context.player2DCoords.x, 
+          player.sprite.getWidth() - player.sprite.texture.offsetX, 
+          width - player.sprite.getWidth() + player.sprite.texture.offsetX
+        )
+        _y = configY + clamp(
+          context.player2DCoords.y,
+          player.sprite.getHeight() - player.sprite.texture.offsetY,
+          height - player.sprite.getHeight() + player.sprite.texture.offsetY
+        )
+      }
+
+      var gmColorAlpha = surface_getpixel_ext(middleSurface, _x, _y)
+      var alpha = ((gmColorAlpha >> 24) & 255) / 255.0
+      var gmBlue = ((gmColorAlpha >> 16) & 255) / 255.0
+      var gmGreen = ((gmColorAlpha >> 8) & 255) / 255.0
+      var gmRed = (gmColorAlpha & 255) / 255.0
+      var lerpFactor = 0.25
+      context.playerGridShadowColor.alpha = lerp(context.playerGridShadowColor.alpha, alpha, lerpFactor)
+      context.playerGridShadowColor.red = lerp(context.playerGridShadowColor.red, 1.0 - gmRed, lerpFactor)
+      context.playerGridShadowColor.green = lerp(context.playerGridShadowColor.green, 1.0 - gmGreen, lerpFactor)
+      context.playerGridShadowColor.blue = lerp(context.playerGridShadowColor.blue, 1.0 - gmBlue, lerpFactor)
+      //Core.print("playerGridShadowColor",
+      //  "red:", context.playerGridShadowColor.red * 255.0,
+      //  "green:", context.playerGridShadowColor.green * 255.0,
+      //  "blue:", context.playerGridShadowColor.blue * 255.0,
+      //  "alpha:", context.playerGridShadowColor.alpha * 255.0
+      //)
+    }
+
     var controller = Beans.get(BeanVisuController)
     var gridService = controller.gridService
     var properties = gridService.properties
@@ -1818,6 +1882,8 @@ function GridRenderer() constructor {
     var height = layout.height()
     var enableParticles = Visu.settings.getValue("visu.graphics.particle")
     var enableGlitch = Visu.settings.getValue("visu.graphics.bkt-glitch")
+
+    updatePlayerGridShadowColor(this, layout)
 
     //GPU.render.clear(properties.gridClearColor.toGMColor(), 0.0)
     //GPU.render.clear(properties.gridClearColor.toGMColor(), properties.gridClearFrameAlpha)
@@ -2199,15 +2265,15 @@ function GridRenderer() constructor {
   ///@param {UILayout} layout
   ///@return {GridRenderer}
   render = function(layout) {
-    static updatePlayerShadowColor = function(context, layout) {
+    static updatePlayerBackgroundShadowColor = function(context, layout) {
+      //return null;
+      if (context.playerShadowColorTick != 10) {
+        return
+      }
+
       var controller = Beans.get(BeanVisuController)
       var properties = controller.gridService.properties
-      var middleSurface = (properties.renderBackgroundShaders
-          && Visu.settings.getValue("visu.graphics.bkg-shaders")
-          && controller.shaderBackgroundPipeline.executor.tasks.size() > 0)
-        ? context.shaderBackgroundSurface.asset
-        : context.backgroundSurface.asset
-
+      var middleSurface = context.backgroundSurface.asset
       if (!surface_exists(middleSurface)) {
         return
       }
@@ -2221,9 +2287,59 @@ function GridRenderer() constructor {
       var _x = configX + (width / 2.0)
       var _y = configY + (height / 2.0)
       var player = playerService.player
-      if (Optional.is(player) 
-          && Optional.is(player2DCoords.x) 
-          && Optional.is(player2DCoords.y)) {
+      if (player != null && player2DCoords.x != null && player2DCoords.y != null) {
+        _x = configX + clamp(
+          context.player2DCoords.x, 
+          player.sprite.getWidth() - player.sprite.texture.offsetX, 
+          width - player.sprite.getWidth() + player.sprite.texture.offsetX
+        )
+        _y = configY + clamp(
+          context.player2DCoords.y,
+          player.sprite.getHeight() - player.sprite.texture.offsetY,
+          height - player.sprite.getHeight() + player.sprite.texture.offsetY
+        )
+      }
+
+      var middleColor = surface_getpixel(middleSurface, _x, _y)
+      var lerpFactor = 0.25
+      context.playerBackgroundShadowColor.red = lerp(context.playerBackgroundShadowColor.red, 1.0 - (color_get_red(middleColor) / 255.0), lerpFactor)
+      context.playerBackgroundShadowColor.green = lerp(context.playerBackgroundShadowColor.green, 1.0 - (color_get_green(middleColor) / 255.0), lerpFactor)
+      context.playerBackgroundShadowColor.blue = lerp(context.playerBackgroundShadowColor.blue, 1.0 - (color_get_blue(middleColor) / 255.0), lerpFactor)
+      //Core.print("playerBackgroundShadowColor",
+      //  "red:", context.playerBackgroundShadowColor.red * 255.0,
+      //  "green:", context.playerBackgroundShadowColor.green * 255.0,
+      //  "blue:", context.playerBackgroundShadowColor.blue * 255.0,
+      //  "alpha:", context.playerBackgroundShadowColor.alpha * 255.0
+      //)
+    }
+    
+    static updatePlayerShaderBackgroundShadowColor = function(context, layout) {
+      return null;
+      if (context.playerShadowColorTick != 20) {
+        return
+      }
+
+      var controller = Beans.get(BeanVisuController)
+      var properties = controller.gridService.properties
+      var middleSurface = (properties.renderBackgroundShaders
+          && Visu.settings.getValue("visu.graphics.bkg-shaders")
+          && controller.shaderBackgroundPipeline.executor.tasks.size() > 0)
+        ? context.shaderBackgroundSurface.asset
+        : context.backgroundSurface.asset
+      if (!surface_exists(middleSurface)) {
+        return
+      }
+
+      var playerService = controller.playerService
+      var player = playerService.player
+      var width = layout.width()
+      var height = layout.height()
+      var configX = layout.x()
+      var configY = layout.y()
+      var _x = configX + (width / 2.0)
+      var _y = configY + (height / 2.0)
+      var player = playerService.player
+      if (player != null && player2DCoords.x != null && player2DCoords.y != null) {
         _x = configX + clamp(
           context.player2DCoords.x, 
           player.sprite.getWidth() - player.sprite.texture.offsetX, 
@@ -2241,12 +2357,48 @@ function GridRenderer() constructor {
         _y = _y * (context.shaderBackgroundSurface.height / context.backgroundSurface.height)
       }
 
-      var middleColor = surface_getpixel(middleSurface, _x, _y)
-      context.playerShadowColor.red = lerp(context.playerShadowColor.red, 1.0 - (color_get_red(middleColor) / 255.0), 0.1)
-      context.playerShadowColor.green = lerp(context.playerShadowColor.green, 1.0 - (color_get_green(middleColor) / 255.0), 0.1)
-      context.playerShadowColor.blue = lerp(context.playerShadowColor.blue, 1.0 - (color_get_blue(middleColor) / 255.0), 0.1)
+      var gmColorAlpha = surface_getpixel_ext(middleSurface, _x, _y)
+      var alpha = ((gmColorAlpha >> 24) & 255) / 255.0
+      var gmBlue = ((gmColorAlpha >> 16) & 255) / 255.0
+      var gmGreen = ((gmColorAlpha >> 8) & 255) / 255.0
+      var gmRed = (gmColorAlpha & 255) / 255.0
+      var lerpFactor = 0.25
+      context.playerShaderBackgroundShadowColor.alpha = lerp(context.playerShaderBackgroundShadowColor.alpha, alpha, lerpFactor)
+      context.playerShaderBackgroundShadowColor.red = lerp(context.playerShaderBackgroundShadowColor.red, 1.0 - gmRed, lerpFactor)
+      context.playerShaderBackgroundShadowColor.green = lerp(context.playerShaderBackgroundShadowColor.green, 1.0 - gmGreen, lerpFactor)
+      context.playerShaderBackgroundShadowColor.blue = lerp(context.playerShaderBackgroundShadowColor.blue, 1.0 - gmBlue, lerpFactor)
+      //Core.print("playerShaderBackgroundShadowColor",
+      //  "red:", context.playerShaderBackgroundShadowColor.red * 255.0,
+      //  "green:", context.playerShaderBackgroundShadowColor.green * 255.0,
+      //  "blue:", context.playerShaderBackgroundShadowColor.blue * 255.0,
+      //  "alpha:", context.playerShaderBackgroundShadowColor.alpha * 255.0
+      //)
     }
 
+    static updatePlayerShadowColor = function(context) {
+      context.playerShadowColorTick += 1
+      if (context.playerShadowColorTick > 30) {
+        context.playerShadowColorTick = -10
+      } else {
+        return
+      }
+
+      var playerBackgroundShadowGMColor = context.playerBackgroundShadowColor.toGMColor()
+      var playerGridShadowGMColor = context.playerGridShadowColor.toGMColor()
+      var playerShaderBackgroundShadowGMColor = context.playerShaderBackgroundShadowColor.toGMColor()
+      var playerShadowGMColor = merge_colour(playerBackgroundShadowGMColor, playerShaderBackgroundShadowGMColor, context.playerShaderBackgroundShadowColor.alpha)
+      playerShadowGMColor = merge_colour(playerShadowGMColor, playerGridShadowGMColor, context.playerGridShadowColor.alpha)
+      context.playerShadowColor.red = colour_get_red(playerShadowGMColor) / 255.0
+      context.playerShadowColor.green = colour_get_green(playerShadowGMColor) / 255.0
+      context.playerShadowColor.blue = colour_get_blue(playerShadowGMColor) / 255.0
+      //Core.print("playerShadowColor",
+      //  "red:", context.playerShadowColor.red * 255.0,
+      //  "green:", context.playerShadowColor.green * 255.0,
+      //  "blue:", context.playerShadowColor.blue * 255.0,
+      //  "alpha:", context.playerShadowColor.alpha * 255.0
+      //)
+    }
+  
     var shaderQuality = Visu.settings.getValue("visu.graphics.shader-quality", 1.0)
     var width = ceil(layout.width())
     var height = ceil(layout.height())
@@ -2285,7 +2437,9 @@ function GridRenderer() constructor {
       .update(shaderWidth, shaderHeight)
       .renderOn(this.renderShaderCombinedSurface, layout, false)
 
-    updatePlayerShadowColor(this, layout)
+    updatePlayerBackgroundShadowColor(this, layout)
+    updatePlayerShaderBackgroundShadowColor(this, layout)
+    updatePlayerShadowColor(this)
 
     return this
   }

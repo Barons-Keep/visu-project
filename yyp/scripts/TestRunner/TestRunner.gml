@@ -6,6 +6,9 @@ function TestRunner() constructor {
   ///@type {?TestSuite}
   testSuite = null
 
+  ///@type {?Struct}
+  report = null
+
   ///@type {Queue<TestSuite>}
   testSuites = new Queue(TestSuite)
   
@@ -15,13 +18,14 @@ function TestRunner() constructor {
   ///@type {Map<String, Callable>}
   restoreHooks = new Map(String, Callable)
 
-  ///@type {Boolean}
-  initialized = false
-
   ///@type {TaskExecutor}
   executor = new TaskExecutor(this, { 
     enableLogger: true,
-    catchException: false,
+    catchException: true,
+    exceptionCallback: function(task, exception) {
+      task.status = TaskStatus.REJECTED
+    },
+    loggerPrefix: BeanTestRunner,
   })
 
   ///@return {TestRunner}
@@ -62,6 +66,32 @@ function TestRunner() constructor {
     return this
   }
 
+  ///@return {Struct}
+  factoryReport = function() {
+    var unixTimestamp = Core.getCurrentUnixTimestamp()
+    return {
+      results: {
+        tool: {
+          "name": "io.alkapivo.core.test.TestRunner"
+        },
+        summary: {
+          "tests": 0,
+          "passed": 0,
+          "failed": 0,
+          "pending": 0,
+          "skipped": 0,
+          "other": 0,
+          "start": unixTimestamp,
+          "stop": unixTimestamp,
+        },
+        tests: [],
+        environment: {
+          "appName": game_display_name,
+        }
+      }
+    }
+  }
+
   ///@param {String} path
   ///@return {TestRunner}
   push = function(path) {
@@ -86,24 +116,40 @@ function TestRunner() constructor {
   ///@private
   ///@return {TestRunner}
   saveReport = function() {
-    var stringBuilder = new StringBuilder()
-    this.testSuite.report.forEach(function(entry, index, stringBuilder) {
-      var status = entry.result.status == PromiseStatus.FULLFILLED ? "Passed" : "Failed"
-      var message = $"{entry.test} ({entry.description}): {status}"
-      Logger.info("TestRunner", message)
-      stringBuilder.append($"{message}\n")
-    }, stringBuilder)
+    if (this.testSuite == null || this.report == null) {
+      return
+    }
 
-    var date = string(current_year) + "-"
-      + string(string_replace(string_format(current_month, 2, 0), " ", "0")) + "-"
-      + string(string_replace(string_format(current_day, 2, 0), " ", "0")) + "_"
-      + string(string_replace(string_format(current_hour, 2, 0), " ", "0")) + "-"
-      + string(string_replace(string_format(current_minute, 2, 0), " ", "0")) + "-"
-      + string(string_replace(string_format(current_second, 2, 0), " ", "0"));
+    this.testSuite.results.forEach(function(result, idx, runner) {
+      var report = runner.report
+      report.results.summary.tests++
+      report.results.summary.stop = Core.getCurrentUnixTimestamp()
+      var status = "skipped"
+      switch (result.promise.status) {
+        case PromiseStatus.FULLFILLED:
+          status = "passed"
+          report.results.summary.passed++
+          break
+        case PromiseStatus.REJECTED:
+          status = "failed"
+          report.results.summary.failed++
+          break
+        default:
+          status = "skipped"
+          report.results.summary.skipped++
+          break
+      }
+
+      GMArray.add(report.results.tests, {
+        name: result.name,
+        status: status,
+        duration: result.duration,
+      })
+    }, this)
 
     FileUtil.writeFileSync(new File({
-      path: FileUtil.get($"{working_directory}{date}_{this.testSuite.name}.txt"),
-      data: stringBuilder.get()
+      path: FileUtil.get($"{working_directory}ctrf-report.json"),
+      data: JSON.stringify(this.report, { pretty: true })
     }))
 
     return this
@@ -119,37 +165,46 @@ function TestRunner() constructor {
 
   ///@return {TestRunner}
   update = function() {
-    if (!Optional.is(this.testSuite) 
-      && this.testSuites.size() > 0) {
+    if (this.testSuite == null && this.testSuites.size() > 0) {
       this.testSuite = this.testSuites.pop()
     }
 
-    if (!Core.isType(this.testSuite, TestSuite)) {
+    if (this.testSuite == null) {
       return this
     }
 
+    if (this.report == null) {
+      this.report = this.factoryReport()
+    }
+
     try {
-      this.executor.update()
-      
-      this.testSuite.update(this.executor)
+      this.testSuite.update(this.executor.update())
       if (!this.testSuite.finished) {
         return this
       }
 
-      this.saveReport().testSuite = null
-      if (this.testSuites.size() == 0) {
-        this.shutdown()
-      }
+      this.saveReport()
+      this.testSuite = null
     } catch (exception) {
-      Logger.error(BeanTestRunner, $"Fatal exception: {exception.message}")
-      Logger.info(BeanTestRunner, "Attempt to save test results")
-
+      Logger.error("TestRunner::update", $"Exception: {exception.message}")
+      Core.printStackTrace()
       try {
         this.saveReport()
+        this.testSuite = null
+        this.testSuites.forEach(function(testSuite, idx, testRunner) {
+          testRunner.testSuite = testSuite
+          testRunner.saveReport()
+          testRunner.testSuite = null
+        }, this)
       } catch (ex) {
-        Logger.error(BeanTestRunner, $"Unable to save test results: {ex.message}")
+        Logger.error("TestRunner::update", $"Unable to save test results: {ex.message}")
+        Core.printStackTrace()
       }
 
+      this.shutdown()
+    }
+
+    if (this.testSuites.size() == 0) {
       this.shutdown()
     }
 

@@ -71,7 +71,7 @@ function VisuIO() constructor {
       var state = controller.fsm.getStateName()
       switch (state) {
         case "idle":
-          if (menu.containers.size() > 0) {
+          if (menu.enabled) {
             if (controller.visuRenderer.blur.target != 0.0) {
               menu.send(new Event("back"))
             } else {
@@ -97,7 +97,7 @@ function VisuIO() constructor {
           controller.send(new Event("pause", { data: menu.factoryOpenMainMenuEvent() }))
           break
         case "paused":
-          if (menu.containers.size() > 0) {
+          if (menu.enabled) {
             menu.send(new Event("back") )
             if (!Optional.is(menu.back)) {
               controller.send(new Event("play"))

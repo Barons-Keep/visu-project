@@ -671,7 +671,8 @@ function VisuTrackLoader(_controller): Service() constructor {
             }
 
             var audio = Assert.isType(fsm.context.controller.trackService.track.audio, Sound)
-            var attempts = this.state.inject("attempts", GAME_FPS * 5) - DeltaTime.apply(1)
+            var attempts = this.state.inject("attempts", GAME_FPS * 5) - DELTA_TIME
+            //var attempts = this.state.inject("attempts", GAME_FPS * 5) - DeltaTime.apply(1)
             Assert.isTrue(attempts >= 0.0, "parse-secondary-assets attempts must be >= 0.0")
             this.state.set("attempts", attempts)
             audio.rewind(0.0)
@@ -924,8 +925,11 @@ function VisuTrackLoader(_controller): Service() constructor {
 
   ///@return {FSM}
   update = function() {
+    var deltaTime = DELTA_TIME
+    DELTA_TIME = 1.0
     this.updateFSM()
     this.updateExecutor()
+    DELTA_TIME = deltaTime
     return this
   }
 }

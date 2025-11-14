@@ -246,8 +246,10 @@ function GridService(_config = null) constructor {
       return this
     },
     updateMovement: function(gridService) {
-      var angle = DeltaTime.apply(gridService.movement.angle.update().get() / 500.0)
-      var spd = DeltaTime.apply(gridService.movement.speed.update().get())
+      var angle = DELTA_TIME * gridService.movement.angle.update().get() / 500.0
+      var spd = DELTA_TIME * gridService.movement.speed.update().get()
+      //var angle = DeltaTime.apply(gridService.movement.angle.update().get() / 500.0)
+      //var spd = DeltaTime.apply(gridService.movement.speed.update().get())
       this.setX(this.x + Math.fetchCircleX(spd, angle))
       this.setY(this.y + Math.fetchCircleY(spd, angle))
 

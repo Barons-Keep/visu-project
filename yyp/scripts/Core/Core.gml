@@ -75,6 +75,9 @@ function _Core() constructor {
   ///@type {?Map<String, any>}
   typeParsers = null
 
+  ///@type {?Number}
+  unixEpochTimestamp = null
+
   ///@param {any} object
   ///@param {any} type
   ///@return {Boolean}
@@ -356,6 +359,18 @@ function _Core() constructor {
     } else  {
       return new Array(Number, [ 0 ])
     }
+  }
+
+  ///@return {Number}
+  static getCurrentUnixTimestamp = function() {
+    if (this.unixEpochTimestamp == null) {
+      var timezone = date_get_timezone()
+      date_set_timezone(timezone_utc)
+      this.unixEpochTimestamp = date_create_datetime(1970, 1, 1, 0, 0, 0)
+      date_set_timezone(timezone)
+    }
+    
+    return floor(date_second_span(floor(this.unixEpochTimestamp), date_current_datetime()))
   }
 }
 global.__Core = new _Core()

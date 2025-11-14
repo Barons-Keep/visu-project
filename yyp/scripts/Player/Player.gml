@@ -700,7 +700,8 @@ function PlayerStats(_player, json) constructor {
 
   ///@return {PlayerStats}
   update = function() {
-    var step = DeltaTime.apply(FRAME_MS)
+    var step = DELTA_TIME * FRAME_MS
+    //var step = DeltaTime.apply(FRAME_MS)
     this.setGodModeCooldown(this.godModeCooldown > step ? this.godModeCooldown - step : 0.0)
     this.setBombCooldown(this.bombCooldown > step ? this.bombCooldown - step : 0.0)
     this.forceLevel.update()
@@ -729,7 +730,8 @@ function PlayerHandler(json) constructor {
     finished: false,
     increment: function() {
       this.finished = false
-      this.time += DeltaTime.apply()
+      this.time += DELTA_TIME * FRAME_MS
+      //this.time += DeltaTime.apply()
       if (this.time >= this.duration) {
         this.finished = true
         this.time = this.duration
@@ -739,7 +741,8 @@ function PlayerHandler(json) constructor {
     },
     decrement: function() {
       this.finished = false
-      this.time -= DeltaTime.apply()
+      this.time -= DELTA_TIME * FRAME_MS
+      //this.time -= DeltaTime.apply()
       if (this.time <= 0.0) {
         this.time = 0.0
       }
@@ -815,21 +818,28 @@ function PlayerHandler(json) constructor {
     static calcSpeed = function(config, player, keyA, keyB, keyFocus) {
       var spdMax = config.speedMax
       if (keyFocus) {
-        var factor = DeltaTime.apply(abs(config.speedMax - config.speedMaxFocus) / 15.0)
+        var factor = DELTA_TIME * (abs(config.speedMax - config.speedMaxFocus) / 15.0)
+        //var factor = DeltaTime.apply(abs(config.speedMax - config.speedMaxFocus) / 15.0)
         spdMax = clamp(abs(config.speed) - factor, config.speedMaxFocus, config.speedMax)
       }
 
       var spd = 0.0
       if (keyA || keyB) {
         var dir = keyA ? -1.0 : 1.0
-        config.speed += dir * DeltaTime.apply(config.acceleration) * 0.5
-        spd = DeltaTime.apply(config.speed)
-        config.speed += dir * DeltaTime.apply(config.acceleration) * 0.5
+        config.speed += dir * DELTA_TIME * config.acceleration * 0.5
+        spd = DELTA_TIME * config.speed
+        config.speed += dir * DELTA_TIME * config.acceleration * 0.5
+        //config.speed += dir * DeltaTime.apply(config.acceleration) * 0.5
+        //spd = DeltaTime.apply(config.speed)
+        //config.speed += dir * DeltaTime.apply(config.acceleration) * 0.5
       } else if (abs(config.speed) - (DeltaTime.apply(config.friction) * 0.5) >= 0) {
         var dir = sign(config.speed)
-        config.speed -= dir * DeltaTime.apply(config.friction) * 0.5
-        spd = DeltaTime.apply(config.speed)
-        config.speed -= dir * DeltaTime.apply(config.friction) * 0.5
+        config.speed -= dir * DELTA_TIME * config.friction * 0.5
+        spd = DELTA_TIME * config.speed
+        config.speed -= dir * DELTA_TIME *config.friction * 0.5
+        //config.speed -= dir * DeltaTime.apply(config.friction) * 0.5
+        //spd = DeltaTime.apply(config.speed)
+        //config.speed -= dir * DeltaTime.apply(config.friction) * 0.5
         if (sign(config.speed) != dir) {
           config.speed = 0.0
         }
@@ -838,22 +848,6 @@ function PlayerHandler(json) constructor {
       }
       config.speed = sign(config.speed) * clamp(abs(config.speed), 0.0, spdMax)
       return spd
-
-      //var speedMax = config.speedMax
-      //if (keyFocus) {
-      //  var factor = abs(config.speedMax - config.speedMaxFocus) / 15.0
-      //  speedMax = clamp(abs(config.speed) - DeltaTime.apply(factor), 
-      //    config.speedMaxFocus, config.speedMax)
-      //}
-      //speedMax = DeltaTime.apply(speedMax)
-      //config.speed = keyA || keyB
-      //  ? (config.speed + (keyA ? -1 : 1) 
-      //    * DeltaTime.apply(config.acceleration))
-      //  : (abs(config.speed) - DeltaTime.apply(config.friction) >= 0
-      //    ? config.speed - sign(config.speed) 
-      //      * DeltaTime.apply(config.friction) : 0)
-      //config.speed = sign(config.speed) * clamp(abs(config.speed), 0, speedMax)
-      //return config.speed
     }
 
     static updateKeyActionOnEnabled = function(gun, index, acc) {
@@ -971,7 +965,8 @@ function Player(template): GridItem(template) constructor {
     gml_pragma("forceinline")
     this.signals.reset()
 
-    var _speed = DeltaTime.apply(this.speed)
+    var _speed = DELTA_TIME * this.speed
+    //var _speed = DeltaTime.apply(this.speed)
     this.x += Math.fetchCircleX(_speed, this.angle)
     this.y += Math.fetchCircleY(_speed, this.angle)
     return this

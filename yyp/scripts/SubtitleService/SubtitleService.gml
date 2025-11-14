@@ -67,7 +67,8 @@ function SubtitleService(config = null) constructor {
         })
         .whenUpdate(function() { 
           var state = this.state
-          state.time = state.time + DeltaTime.apply(FRAME_MS)
+          state.time += DELTA_TIME * FRAME_MS
+          //state.time += DeltaTime.apply(FRAME_MS)
           
           var angleTransformer = state.subtitle.angleTransformer
           var speedTransformer = state.subtitle.speedTransformer
@@ -76,8 +77,10 @@ function SubtitleService(config = null) constructor {
             
             angleTransformer.update()
             speedTransformer.update()
-            var _x = Math.fetchCircleX(DeltaTime.apply(speedTransformer.get()) / GRID_ITEM_SPEED_SCALE, angleTransformer.get())
-            var _y = Math.fetchCircleY(DeltaTime.apply(speedTransformer.get()) / GRID_ITEM_SPEED_SCALE, angleTransformer.get())
+            var _x = Math.fetchCircleX((DELTA_TIME * speedTransformer.get()) / GRID_ITEM_SPEED_SCALE, angleTransformer.get())
+            var _y = Math.fetchCircleY((DELTA_TIME * speedTransformer.get()) / GRID_ITEM_SPEED_SCALE, angleTransformer.get())
+            //var _x = Math.fetchCircleX(DeltaTime.apply(speedTransformer.get()) / GRID_ITEM_SPEED_SCALE, angleTransformer.get())
+            //var _y = Math.fetchCircleY(DeltaTime.apply(speedTransformer.get()) / GRID_ITEM_SPEED_SCALE, angleTransformer.get())
             var area = state.subtitle.area
             area.setX(area.getX() + _x)
             area.setY(area.getY() + _y)

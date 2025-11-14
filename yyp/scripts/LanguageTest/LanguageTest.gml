@@ -57,7 +57,7 @@ function Test_Language(json = {}) {
       Beans.get(BeanTestRunner).installHooks()
     })
     .whenFinish(function(data) {
-      Logger.test("LanguageTest", $"Finished Test_Language: {data}")
+      Logger.test("LanguageTest", $"Finished Test_Language")
       Beans.get(BeanTestRunner).uninstallHooks()
     })
     .whenTimeout(function() {

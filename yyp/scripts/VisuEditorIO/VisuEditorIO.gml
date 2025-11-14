@@ -748,7 +748,7 @@ function VisuEditorIO() constructor {
       
       var controller = Beans.get(BeanVisuController)
       if (!Core.isType(controller, VisuController) 
-        || controller.menu.containers.size() > 0) {
+        || controller.menu.enabled) {
         return this
       }
 

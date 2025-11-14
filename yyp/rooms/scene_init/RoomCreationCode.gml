@@ -1,3 +1,5 @@
+Core.print("Init scene_init")
+
 GMObjectUtil.factoryStructInstance(
 	GMServiceInstance, 
 	Scene.fetchLayer("instance_main", 100),

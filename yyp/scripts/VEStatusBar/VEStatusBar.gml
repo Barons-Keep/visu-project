@@ -161,7 +161,8 @@ function VEStatusBar(_editor) constructor {
                       var realFPSCounter = Struct.getIfType(this, "realFPSCounter", Number, 0.0)
                       var realFPSSum = Struct.getIfType(this, "realFPSSum", Number, 0.0)
 
-                      realFPSCounter += DeltaTime.apply(1.0)
+                      realFPSCounter += DELTA_TIME * 1.0
+                      //realFPSCounter += DeltaTime.apply(1.0)
                       realFPSSum += fps_real
                       if (realFPSCounter > (GAME_FPS / 2.0)) {
                         realFPS = round(realFPSSum / realFPSCounter)

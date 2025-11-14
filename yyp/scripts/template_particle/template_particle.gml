@@ -3,6 +3,7 @@
 ///@param {?Struct} [json]
 ///@return {Struct}
 function template_particle(json = null) {
+  var emitter = Struct.getIfType(json, "emitter", Struct)
   var template = {
     name: Assert.isType(json.name, String),
     store: new Map(String, Struct, {
@@ -42,31 +43,31 @@ function template_particle(json = null) {
       },
       "particle_hide-preview": {
         type: Boolean,
-        value: Struct.getIfType(json, "particle_hide-preview", Boolean, false),
+        value: Struct.getIfType(emitter, "hide", Boolean, false),
       },
       "particle_use-preview": {
         type: Boolean,
-        value: Struct.getIfType(json, "particle_use-preview", Boolean, false),
+        value: Struct.getIfType(emitter, "use", Boolean, false),
       },
       "particle_render-preview": {
         type: Boolean,
-        value: Struct.getIfType(json, "particle_render-preview", Boolean, false),
+        value: Struct.getIfType(emitter, "render", Boolean, false),
       },
       "particle_interval-preview": {
         type: Number,
-        value: Struct.getIfType(json, "particle_interval-preview", Number, 1.0),
+        value: Struct.getIfType(emitter, "interval", Number, 1.0),
         passthrough: UIUtil.passthrough.getClampedStringNumber(),
         data: new Vector2(0.0, 999.9),
       },
       "particle_amount-preview": {
         type: Number,
-        value: Struct.getIfType(json, "particle_amount-preview", Number, 1),
+        value: Struct.getIfType(emitter, "amount", Number, 1),
         passthrough: UIUtil.passthrough.getClampedStringInteger(),
         data: new Vector2(1, 999),
       },
       "particle_area-preview": {
         type: Rectangle,
-        value: Struct.parse.rectangle(json, "particle_area-preview", { width: 1.0, height: 1.0 }),
+        value: Struct.parse.rectangle(emitter, "area", { width: 1.0, height: 1.0 }),
         passthrough: function(value) {
           value.x = clamp(value.x, -10.0, 10.0)
           value.y = clamp(value.y, -10.0, 10.0)
@@ -77,14 +78,14 @@ function template_particle(json = null) {
       },
       "particle_shape-preview": {
         type: String,
-        value: Struct.parse.enumerableKey(json, "particle_shape-preview", 
+        value: Struct.parse.enumerableKey(emitter, "shape", 
           ParticleEmitterShape, ParticleEmitterShape.RECTANGLE),
         passthrough: UIUtil.passthrough.getArrayValue(),
         data: ParticleEmitterShape.keys(),
       },
       "particle_distribution-preview": {
         type: String,
-        value: Struct.parse.enumerableKey(json, "particle_distribution-preview",
+        value: Struct.parse.enumerableKey(emitter, "distribution",
           ParticleEmitterDistribution, ParticleEmitterDistribution.LINEAR),
         passthrough: UIUtil.passthrough.getArrayValue(),
         data: ParticleEmitterDistribution.keys(),

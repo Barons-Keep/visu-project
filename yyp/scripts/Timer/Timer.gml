@@ -45,7 +45,8 @@ function Timer(_duration, config = null) constructor {
       return this
     }
 
-    this.time += DeltaTime.apply(this.amount)
+    this.time += DELTA_TIME * this.amount
+    //this.time += DeltaTime.apply(this.amount)
     if (this.amount > 0) {
       if (this.time < this.duration) {
         return this

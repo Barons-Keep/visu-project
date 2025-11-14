@@ -157,16 +157,17 @@ function DisplayService(_controller, config = {}): Service() constructor {
 
     return this
   }
+ 
 
   ///@param {Number} _width
   ///@param {Number} _height
   ///@return {DisplayService}
   resize = function(_width, _height) {
-    var width = max(this.minWidth, _width)
-    var height = max(this.minHeight, _height)
+    var width = Math.getEvenCeil(max(this.minWidth, _width))
+    var height = Math.getEvenCeil(max(this.minHeight, _height))
     try {
-      var guiWidth = width / this.scale
-      var guiHeight = height / this.scale
+      var guiWidth = Math.getEvenCeil(width / this.scale)
+      var guiHeight = Math.getEvenCeil(height / this.scale)
       Logger.debug("DisplayService", $"Resize window from {this.previousWidth}x{this.previousHeight} to {width}x{height}, scale: {this.scale}")
       display_set_gui_size(guiWidth, guiHeight)
       window_set_size(width, height)

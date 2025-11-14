@@ -294,7 +294,8 @@ function GridItemEmitter(json = null) constructor {
     //this.anglePerArrayStep.update()
     //this.speedRng.update()
 
-    this.time += DeltaTime.apply(FRAME_MS)
+    this.time += DELTA_TIME * FRAME_MS
+    //this.time += DeltaTime.apply(FRAME_MS)
     if (this.time < this.interval) {
       return this
     }
@@ -491,7 +492,8 @@ function GridItem(config) constructor {
     gml_pragma("forceinline")
     this.signals.reset()
     //var _speed = DeltaTime.apply(controller.gridService.properties.bulletTime * this.speed)
-    var _speed = DeltaTime.apply(GRID_SERVICE_BULLET_TIME * this.speed)
+    var _speed = DELTA_TIME * GRID_SERVICE_BULLET_TIME * this.speed
+    //var _speed = DeltaTime.apply(GRID_SERVICE_BULLET_TIME * this.speed)
     this.x += Math.fetchCircleX(_speed, this.angle)
     this.y += Math.fetchCircleY(_speed, this.angle)
     return this

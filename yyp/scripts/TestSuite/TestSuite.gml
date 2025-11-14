@@ -4,29 +4,37 @@
 function TestSuite(json = {}) constructor {
   
   ///@type {String}
-  name = Assert.isType(Struct.getDefault(json, "name", "Undefined test suite"), String)
+  name = Struct.getIfType(json, "name", String, "Undefined test suite")
+
+  ///@type {Boolean}
+  stopAfterFailure = Struct.getIfType(json, "stopAfterFailure", Boolean, false)
 
   ///@type {Boolean}
   finished = false
 
   ///@type {Array<Test>}
-  tests = new Array(Test, GMArray.map(
-    (Core.isType(Struct.get(json, "tests"), GMArray) 
-      ? json.tests 
-      : []),
-    function(json) {
-      return new Test(json)
-    }))
+  tests = new Array(Test, GMArray.map(Struct.getIfType(json, "tests", GMArray, []), function(json) {
+    return new Test(json)
+  }))
 
   ///@type {Array<Struct>}
-  report = new Array(Struct)
-
-  ///@type {Boolean}
-  stopAfterFailure = Struct.getDefault(json, "stopAfterFailure", false)
+  results = this.tests.map(function(test, idx, testSuite) {
+    return {
+      name: $"{test.handler}: {test.description}",
+      promise: { status: PromiseStatus.PENDING },
+      duration: 0,
+      _start: 0,
+      _stop: 0,
+    }
+  }, this, Struct)
 
   ///@private
   ///@type {Number}
-  pointer = 0
+  testsPointer = 0
+
+  ///@private
+  ///@type {Number}
+  resultsPointer = 0
 
   ///@param {TaskExecutor}
   ///@return {TestSuite}
@@ -35,29 +43,33 @@ function TestSuite(json = {}) constructor {
       return this
     }
 
-    if (this.pointer >= this.tests.size()) {
+    if (this.testsPointer >= this.tests.size()) {
       this.finished = true
       return this
     }
 
-    if (this.pointer == this.report.size()) {
-      var test = this.tests.get(this.pointer)
-      var task = Callable.run(test.handler, Struct.get(test, "data"))
+    var unixTimestamp = Core.getCurrentUnixTimestamp()
+    var result = this.results.get(this.testsPointer)
+    if (this.testsPointer == this.resultsPointer) {
+      var test = this.tests.get(this.testsPointer)
+      var task = Assert.isType(Callable.run(test.handler, Struct.get(test, "data")),
+        Task, "TestSuite.update task must be type of task")
       executor.add(task)
-      this.report.add({
-        test: test.handler,
-        description: test.description,
-        result: task.promise,
-      })
+      result.promise = task.promise
+      result._start = unixTimestamp
+      result._stop = unixTimestamp
+      this.resultsPointer++
     } else {
-      var status = this.report.getLast().result.status
-      if (this.stopAfterFailure) {
-        switch (status) {
-          case PromiseStatus.REJECTED: this.finished = true break
-          case PromiseStatus.FULLFILLED: this.pointer++ break
-        }
-      } else if (status != PromiseStatus.PENDING) {
-        this.pointer++
+      result._stop = unixTimestamp
+      result.duration = result._stop - result._start
+      switch (result.promise.status) {
+        case PromiseStatus.REJECTED:
+          this.finished = this.stopAfterFailure ? true : this.finished
+          this.testsPointer++
+          break
+        case PromiseStatus.FULLFILLED:
+          this.testsPointer++
+          break
       }
     }
 

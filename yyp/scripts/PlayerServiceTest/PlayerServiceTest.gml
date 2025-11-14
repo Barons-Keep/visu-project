@@ -164,7 +164,7 @@ function TestEvent_PlayerService_player_shoot(json = {}) constructor {
       stages: {
         init: function(task) {
           var controller = Beans.get(BeanVisuController)
-          if (controller.menu.containers.size() != 0) {
+          if (controller.menu.enabled) {
             return
           }
 

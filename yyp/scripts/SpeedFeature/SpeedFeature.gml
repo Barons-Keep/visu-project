@@ -91,7 +91,8 @@ function DeprecatedSpeedFeature(json): GridItemFeature(json) constructor {
     }
 
     if (this.add != null) {
-      item.setSpeed(item.speed + (this.add.update().value / GRID_ITEM_SPEED_SCALE))
+      item.setSpeed(item.speed + DELTA_TIME * (this.add.update().value / GRID_ITEM_SPEED_SCALE))
+      //item.setSpeed(item.speed + DeltaTime.apply(this.add.update().value / GRID_ITEM_SPEED_SCALE))
     }
   }
 }

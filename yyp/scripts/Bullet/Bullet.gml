@@ -302,7 +302,8 @@ function Bullet(template): GridItem(template) constructor {
     gml_pragma("forceinline")
 
     #region @Implement component Lifespan
-    this.lifespan += DeltaTime.apply(FRAME_MS)
+    this.lifespan += DELTA_TIME * FRAME_MS
+    //this.lifespan += DeltaTime.apply(FRAME_MS)
     if (this.lifespan >= this.lifespanMax
         || this.signals.shroomCollision != null
         || this.signals.playerCollision != null) {
@@ -323,7 +324,8 @@ function Bullet(template): GridItem(template) constructor {
     #region @Implement component Angle
     var componentAngle = 0.0
     if (this.wiggle) {
-      this.wiggleTime += DeltaTime.apply(this.wiggleFrequency * FRAME_MS)
+      this.wiggleTime += DELTA_TIME * this.wiggleFrequency * FRAME_MS
+      //this.wiggleTime += DeltaTime.apply(this.wiggleFrequency * FRAME_MS)
       this.wiggleTime = this.wiggleTime > TAU
         ? this.wiggleTime - TAU
         : (this.wiggleTime < 0.0

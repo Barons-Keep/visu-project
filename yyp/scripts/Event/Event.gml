@@ -141,7 +141,8 @@ global.__EVENT_DISPATCHERS = {
           var factor = this.state.get("factor")
           var dir = source < target ? 1 : -1
           var value = Struct.get(container, this.name) 
-            + DeltaTime.apply(factor * dir)
+            + DELTA_TIME * (factor * dir)
+          //  + DeltaTime.apply(factor * dir)
           value = dir > 0
             ? clamp(value, source, target)
             : clamp(value, target, source)
@@ -289,8 +290,10 @@ global.__EVENT_DISPATCHERS = {
             verticalFactor = clamp(ceil(surfaceHeight / height), 1.0, 999999.9)
           }
 
-          _x -= sign(sprite.getScaleX()) * Math.fetchCircleX(DeltaTime.apply(_speed), angle)
-          _y -= sign(sprite.getScaleY()) * Math.fetchCircleY(DeltaTime.apply(_speed), angle)
+          _x -= sign(sprite.getScaleX()) * Math.fetchCircleX(DELTA_TIME * _speed, angle)
+          _y -= sign(sprite.getScaleY()) * Math.fetchCircleY(DELTA_TIME * _speed, angle)
+          //_x -= sign(sprite.getScaleX()) * Math.fetchCircleX(DeltaTime.apply(_speed), angle)
+          //_y -= sign(sprite.getScaleY()) * Math.fetchCircleY(DeltaTime.apply(_speed), angle)
 
           if (abs(_x) > width * horizontalFactor) {
             _x = sign(_x) * (abs(_x) - (((abs(_x) div width) + horizontalFactor) * width))
@@ -315,14 +318,16 @@ global.__EVENT_DISPATCHERS = {
             case "fade-in":
               var fadeInSpeed = this.state.get("fadeInSpeed")
               var alpha = this.state.get("alpha")
-              sprite.alpha = clamp(sprite.alpha + DeltaTime.apply(fadeInSpeed), 0.0, alpha)
+              sprite.alpha = clamp(sprite.alpha + DELTA_TIME * fadeInSpeed, 0.0, alpha)
+              //sprite.alpha = clamp(sprite.alpha + DeltaTime.apply(fadeInSpeed), 0.0, alpha)
               if (sprite.alpha >= alpha) {
                 this.state.set("stage", "idle")
               }
               break
             case "fade-out":
               var fadeOutSpeed = this.state.get("fadeOutSpeed")
-              sprite.alpha = clamp(sprite.alpha - DeltaTime.apply(fadeOutSpeed), 0.0, 1.0)
+              sprite.alpha = clamp(sprite.alpha - DELTA_TIME * fadeOutSpeed, 0.0, 1.0)
+              //sprite.alpha = clamp(sprite.alpha - DeltaTime.apply(fadeOutSpeed), 0.0, 1.0)
               if (sprite.alpha <= 0.0) {
                 this.fullfill()
               }
@@ -407,14 +412,16 @@ global.__EVENT_DISPATCHERS = {
             case "fade-in":
               var fadeInSpeed = this.state.get("fadeInSpeed")
               var alpha = this.state.get("alpha")
-              color.alpha = clamp(color.alpha + DeltaTime.apply(fadeInSpeed), 0.0, alpha)
+              color.alpha = clamp(color.alpha + DELTA_TIME * fadeInSpeed, 0.0, alpha)
+              //color.alpha = clamp(color.alpha + DeltaTime.apply(fadeInSpeed), 0.0, alpha)
               if (color.alpha >= alpha) {
                 this.state.set("stage", "idle")
               }
               break
             case "fade-out":
               var fadeOutSpeed = this.state.get("fadeOutSpeed")
-              color.alpha = clamp(color.alpha - DeltaTime.apply(fadeOutSpeed), 0.0, 1.0)
+              color.alpha = clamp(color.alpha - DELTA_TIME * fadeOutSpeed, 0.0, 1.0)
+              //color.alpha = clamp(color.alpha - DeltaTime.apply(fadeOutSpeed), 0.0, 1.0)
               if (color.alpha <= 0.0) {
                 this.fullfill()
               }

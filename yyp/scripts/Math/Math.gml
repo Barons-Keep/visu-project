@@ -518,6 +518,13 @@ function _Math() constructor {
   static sqr = function(value) {
     return (sign(value) == 1.0) ? sqrt(value) : 0.0
   }
+
+  ///@param {Number}
+  ///@return {Number}
+  static getEvenCeil = function(value) {
+    var result = ceil(value)
+    return result mod 2 != 0 ? result + 1 : result
+  }
 }
 
 global.__Math = new _Math()

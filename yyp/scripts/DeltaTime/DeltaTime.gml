@@ -1,16 +1,25 @@
 ///@package io.alkapivo.core.service.deltatime
 
 ///@static
+///@type {Number}
+global.__DELTA_TIME = 1.0;
+#macro DELTA_TIME global.__DELTA_TIME
+
+///@static
 function _DeltaTime() constructor {
 	
   ///@private
 	///@type {Number}
-  deltaTime = 1
+  deltaTime = 1.0
 	
   ///@private
 	///@type {Number}
   fpsMin = 2
 	
+  ///@private
+  ///@type {Number}
+  deltaTimeMax = GAME_FPS / this.fpsMin
+
   ///@private
 	///@type {Number}
 	deltaTimePrecision = 1000000.0
@@ -27,8 +36,6 @@ function _DeltaTime() constructor {
   ///@return {Number}
   static apply = function(value = FRAME_MS) {
     gml_pragma("forceinline")
-    //var half = value / 2.0
-    //return this.deltaTime != 0.0 ? (this.deltaTime * half) + half : 0.0
     return this.deltaTime * value
   }
 
@@ -41,19 +48,29 @@ function _DeltaTime() constructor {
   ///@return {DeltaTime}
   static update = function() {
     gml_pragma("forceinline")
-    this.deltaTimePrevious = this.deltaTime;
-    this.deltaTime = delta_time / this.deltaTimePrecision;
-    if (this.deltaTime > 1 / this.fpsMin) {
+    this.deltaTimePrevious = this.deltaTime
+    this.deltaTime = delta_time / this.deltaTimePrecision
+    if (this.deltaTime > 1.0 / this.fpsMin) {
       if (this.deltaTimeRestored) {
-        this.deltaTime = 1 / this.fpsMin;	
+        this.deltaTime = 1.0 / this.fpsMin
       } else {
-        this.deltaTime = this.deltaTimePrevious;
-        this.deltaTimeRestored = true;
+        this.deltaTime = this.deltaTimePrevious
+        this.deltaTimeRestored = true
       }
     } else {
-      this.deltaTimeRestored = false;	
+      this.deltaTimeRestored = false
     }
-    this.deltaTime = clamp(this.deltaTime * GAME_FPS, 1.0, 5.0);
+
+    //this.deltaTime = fps_real >= GAME_FPS
+    //  ? 1.0
+    //  : clamp(this.deltaTime * GAME_FPS, 1.0, this.deltaTimeMax)
+    this.deltaTime = clamp(this.deltaTime * GAME_FPS, 1.0, this.deltaTimeMax)
+    DELTA_TIME = this.deltaTime
+
+    if (Core.getProperty("core.delta-time.performance.logger", false)) {
+      Logger.debug(BeanDeltaTimeService, $"DeltaTime: {String.format(DELTA_TIME, 2, 6)}, FPS-Real: {fps_real}, FPS: {fps}")
+    }
+
     return this
   }
 }

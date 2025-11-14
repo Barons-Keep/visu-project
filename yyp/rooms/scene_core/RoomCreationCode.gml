@@ -1,0 +1,1 @@
+Core.print("Init scene_core")

@@ -106,7 +106,8 @@ function ColorTransformer(json = null) constructor {
       return this
     }
 
-    var _factor = DeltaTime.apply(this.factor)
+    var _factor = DELTA_TIME * this.factor
+    //var _factor = DeltaTime.apply(this.factor)
     this.value.red = Math.transformNumber(this.value.red, this.target.red, _factor)
     this.value.green = Math.transformNumber(this.value.green, this.target.green, _factor)
     this.value.blue = Math.transformNumber(this.value.blue, this.target.blue, _factor)
@@ -212,7 +213,8 @@ function NumberTransformer(json = null) constructor {
       return this
     }
 
-    this.time += DeltaTime.apply()
+    this.time += DELTA_TIME * FRAME_MS
+    //this.time += DeltaTime.apply(FRAME_MS)
     if (this.time >= this.duration) {
       this.finished = true
       this.time = this.duration
@@ -228,9 +230,13 @@ function NumberTransformer(json = null) constructor {
       return this
     }
 
-    this.factor += DeltaTime.apply(this.increase * 0.5)
-    this.value = Math.transformNumber(this.value, this.target, DeltaTime.apply(this.factor))
-    this.factor += DeltaTime.apply(this.increase * 0.5)
+    this.factor += DELTA_TIME * (this.increase * 0.5)
+    this.value = Math.transformNumber(this.value, this.target, DELTA_TIME * this.factor)
+    this.factor += DELTA_TIME * (this.increase * 0.5)
+    //this.factor += DeltaTime.apply(this.increase * 0.5)
+    //this.value = Math.transformNumber(this.value, this.target, DeltaTime.apply(this.factor))
+    //this.factor += DeltaTime.apply(this.increase * 0.5)
+    
     if (this.value == this.target) {
       this.finished = true
     }

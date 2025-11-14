@@ -55,11 +55,11 @@ function Surface(config = null) constructor {
   update = function(width = null, height = null) {
     this.updated = false
     if (Core.isType(width, Number) && width > 2) {
-      this.width = round(width)
+      this.width = ceil(width)
     }
 
     if (Core.isType(height, Number) && height > 2) {
-      this.height = round(height)
+      this.height = ceil(height)
     }
 
     if (!Core.isType(this.asset, GMSurface)) {
@@ -140,10 +140,10 @@ function Surface(config = null) constructor {
 
     if (blendConfig != null) {
       blendConfig.set()
-      draw_surface_stretched_ext(this.asset, x, y, width, height, blend, alpha)
+      draw_surface_stretched_ext(this.asset, x, y, ceil(width), ceil(height), blend, alpha)
       blendConfig.reset()
     } else {
-      draw_surface_stretched_ext(this.asset, x, y, width, height, blend, alpha)
+      draw_surface_stretched_ext(this.asset, x, y, ceil(width), ceil(height), blend, alpha)
     }
 
     return this
@@ -197,14 +197,14 @@ function Surface(config = null) constructor {
 
     if (!Core.isType(this.asset, GMSurface)) {
       Logger.error("Surface", "scaleToFill fatal error")
-      return
+      return this
     }
     
     var surfaceWidth = surface_get_width(this.asset)
     var surfaceHeight = surface_get_height(this.asset)
     var scale = max(width / surfaceWidth, height / surfaceHeight)
-    this.width = surfaceWidth * scale
-    this.height = surfaceHeight * scale
+    this.width = ceil(surfaceWidth * scale)
+    this.height = ceil(surfaceHeight * scale)
     surface_resize(this.asset, this.width, this.height)
     return this
   }

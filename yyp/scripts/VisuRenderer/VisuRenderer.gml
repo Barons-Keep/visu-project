@@ -139,6 +139,29 @@ function VisuRenderer() constructor {
   debugMinFPS = GAME_FPS
 
   ///@private
+  ///@type {Struct}
+  Assert.isTrue(shader_is_compiled(shader_gaussian_blur), "shader_gaussian_blur must be compiled")
+  shaderGaussianBlur = {
+    uniformSize: shader_get_uniform(shader_gaussian_blur, "size"),
+    setSize: function(width, height, value) {
+      shader_set_uniform_f(this.uniformSize, width, height, value)
+      return this
+    },
+    setShader: function() {
+      shader_set(shader_gaussian_blur)
+      return this
+    },
+    render: function(handler, data) {
+      handler(data)
+      return this
+    },
+    resetShader: function() {
+      shader_reset()
+      return this
+    },
+  }
+
+  ///@private
   ///@type {Boolean}
   renderEditorMode = Core.getProperty("visu.editor.renderEditorMode", false)
 
@@ -310,7 +333,7 @@ function VisuRenderer() constructor {
   ///@return {VisuRenderer}
   renderMenu = function(layout) {
     var controller = Beans.get(BeanVisuController)
-    if (controller.menu.containers.size() != 0) {
+    if (controller.menu.enabled) {
       return this
     }
 
@@ -353,27 +376,19 @@ function VisuRenderer() constructor {
   ///@param {UILayout} layout
   ///@return {VisuRenderer}
   renderGame = function(layout) {
-    var controller = Beans.get(BeanVisuController)
-    var editor = Beans.get(Visu.modules().editor.controller)
-    if (controller.menu.containers.size() == 0) {
+    if (!Beans.get(BeanVisuController).menu.enabled) {
       return this
     }
 
     this.blur.update()
-    if (shader_is_compiled(shader_gaussian_blur)) {
-      var uniformSize = shader_get_uniform(shader_gaussian_blur, "size")
-      shader_set(shader_gaussian_blur)
-      shader_set_uniform_f(uniformSize, layout.width(), layout.height(), this.blur.value)
-      if (Visu.settings.getValue("visu.debug.render-surfaces")) {
-        this.gridRenderer.renderDebugSurfaces(layout)
-      } else [
-        this.gridRenderer.renderGUIGameSurface(layout)
-      ]
-      shader_reset()
-    } else {
-      this.gridRenderer.renderGUI(layout)
-    }
-
+    this.shaderGaussianBlur
+      .setShader()
+      .setSize(layout.width(), layout.height(), this.blur.value)
+      .render(Visu.settings.getValue("visu.debug.render-surfaces")
+        ? this.gridRenderer.renderDebugSurfaces
+        : this.gridRenderer.renderGUIGameSurface, layout)
+      .resetShader()
+    
     return this
   }
 

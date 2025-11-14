@@ -299,7 +299,8 @@ function Shroom(template): GridItem(template) constructor {
     this.updateGridItemFeatureQueue(this, controller, this.queue)
 
     #region @Implement component Lifespan
-    this.lifespan += DeltaTime.apply(FRAME_MS)
+    this.lifespan += DELTA_TIME * FRAME_MS
+    //this.lifespan += DeltaTime.apply(FRAME_MS)
     if (this.lifespan >= this.lifespanMax) {
       this.signal("kill")
     }

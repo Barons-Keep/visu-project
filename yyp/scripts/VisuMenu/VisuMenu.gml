@@ -175,6 +175,9 @@ function VisuMenu(_config = null) constructor {
   ///@type {?Struct}
   config = Optional.is(_config) ? Assert.isType(_config, Struct) : null
 
+  ///@type {Boolean}
+  enabled = false
+
   ///@type {Map<String, Containers>}
   containers = new Map(String, UI)
 
@@ -2688,7 +2691,8 @@ function VisuMenu(_config = null) constructor {
           .run(UIUtil.renderTemplates
           .get("renderDefault"))),
         render: function() {
-          var uiAlpha = clamp(this.state.get("uiAlpha") + DeltaTime.apply(this.state.get("uiAlphaFactor")), 0.0, 1.0)
+          var uiAlpha = clamp(this.state.get("uiAlpha") + DELTA_TIME * this.state.get("uiAlphaFactor"), 0.0, 1.0)
+          //var uiAlpha = clamp(this.state.get("uiAlpha") + DeltaTime.apply(this.state.get("uiAlphaFactor")), 0.0, 1.0)
           this.state.set("uiAlpha", uiAlpha)
           if (this.surface == null) {
             this.surface = new Surface({ width: this.area.getWidth(), height: this.area.getHeight() })
@@ -3081,7 +3085,8 @@ function VisuMenu(_config = null) constructor {
           //DeltaTime.deltaTime = delta
         },
         render: function() {
-          var uiAlpha = clamp(this.state.get("uiAlpha") + DeltaTime.apply(this.state.get("uiAlphaFactor")), 0.0, 1.0)
+          var uiAlpha = clamp(this.state.get("uiAlpha") + DELTA_TIME * this.state.get("uiAlphaFactor"), 0.0, 1.0)
+          //var uiAlpha = clamp(this.state.get("uiAlpha") + DeltaTime.apply(this.state.get("uiAlphaFactor")), 0.0, 1.0)
           this.state.set("uiAlpha", uiAlpha)
 
           this.updateVerticalSelectedIndex(VISU_MENU_ENTRY_HEIGHT)
@@ -3217,42 +3222,46 @@ function VisuMenu(_config = null) constructor {
   ///@type {EventPump}
   dispatcher = new EventPump(this, new Map(String, Callable, {
     "open": function(event) {
+      var controller = Beans.get(BeanVisuController)
       var editor = Beans.get(Visu.modules().editor.controller)
-      if (Optional.is(editor) && editor.renderUI) {
+      if (editor != null && editor.renderUI) {
+        this.enabled = false
         return
       }
-      
-      this.dispatcher.execute(new Event("close"))
-      this.containers = this.factoryContainers(
-        event.data.title, 
-        event.data.content, 
-        event.data.layout
-      )
-      this.back = Core.isType(Struct.get(event.data, "back"), Callable) 
-        ? event.data.back 
-        : null
-      this.backData = Struct.getDefault(event.data, "backData", null)
 
-      var blur = Beans.get(BeanVisuController).visuRenderer.blur
+      this.enabled = true
+
+      var blur = controller.visuRenderer.blur
       blur.target = 24.0
       blur.startValue = blur.value
       blur.reset()
-      
+
+      this.back = Struct.getIfType(event.data, "back", Callable)
+      this.backData = Struct.get(event.data, "backData")
+      this.dispatcher.execute(new Event("close"))
+      this.containers = this.factoryContainers(event.data.title, event.data.content, event.data.layout)
       this.containers.forEach(function(container, key, uiService) {
+        container.state.set("uiAlphaFactor", 0.05)
         uiService.send(new Event("add", {
           container: container,
           replace: true,
         }))
-      }, Beans.get(BeanVisuController).uiService)
+      }, controller.uiService)
     },
-    "close": function(event) {
-      if (Struct.getDefault(event.data, "fade", false)) {
-        var blur = Beans.get(BeanVisuController).visuRenderer.blur
+    "close": function(event) {    
+      this.enabled = false
+
+      var controller = Beans.get(BeanVisuController)
+      if (Struct.getIfType(event.data, "fade", Boolean, false)) {
+        var blur = controller.visuRenderer.blur
         blur.target = 0.0
         blur.startValue = blur.value
         blur.reset()
 
         this.containers.forEach(function (container) {
+          Struct.set(container, "onMousePressedLeft", method(container, function(event) { }))
+          Struct.set(container, "onMouseWheelUp", method(container, function(event) { }))
+          Struct.set(container, "onMouseWheelDown", method(container, function(event) { }))
           Struct.set(container, "updateCustom", method(container, function() {
             this.state.set("uiAlphaFactor", -0.05)
             var blur = Beans.get(BeanVisuController).visuRenderer.blur
@@ -3260,27 +3269,27 @@ function VisuMenu(_config = null) constructor {
               this.controller.send(new Event("close"))
             }
           }))
-          Struct.set(container, "onMousePressedLeft", method(container, function(event) { }))
-          Struct.set(container, "onMouseWheelUp", method(container, function(event) { }))
-          Struct.set(container, "onMouseWheelDown", method(container, function(event) { }))
         })
+
         return
       }
 
       this.back = null
       this.backData = null
+
       this.containers.forEach(function (container, key, uiService) {
         uiService.send(new Event("remove", { 
           name: key, 
           quiet: true,
         }))
-      }, Beans.get(BeanVisuController).uiService).clear()
+      }, controller.uiService).clear()
     },
     "back": function(event) {
-      if (Optional.is(this.back)) {
+      if (this.back != null) {
         this.dispatcher.execute(this.back(this.backData))
         return
       }
+
       this.dispatcher.execute(new Event("close", { fade: true }))
     },
     "game-end": function(event) {

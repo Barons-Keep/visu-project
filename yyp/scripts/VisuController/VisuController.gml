@@ -408,15 +408,14 @@ function VisuController(layerName) constructor {
   ///@return {VisuController}
   updateCursor = function() {
     var cursor = this.displayService.getCursor()
-    var size = this.menu.containers.size()
     var editor = Beans.get(Visu.modules().editor.controller)
     if (Optional.is(editor)) {
       if (editor.renderUI && cursor == Cursor.NONE && cursor_sprite == -1) {
-        displayService.setCursor(Cursor.DEFAULT)
-      } else if (!editor.renderUI && size == 0 && cursor != Cursor.NONE) {
-        displayService.setCursor(Cursor.NONE)
-      } else if (!editor.renderUI && size > 0 && cursor == Cursor.NONE) {
-        displayService.setCursor(Cursor.DEFAULT)
+        this.displayService.setCursor(Cursor.DEFAULT)
+      } else if (!editor.renderUI && !this.menu.enabled && cursor != Cursor.NONE) {
+        this.displayService.setCursor(Cursor.NONE)
+      } else if (!editor.renderUI && this.menu.enabled && cursor == Cursor.NONE) {
+        this.displayService.setCursor(Cursor.DEFAULT)
       }
 
       if (!editor.renderUI && cursor_sprite != -1) {
@@ -427,15 +426,15 @@ function VisuController(layerName) constructor {
         cursor_sprite = -1
       }
       
-      if (size == 0 && cursor != Cursor.NONE) {
-        displayService.setCursor(Cursor.NONE)
-      } else if (size > 0 && cursor == Cursor.NONE) {
-        displayService.setCursor(Cursor.DEFAULT)
+      if (!this.menu.enabled && cursor != Cursor.NONE) {
+        this.displayService.setCursor(Cursor.NONE)
+      } else if (this.menu.enabled && cursor == Cursor.NONE) {
+        this.displayService.setCursor(Cursor.DEFAULT)
       }
     }
 
     if (cursor_sprite == -1 && is_debug_overlay_open() && this.displayService.getCursor() == Cursor.NONE) {
-      displayService.setCursor(Cursor.DEFAULT)
+      this.displayService.setCursor(Cursor.DEFAULT)
     }
 
     if (cursor_sprite != -1 && this.displayService.getCursor() != Cursor.NONE) {
@@ -514,6 +513,8 @@ function VisuController(layerName) constructor {
   ///@private
   ///@return {VisuController}
   updateDebugFPS = function() {
+    //Core.print("DeltaTime.deltaTime", DeltaTime.deltaTime)
+    //game_set_speed(30, gamespeed_fps)
     if (Core.getProperty("visu.enable-debug-fps", false) != true) {
       return this
     }
@@ -678,7 +679,7 @@ function VisuController(layerName) constructor {
   isGameplayRunning = function() {
     var state = this.fsm.getStateName()
     var editor = Beans.get(Visu.modules().editor.controller)
-    return (this.menu.containers.size() == 0) 
+    return (!this.menu.enabled) 
         && (state != "splashscreen")
         && (state != "game-over")
         && (state != "paused" 

@@ -55,7 +55,8 @@ function VisuStateMachine(context, name) {
                 var displayService = controller.displayService
                 var width = layout.width()
                 var height = layout.height()
-                task.state.bkgFactor += DeltaTime.apply(FRAME_MS / 48.0)
+                task.state.bkgFactor += DELTA_TIME * (FRAME_MS / 48.0)
+                //task.state.bkgFactor += DeltaTime.apply(FRAME_MS / 48.0)
                 task.state.bkg
                   .scaleToFill(GuiWidth() + 400, GuiHeight() + 400)
                   .setScaleX(task.state.bkg.getScaleX() + task.state.bkgFactor)
@@ -313,7 +314,7 @@ function VisuStateMachine(context, name) {
           },
         },
         update: function(fsm) {
-          if (fsm.context.menu.containers.size() == 0) {
+          if (!fsm.context.menu.enabled) {
             fsm.context.menu.send(fsm.context.menu
               .factoryOpenMainMenuEvent({ 
                 titleLabel: "Game over"
