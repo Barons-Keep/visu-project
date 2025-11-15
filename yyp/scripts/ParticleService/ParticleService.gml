@@ -199,10 +199,10 @@ function ParticleService(config = null): Service() constructor {
           part_emitter_region(
             system.asset,
             system.emitter,
-            this.state.coords.x,
-            this.state.coords.z,
-            this.state.coords.y,
-            this.state.coords.a,
+            this.state.beginX,
+            this.state.beginY,
+            this.state.endX,
+            this.state.endY,
             this.state.shape,
             this.state.distribution
           )
@@ -265,12 +265,10 @@ function ParticleService(config = null): Service() constructor {
     return new Event("spawn-particle-emitter", {
       system: system,
       template: template,
-      coords: new Vector4(
-        Struct.get(config, "beginX"),
-        Struct.get(config, "endX"),
-        Struct.get(config, "beginY"),
-        Struct.get(config, "endY")
-      ),
+      beginX: Struct.get(config, "beginX"),
+      endX: Struct.get(config, "endX"),
+      beginY: Struct.get(config, "beginY"),
+      endY: Struct.get(config, "endY"),
       duration: Struct.getDefault(config, "duration", 0.0),
       amount: Struct.getDefault(config, "amount", 1.0),
       interval: Struct.getDefault(config, "interval", FRAME_MS),

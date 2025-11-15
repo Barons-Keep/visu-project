@@ -37,20 +37,23 @@ function VESceneConfigPreview(_config = null) constructor {
             return
           }
 
-          var particle = task.state.get("particle")
-          var amount = task.state.get("amount")
+          var template = Struct.get(task.state, "template")
+          var amount = Struct.get(task.state, "amount")
           var duration = Core.isType(task.timeout, Timer) ? task.timeout.time : "N/A"
           var interval = Core.isType(task.tick, Timer) ? task.tick.time : "N/A"
-          var vec = task.state.get("coords")
-          stringBuilder.append($"      - ParticleTemplate: {particle.name}\n"
+          var beginX = Struct.get(task.state, "beginX")
+          var endX = Struct.get(task.state, "endX")
+          var beginY = Struct.get(task.state, "beginY")
+          var endY = Struct.get(task.state, "endY")
+          stringBuilder.append($"      - ParticleTemplate: {template.particle.name}\n"
             + $"        Amount: {amount}\n"
             + $"        Duration: {duration}\n"
             + $"        Interval: {interval}\n"
             + $"        Area:\n"
-            + $"          X: {vec.x}\n"
-            + $"          Y: {vec.y}\n"
-            + $"          W: {vec.z}\n"
-            + $"          H: {vec.a}\n")
+            + $"          X: {beginX}\n"
+            + $"          Y: {beginY}\n"
+            + $"          W: {endX - beginX}\n"
+            + $"          H: {endY - beginY}\n")
         }, stringBuilder)
 
         return stringBuilder.get()

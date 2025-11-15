@@ -4,7 +4,7 @@
   "core.video-service.cooldown": 0.1,
   "core.video-service.timeout": 10.0,
   "core.video-service.attempts": 8,
-  "core.ui-service.use-surface-optimalization": true,
+  "core.ui-service.use-surface-optimalization": false,
   "core.ui-service.surface-optimalization": 2,
   "core.display-service.center.offset.x": 0.0,
   "core.display-service.center.offset.y": 0.0,

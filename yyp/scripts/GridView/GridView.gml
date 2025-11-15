@@ -49,11 +49,11 @@ function GridView(config = {}) constructor {
       var _derivativeX = 0.0
       if (targetX >= this.x + this.width - this.follow.xMargin) {
         _derivativeX = ((targetX - 1.0 / 2.0) - this.x) / this.follow.smooth
-        this.x += _derivativeX
+        this.x += DELTA_TIME * _derivativeX
       }
       if (targetX <= this.x + this.follow.xMargin) {
         _derivativeX = ((targetX - 1.0 / 2.0) - this.x) / this.follow.smooth
-        this.x += _derivativeX
+        this.x += DELTA_TIME * _derivativeX
       }
       if (targetX >= this.worldWidth - this.width || targetX <= 0) {
         _derivativeX = 0.0
@@ -65,11 +65,11 @@ function GridView(config = {}) constructor {
       var targetY = this.follow.target.y
       if (targetY >= this.y + this.height - this.follow.yMargin) {
         _derivativeY = ((targetY - 1.0 / 2.0) - this.y) / this.follow.smooth
-        this.y += _derivativeY
+        this.y += DELTA_TIME * _derivativeY
       }
       if (targetY <= this.y + this.follow.yMargin) {
         _derivativeY = ((targetY - 1.0 / 2.0) - this.y) / this.follow.smooth
-        this.y += _derivativeY
+        this.y += DELTA_TIME * _derivativeY
       }
       if (targetY >= this.worldHeight - this.height || targetY <= 0) {
         _derivativeY = 0.0

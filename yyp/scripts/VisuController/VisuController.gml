@@ -686,6 +686,14 @@ function VisuController(layerName) constructor {
         || (Optional.is(editor) && editor.store.getValue("update-services")))
   }
 
+  ///@return {Boolean}
+  isLoadingTrack = function() {
+    var state = this.loader.fsm.getStateName()
+    return (!this.menu.enabled) 
+        && (state != "idle")
+        && (state != "loaded")
+  }
+
   ///@param {Event}
   ///@return {?Promise}
   send = function(event) {
@@ -715,9 +723,14 @@ function VisuController(layerName) constructor {
       return this
     }
 
-    var deltaTime = DeltaTime.deltaTime
+    var deltaTime = DELTA_TIME
+    DELTA_TIME = this.isLoadingTrack() 
+      ? 1.0 
+      : (this.isGameplayRunning() 
+        ? deltaTime 
+        : 0.0)
+    DeltaTime.deltaTime = DELTA_TIME
     try {
-      DeltaTime.deltaTime = this.isGameplayRunning() ? deltaTime : 0.0
       this.visuRenderer.render()
     } catch (exception) {
       var message = $"'render' fatal error: {exception.message}"
@@ -727,9 +740,9 @@ function VisuController(layerName) constructor {
       GPU.reset.shader()
       GPU.reset.surface()
       GPU.reset.blendMode()
-    } finally {
-      DeltaTime.deltaTime = deltaTime
     }
+    DELTA_TIME = deltaTime
+    DeltaTime.deltaTime = deltaTime
 
     this.renderTimer.finish()
     return this
@@ -743,6 +756,10 @@ function VisuController(layerName) constructor {
       return this
     }
 
+    var deltaTime = DELTA_TIME
+    DELTA_TIME = this.isLoadingTrack()
+      ? 1.0
+      : deltaTime
     try {
       this.visuRenderer.renderGUI()
     } catch (exception) {
@@ -754,6 +771,8 @@ function VisuController(layerName) constructor {
       GPU.reset.surface()
       GPU.reset.blendMode()
     }
+    DELTA_TIME = deltaTime
+    DeltaTime.deltaTime = deltaTime
 
     this.renderGUITimer.finish()
     return this

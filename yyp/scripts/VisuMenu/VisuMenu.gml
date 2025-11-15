@@ -3225,11 +3225,9 @@ function VisuMenu(_config = null) constructor {
       var controller = Beans.get(BeanVisuController)
       var editor = Beans.get(Visu.modules().editor.controller)
       if (editor != null && editor.renderUI) {
-        this.enabled = false
+        //this.enabled = false
         return
       }
-
-      this.enabled = true
 
       var blur = controller.visuRenderer.blur
       blur.target = 24.0
@@ -3239,6 +3237,7 @@ function VisuMenu(_config = null) constructor {
       this.back = Struct.getIfType(event.data, "back", Callable)
       this.backData = Struct.get(event.data, "backData")
       this.dispatcher.execute(new Event("close"))
+      this.enabled = true
       this.containers = this.factoryContainers(event.data.title, event.data.content, event.data.layout)
       this.containers.forEach(function(container, key, uiService) {
         container.state.set("uiAlphaFactor", 0.05)
@@ -3249,8 +3248,6 @@ function VisuMenu(_config = null) constructor {
       }, controller.uiService)
     },
     "close": function(event) {    
-      this.enabled = false
-
       var controller = Beans.get(BeanVisuController)
       if (Struct.getIfType(event.data, "fade", Boolean, false)) {
         var blur = controller.visuRenderer.blur
@@ -3276,7 +3273,7 @@ function VisuMenu(_config = null) constructor {
 
       this.back = null
       this.backData = null
-
+      this.enabled = false
       this.containers.forEach(function (container, key, uiService) {
         uiService.send(new Event("remove", { 
           name: key, 

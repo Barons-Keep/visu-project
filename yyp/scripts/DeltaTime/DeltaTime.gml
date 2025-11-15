@@ -8,14 +8,31 @@ global.__DELTA_TIME = 1.0;
 ///@static
 function _DeltaTime() constructor {
 	
-  ///@private
 	///@type {Number}
   deltaTime = 1.0
 	
+  ///@type {Number}
+  expectedDeltaTime = game_get_speed(gamespeed_fps) / 1000000
+
+  ///@type {Number}
+  maxLagCompensation = 4
+
+  ///@return {DeltaTime}
+  static update = function() {
+    gml_pragma("forceinline")
+    this.deltaTime = min((this.expectedDeltaTime * delta_time), this.maxLagCompensation)
+    DELTA_TIME = this.deltaTime
+
+    if (Core.getProperty("core.delta-time.performance.logger", false)) {
+      Logger.debug(BeanDeltaTimeService, $"DeltaTime: {String.format(DELTA_TIME, 2, 6)}, FPS-Real: {fps_real}, FPS: {fps}")
+    }
+    return this
+  }
+
   ///@private
 	///@type {Number}
-  fpsMin = 2
-	
+  fpsMin = 3
+
   ///@private
   ///@type {Number}
   deltaTimeMax = GAME_FPS / this.fpsMin
@@ -46,7 +63,7 @@ function _DeltaTime() constructor {
   }
 
   ///@return {DeltaTime}
-  static update = function() {
+  static _update = function() {
     gml_pragma("forceinline")
     this.deltaTimePrevious = this.deltaTime
     this.deltaTime = delta_time / this.deltaTimePrecision
@@ -60,10 +77,6 @@ function _DeltaTime() constructor {
     } else {
       this.deltaTimeRestored = false
     }
-
-    //this.deltaTime = fps_real >= GAME_FPS
-    //  ? 1.0
-    //  : clamp(this.deltaTime * GAME_FPS, 1.0, this.deltaTimeMax)
     this.deltaTime = clamp(this.deltaTime * GAME_FPS, 1.0, this.deltaTimeMax)
     DELTA_TIME = this.deltaTime
 

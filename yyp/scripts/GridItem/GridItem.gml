@@ -504,7 +504,7 @@ function GridItem(config) constructor {
   static update = function(controller) { 
     gml_pragma("forceinline")
     if (this.fadeIn < 1.0) {
-      this.fadeIn = clamp(this.fadeIn + VISU_FADE_FACTOR, 0.0, 1.0)
+      this.fadeIn = clamp(this.fadeIn + (DELTA_TIME * VISU_FADE_FACTOR), 0.0, 1.0)
     }
 
     return this

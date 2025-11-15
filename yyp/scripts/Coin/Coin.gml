@@ -69,11 +69,11 @@ function CoinTemplate(_name, json) constructor {
       sprite: this.sprite,
       useSpeed: this.useSpeed,
       changeSpeed: this.changeSpeed,
-      mask: this.mask != null ? JSON.clone(this.mask) : null,
-      //mask: this.mask,
+      //mask: this.mask != null ? JSON.clone(this.mask) : null,
+      mask: this.mask,
       amount: this.amount,
-      speed: this.speed != null ? JSON.clone(this.speed) : null,
-      //speed: this.speed,
+      //speed: this.speed != null ? JSON.clone(this.speed) : null,
+      speed: this.speed,
     }
   }
 

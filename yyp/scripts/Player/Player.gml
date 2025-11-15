@@ -750,27 +750,6 @@ function PlayerHandler(json) constructor {
       return this
     },
   }
-  
-  ///@type {Struct}
-  previous = {
-    x: {
-      value: 0.0,
-      prev: null,
-      get: function() {
-        return this.value - this.prev
-      },
-      update: function(value) {
-        this.prev = this.prev == null ? value : this.value
-        this.value = value
-        return this
-      },
-      reset: function() {
-        this.value = 0.0
-        this.prev = this.value
-        return this
-      },
-    },
-  }
 
   ///@type {Array<Struct>}
   guns = new Array(Struct, Core.isType(Struct.get(json, "guns"), GMArray)
@@ -802,7 +781,6 @@ function PlayerHandler(json) constructor {
     this.guns.forEach(function(gun) {
       gun.cooldown.reset()
     })
-    this.previous.x.reset()
     player.speed = 0
     player.angle = 90
     player.sprite.setAngle(player.angle)
@@ -836,7 +814,7 @@ function PlayerHandler(json) constructor {
         var dir = sign(config.speed)
         config.speed -= dir * DELTA_TIME * config.friction * 0.5
         spd = DELTA_TIME * config.speed
-        config.speed -= dir * DELTA_TIME *config.friction * 0.5
+        config.speed -= dir * DELTA_TIME * config.friction * 0.5
         //config.speed -= dir * DeltaTime.apply(config.friction) * 0.5
         //spd = DeltaTime.apply(config.speed)
         //config.speed -= dir * DeltaTime.apply(config.friction) * 0.5
@@ -847,6 +825,7 @@ function PlayerHandler(json) constructor {
         config.speed = 0.0
       }
       config.speed = sign(config.speed) * clamp(abs(config.speed), 0.0, spdMax)
+      //spd = sign(spd) * clamp(abs(spd), 0.0, spdMax)
       return spd
     }
 
@@ -933,8 +912,6 @@ function PlayerHandler(json) constructor {
       0.0, 
       controller.gridService.height
     )
-
-    this.previous.x.update(player.x)
     
     //var halfPi = pi / 2
     //global.cameraRollSpeed = sin((this.y.speed / this.y.speedMax) * halfPi) * 5.0;

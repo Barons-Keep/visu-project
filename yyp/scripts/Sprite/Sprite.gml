@@ -376,45 +376,6 @@ function _SpriteUtil() constructor {
     }
     return sprite
   }
-
-  ///@param {Struct} _json
-  ///@param {?Struct} [defaultJson]
-  ///@return {?Sprite}
-  static _parse = function(json, defaultJson = null) {
-    gml_pragma("forceinline")
-    var sprite = null
-    try {
-      if (!Optional.is(Struct.getIfType(json, "name", String))
-          && Core.isType(defaultJson, Struct)) {
-        return SpriteUtil.parse(defaultJson)
-      }
-
-      //var json = JSON.clone(_json)
-      var texture = Assert.isType(TextureUtil.parse(json.name, json), Texture)
-      Struct.set(json, "frame", clamp(
-        (Struct.get(json, "randomFrame") == true
-          ? random(texture.frames - 1.0) 
-          : NumberUtil.parse(Struct.get(json, "frame"), 0.0)), 
-        0.0, 
-        texture.frames - 1.0
-      ))
-
-      if (Struct.contains(json, "blend")) {
-        json.blend = ColorUtil
-          .fromHex(json.blend, ColorUtil.WHITE)
-          .toGMColor()
-      }
-      sprite = new Sprite(texture, json)
-    } catch (exception) {
-      Logger.error("SpriteUtil", $"'parse-sprite' fatal error: {exception.message}")
-      sprite = null
-      if (Core.isType(defaultJson, Struct)) {
-        Logger.error("SpriteUtil", $"'parse-sprite' use defaultJson: {JSON.stringify(defaultJson)}")
-        sprite = SpriteUtil.parse(defaultJson)
-      }
-    }
-    return sprite
-  }
 }
 global.__SpriteUtil = new _SpriteUtil()
 #macro SpriteUtil global.__SpriteUtil
