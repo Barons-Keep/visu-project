@@ -46,7 +46,7 @@ function TaskExecutor(_context, config = {}) constructor {
   ///@param {TaskExecutor} executor
   ///@throws {Exception}
   ///@return {TaskExecutor}
-  static execute = function(task, index, executor) {
+  execute = function(task, index, executor) {
     static resolveTask = function(task, index, executor) {
       if (task.status == TaskStatus.IDLE) {
         task.status = TaskStatus.RUNNING
@@ -105,13 +105,13 @@ function TaskExecutor(_context, config = {}) constructor {
 
   ///@param {Task} task
   ///@return {TaskExecutor}
-  static add = function(task) {
+  add = function(task) {
     this.tasks.add(task)
     return this
   }
 
   ///@return {TaskExecutor}
-  static update = function() {
+  update = function() {
     this.tasks.forEach(this.execute, this).runGC()
     return this
   }

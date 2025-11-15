@@ -155,6 +155,7 @@ function ShroomService(_controller, config = {}): Service() constructor {
     enableLogger: true,
     catchException: true,
     exceptionCallback: function(task, exception) {
+      task.status = TaskStatus.REJECTED
       Beans.get(BeanVisuController).exceptionDebugHandler(
         $"'ShroomService::executor' (task.name: {task.name}), fatal error: {exception.message}")
     },

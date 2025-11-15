@@ -56,6 +56,7 @@ function ShaderTemplate(_name, json) constructor {
       Struct.set(json, "properties", this.properties)
     }
 
-    return JSON.clone(json)
+    return json
+    //return JSON.clone(json)
   }
 }

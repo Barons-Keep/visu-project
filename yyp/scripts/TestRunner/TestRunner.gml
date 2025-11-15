@@ -178,7 +178,8 @@ function TestRunner() constructor {
     }
 
     try {
-      this.testSuite.update(this.executor.update())
+      this.executor.update()
+      this.testSuite.update(this.executor)
       if (!this.testSuite.finished) {
         return this
       }
@@ -191,11 +192,12 @@ function TestRunner() constructor {
       try {
         this.saveReport()
         this.testSuite = null
-        this.testSuites.forEach(function(testSuite, idx, testRunner) {
-          testRunner.testSuite = testSuite
-          testRunner.saveReport()
-          testRunner.testSuite = null
-        }, this)
+        var size = testSuites.size()
+        for (var idx = 0; idx < size; idx++) {
+          this.testSuite = this.testSuites.pop()
+          this.saveReport()
+          this.testSuite = null
+        }
       } catch (ex) {
         Logger.error("TestRunner::update", $"Unable to save test results: {ex.message}")
         Core.printStackTrace()

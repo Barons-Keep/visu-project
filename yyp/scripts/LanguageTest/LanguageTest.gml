@@ -53,15 +53,15 @@ function Test_Language(json = {}) {
       stage(this)
     })
     .whenStart(function(executor) {
-      Logger.test("LanguageTest", "Start Test_Language")
+      Logger.test(BeanTestRunner, "Start Test_Language")
       Beans.get(BeanTestRunner).installHooks()
     })
     .whenFinish(function(data) {
-      Logger.test("LanguageTest", $"Finished Test_Language")
+      Logger.test(BeanTestRunner, $"Finished Test_Language")
       Beans.get(BeanTestRunner).uninstallHooks()
     })
     .whenTimeout(function() {
-      Logger.test("BrushToolbarTest", "Test_Language: Timeout")
+      Logger.test(BeanTestRunner, "Test_Language: Timeout")
       this.reject("failure")
       Beans.get(BeanTestRunner).uninstallHooks()
     })

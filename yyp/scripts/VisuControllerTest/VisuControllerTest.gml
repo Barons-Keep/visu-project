@@ -59,16 +59,16 @@ function TestEvent_VisuController_load(json = {}) {
       stage(this)
     })
     .whenStart(function(executor) {
-      Logger.test("VisuControllerTest", "TestEvent_VisuController_load started")
+      Logger.test(BeanTestRunner, "TestEvent_VisuController_load started")
       Beans.get(BeanTestRunner).installHooks()
       Visu.settings.setValue("visu.god-mode", true)
     })
     .whenFinish(function(data) {
-      Logger.test("VisuControllerTest", $"TestEvent_VisuController_load finished")
+      Logger.test(BeanTestRunner, $"TestEvent_VisuController_load finished")
       Beans.get(BeanTestRunner).uninstallHooks()
     })
     .whenTimeout(function() {
-      Logger.test("VisuControllerTest", "TestEvent_VisuController_load timeout")
+      Logger.test(BeanTestRunner, "TestEvent_VisuController_load timeout")
       this.reject("failure")
       Beans.get(BeanTestRunner).uninstallHooks()
     })
@@ -187,16 +187,16 @@ function TestEvent_VisuController_playback(json = {}) {
       stage(this)
     })
     .whenStart(function(executor) {
-      Logger.test("VisuControllerTest", "TestEvent_VisuController_playback started")
+      Logger.test(BeanTestRunner, "TestEvent_VisuController_playback started")
       Beans.get(BeanTestRunner).installHooks()
       Visu.settings.setValue("visu.god-mode", true)
     })
     .whenFinish(function(data) {
-      Logger.test("VisuControllerTest", $"TestEvent_VisuController_playback finished")
+      Logger.test(BeanTestRunner, $"TestEvent_VisuController_playback finished")
       Beans.get(BeanTestRunner).uninstallHooks()
     })
     .whenTimeout(function() {
-      Logger.test("VisuControllerTest", "TestEvent_VisuController_playback timeout")
+      Logger.test(BeanTestRunner, "TestEvent_VisuController_playback timeout")
       this.reject("failure")
       Beans.get(BeanTestRunner).uninstallHooks()
     })
@@ -295,16 +295,16 @@ function TestEvent_VisuController_rewind(json = {}) {
       stage(this)
     })
     .whenStart(function(executor) {
-      Logger.test("VisuControllerTest", "TestEvent_VisuController_rewind started")
+      Logger.test(BeanTestRunner, "TestEvent_VisuController_rewind started")
       Beans.get(BeanTestRunner).installHooks()
       Visu.settings.setValue("visu.god-mode", true)
     })
     .whenFinish(function(data) {
-      Logger.test("VisuControllerTest", $"TestEvent_VisuController_rewind finished")
+      Logger.test(BeanTestRunner, $"TestEvent_VisuController_rewind finished")
       Beans.get(BeanTestRunner).uninstallHooks()
     })
     .whenTimeout(function() {
-      Logger.test("VisuControllerTest", "TestEvent_VisuController_rewind timeout")
+      Logger.test(BeanTestRunner, "TestEvent_VisuController_rewind timeout")
       this.reject("failure")
       Beans.get(BeanTestRunner).uninstallHooks()
     })

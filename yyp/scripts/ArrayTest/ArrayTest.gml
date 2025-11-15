@@ -235,15 +235,15 @@ function Test_Array(json = {}) {
       this.fullfill("success")
     })
     .whenStart(function(executor) {
-      Logger.test("LanguageTest", "Start Test_Array")
+      Logger.test(BeanTestRunner, "Start Test_Array")
       Beans.get(BeanTestRunner).installHooks()
     })
     .whenFinish(function(data) {
-      Logger.test("LanguageTest", $"Finished Test_Array: {data}")
+      Logger.test(BeanTestRunner, $"Finished Test_Array")
       Beans.get(BeanTestRunner).uninstallHooks()
     })
     .whenTimeout(function() {
-      Logger.test("BrushToolbarTest", "Test_Array: Timeout")
+      Logger.test(BeanTestRunner, "Test_Array: Timeout")
       this.reject("failure")
       Beans.get(BeanTestRunner).uninstallHooks()
     })

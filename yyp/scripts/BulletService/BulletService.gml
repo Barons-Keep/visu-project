@@ -77,6 +77,7 @@ function BulletService(_controller): Service() constructor {
     enableLogger: true,
     catchException: true,
     exceptionCallback: function(task, exception) {
+      task.status = TaskStatus.REJECTED
       var message = $"'BulletService::executor' (task.name: {task.name}), fatal error: {exception.message}"
       Beans.get(BeanVisuController).exceptionDebugHandler(message)
     },

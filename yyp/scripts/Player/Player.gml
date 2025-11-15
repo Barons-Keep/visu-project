@@ -37,7 +37,8 @@ function PlayerTemplate(json) constructor {
       Struct.set(json, "stats", this.stats)
     }
 
-    return JSON.clone(json)
+    return json
+    //return JSON.clone(json)
   }
 }
 

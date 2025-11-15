@@ -302,7 +302,8 @@ function VETemplate(json) constructor {
   toParticleTemplate = function() {
     var template = new ParticleTemplate(
       this.store.getValue("template-name"), 
-      JSON.clone(this.store.getValue("particle-template").serialize())
+      this.store.getValue("particle-template").serialize()
+      //JSON.clone(this.store.getValue("particle-template").serialize())
     )
 
     template.blend = this.store.getValue("particle-blend")

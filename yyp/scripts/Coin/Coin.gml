@@ -82,16 +82,16 @@ function CoinTemplate(_name, json) constructor {
   ///@param {?Number} [angle]
   ///@param {?Struct} [speed]
   serializeSpawn = function(x, y, angle = null, speed = null) {
-    var _speed = this.speed != null ? JSON.clone(this.speed) : null
-    //var _speed = this.speed
+    //var _speed = this.speed != null ? JSON.clone(this.speed) : null
+    var _speed = this.speed
     return {
       name: this.name,
       category: this.category,
       sprite: this.sprite,
       useSpeed: this.useSpeed,
       changeSpeed: this.changeSpeed,
-      mask: this.mask != null ? JSON.clone(this.mask) : null,
-      //mask: this.mask,
+      //mask: this.mask != null ? JSON.clone(this.mask) : null,
+      mask: this.mask,
       amount: this.amount,
       x: x,
       y: y,

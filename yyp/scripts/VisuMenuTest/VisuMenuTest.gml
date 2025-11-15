@@ -153,17 +153,17 @@ function TestEvent_VisuMenu_select_track(json = {}) {
       stage(this)
     })
     .whenStart(function(executor) {
-      Logger.test("VisuMenuTest", "TestEvent_VisuMenu_select_track started")
+      Logger.test(BeanTestRunner, "TestEvent_VisuMenu_select_track started")
       Beans.get(BeanTestRunner).installHooks()
       Visu.settings.setValue("visu.god-mode", true)
     })
     .whenFinish(function(data) {
-      Logger.test("VisuMenuTest", $"TestEvent_VisuMenu_select_track finished")
+      Logger.test(BeanTestRunner, $"TestEvent_VisuMenu_select_track finished")
       Beans.get(BeanTestRunner).uninstallHooks()
       Core.print("stage:", this.state.stage)
     })
     .whenTimeout(function() {
-      Logger.test("VisuMenuTest", "TestEvent_VisuMenu_select_track timeout")
+      Logger.test(BeanTestRunner, "TestEvent_VisuMenu_select_track timeout")
       this.reject("failure")
       Beans.get(BeanTestRunner).uninstallHooks()
       Core.print("stage:", this.state.stage)

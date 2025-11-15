@@ -128,7 +128,7 @@ function TestEvent_BrushToolbar_save(json = {}) {
       stage(this)
     })
     .whenStart(function(executor) {
-      Logger.test("BrushToolbarTest", "TestEvent_BrushToolbar_save started")
+      Logger.test(BeanTestRunner, "TestEvent_BrushToolbar_save started")
       Beans.get(BeanTestRunner).installHooks()
 
       Visu.settings.setValue("visu.god-mode", true)
@@ -150,12 +150,12 @@ function TestEvent_BrushToolbar_save(json = {}) {
       Beans.get(BeanVisuEditorController).store.get("render-brush").set(true)
     })
     .whenFinish(function(data) {
-      Logger.test("BrushToolbarTest", $"TestEvent_BrushToolbar_save finished")
+      Logger.test(BeanTestRunner, $"TestEvent_BrushToolbar_save finished")
       Beans.get(BeanTestRunner).uninstallHooks()
       Beans.get(BeanVisuEditorController).store.get("render-brush").set(false)
     })
     .whenTimeout(function() {
-      Logger.test("BrushToolbarTest", "TestEvent_BrushToolbar_save timeout")
+      Logger.test(BeanTestRunner, "TestEvent_BrushToolbar_save timeout")
       this.reject("failure")
       Beans.get(BeanTestRunner).uninstallHooks()
       Beans.get(BeanVisuEditorController).store.get("render-brush").set(false)

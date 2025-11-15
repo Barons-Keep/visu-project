@@ -352,7 +352,7 @@ function VisuStateMachine(context, name) {
             audio_stop_all()
             controller.visuRenderer.gridRenderer.clear()
             Beans.get(BeanSoundService).free(staticSounds)
-            Beans.get(BeanTextureService).free()
+            //Beans.get(BeanTextureService).free()
             
             controller.trackService.dispatcher.execute(new Event("close-track"))
           },

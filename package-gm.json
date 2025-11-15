@@ -27,7 +27,7 @@
     },
     "track": {
       "remote": "https://github.com/Barons-Keep/visu-track.git",
-      "revision": "25.10.30"
+      "revision": "25.11.15"
     }
   }
 }

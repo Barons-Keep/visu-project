@@ -217,15 +217,15 @@ function TestEvent_NumberTransformer_Ease(json = {}) constructor {
       }
     })
     .whenStart(function(executor) {
-      Logger.test("TransformerTest", "TestEvent_NumberTransformer_Ease started")
+      Logger.test(BeanTestRunner, "TestEvent_NumberTransformer_Ease started")
       Beans.get(BeanTestRunner).installHooks()
     })
     .whenFinish(function(data) {
-      Logger.test("TransformerTest", "TestEvent_NumberTransformer_Ease finished")
+      Logger.test(BeanTestRunner, "TestEvent_NumberTransformer_Ease finished")
       Beans.get(BeanTestRunner).uninstallHooks()
     })
     .whenTimeout(function() {
-      Logger.test("TransformerTest", "TestEvent_NumberTransformer_Ease timeout")
+      Logger.test(BeanTestRunner, "TestEvent_NumberTransformer_Ease timeout")
       this.reject("failure")
       Beans.get(BeanTestRunner).uninstallHooks()
     })
