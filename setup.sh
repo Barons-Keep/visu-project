@@ -42,6 +42,6 @@ fi
 gm-cli sync
 
 # install track in yyp
-#rm -rf ./visu-project/yyp/datafiles/track
-#cp -rv ./gm_modules/track/resource/datafiles/track/ ./visu-project/yyp/datafiles/track/
+rm -rf ./visu-project/yyp/datafiles/track
+cp -rv ./gm_modules/track/resource/datafiles/track/ ./visu-project/yyp/datafiles/track/
 
