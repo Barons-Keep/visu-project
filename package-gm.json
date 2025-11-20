@@ -6,7 +6,10 @@
   "author": "Alkapivo",
   "license": "ISC",
   "scripts": {
-    "setup": "./setup.sh"
+    "setup": "./setup.sh",
+    "setup-clean": "./setup.sh --clean",
+    "setup-editor": "./setup.sh --editor",
+    "setup-clean-editor": "./setup.sh --clean --editor"
   },
   "dependencies": {
     "core": {
