@@ -1,12 +1,14 @@
 ///@package io.alkapivo.visu.ui.controller
 
-///@param {Struct} [json]
+///@param {Test} test
 ///@return {Task}
-function TestEvent_VisuMenu_select_track(json = {}) {
-  return new Task("TestEvent_VisuMenu_select_track")
+function Test_VisuMenu_select_track(test) {
+  var json = Struct.get(test, "data")
+  return new Task("Test_VisuMenu_select_track")
     .setTimeout(Struct.getDefault(json, "timeout", 60.0))
     .setPromise(new Promise())
     .setState({
+      description: test.description,
       cooldown: new Timer(Struct.getDefault(json, "cooldown", 0.8)),
       getContent: function() {
         return Beans.get(BeanVisuController).menu.containers.get("container_visu-menu.content")
@@ -153,19 +155,17 @@ function TestEvent_VisuMenu_select_track(json = {}) {
       stage(this)
     })
     .whenStart(function(executor) {
-      Logger.test(BeanTestRunner, "TestEvent_VisuMenu_select_track started")
+      Logger.test(BeanTestRunner, $"Test_VisuMenu_select_track started. Description: {this.state.description}")
       Beans.get(BeanTestRunner).installHooks()
       Visu.settings.setValue("visu.god-mode", true)
     })
     .whenFinish(function(data) {
-      Logger.test(BeanTestRunner, $"TestEvent_VisuMenu_select_track finished")
+      Logger.test(BeanTestRunner, $"Test_VisuMenu_select_track finished. Description: {this.state.description}")
       Beans.get(BeanTestRunner).uninstallHooks()
-      Core.print("stage:", this.state.stage)
     })
     .whenTimeout(function() {
-      Logger.test(BeanTestRunner, "TestEvent_VisuMenu_select_track timeout")
+      Logger.test(BeanTestRunner, $"Test_VisuMenu_select_track timeout. Description: {this.state.description}")
       this.reject("failure")
       Beans.get(BeanTestRunner).uninstallHooks()
-      Core.print("stage:", this.state.stage)
     })
 }

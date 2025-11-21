@@ -44,13 +44,15 @@ global.__PlayerServiceTestUtil = {
 #macro PlayerServiceTestUtil global.__PlayerServiceTestUtil
 
 
-///@param {Struct} [json]
+///@param {Test} test
 ///@return {Task}
-function TestEvent_PlayerService_player_shoot(json = {}) constructor {
-  return new Task("TestEvent_PlayerService_player_shoot")
+function Test_PlayerService_player_shoot(test) {
+  var json = Struct.get(test, "data")
+  return new Task("Test_PlayerService_player_shoot")
     .setTimeout(Struct.getIfType(json, "timeout", Number, 10.0))
     .setPromise(new Promise())
     .setState({
+      description: test.description,
       player: Struct.getIfType(json, "player", Struct, {
         "icon":{
           "name":"texture_ve_icon_effect_shader",
@@ -257,17 +259,17 @@ function TestEvent_PlayerService_player_shoot(json = {}) constructor {
       stage(this)
     })
     .whenStart(function(executor) {
-      Logger.test(BeanTestRunner, "TestEvent_PlayerService_player_shoot started")
+      Logger.test(BeanTestRunner, $"Test_PlayerService_player_shoot started. Description: {this.state.description}")
       Beans.get(BeanTestRunner).installHooks()
       Visu.settings.setValue("visu.god-mode", true)
       Beans.get(BeanVisuController).menu.send(new Event("close", { fade: false }))
     })
     .whenFinish(function(data) {
-      Logger.test(BeanTestRunner, "TestEvent_PlayerService_player_shoot finished")
+      Logger.test(BeanTestRunner, $"Test_PlayerService_player_shoot finished. Description: {this.state.description}")
       Beans.get(BeanTestRunner).uninstallHooks()
     })
     .whenTimeout(function() {
-      Logger.test(BeanTestRunner, "TestEvent_PlayerService_player_shoot timeout")
+      Logger.test(BeanTestRunner, $"Test_PlayerService_player_shoot timeout. Description: {this.state.description}")
       this.reject("failure")
       Beans.get(BeanTestRunner).uninstallHooks()
     })

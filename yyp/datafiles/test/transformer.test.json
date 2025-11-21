@@ -6,8 +6,8 @@
     "stopAfterFailure": false,
     "tests": [
       {
-        "handler": "TestEvent_NumberTransformer_Ease",
-        "description": "TestEvent NumberTransformer Ease",
+        "handler": "Test_NumberTransformer_Ease",
+        "description": "Test NumberTransformer Ease",
         "data": {
           "timeout": 90.0,
           "transformers": [

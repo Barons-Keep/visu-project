@@ -264,6 +264,15 @@ function _String() constructor {
     }
     return result
   }
+
+  ///@param {String} text
+  ///@param {?GMArray<String>} patterns
+  ///@return {String}
+  static trim = function(text, patterns = null) {
+    return Core.isType(patterns, GMArray)
+      ? string_trim(text, patterns)
+      : string_trim(text)
+  }
 }
 global.__String = new _String()
 #macro String global.__String

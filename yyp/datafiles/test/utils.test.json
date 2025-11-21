@@ -7,7 +7,7 @@
     "tests": [
       {
         "handler": "Test_Language",
-        "description": "Verify Language utils with language/en_EN.json",
+        "description": "Verify Language utils with lang/en_EN.json",
         "data": {
           "timeout": 5.0,
           "cooldown": 0.5,

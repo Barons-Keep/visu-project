@@ -4,12 +4,10 @@
 function Test(json) constructor {
 
   ///@type {String}
-  handler = Assert.isType(json.handler, String)
+  handler = Assert.isType(json.handler, String, "Test::handler must be type of String")
 
   ///@type {String}
-  description = Core.isType(Struct.get(json, "description"), String)
-    ? json.description
-    : ""
+  description = Struct.getIfType(json, "description", String, "")
   
   ///@type {any}
   data = Struct.get(json, "data")

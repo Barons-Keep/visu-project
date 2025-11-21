@@ -6,7 +6,7 @@
     "stopAfterFailure": false,
     "tests": [
       {
-        "handler": "TestEvent_VisuMenu_select_track",
+        "handler": "Test_VisuMenu_select_track",
         "description": "Test VisuMenu select track functionality",
         "data": {
           "timeout": 10.0

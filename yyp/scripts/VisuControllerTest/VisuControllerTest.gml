@@ -1,13 +1,15 @@
 ///@package io.alkapivo.visu
 
 
-///@param {Struct} [json]
+///@param {Test} json
 ///@return {Task}
-function TestEvent_VisuController_load(json = {}) {
-  return new Task("TestEvent_VisuController_load")
+function Test_VisuController_load(test) {
+  var json = Struct.get(test, "data")
+  return new Task("Test_VisuController_load")
     .setTimeout(Struct.getDefault(json, "timeout", 10.0))
     .setPromise(new Promise())
     .setState({
+      description: test.description,
       path: Assert.isType(Struct.get(json, "path"), String, "path must be type of String"),
       trackName: Assert.isType(Struct.get(json, "trackName"), String, "trackName must be type of String"),
       cooldown: new Timer(Struct.getIfType(json, "cooldown", Number, 2.0)),
@@ -59,29 +61,31 @@ function TestEvent_VisuController_load(json = {}) {
       stage(this)
     })
     .whenStart(function(executor) {
-      Logger.test(BeanTestRunner, "TestEvent_VisuController_load started")
+      Logger.test(BeanTestRunner, $"Test_VisuController_load started. Description: {this.state.description}")
       Beans.get(BeanTestRunner).installHooks()
       Visu.settings.setValue("visu.god-mode", true)
     })
     .whenFinish(function(data) {
-      Logger.test(BeanTestRunner, $"TestEvent_VisuController_load finished")
+      Logger.test(BeanTestRunner, $"Test_VisuController_load finished. Description: {this.state.description}")
       Beans.get(BeanTestRunner).uninstallHooks()
     })
     .whenTimeout(function() {
-      Logger.test(BeanTestRunner, "TestEvent_VisuController_load timeout")
+      Logger.test(BeanTestRunner, $"Test_VisuController_load timeout. Description: {this.state.description}")
       this.reject("failure")
       Beans.get(BeanTestRunner).uninstallHooks()
     })
 }
 
 
-///@param {Struct} [json]
+///@param {Test} json
 ///@return {Task}
-function TestEvent_VisuController_playback(json = {}) {
-  return new Task("TestEvent_VisuController_playback")
+function Test_VisuController_playback(test) {
+  var json = Struct.get(test, "data")
+  return new Task("Test_VisuController_playback")
     .setTimeout(Struct.getDefault(json, "timeout", 20.0))
     .setPromise(new Promise())
     .setState({
+      description: test.description,
       duration: Struct.getDefault(json, "duration", 10.0),
       cooldown: new Timer(Struct.getDefault(json, "cooldown", 2.0)),
       stage: "cooldownBefore",
@@ -187,29 +191,31 @@ function TestEvent_VisuController_playback(json = {}) {
       stage(this)
     })
     .whenStart(function(executor) {
-      Logger.test(BeanTestRunner, "TestEvent_VisuController_playback started")
+      Logger.test(BeanTestRunner, $"Test_VisuController_playback started. Description: {this.state.description}")
       Beans.get(BeanTestRunner).installHooks()
       Visu.settings.setValue("visu.god-mode", true)
     })
     .whenFinish(function(data) {
-      Logger.test(BeanTestRunner, $"TestEvent_VisuController_playback finished")
+      Logger.test(BeanTestRunner, $"Test_VisuController_playback finished. Description: {this.state.description}")
       Beans.get(BeanTestRunner).uninstallHooks()
     })
     .whenTimeout(function() {
-      Logger.test(BeanTestRunner, "TestEvent_VisuController_playback timeout")
+      Logger.test(BeanTestRunner, $"Test_VisuController_playback timeout. Description: {this.state.description}")
       this.reject("failure")
       Beans.get(BeanTestRunner).uninstallHooks()
     })
 }
 
 
-///@param {Struct} [json]
+///@param {Test} json
 ///@return {Task}
-function TestEvent_VisuController_rewind(json = {}) {
-  return new Task("TestEvent_VisuController_rewind")
+function Test_VisuController_rewind(test) {
+  var json = Struct.get(test, "data")
+  return new Task("Test_VisuController_rewind")
     .setTimeout(Struct.getDefault(json, "timeout", 20.0))
     .setPromise(new Promise())
     .setState({
+      description: test.description,
       amount: Struct.getDefault(json, "amount", 5),
       minDuration: Struct.getDefault(json, "maxDuration", 0.2),
       maxDuration: Struct.getDefault(json, "maxDuration", 3.0),
@@ -247,7 +253,7 @@ function TestEvent_VisuController_rewind(json = {}) {
             if (delta < 2) {
               task.state.count++
             }
-            Logger.test("TestEvent_VisuController_rewind", $"Current delta: {delta}, counter: {task.state.count}")
+            Logger.test("Test_VisuController_rewind", $"Current delta: {delta}, counter: {task.state.count}")
             task.state.timer.reset()
             task.state.timer.duration = random_range(task.state.minDuration, task.state.maxDuration)
             task.state.target = random(trackService.duration * 0.7500)
@@ -258,21 +264,21 @@ function TestEvent_VisuController_rewind(json = {}) {
           }
 
           if (task.state.timer.finished && task.state.amount <= 0) {
-            Logger.test("TestEvent_VisuController_rewind", $"{task.state.count} successfull rewind attempts, target is {task.state.countTarget * 0.75}")
-            if (task.state.count >= task.state.countTarget * 0.75) {
+            Logger.test("Test_VisuController_rewind", $"{task.state.count} successfull rewind attempts, target is {floor(task.state.countTarget * 0.75)}")
+            if (task.state.count >= floor(task.state.countTarget * 0.75)) {
               var video = controller.videoService.getVideo()
               if (Core.isType(video, Video)) {
                 if (video.getStatus() != VideoStatus.CLOSED) {
                   task.state.stage = "cooldownAfter"
                 } else {
-                  Logger.test("TestEvent_VisuController_rewind", $"rejected, invalid video status: {video.getStatus()}")
+                  Logger.test("Test_VisuController_rewind", $"rejected, invalid video status: {video.getStatus()}")
                   task.reject()
                 }
               } else {
                 task.state.stage = "cooldownAfter"
               }
             } else {
-              Logger.test("TestEvent_VisuController_rewind", $"rejected, not matching target: {task.state.countTarget * 0.75}")
+              Logger.test("Test_VisuController_rewind", $"rejected, not matching target: {task.state.countTarget * 0.75}")
               task.reject()
             }
           }
@@ -297,16 +303,16 @@ function TestEvent_VisuController_rewind(json = {}) {
       stage(this)
     })
     .whenStart(function(executor) {
-      Logger.test(BeanTestRunner, "TestEvent_VisuController_rewind started")
+      Logger.test(BeanTestRunner, $"Test_VisuController_rewind started. Description: {this.state.description}")
       Beans.get(BeanTestRunner).installHooks()
       Visu.settings.setValue("visu.god-mode", true)
     })
     .whenFinish(function(data) {
-      Logger.test(BeanTestRunner, $"TestEvent_VisuController_rewind finished")
+      Logger.test(BeanTestRunner, $"Test_VisuController_rewind finished. Description: {this.state.description}")
       Beans.get(BeanTestRunner).uninstallHooks()
     })
     .whenTimeout(function() {
-      Logger.test(BeanTestRunner, "TestEvent_VisuController_rewind timeout")
+      Logger.test(BeanTestRunner, $"Test_VisuController_rewind timeout. Description: {this.state.description}")
       this.reject("failure")
       Beans.get(BeanTestRunner).uninstallHooks()
     })

@@ -1,12 +1,14 @@
 ///@package io.alkapivo.visu
 
-///@param {Struct} [json]
+///@param {Test} test
 ///@return {Task}
-function TestEvent_BrushToolbar_save(json = {}) {
+function TestEvent_BrushToolbar_save(test) {
+  var json = Struct.get(test, "data")
   return new Task("TestEvent_BrushToolbar_save")
     .setTimeout(Struct.getDefault(json, "timeout", 60.0))
     .setPromise(new Promise())
     .setState({
+      description: test.description,
       cooldown: new Timer(Struct.getDefault(json, "cooldown", 0.8)),
       stage: "cooldownBefore",
       stages: {
@@ -152,7 +154,7 @@ function TestEvent_BrushToolbar_save(json = {}) {
       stage(this)
     })
     .whenStart(function(executor) {
-      Logger.test(BeanTestRunner, "TestEvent_BrushToolbar_save started")
+      Logger.test(BeanTestRunner, $"TestEvent_BrushToolbar_save started. Description: {this.state.description}")
       Beans.get(BeanTestRunner).installHooks()
 
       Visu.settings.setValue("visu.god-mode", true)
@@ -179,7 +181,7 @@ function TestEvent_BrushToolbar_save(json = {}) {
       }
     })
     .whenFinish(function(data) {
-      Logger.test(BeanTestRunner, $"TestEvent_BrushToolbar_save finished")
+      Logger.test(BeanTestRunner, $"TestEvent_BrushToolbar_save finished. Description: {this.state.description}")
       Beans.get(BeanTestRunner).uninstallHooks()
       var editor = Beans.get(Visu.modules().editor.controller)
       if (Optional.is(editor)) {
@@ -187,7 +189,7 @@ function TestEvent_BrushToolbar_save(json = {}) {
       }
     })
     .whenTimeout(function() {
-      Logger.test(BeanTestRunner, "TestEvent_BrushToolbar_save timeout")
+      Logger.test(BeanTestRunner, $"TestEvent_BrushToolbar_save timeout. Description: {this.state.description}")
       this.reject("failure")
       Beans.get(BeanTestRunner).uninstallHooks()
       var editor = Beans.get(Visu.modules().editor.controller)

@@ -1,12 +1,14 @@
 ///@package io.alkapivo.test.core.collection
 
-///@param {Struct} [json]
+///@param {Test} test
 ///@return {Task}
-function Test_Map(json = {}) {
+function Test_Map(test) {
+  var json = Struct.get(test, "data")
   return new Task("Test_Map")
     .setTimeout(Struct.getDefault(json, "timeout", 3.0))
     .setPromise(new Promise())
     .setState({
+      description: test.description,
       collection: new Map(String, String, {
         lorem: "ipsum",
         dolor: "sit",
@@ -252,15 +254,15 @@ function Test_Map(json = {}) {
       this.fullfill("success")
     })
     .whenStart(function(executor) {
-      Logger.test(BeanTestRunner, "Start Test_Map")
+      Logger.test(BeanTestRunner, $"Test_Map started. Description: {this.state.description}")
       Beans.get(BeanTestRunner).installHooks()
     })
     .whenFinish(function(data) {
-      Logger.test(BeanTestRunner, $"Finished Test_Map")
+      Logger.test(BeanTestRunner, $"Test_Map finished. Description: {this.state.description}")
       Beans.get(BeanTestRunner).uninstallHooks()
     })
     .whenTimeout(function() {
-      Logger.test(BeanTestRunner, "Test_Map: Timeout")
+      Logger.test(BeanTestRunner, $"Test_Map timeout. Description: {this.state.description}")
       this.reject("failure")
       Beans.get(BeanTestRunner).uninstallHooks()
     })

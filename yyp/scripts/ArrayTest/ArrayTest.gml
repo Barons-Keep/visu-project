@@ -1,12 +1,14 @@
 ///@package io.alkapivo.test.core.collection.ArrayTest
 
-///@param {Struct} [json]
+///@param {Test} test
 ///@return {Task}
-function Test_Array(json = {}) {
+function Test_Array(test) {
+  var json = Struct.get(test, "data")
   return new Task("Test_Array")
     .setTimeout(Struct.getDefault(json, "timeout", 3.0))
     .setPromise(new Promise())
     .setState({
+      description: test.description,
       array: new Array(Struct, [
         { name: "lorem" },
         { name: "ipsum" },
@@ -235,15 +237,15 @@ function Test_Array(json = {}) {
       this.fullfill("success")
     })
     .whenStart(function(executor) {
-      Logger.test(BeanTestRunner, "Start Test_Array")
+      Logger.test(BeanTestRunner, $"Test_Array started. Description: {this.state.description}")
       Beans.get(BeanTestRunner).installHooks()
     })
     .whenFinish(function(data) {
-      Logger.test(BeanTestRunner, $"Finished Test_Array")
+      Logger.test(BeanTestRunner, $"Test_Array finished. Description: {this.state.description}")
       Beans.get(BeanTestRunner).uninstallHooks()
     })
     .whenTimeout(function() {
-      Logger.test(BeanTestRunner, "Test_Array: Timeout")
+      Logger.test(BeanTestRunner, $"Test_Array timeout. Description: {this.state.description}")
       this.reject("failure")
       Beans.get(BeanTestRunner).uninstallHooks()
     })

@@ -6,7 +6,7 @@
     "stopAfterFailure": false,
     "tests": [
       {
-        "handler": "TestEvent_PlayerService_player_shoot",
+        "handler": "Test_PlayerService_player_shoot",
         "description": "Test player shooting functionality",
         "data": {
           "timeout": 10.0,
@@ -74,7 +74,7 @@
                   "speed":24.0,
                   "offsetX":-112.0,
                   "offsetY":-96.0,
-                  "focus": null,
+                  "focus": null
                 },
                 {
                   "cooldown":60.0,
@@ -83,7 +83,7 @@
                   "speed":24.0,
                   "offsetX":112.0,
                   "offsetY":-96.0,
-                  "focus": false,
+                  "focus": false
                 },
                 {
                   "cooldown":60.0,
@@ -93,7 +93,7 @@
                   "speed":24.0,
                   "offsetX":-112.0,
                   "offsetY":96.0,
-                  "focus": true,
+                  "focus": true
                 },
                 {
                   "cooldown":60.0,
@@ -103,7 +103,7 @@
                   "speed":24.0,
                   "offsetX":112.0,
                   "offsetY":96.0,
-                  "focus": true,
+                  "focus": true
                 }
               ]
             },

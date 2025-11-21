@@ -1,12 +1,14 @@
 ///@package io.alkapivo.test.core.collection
 
-///@param {Struct} [json]
+///@param {Test} test
 ///@return {Task}
-function Test_Stack(json = {}) {
+function Test_Stack(test) {
+  var json = Struct.get(test, "data")
   return new Task("Test_Stack")
     .setTimeout(Struct.getDefault(json, "timeout", 3.0))
     .setPromise(new Promise())
     .setState({
+      description: test.description,
       stack: new Stack(String, [ "lorem", "ipsum", "dolor", "sit", "amet" ]),
       push: "consectetur",
       pop: "amet",
@@ -137,15 +139,15 @@ function Test_Stack(json = {}) {
       this.fullfill("success")
     })
     .whenStart(function(executor) {
-      Logger.test(BeanTestRunner, "Start Test_Stack")
+      Logger.test(BeanTestRunner, $"Test_Stack started. Description: {this.state.description}")
       Beans.get(BeanTestRunner).installHooks()
     })
     .whenFinish(function(data) {
-      Logger.test(BeanTestRunner, $"Finished Test_Stack")
+      Logger.test(BeanTestRunner, $"Test_Stack finished. Description: {this.state.description}")
       Beans.get(BeanTestRunner).uninstallHooks()
     })
     .whenTimeout(function() {
-      Logger.test(BeanTestRunner, "Test_Stack: Timeout")
+      Logger.test(BeanTestRunner, $"Test_Stack timeout. Description: {this.state.description}")
       this.reject("failure")
       Beans.get(BeanTestRunner).uninstallHooks()
     })

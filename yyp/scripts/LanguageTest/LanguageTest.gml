@@ -1,12 +1,14 @@
 ///@package io.alkapivo.test.utils
 
-///@param {Struct} [json]
+///@param {Test} test
 ///@return {Task}
-function Test_Language(json = {}) {
+function Test_Language(test) {
+  var json = Struct.get(test, "data")
   return new Task("Test_Language")
     .setTimeout(Struct.getDefault(json, "timeout", 1.0))
     .setPromise(new Promise())
     .setState({
+      description: test.description,
       cooldown: new Timer(Struct.getDefault(json, "cooldown", 0.5)),
       code: Struct.getDefault(json, "code", LanguageType.en_EN),
       key: Struct.getDefault(json, "key", "test.language"),
@@ -53,15 +55,15 @@ function Test_Language(json = {}) {
       stage(this)
     })
     .whenStart(function(executor) {
-      Logger.test(BeanTestRunner, "Start Test_Language")
+      Logger.test(BeanTestRunner, $"Test_Language started. Description: {this.state.description}")
       Beans.get(BeanTestRunner).installHooks()
     })
     .whenFinish(function(data) {
-      Logger.test(BeanTestRunner, $"Finished Test_Language")
+      Logger.test(BeanTestRunner, $"Test_Language finished. Description: {this.state.description}")
       Beans.get(BeanTestRunner).uninstallHooks()
     })
     .whenTimeout(function() {
-      Logger.test(BeanTestRunner, "Test_Language: Timeout")
+      Logger.test(BeanTestRunner, $"Test_Language timeout. Description: {this.state.description}")
       this.reject("failure")
       Beans.get(BeanTestRunner).uninstallHooks()
     })

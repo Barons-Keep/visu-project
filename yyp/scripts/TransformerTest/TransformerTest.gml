@@ -1,12 +1,14 @@
 ///@package io.alkapivo.core.util
 
-///@param {Struct} [json]
+///@param {Test} test
 ///@return {Task}
-function TestEvent_NumberTransformer_Ease(json = {}) constructor {
-  return new Task("TestEvent_NumberTransformer_Ease")
+function Test_NumberTransformer_Ease(test) {
+  var json = Struct.get(test, "data")
+  return new Task("Test_NumberTransformer_Ease")
     .setTimeout(Struct.getIfType(json, "timeout", Number, 90.0))
     .setPromise(new Promise())
     .setState({
+      description: test.description,
       transformer: null,
       transformers: new Queue(Struct, Struct.getIfType(json, "transformers", GMArray, [
         {
@@ -212,20 +214,20 @@ function TestEvent_NumberTransformer_Ease(json = {}) constructor {
           easeType: this.state.transformer.easeType,
         }, { pretty: true })
 
-        Logger.test("TestEvent_NumberTransformer_Ease", $"Result:\n{report}\n")
+        Logger.test("Test_NumberTransformer_Ease", $"Result:\n{report}\n")
         this.state.transformer = null
       }
     })
     .whenStart(function(executor) {
-      Logger.test(BeanTestRunner, "TestEvent_NumberTransformer_Ease started")
+      Logger.test(BeanTestRunner, $"Test_NumberTransformer_Ease started. Description: {this.state.description}")
       Beans.get(BeanTestRunner).installHooks()
     })
     .whenFinish(function(data) {
-      Logger.test(BeanTestRunner, "TestEvent_NumberTransformer_Ease finished")
+      Logger.test(BeanTestRunner, $"Test_NumberTransformer_Ease finished. Description: {this.state.description}")
       Beans.get(BeanTestRunner).uninstallHooks()
     })
     .whenTimeout(function() {
-      Logger.test(BeanTestRunner, "TestEvent_NumberTransformer_Ease timeout")
+      Logger.test(BeanTestRunner, $"Test_NumberTransformer_Ease timeout. Description: {this.state.description}")
       this.reject("failure")
       Beans.get(BeanTestRunner).uninstallHooks()
     })

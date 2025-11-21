@@ -1,12 +1,14 @@
 ///@package io.alkapivo.test.core.collection
 
-///@param {Struct} [json]
+///@param Test} test
 ///@return {Task}
-function Test_Queue(json = {}) {
+function Test_Queue(test) {
+  var json = Struct.get(test, "data")
   return new Task("Test_Queue")
     .setTimeout(Struct.getDefault(json, "timeout", 3.0))
     .setPromise(new Promise())
     .setState({
+      description: test.description,
       queue: new Queue(String, [ "lorem", "ipsum", "dolor", "sit", "amet" ]),
       push: "consectetur",
       pop: "ipsum",
@@ -144,15 +146,15 @@ function Test_Queue(json = {}) {
       this.fullfill("success")
     })
     .whenStart(function(executor) {
-      Logger.test(BeanTestRunner, "Start Test_Queue")
+      Logger.test(BeanTestRunner, $"Test_Queue started. Description: {this.state.description}")
       Beans.get(BeanTestRunner).installHooks()
     })
     .whenFinish(function(data) {
-      Logger.test(BeanTestRunner, $"Finished Test_Queue")
+      Logger.test(BeanTestRunner, $"Test_Queue finished. Description: {this.state.description}")
       Beans.get(BeanTestRunner).uninstallHooks()
     })
     .whenTimeout(function() {
-      Logger.test(BeanTestRunner, "Test_Queue: Timeout")
+      Logger.test(BeanTestRunner, $"Test_Queue timeout. Description: {this.state.description}")
       this.reject("failure")
       Beans.get(BeanTestRunner).uninstallHooks()
     })

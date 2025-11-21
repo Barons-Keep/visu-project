@@ -1,6 +1,6 @@
 {
   "version": "1",
-  "model": "io.alkapivo.core.test.TestSuite",
+  "model": "io.alkapivo.visu.TestSuite",
   "data":{
     "name": "Test package io.alkapivo.core.collection",
     "stopAfterFailure": false,

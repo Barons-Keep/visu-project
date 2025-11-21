@@ -956,15 +956,49 @@ function _Visu() constructor {
               {
                 name: "file",
                 type: "String",
-                description: "Path to test suite JSON"
+                description: "Path to test suite"
               }
             ],
             handler: function(args) {
               Logger.debug("CLIParamParser", $"Run --test {args.get(0)}")
-              Beans.get(BeanTestRunner).push(args.get(0))
+
               Core.setProperty("visu.manifest.load-on-start", false)
               Core.setProperty("visu.menu.open-on-start", false)
               Core.setProperty("visu.skip-splashscreen", true)
+
+              Beans.get(BeanTestRunner).push(args.get(0))
+
+              var fsm = Beans.get(BeanVisuController).fsm
+              if (fsm.getStateName() != "idle") {
+                fsm.dispatcher.send(new Event("transition", { name: "idle" }))
+              }
+            },
+          }),
+          new CLIParam({
+            name: "-T",
+            fullName: "--tests",
+            description: "Run tests from test suites",
+            args: [
+              {
+                name: "files",
+                type: "String",
+                description: "Comma separated list of paths to test suites"
+              }
+            ],
+            handler: function(args) {
+              Core.setProperty("visu.manifest.load-on-start", false)
+              Core.setProperty("visu.menu.open-on-start", false)
+              Core.setProperty("visu.skip-splashscreen", true)
+
+              String.split(args.get(0), ",").forEach(function(path) {
+                var test = String.trim(path)
+                if (test == "") {
+                  return
+                }
+
+                Logger.debug("CLIParamParser", $"Run --test {test}")
+                Beans.get(BeanTestRunner).push(test)
+              })
 
               var fsm = Beans.get(BeanVisuController).fsm
               if (fsm.getStateName() != "idle") {
