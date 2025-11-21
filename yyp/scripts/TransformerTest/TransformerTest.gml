@@ -219,15 +219,15 @@ function Test_NumberTransformer_Ease(test) {
       }
     })
     .whenStart(function(executor) {
-      Logger.test(BeanTestRunner, $"Test_NumberTransformer_Ease started. Description: {this.state.description}")
+      Logger.test(BeanTestRunner, $"Test_NumberTransformer_Ease started.\nDescription: {this.state.description}")
       Beans.get(BeanTestRunner).installHooks()
     })
     .whenFinish(function(data) {
-      Logger.test(BeanTestRunner, $"Test_NumberTransformer_Ease finished. Description: {this.state.description}")
+      Logger.test(BeanTestRunner, $"Test_NumberTransformer_Ease finished.\nDescription: {this.state.description}")
       Beans.get(BeanTestRunner).uninstallHooks()
     })
     .whenTimeout(function() {
-      Logger.test(BeanTestRunner, $"Test_NumberTransformer_Ease timeout. Description: {this.state.description}")
+      Logger.test(BeanTestRunner, $"Test_NumberTransformer_Ease timeout.\nDescription: {this.state.description}")
       this.reject("failure")
       Beans.get(BeanTestRunner).uninstallHooks()
     })

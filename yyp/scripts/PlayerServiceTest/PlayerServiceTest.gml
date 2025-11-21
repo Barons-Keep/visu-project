@@ -259,17 +259,17 @@ function Test_PlayerService_player_shoot(test) {
       stage(this)
     })
     .whenStart(function(executor) {
-      Logger.test(BeanTestRunner, $"Test_PlayerService_player_shoot started. Description: {this.state.description}")
+      Logger.test(BeanTestRunner, $"Test_PlayerService_player_shoot started.\nDescription: {this.state.description}")
       Beans.get(BeanTestRunner).installHooks()
       Visu.settings.setValue("visu.god-mode", true)
       Beans.get(BeanVisuController).menu.send(new Event("close", { fade: false }))
     })
     .whenFinish(function(data) {
-      Logger.test(BeanTestRunner, $"Test_PlayerService_player_shoot finished. Description: {this.state.description}")
+      Logger.test(BeanTestRunner, $"Test_PlayerService_player_shoot finished.\nDescription: {this.state.description}")
       Beans.get(BeanTestRunner).uninstallHooks()
     })
     .whenTimeout(function() {
-      Logger.test(BeanTestRunner, $"Test_PlayerService_player_shoot timeout. Description: {this.state.description}")
+      Logger.test(BeanTestRunner, $"Test_PlayerService_player_shoot timeout.\nDescription: {this.state.description}")
       this.reject("failure")
       Beans.get(BeanTestRunner).uninstallHooks()
     })

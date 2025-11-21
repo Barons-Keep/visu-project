@@ -237,15 +237,15 @@ function Test_Array(test) {
       this.fullfill("success")
     })
     .whenStart(function(executor) {
-      Logger.test(BeanTestRunner, $"Test_Array started. Description: {this.state.description}")
+      Logger.test(BeanTestRunner, $"Test_Array started.\nDescription: {this.state.description}")
       Beans.get(BeanTestRunner).installHooks()
     })
     .whenFinish(function(data) {
-      Logger.test(BeanTestRunner, $"Test_Array finished. Description: {this.state.description}")
+      Logger.test(BeanTestRunner, $"Test_Array finished.\nDescription: {this.state.description}")
       Beans.get(BeanTestRunner).uninstallHooks()
     })
     .whenTimeout(function() {
-      Logger.test(BeanTestRunner, $"Test_Array timeout. Description: {this.state.description}")
+      Logger.test(BeanTestRunner, $"Test_Array timeout.\nDescription: {this.state.description}")
       this.reject("failure")
       Beans.get(BeanTestRunner).uninstallHooks()
     })

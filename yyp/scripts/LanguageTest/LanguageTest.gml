@@ -55,15 +55,15 @@ function Test_Language(test) {
       stage(this)
     })
     .whenStart(function(executor) {
-      Logger.test(BeanTestRunner, $"Test_Language started. Description: {this.state.description}")
+      Logger.test(BeanTestRunner, $"Test_Language started.\nDescription: {this.state.description}")
       Beans.get(BeanTestRunner).installHooks()
     })
     .whenFinish(function(data) {
-      Logger.test(BeanTestRunner, $"Test_Language finished. Description: {this.state.description}")
+      Logger.test(BeanTestRunner, $"Test_Language finished.\nDescription: {this.state.description}")
       Beans.get(BeanTestRunner).uninstallHooks()
     })
     .whenTimeout(function() {
-      Logger.test(BeanTestRunner, $"Test_Language timeout. Description: {this.state.description}")
+      Logger.test(BeanTestRunner, $"Test_Language timeout.\nDescription: {this.state.description}")
       this.reject("failure")
       Beans.get(BeanTestRunner).uninstallHooks()
     })

@@ -154,7 +154,7 @@ function TestEvent_BrushToolbar_save(test) {
       stage(this)
     })
     .whenStart(function(executor) {
-      Logger.test(BeanTestRunner, $"TestEvent_BrushToolbar_save started. Description: {this.state.description}")
+      Logger.test(BeanTestRunner, $"TestEvent_BrushToolbar_save started.\nDescription: {this.state.description}")
       Beans.get(BeanTestRunner).installHooks()
 
       Visu.settings.setValue("visu.god-mode", true)
@@ -181,7 +181,7 @@ function TestEvent_BrushToolbar_save(test) {
       }
     })
     .whenFinish(function(data) {
-      Logger.test(BeanTestRunner, $"TestEvent_BrushToolbar_save finished. Description: {this.state.description}")
+      Logger.test(BeanTestRunner, $"TestEvent_BrushToolbar_save finished.\nDescription: {this.state.description}")
       Beans.get(BeanTestRunner).uninstallHooks()
       var editor = Beans.get(Visu.modules().editor.controller)
       if (Optional.is(editor)) {
@@ -189,7 +189,7 @@ function TestEvent_BrushToolbar_save(test) {
       }
     })
     .whenTimeout(function() {
-      Logger.test(BeanTestRunner, $"TestEvent_BrushToolbar_save timeout. Description: {this.state.description}")
+      Logger.test(BeanTestRunner, $"TestEvent_BrushToolbar_save timeout.\nDescription: {this.state.description}")
       this.reject("failure")
       Beans.get(BeanTestRunner).uninstallHooks()
       var editor = Beans.get(Visu.modules().editor.controller)

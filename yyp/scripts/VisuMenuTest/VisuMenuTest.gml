@@ -155,16 +155,16 @@ function Test_VisuMenu_select_track(test) {
       stage(this)
     })
     .whenStart(function(executor) {
-      Logger.test(BeanTestRunner, $"Test_VisuMenu_select_track started. Description: {this.state.description}")
+      Logger.test(BeanTestRunner, $"Test_VisuMenu_select_track started.\nDescription: {this.state.description}")
       Beans.get(BeanTestRunner).installHooks()
       Visu.settings.setValue("visu.god-mode", true)
     })
     .whenFinish(function(data) {
-      Logger.test(BeanTestRunner, $"Test_VisuMenu_select_track finished. Description: {this.state.description}")
+      Logger.test(BeanTestRunner, $"Test_VisuMenu_select_track finished.\nDescription: {this.state.description}")
       Beans.get(BeanTestRunner).uninstallHooks()
     })
     .whenTimeout(function() {
-      Logger.test(BeanTestRunner, $"Test_VisuMenu_select_track timeout. Description: {this.state.description}")
+      Logger.test(BeanTestRunner, $"Test_VisuMenu_select_track timeout.\nDescription: {this.state.description}")
       this.reject("failure")
       Beans.get(BeanTestRunner).uninstallHooks()
     })
