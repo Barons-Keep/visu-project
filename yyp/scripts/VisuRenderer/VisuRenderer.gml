@@ -139,6 +139,14 @@ function VisuRenderer() constructor {
   debugMinFPS = GAME_FPS
 
   ///@private
+  ///@type {Number}
+  debugDeltaHighCooldown = 0.0
+
+  ///@private
+  ///@type {Number}
+  debugMaxDelta = 1.0
+
+  ///@private
   ///@type {Struct}
   Assert.isTrue(shader_is_compiled(shader_gaussian_blur), "shader_gaussian_blur must be compiled")
   shaderGaussianBlur = {
@@ -230,6 +238,18 @@ function VisuRenderer() constructor {
       this.debugMinFPS = fpsReal
       this.debugFPSLowCooldown = GAME_FPS * 2
     }
+
+    if (this.debugDeltaHighCooldown > 0) {
+      this.debugDeltaHighCooldown--
+    } else {
+      this.debugMaxDelta = DELTA_TIME
+    }
+
+    var deltaTime = DELTA_TIME
+    if (deltaTime >= this.debugMaxDelta) {
+      this.debugMaxDelta = deltaTime
+      this.debugDeltaHighCooldown = GAME_FPS * 2
+    }
     
     if (enableDebugOverlay) {
       var shrooms = controller.shroomService.shrooms.size()
@@ -248,8 +268,8 @@ function VisuRenderer() constructor {
       update: xxxxx ms | total:       xxxxx ms
       render: xxxxx ms | avg:         xxxxx ms
       -----------------|-----------------------
-      shrooms: xxxx    |
-      bullets: xxxx    |
+      shrooms: xxxx    | dt:        xxxxxxx
+      bullets: xxxx    | dt-max:    xxxxxxx
       */
       var a1 = String.format(fps, 4, 0) // fps
       var a2 = String.format(this.debugMinFPS, 4, 0) // fps-min
@@ -261,14 +281,16 @@ function VisuRenderer() constructor {
       var d2 = String.format(gridService.avgTime.get(), 2, 2) // avg
       var e1 = String.format(shrooms, 4, 0) // shrooms
       var e2 = String.format(bullets, 4, 0) // bullets
-      var text = $"fps:     {a1}    | fps-real:     {b1}\n"
-               + $"fps-min: {a2}    | fps-real-avg: {b2}\n"    
+      var f1 = String.format(deltaTime, 1, 5)
+      var f2 = String.format(this.debugMaxDelta, 1, 5)
+      var text = $"fps:     {a1}    | fps-real:     {b1}    \n"
+               + $"fps-min: {a2}    | fps-real-avg: {b2}    \n"    
                +  "-----------------|-----------------------\n"
-               + $"update: { c1} ms | total:       { d1} ms\n"
-               + $"render: { c2} ms | avg:         { d2} ms\n"
+               + $"update: { c1} ms | total:       { d1} ms \n"
+               + $"render: { c2} ms | avg:         { d2} ms \n"
                +  "-----------------|-----------------------\n"
-               + $"shrooms: {e1}    |\n"
-               + $"bullets: {e2}    |\n"
+               + $"shrooms: {e1}    | dt:        {   f1}    \n"
+               + $"bullets: {e2}    | dt-max:    {   f2}    \n"
         
       GPU.render.text(64, 80, text, 1.0, 0.0, 1.0, c_lime, 
         GPU_DEFAULT_FONT_BOLD, HAlign.LEFT, VAlign.TOP, c_black, 1.0)

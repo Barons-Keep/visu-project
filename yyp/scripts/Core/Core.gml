@@ -10,7 +10,7 @@ gml_pragma("optimise", "js_check_index", "push off")
 #macro super event_inherited
 
 #macro GAME_FPS 60
-#macro FRAME_MS 1 / GAME_FPS
+#macro FRAME_MS (1.0 / GAME_FPS)
 
 #macro GuiWidth display_get_gui_width
 #macro GuiHeight display_get_gui_height

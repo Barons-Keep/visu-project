@@ -9,5 +9,8 @@
   "core.display-service.center.offset.x": 0.0,
   "core.display-service.center.offset.y": 0.0,
   "core.display-service.resize.tick": 2,
+  "core.delta-time.steady": false,
+  "core.delta-time.clamp-to-fps": false,
+  "core.delta-time.performance.logger": false,
   "end-property": null
 }

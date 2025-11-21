@@ -7,48 +7,51 @@ global.__DELTA_TIME = 1.0;
 
 ///@static
 function _DeltaTime() constructor {
-	
-	///@type {Number}
+
+  ///@type {Number}
   deltaTime = 1.0
-	
-  ///@type {Number}
-  expectedDeltaTime = game_get_speed(gamespeed_fps) / 1000000
 
+  ///@private
   ///@type {Number}
-  maxLagCompensation = 4
+  fpsMin = 15
 
+  ///@private
+  ///@type {Number}
+  deltaTimePrevious = 1.0
+  
+  ///@private
+  ///@type {Boolean}
+  deltaTimeRestored = false
+  
+  ///@private
   ///@return {DeltaTime}
-  static update = function() {
+  static unsteadyDelta = function() {
     gml_pragma("forceinline")
-    this.deltaTime = min((this.expectedDeltaTime * delta_time), this.maxLagCompensation)
-    DELTA_TIME = this.deltaTime
-
-    if (Core.getProperty("core.delta-time.performance.logger", false)) {
-      Logger.debug(BeanDeltaTimeService, $"DeltaTime: {String.format(DELTA_TIME, 2, 6)}, FPS-Real: {fps_real}, FPS: {fps}")
-    }
+    this.deltaTime = min(((GAME_FPS / 1000000.0) * delta_time), GAME_FPS / this.fpsMin)
     return this
   }
 
   ///@private
-	///@type {Number}
-  fpsMin = 3
+  ///@return {DeltaTime}
+  static steadyDelta = function() {
+    gml_pragma("forceinline")
+    this.deltaTimePrevious = this.deltaTime
+    this.deltaTime = delta_time / 1000000.0
+    if (this.deltaTime > 1.0 / this.fpsMin) {
+      if (this.deltaTimeRestored) {
+        this.deltaTime = 1.0 / this.fpsMin
+      } else {
+        this.deltaTime = this.deltaTimePrevious
+        this.deltaTimeRestored = true
+      }
+    } else {
+      this.deltaTimeRestored = false
+    }
+    this.deltaTime = min(this.deltaTime * GAME_FPS, GAME_FPS / this.fpsMin)
 
-  ///@private
-  ///@type {Number}
-  deltaTimeMax = GAME_FPS / this.fpsMin
+    return this
+  }
 
-  ///@private
-	///@type {Number}
-	deltaTimePrecision = 1000000.0
-	
-	///@private
-  ///@type {Number}
-	deltaTimePrevious = 1.0
-	
-  ///@private
-	///@type {Boolean}
-	deltaTimeRestored = false
-  
   ///@param {Number} [value]
   ///@return {Number}
   static apply = function(value = FRAME_MS) {
@@ -63,21 +66,17 @@ function _DeltaTime() constructor {
   }
 
   ///@return {DeltaTime}
-  static _update = function() {
-    gml_pragma("forceinline")
-    this.deltaTimePrevious = this.deltaTime
-    this.deltaTime = delta_time / this.deltaTimePrecision
-    if (this.deltaTime > 1.0 / this.fpsMin) {
-      if (this.deltaTimeRestored) {
-        this.deltaTime = 1.0 / this.fpsMin
-      } else {
-        this.deltaTime = this.deltaTimePrevious
-        this.deltaTimeRestored = true
-      }
+  static update = function() {
+    if (Core.getProperty("core.delta-time.steady", true)) {
+      this.steadyDelta()
     } else {
-      this.deltaTimeRestored = false
+      this.unsteadyDelta()
     }
-    this.deltaTime = clamp(this.deltaTime * GAME_FPS, 1.0, this.deltaTimeMax)
+
+    if (Core.getProperty("core.delta-time.clamp-to-fps", false)) {
+      this.deltaTime = min(fps, fps_real) < GAME_FPS ? this.deltaTime : 1.0
+    }
+
     DELTA_TIME = this.deltaTime
 
     if (Core.getProperty("core.delta-time.performance.logger", false)) {

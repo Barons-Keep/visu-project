@@ -442,7 +442,11 @@ function VisuMenu(_config = null) constructor {
             },
           }
         }
-      ])
+      ]),
+      back: config.node != null 
+        ? this.factoryOpenVisuMenuNode
+        : this.factoryOpenMainMenuEvent,
+      backData: config.node,
     })
 
     return event
@@ -3240,9 +3244,9 @@ function VisuMenu(_config = null) constructor {
       blur.startValue = blur.value
       blur.reset()
 
+      this.dispatcher.execute(new Event("close"))
       this.back = Struct.getIfType(event.data, "back", Callable)
       this.backData = Struct.get(event.data, "backData")
-      this.dispatcher.execute(new Event("close"))
       this.enabled = true
       this.containers = this.factoryContainers(event.data.title, event.data.content, event.data.layout)
       this.containers.forEach(function(container, key, uiService) {
