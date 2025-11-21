@@ -265,12 +265,14 @@ function TestEvent_VisuController_rewind(json = {}) {
                 if (video.getStatus() != VideoStatus.CLOSED) {
                   task.state.stage = "cooldownAfter"
                 } else {
+                  Logger.test("TestEvent_VisuController_rewind", $"rejected, invalid video status: {video.getStatus()}")
                   task.reject()
                 }
               } else {
                 task.state.stage = "cooldownAfter"
               }
             } else {
+              Logger.test("TestEvent_VisuController_rewind", $"rejected, not matching target: {task.state.countTarget * 0.75}")
               task.reject()
             }
           }

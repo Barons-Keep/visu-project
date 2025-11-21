@@ -5,58 +5,31 @@
 function ShaderTemplate(_name, json) constructor {
 
   ///@type {?String}
-  name = Assert.isType(_name, String)
+  name = Assert.isType(_name, String, "ShaderTemplate::name must be type of String")
 
   ///@type {?String}
   inherit = Struct.contains(json, "inherit")
-    ? Assert.isType(json.inherit, String)
+    ? Assert.isType(json.inherit, String, "ShaderTemplate::inherit must be type of String")
     : null
 
   ///@type {String}
-  shader = Assert.isType(Core.getRuntimeType() == RuntimeType.GXGAMES 
-    ? (Struct.contains(SHADERS_WASM, json.shader) 
-      ? Struct.get(SHADERS_WASM, json.shader) 
-      : json.shader)
-    : json.shader, String)
-  Assert.isType(ShaderUtil.fetch(this.shader), Shader)
-  
-  ///@type {?String}
-  //type = Struct.contains(json, "type") 
-  //  ? Assert.isType(json.type, String) 
-  //  : null
+  shader = Assert.isType(json.shader, String, "ShaderTemplate::shader must be type of String")
+  Assert.isType(ShaderUtil.fetch(this.shader), Shader, $"Shader {this.shader} must exists")
 
   ///@type {?Struct}
   properties = Struct.contains(json, "properties")
-    ? Assert.isType(json.properties, Struct)
+    ? Assert.isType(json.properties, Struct, "ShaderTemplate::properties must be type of Struct")
     : null
-
-  ///@description remove nullable fields
-  if (!Optional.is(this.inherit)) {
-    Struct.remove(this, "inherit")
-  }
-  //if (!Optional.is(this.type)) {
-  //  Struct.remove(this, "type")
-  //}
-  if (!Optional.is(this.properties)) {
-    Struct.remove(this, "properties")
-  }
 
   ///@return {Struct}
   serialize = function() {
     var json = {
       name: this.name,
       shader: this.shader,
-    }
-    
-    if (Optional.is(Struct.get(this, "inherit"))) {
-      Struct.set(json, "inherit", this.inherit)
-    }
-
-    if (Optional.is(Struct.get(this, "properties"))) {
-      Struct.set(json, "properties", this.properties)
+      inherit: this.inherit,
+      properties: this.properties,
     }
 
     return json
-    //return JSON.clone(json)
   }
 }

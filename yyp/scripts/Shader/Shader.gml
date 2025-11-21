@@ -681,14 +681,6 @@ global.__SHADER_CONFIGS = {
 #macro SHADER_CONFIGS global.__SHADER_CONFIGS
 
 
-///@static
-///@type {Struct}
-global.__shadersWASM = {
-
-}
-#macro SHADERS_WASM global.__shadersWASM
-
-
 ///@enum
 function _ShaderType(): Enum() constructor {
   GLSL = "GLSL"
@@ -747,10 +739,7 @@ function _ShaderUtil() constructor {
 
   ///@param {String} _name
   ///@return {?Shader}
-  static fetch = function(_name) {
-    var name = Core.getRuntimeType() == RuntimeType.GXGAMES
-      ? (Struct.contains(SHADERS_WASM, _name) ? Struct.get(SHADERS_WASM, _name) : _name)
-      : _name
+  static fetch = function(name) {
     var asset = asset_get_index(name)
     if (asset == -1) {
       Logger.warn("ShaderUtil", String.template("{0} does not exist: { \"name\": \"{1}\" }", GMShader, name))

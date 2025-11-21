@@ -76,14 +76,7 @@ global.__GlitchType = new _GlitchType()
 global.__effect_track_event = {
   "brush_effect_shader": {
     parse: function(data) {
-      var template = Struct.parse.text(data, "ef-shd_template", "shader-default")
-      if (Core.getRuntimeType() == RuntimeType.GXGAMES
-          && Struct.contains(SHADERS_WASM, template)) {
-        var wasmTemplate = Struct.get(SHADERS_WASM, eventData.template)
-        Logger.debug("Track", $"Override shader '{template}' with '{wasmTemplate}'")
-        template = wasmTemplate
-      }
-      
+      var template = Struct.parse.text(data, "ef-shd_template", "shader-default") 
       return {
         "icon": Struct.parse.sprite(data, "icon"),
         "ef-shd_hide": Struct.parse.boolean(data, "ef-shd_hide", TRACK_EVENT_DEFAULT_HIDDEN_VALUE),

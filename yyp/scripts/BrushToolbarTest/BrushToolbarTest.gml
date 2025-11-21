@@ -13,13 +13,17 @@ function TestEvent_BrushToolbar_save(json = {}) {
         cooldownBefore: function(task) {
           if (task.state.cooldown.update().finished) {
             //task.state.stage = "setup"
-            //task.state.cooldown.reset()
+            task.state.cooldown.reset()
 
             // Temporary disable test
             Assert.isTrue(Beans.get(BeanTestRunner).exceptions.size() == 0, "No exceptions can be thrown")
             task.fullfill("success")
 
-            var editor = Beans.get(BeanVisuEditorController)
+            var editor = Beans.get(Visu.modules().editor.controller)
+            if (editor == null) {
+              return
+            }
+
             editor.send(new Event("close"))
             if (editor.store.getValue("render-brush")) {
               editor.store.get("render-brush").set(false)
@@ -28,7 +32,11 @@ function TestEvent_BrushToolbar_save(json = {}) {
         },
         setup: function(task) {
           Beans.get(BeanTestRunner).exceptions.clear()
-          var editor = Beans.get(BeanVisuEditorController)
+          var editor = Beans.get(Visu.modules().editor.controller)
+          if (editor == null) {
+            return
+          }
+
           editor.renderUI = true
           editor.send(new Event("open"))
           if (!editor.store.getValue("_render-brush")) {
@@ -54,7 +62,11 @@ function TestEvent_BrushToolbar_save(json = {}) {
           task.state.stage = "selectType"
         },
         selectType: function(task) {
-          var editor = Beans.get(BeanVisuEditorController)
+          var editor = Beans.get(Visu.modules().editor.controller)
+          if (editor == null) {
+            return
+          }
+
           var entry = task.state.types.pop()
           if (Core.isType(entry, Struct)) {
             Logger.test("TestEvent_BrushToolbar_save", $"Select brush from category '{entry.category}' of type '{entry.type}'")
@@ -66,7 +78,11 @@ function TestEvent_BrushToolbar_save(json = {}) {
           }
         },
         selectTemplate: function(task) {
-          var editor = Beans.get(BeanVisuEditorController)
+          var editor = Beans.get(Visu.modules().editor.controller)
+          if (editor == null) {
+            return
+          }
+
           if (task.state.cooldown.update().finished) {
             task.state.stage = "saveBrush"
             task.state.cooldown.reset()
@@ -86,7 +102,11 @@ function TestEvent_BrushToolbar_save(json = {}) {
           }
         },
         saveBrush: function(task) {
-          var editor = Beans.get(BeanVisuEditorController)
+          var editor = Beans.get(Visu.modules().editor.controller)
+          if (editor == null) {
+            return
+          }
+
           if (task.state.cooldown.update().finished) {
             task.state.stage = "cooldownAfter"
             task.state.cooldown.reset()
@@ -114,7 +134,11 @@ function TestEvent_BrushToolbar_save(json = {}) {
             Assert.isTrue(Beans.get(BeanTestRunner).exceptions.size() == 0, "No exceptions can be thrown")
             task.fullfill("success")
 
-            var editor = Beans.get(BeanVisuEditorController)
+            var editor = Beans.get(Visu.modules().editor.controller)
+            if (editor == null) {
+              return
+            }
+
             editor.send(new Event("close"))
             if (editor.store.getValue("render-brush")) {
               editor.store.get("render-brush").set(false)
@@ -132,32 +156,43 @@ function TestEvent_BrushToolbar_save(json = {}) {
       Beans.get(BeanTestRunner).installHooks()
 
       Visu.settings.setValue("visu.god-mode", true)
-      if (!Optional.is(Beans.get(BeanVisuEditorIO))) {
-        Beans.add(Beans.factory(BeanVisuEditorIO, GMServiceInstance,
-          Beans.get(BeanVisuController).layerId, new VisuEditorIO()))
-      }
 
-      if (!Optional.is(Beans.get(BeanVisuEditorController))) {
-        Beans.add(Beans.factory(BeanVisuEditorController, GMServiceInstance,
-          Beans.get(BeanVisuController).layerId, new VisuEditorController()))
-
-        var editor = Beans.get(BeanVisuEditorController)
-        if (Optional.is(editor)) {
-          editor.send(new Event("open"))
+      var editorIOConstructor = Core.getConstructor("VisuEditorIO")
+      if (Optional.is(editorIOConstructor)) {
+        if (!Optional.is(Beans.get(Visu.modules().editor.io))) {
+          Beans.add(Beans.factory(Visu.modules().editor.io, GMServiceInstance, 
+            Beans.get(BeanVisuController).layerId, new editorIOConstructor()))
         }
       }
 
-      Beans.get(BeanVisuEditorController).store.get("render-brush").set(true)
+      var editorConstructor = Core.getConstructor("VisuEditorController")
+      if (Optional.is(editorConstructor)) {
+        if (!Optional.is(Beans.get(Visu.modules().editor.controller))) {
+          Beans.add(Beans.factory(Visu.modules().editor.controller, GMServiceInstance, 
+            Beans.get(BeanVisuController).layerId, new editorConstructor()))
+        }
+
+        var editor = Beans.get(Visu.modules().editor.controller)
+        if (Optional.is(editor)) {
+          editor.store.get("render-brush").set(true)
+        }
+      }
     })
     .whenFinish(function(data) {
       Logger.test(BeanTestRunner, $"TestEvent_BrushToolbar_save finished")
       Beans.get(BeanTestRunner).uninstallHooks()
-      Beans.get(BeanVisuEditorController).store.get("render-brush").set(false)
+      var editor = Beans.get(Visu.modules().editor.controller)
+      if (Optional.is(editor)) {
+        editor.store.get("render-brush").set(false)
+      }
     })
     .whenTimeout(function() {
       Logger.test(BeanTestRunner, "TestEvent_BrushToolbar_save timeout")
       this.reject("failure")
       Beans.get(BeanTestRunner).uninstallHooks()
-      Beans.get(BeanVisuEditorController).store.get("render-brush").set(false)
+      var editor = Beans.get(Visu.modules().editor.controller)
+      if (Optional.is(editor)) {
+        editor.store.get("render-brush").set(false)
+      }
     })
 }

@@ -2386,92 +2386,6 @@ function VisuMenu(_config = null) constructor {
           }
         },
         {
-          name: "developer_menu-button-input-entry_editor",
-          template: VisuComponents.get("menu-button-input-entry"),
-          layout: VisuLayouts.get("menu-button-input-entry"),
-          config: {
-            layout: { type: UILayoutType.VERTICAL },
-            label: { 
-              text: "Editor",
-              callback: function() {
-                Beans.get(BeanVisuController).sfxService.play("menu-use-entry")
-                var value = false
-                var editorIOConstructor = Core.getConstructor(Visu.modules().editor.io)
-                var editorControllerConstructor = Core.getConstructor(Visu.modules().editor.controller)
-                if (!Optional.is(editorIOConstructor) || !Optional.is(editorControllerConstructor)) {
-                  return
-                }
-                
-                if (Optional.is(Beans.get(Visu.modules().editor.io))) {
-                  Beans.kill(Visu.modules().editor.io)
-                  value = false
-                } else {
-                  Beans.add(Beans.factory(Visu.modules().editor.io, GMServiceInstance, 
-                    Beans.get(BeanVisuController).layerId, new editorIOConstructor()))
-                  value = true
-                }
-
-                if (Optional.is(Beans.get(Visu.modules().editor.controller))) {
-                  Beans.kill(Visu.modules().editor.controller)
-                  value = false
-                } else {
-                  Beans.add(Beans.factory(Visu.modules().editor.controller, GMServiceInstance, 
-                    Beans.get(BeanVisuController).layerId, new editorControllerConstructor()))
-                  value = true
-                  var editor = Beans.get(Visu.modules().editor.controller)
-                  if (Optional.is(editor)) {
-                    editor.send(new Event("open"))
-                  }
-                }
-
-                Visu.settings.setValue("visu.editor.enable", value).save()
-              },
-              onMouseReleasedLeft: function() {
-                this.callback()
-              },
-            },
-            input: {
-              label: { text: "" },
-              updateCustom: function() {
-                this.label.text = Optional.is(Beans.get(Visu.modules().editor.controller)) ? "Enabled" : "Disabled"
-                this.label.alpha = this.label.text == "Enabled" ? 1.0 : 0.3
-              },
-              callback: function() {
-                Beans.get(BeanVisuController).sfxService.play("menu-use-entry")
-                var value = false
-
-                var editorIOConstructor = Core.getConstructor("VisuEditorIO")
-                if (Optional.is(editorIOConstructor)) {
-                  if (Optional.is(Beans.get(Visu.modules().editor.io))) {
-                    Beans.kill(Visu.modules().editor.io)
-                    value = false
-                  } else {
-                    Beans.add(Beans.factory(Visu.modules().editor.io, GMServiceInstance, 
-                      Beans.get(BeanVisuController).layerId, new editorIOConstructor()))
-                    value = true
-                  }
-                }
-
-                var editorConstructor = Core.getConstructor("VisuEditorController")
-                if (Optional.is(Beans.get(Visu.modules().editor.controller))) {
-                  Beans.kill(Visu.modules().editor.controller)
-                  value = false
-                } else {
-                  Beans.add(Beans.factory(Visu.modules().editor.controller, GMServiceInstance, 
-                    Beans.get(BeanVisuController).layerId, new editorConstructor()))
-                  value = true
-                  var editor = Beans.get(Visu.modules().editor.controller)
-                  if (Optional.is(editor)) {
-                    editor.send(new Event("open"))
-                  }
-                }
-
-                Visu.settings.setValue("visu.editor.enable", value).save()
-              },
-            }
-          }
-        },
-        {
           name: "developer_menu-button-input-entry_ws",
           template: VisuComponents.get("menu-button-input-entry"),
           layout: VisuLayouts.get("menu-button-input-entry"),
@@ -2606,6 +2520,98 @@ function VisuMenu(_config = null) constructor {
         }
       ])
     })
+
+    var editorConstructor = Core.getConstructor("VisuEditorController")
+    if (Optional.is(editorConstructor)) {
+      event.data.content.add({
+        name: "developer_menu-button-input-entry_editor",
+        template: VisuComponents.get("menu-button-input-entry"),
+        layout: VisuLayouts.get("menu-button-input-entry"),
+        config: {
+          layout: { type: UILayoutType.VERTICAL },
+          label: { 
+            text: "Editor",
+            callback: function() {
+              Beans.get(BeanVisuController).sfxService.play("menu-use-entry")
+              var value = false
+              var editorIOConstructor = Core.getConstructor(Visu.modules().editor.io)
+              var editorControllerConstructor = Core.getConstructor(Visu.modules().editor.controller)
+              if (!Optional.is(editorIOConstructor) || !Optional.is(editorControllerConstructor)) {
+                return
+              }
+              
+              if (Optional.is(Beans.get(Visu.modules().editor.io))) {
+                Beans.kill(Visu.modules().editor.io)
+                value = false
+              } else {
+                Beans.add(Beans.factory(Visu.modules().editor.io, GMServiceInstance, 
+                  Beans.get(BeanVisuController).layerId, new editorIOConstructor()))
+                value = true
+              }
+
+              if (Optional.is(Beans.get(Visu.modules().editor.controller))) {
+                Beans.kill(Visu.modules().editor.controller)
+                value = false
+              } else {
+                Beans.add(Beans.factory(Visu.modules().editor.controller, GMServiceInstance, 
+                  Beans.get(BeanVisuController).layerId, new editorControllerConstructor()))
+                value = true
+                var editor = Beans.get(Visu.modules().editor.controller)
+                if (Optional.is(editor)) {
+                  editor.send(new Event("open"))
+                }
+              }
+
+              Visu.settings.setValue("visu.editor.enable", value).save()
+            },
+            onMouseReleasedLeft: function() {
+              this.callback()
+            },
+          },
+          input: {
+            label: { text: "" },
+            updateCustom: function() {
+              this.label.text = Optional.is(Beans.get(Visu.modules().editor.controller)) ? "Enabled" : "Disabled"
+              this.label.alpha = this.label.text == "Enabled" ? 1.0 : 0.3
+            },
+            callback: function() {
+              Beans.get(BeanVisuController).sfxService.play("menu-use-entry")
+              var value = false
+
+              var editorIOConstructor = Core.getConstructor("VisuEditorIO")
+              if (Optional.is(editorIOConstructor)) {
+                if (Optional.is(Beans.get(Visu.modules().editor.io))) {
+                  Beans.kill(Visu.modules().editor.io)
+                  value = false
+                } else {
+                  Beans.add(Beans.factory(Visu.modules().editor.io, GMServiceInstance, 
+                    Beans.get(BeanVisuController).layerId, new editorIOConstructor()))
+                  value = true
+                }
+              }
+
+              var editorConstructor = Core.getConstructor("VisuEditorController")
+              if (Optional.is(editorConstructor)) {
+                if (Optional.is(Beans.get(Visu.modules().editor.controller))) {
+                  Beans.kill(Visu.modules().editor.controller)
+                  value = false
+                } else {
+                  Beans.add(Beans.factory(Visu.modules().editor.controller, GMServiceInstance, 
+                    Beans.get(BeanVisuController).layerId, new editorConstructor()))
+                  value = true
+                  var editor = Beans.get(Visu.modules().editor.controller)
+                  if (Optional.is(editor)) {
+                    editor.send(new Event("open"))
+                  }
+                }
+              }
+
+              Visu.settings.setValue("visu.editor.enable", value).save()
+            },
+          }
+        }
+      }, 5)
+    }
 
     return event
   }

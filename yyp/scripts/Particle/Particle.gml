@@ -257,16 +257,54 @@ function ParticleTemplate(_name, json) constructor {
   serialize = function() {
     var json = {
       shape: this.shape,
-      size: this.size,
-      scale: this.scale,
-      orientation: this.orientation,
-      color: this.color,
-      alpha: this.alpha,
+      size: {
+        wiggle: this.size.wiggle,
+        increase: this.size.increase,
+        minValue: this.size.minValue,
+        maxValue: this.size.maxValue,
+      },
+      scale: {
+        x: this.scale.x,
+        y: this.scale.y,
+      },
+      orientation: {
+        relative: this.orientation.relative,
+        wiggle: this.orientation.wiggle,
+        increase: this.orientation.increase,
+        minValue: this.orientation.minValue,
+        maxValue: this.orientation.maxValue,
+      },
+      color: {
+        start: this.color.start,
+        halfway: this.color.halfway,
+        finish: this.color.finish,
+      },
+      alpha: {
+        start: this.alpha.start,
+        halfway: this.alpha.halfway,
+        finish: this.alpha.finish,
+      },
       blend: this.blend,
-      life: this.life,
-      speed: this.speed,
-      angle: this.angle,
-      gravity: this.gravity,
+      life: {
+        minValue: this.life.minValue,
+        maxValue: this.life.maxValue,
+      },
+      speed: {
+        wiggle: this.speed.wiggle,
+        increase: this.speed.increase,
+        minValue: this.speed.minValue,
+        maxValue: this.speed.maxValue,
+      },
+      angle: {
+        wiggle: this.angle.wiggle,
+        increase: this.angle.increase,
+        minValue: this.angle.minValue,
+        maxValue: this.angle.maxValue,
+      },
+      gravity: {
+        angle: this.gravity.angle,
+        amount: this.gravity.amount,
+      },
       particle: null,
     }
 
