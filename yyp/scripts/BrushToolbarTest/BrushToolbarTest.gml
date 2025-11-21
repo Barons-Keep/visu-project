@@ -2,9 +2,9 @@
 
 ///@param {Test} test
 ///@return {Task}
-function TestEvent_BrushToolbar_save(test) {
+function Test_BrushToolbar_save(test) {
   var json = Struct.get(test, "data")
-  return new Task("TestEvent_BrushToolbar_save")
+  return new Task("Test_BrushToolbar_save")
     .setTimeout(Struct.getDefault(json, "timeout", 60.0))
     .setPromise(new Promise())
     .setState({
@@ -71,7 +71,7 @@ function TestEvent_BrushToolbar_save(test) {
 
           var entry = task.state.types.pop()
           if (Core.isType(entry, Struct)) {
-            Logger.test("TestEvent_BrushToolbar_save", $"Select brush from category '{entry.category}' of type '{entry.type}'")
+            Logger.test("Test_BrushToolbar_save", $"Select brush from category '{entry.category}' of type '{entry.type}'")
             editor.brushToolbar.store.get("category").set(entry.category)
             editor.brushToolbar.store.get("type").set(entry.type)
             task.state.stage = "selectTemplate" 
@@ -154,7 +154,7 @@ function TestEvent_BrushToolbar_save(test) {
       stage(this)
     })
     .whenStart(function(executor) {
-      Logger.test(BeanTestRunner, $"TestEvent_BrushToolbar_save started.\nDescription: {this.state.description}")
+      Logger.test(BeanTestRunner, $"Test_BrushToolbar_save started.\nDescription: {this.state.description}")
       Beans.get(BeanTestRunner).installHooks()
 
       Visu.settings.setValue("visu.god-mode", true)
@@ -181,7 +181,7 @@ function TestEvent_BrushToolbar_save(test) {
       }
     })
     .whenFinish(function(data) {
-      Logger.test(BeanTestRunner, $"TestEvent_BrushToolbar_save finished.\nDescription: {this.state.description}")
+      Logger.test(BeanTestRunner, $"Test_BrushToolbar_save finished.\nDescription: {this.state.description}")
       Beans.get(BeanTestRunner).uninstallHooks()
       var editor = Beans.get(Visu.modules().editor.controller)
       if (Optional.is(editor)) {
@@ -189,7 +189,7 @@ function TestEvent_BrushToolbar_save(test) {
       }
     })
     .whenTimeout(function() {
-      Logger.test(BeanTestRunner, $"TestEvent_BrushToolbar_save timeout.\nDescription: {this.state.description}")
+      Logger.test(BeanTestRunner, $"Test_BrushToolbar_save timeout.\nDescription: {this.state.description}")
       this.reject("failure")
       Beans.get(BeanTestRunner).uninstallHooks()
       var editor = Beans.get(Visu.modules().editor.controller)
