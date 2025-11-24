@@ -8,7 +8,7 @@ function ShaderTemplate(_name, json) constructor {
   name = Assert.isType(_name, String, "ShaderTemplate::name must be type of String")
 
   ///@type {?String}
-  inherit = Struct.contains(json, "inherit")
+  inherit = Struct.get(json, "inherit") != null
     ? Assert.isType(json.inherit, String, "ShaderTemplate::inherit must be type of String")
     : null
 
