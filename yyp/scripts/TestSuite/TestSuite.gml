@@ -52,6 +52,7 @@ function TestSuite(json = {}) constructor {
     var result = this.results.get(this.testsPointer)
     if (this.testsPointer == this.resultsPointer) {
       var test = this.tests.get(this.testsPointer)
+      Logger.test("TestSuite", $"Run test {test}")
       var task = Assert.isType(Callable.run(test.handler, test),
         Task, "TestSuite.update task must be type of task")
       executor.add(task)

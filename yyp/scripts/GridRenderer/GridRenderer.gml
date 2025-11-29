@@ -1706,10 +1706,10 @@ function GridRenderer() constructor {
     var blendConfig = properties.supportBlendConfig
     var shaderGaussianBlur = controller.visuRenderer.shaderGaussianBlur
     GPU.render.clear(color, colorAlpha)
+
     this.gridSurface.renderStretched(width, height, 0, 0, gridAlpha, color, blendConfig)
     shaderGaussianBlur.setShader().setSize(width, height, size)
-    this.gridSurface.renderStretched(width, height, 0, 0, gridAlpha, color, blendConfig)
-    this.gridItemSurface.renderStretched(width, height, 0, 0, focusAlpha, focusColor, blendConfig)
+    this.gridItemSurface.renderStretched(width, height, 0, 0, gridAlpha, color, blendConfig)
     shaderGaussianBlur.resetShader()
     this.gridItemSurface.renderStretched(width, height, 0, 0, focusAlpha, focusColor, blendConfig)
 
