@@ -762,6 +762,7 @@ function _ShaderUtil() constructor {
       return new Shader(asset, config)
     } catch (exception) {
       Logger.warn("ShaderUtil", exception.message)
+      Core.printStackTrace().printException(exception)
     }
     
     return null

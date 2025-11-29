@@ -9,7 +9,7 @@
   "bitRate":128,
   "compression":0,
   "conversionMode":0,
-  "duration":0.1,
+  "duration":0.290317,
   "name":"sound_sfx_player_collect_point_or_force",
   "parent":{
     "name":"sfx",

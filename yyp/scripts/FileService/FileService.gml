@@ -46,10 +46,10 @@ function FileService(config = {}): Service() constructor {
               var path = task.state.path
               var data = task.state.buffer.get()
               if (status) {
-                Logger.info(BeanFileService, $"open-file-buffer successfully: {path}")
+                Logger.info(BeanFileService, $"open-file-buffer: success\n{path}")
                 task.fullfill(new File({ path: path, data: data }))
               } else {
-                Logger.warn(BeanFileService, $"open-file-buffer failure: {path}, status: {status}")
+                Logger.warn(BeanFileService, $"open-file-buffer: failure, status: {status}\n{path}")
                 task.reject()
               }
             },
@@ -61,7 +61,7 @@ function FileService(config = {}): Service() constructor {
         })
         .whenFinish(function() {
           var path = this.state.path
-          Logger.info(BeanFileService, $"open-file-buffer free: {path}")
+          Logger.info(BeanFileService, $"open-file-buffer: free\n{path}")
           this.state.buffer.free()
         })
 
@@ -143,10 +143,10 @@ function FileService(config = {}): Service() constructor {
 
               var path = task.state.path
               if (status) {
-                Logger.info(BeanFileService, $"save-file-buffer successfully: {path}")
+                Logger.info(BeanFileService, $"save-file-buffer: success\n{path}")
                 task.fullfill()
               } else {
-                Logger.warn(BeanFileService, $"save-file-buffer failure: {path}")
+                Logger.warn(BeanFileService, $"save-file-buffer: failure\n{path}")
                 task.reject()
               }
             },
@@ -158,7 +158,7 @@ function FileService(config = {}): Service() constructor {
         })
         .whenFinish(function(e) {
           var path = this.state.path
-          Logger.info(BeanFileService, $"save-file-buffer free: {path}")
+          Logger.info(BeanFileService, $"save-file-buffer: free\n{path}")
           this.state.buffer.free()
         })
     
@@ -213,7 +213,7 @@ function FileService(config = {}): Service() constructor {
         task.state.status = status != false
         break
       default:
-        Logger.warn("FileService::onSaveLoadEvent", $"Found unsupported task: {task.name}, status: {status}")
+        Logger.warn("FileService::onSaveLoadEvent", $"Found unsupported task '{task.name}', status: '{status}'")
         break
     }
 

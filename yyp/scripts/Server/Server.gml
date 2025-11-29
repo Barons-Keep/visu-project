@@ -24,8 +24,9 @@ function Server(config = {}) constructor {
       this.socketId = Assert.isType(socketId, NetworkSocketID)
       Logger.info("Server", $"network_create_server_raw executed successfully, socketId: {this.socketId}")
     } catch (exception) {
+      this.sockedId = null
       Logger.error("Server", exception.message)
-      this.socketId = null
+      Core.printStackTrace().printException(exception)
     }
 
     return this

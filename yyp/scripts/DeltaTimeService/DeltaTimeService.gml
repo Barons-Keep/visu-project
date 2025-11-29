@@ -16,10 +16,16 @@ function DeltaTimeService() constructor {
     return DeltaTime.apply(value)
   }
 
+  ///@param {DeltaTimeMode} mode
+  ///@return {DeltaTimeService}
+  static setMode = function(mode) {
+    DeltaTime.mode = Core.isEnum(mode, DeltaTimeMode) ? mode : DeltaTime.mode
+    return this
+  }
+
   ///@override
   ///@return {DeltaTimeService}
   static updateBegin = function() {
-    gml_pragma("forceinline")
     DeltaTime.update()
     return this
   }

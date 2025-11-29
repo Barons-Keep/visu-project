@@ -755,6 +755,7 @@ function GMTF(style_struct = null) constructor {
       }
     } catch (exception) {
       Logger.error("GMTF", $"setText exception: {exception.message}")
+      Core.printStackTrace().printException(exception)
     }
 
     return this

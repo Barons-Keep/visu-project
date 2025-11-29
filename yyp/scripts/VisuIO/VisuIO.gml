@@ -184,7 +184,7 @@ function VisuIO() constructor {
     } catch (exception) {
       var message = $"'VisuIO::update' fatal error: {exception.message}"
       Logger.error(BeanVisuIO, message)
-      Core.printStackTrace()
+      Core.printStackTrace().printException(exception)
 
       var controller = Beans.get(BeanVisuController)
       if (Core.isType(controller, VisuController)) {

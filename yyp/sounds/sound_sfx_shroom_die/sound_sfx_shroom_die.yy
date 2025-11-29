@@ -9,7 +9,7 @@
   "bitRate":128,
   "compression":0,
   "conversionMode":0,
-  "duration":0.528934,
+  "duration":1.064512,
   "name":"sound_sfx_shroom_die",
   "parent":{
     "name":"sfx",

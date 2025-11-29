@@ -5,11 +5,26 @@
 global.__DELTA_TIME = 1.0;
 #macro DELTA_TIME global.__DELTA_TIME
 
+
+///@enum
+function _DeltaTimeModes(): Enum() constructor {
+  DEFAULT = "DEFAULT"
+  STEADY = "STEADY"
+  UNSTEADY = "UNSTEADY"
+  DISABLED = "DISABLED"
+}
+global.__DeltaTimeModes = new _DeltaTimeModes()
+#macro DeltaTimeMode global.__DeltaTimeModes
+
+
 ///@static
 function _DeltaTime() constructor {
 
   ///@type {Number}
   deltaTime = 1.0
+
+  ///@type {DeltaTimeMode}
+  mode = DeltaTimeMode.DEFAULT
 
   ///@private
   ///@type {Number}
@@ -26,7 +41,6 @@ function _DeltaTime() constructor {
   ///@private
   ///@return {DeltaTime}
   static unsteadyDelta = function() {
-    gml_pragma("forceinline")
     this.deltaTime = min(((GAME_FPS / 1000000.0) * delta_time), GAME_FPS / this.fpsMin)
     return this
   }
@@ -34,7 +48,6 @@ function _DeltaTime() constructor {
   ///@private
   ///@return {DeltaTime}
   static steadyDelta = function() {
-    gml_pragma("forceinline")
     this.deltaTimePrevious = this.deltaTime
     this.deltaTime = delta_time / 1000000.0
     if (this.deltaTime > 1.0 / this.fpsMin) {
@@ -67,10 +80,25 @@ function _DeltaTime() constructor {
 
   ///@return {DeltaTime}
   static update = function() {
-    if (Core.getProperty("core.delta-time.steady", true)) {
-      this.steadyDelta()
-    } else {
-      this.unsteadyDelta()
+    switch (this.mode) {
+      case DeltaTimeMode.STEADY:
+        this.steadyDelta()
+        break
+      case DeltaTimeMode.UNSTEADY:
+        this.unsteadyDelta()
+        break
+      case DeltaTimeMode.DISABLED:
+        this.deltaTime = 1.0
+        this.deltaTimePrevious = 1.0
+        break
+      default:
+      case DeltaTimeMode.DEFAULT:
+        if (Core.getProperty("core.delta-time.steady", true)) {
+          this.steadyDelta()
+        } else {
+          this.unsteadyDelta()
+        }
+        break
     }
 
     if (Core.getProperty("core.delta-time.clamp-to-fps", false)) {

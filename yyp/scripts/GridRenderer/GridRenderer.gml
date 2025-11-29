@@ -1187,13 +1187,13 @@ function GridRenderer() constructor {
     var focusFactor = focusTime != null && focusDuration != null ? focusTime / focusDuration : 0.0
     var scaleFactor = clamp(player.stats.godModeCooldown, 1.0, 10.0)
     var alpha = player.fadeIn
-    var swing = (sin(this.playerZTimer.update().time * 5.0) + 1.0) / 3.0
+    var swing = (sin(this.playerZTimer.update().time * 2.0) + 1.0) / 4.0
     var scaleX = ((player.sprite.texture.width * player.sprite.scaleX) / sprite_get_width(texture_player_shadow)) * (4.0 + (0.0 * focusFactor)) * (scaleFactor + swing)
     var scaleY = ((player.sprite.texture.height * player.sprite.scaleY) / sprite_get_height(texture_player_shadow)) * (4.0 + (0.0 * focusFactor)) * (scaleFactor + swing)
     var _x = (player.x - ((player.sprite.texture.width * player.sprite.scaleX) / (2.0 * GRID_SERVICE_PIXEL_WIDTH)) + ((player.sprite.texture.offsetX * player.sprite.scaleX) / GRID_SERVICE_PIXEL_WIDTH) - gridService.view.x) * GRID_SERVICE_PIXEL_WIDTH,
     var _y = (player.y - ((player.sprite.texture.height * player.sprite.scaleY) / (2.0 * GRID_SERVICE_PIXEL_HEIGHT)) + ((player.sprite.texture.offsetY * player.sprite.scaleY) / GRID_SERVICE_PIXEL_HEIGHT) - gridService.view.y) * GRID_SERVICE_PIXEL_HEIGHT
     draw_sprite_ext(texture_player_shadow, 0, _x, _y, scaleX * 0.75, scaleY * 0.75, 0.0, contrastGMColor, alpha * 1.0)
-    draw_sprite_ext(texture_player_shadow, 0, _x, _y, scaleX * 2.0, scaleY * 2.0, 0.0, supportGridColor.toGMColor(), alpha * 0.9)
+    draw_sprite_ext(texture_player_shadow, 0, _x, _y, scaleX * 2.25, scaleY * 2.25, 0.0, supportGridColor.toGMColor(), alpha * 0.85)
 
     return this
   }
@@ -1706,10 +1706,10 @@ function GridRenderer() constructor {
     var blendConfig = properties.supportBlendConfig
     var shaderGaussianBlur = controller.visuRenderer.shaderGaussianBlur
     GPU.render.clear(color, colorAlpha)
-
     this.gridSurface.renderStretched(width, height, 0, 0, gridAlpha, color, blendConfig)
     shaderGaussianBlur.setShader().setSize(width, height, size)
-    this.gridItemSurface.renderStretched(width, height, 0, 0, gridAlpha, color, blendConfig)
+    this.gridSurface.renderStretched(width, height, 0, 0, gridAlpha, color, blendConfig)
+    this.gridItemSurface.renderStretched(width, height, 0, 0, focusAlpha, focusColor, blendConfig)
     shaderGaussianBlur.resetShader()
     this.gridItemSurface.renderStretched(width, height, 0, 0, focusAlpha, focusColor, blendConfig)
 

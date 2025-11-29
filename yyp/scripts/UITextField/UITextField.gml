@@ -53,7 +53,8 @@ function UITextField(name, json = null) {
     enable: Struct.getIfType(json, "enable", Struct),
 
     ///@type {Boolean}
-    enableColorWrite: Core.getProperty("core.ui-service.use-surface-optimalization", false),
+    enableColorWrite: Struct.getIfType(json, "enableColorWrite", Boolean,
+      Core.getProperty("core.ui-service.use-surface-optimalization", false)),
 
     ///@type {Boolean}
     notify: Struct.getIfType(json, "notify", Boolean, true),

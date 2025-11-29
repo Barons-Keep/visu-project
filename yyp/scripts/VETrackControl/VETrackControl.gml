@@ -1679,9 +1679,10 @@ function VETrackControl(_editor) constructor {
     try {
       this.dispatcher.update()
     } catch (exception) {
-      var message = $"VETrackControl dispatcher fatal error: {exception.message}"
+      var message = $"dispatcher fatal error: {exception.message}"
+      Logger.error("VETrackControl", message)
+      Core.printStackTrace().printException(exception)
       Beans.get(BeanVisuController).send(new Event("spawn-popup", { message: message }))
-      Logger.error("UI", message)
     }
     return this
   }

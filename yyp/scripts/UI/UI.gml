@@ -431,6 +431,7 @@ function UI(config = {}) constructor {
         operation(context)
       } catch (exception) {
         Logger.error("UI", $"Unable to execute free operation '{key}'. {exception.message}")
+        Core.printStackTrace().printException(exception)
       }
     }, this)
 
@@ -969,7 +970,7 @@ function _UIUtil() constructor {
             this.area.x + this.area.getWidth(), this.area.y + this.area.getHeight(), 
             false,
             color, color, color, color, 
-            this.state.get("background-alpha")
+            this.state.getIfType("background-alpha", Number, 1.0)
           )
         }
         

@@ -2093,8 +2093,9 @@ function VETimeline(_editor) constructor {
             }
           } catch (exception) {
             var message = $"onMouseReleasedLeft exception: {exception.message}"
-            Beans.get(BeanVisuController).send(new Event("spawn-popup", { message: message }))
             Logger.error("VETimeline", message)
+            Core.printStackTrace().printException(exception)
+            Beans.get(BeanVisuController).send(new Event("spawn-popup", { message: message }))
           }
         },
 
@@ -2993,9 +2994,10 @@ function VETimeline(_editor) constructor {
       this.dispatcher.update()
       this.transactionService.update()
     } catch (exception) {
-      var message = $"VETimeline dispatcher fatal error: {exception.message}"
+      var message = $"dispatcher fatal error: {exception.message}"
+      Logger.error("VETimeline", message)
+      Core.printStackTrace().printException(exception)
       Beans.get(BeanVisuController).send(new Event("spawn-popup", { message: message }))
-      Logger.error("UI", message)
     }
     return this
   }

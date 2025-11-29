@@ -832,9 +832,10 @@ function VEEventInspector(_editor) constructor {
     try {
       this.dispatcher.update()
     } catch (exception) {
-      var message = $"VEBrushToolbar dispatcher fatal error: {exception.message}"
+      var message = $"dispatcher fatal error: {exception.message}"
+      Logger.error("VEEventInspector", message)
+      Core.printStackTrace().printException(exception)
       Beans.get(BeanVisuController).send(new Event("spawn-popup", { message: message }))
-      Logger.error("UI", message)
     }
 
     this.containers.forEach(function (container, key, enable) {

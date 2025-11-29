@@ -84,6 +84,7 @@ function SFXService(): Service() constructor {
         sfx.stop()
       } catch (exception) {
         Logger.error("SFXService", $"Unable to free SFX \"{name}\".")
+        Core.printStackTrace().printException(exception)
       }
     }
 

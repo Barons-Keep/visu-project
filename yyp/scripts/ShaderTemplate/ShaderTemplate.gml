@@ -17,7 +17,7 @@ function ShaderTemplate(_name, json) constructor {
   Assert.isType(ShaderUtil.fetch(this.shader), Shader, $"Shader {this.shader} must exists")
 
   ///@type {?Struct}
-  properties = Struct.contains(json, "properties")
+  properties = Struct.get(json, "properties") != null
     ? Assert.isType(json.properties, Struct, "ShaderTemplate::properties must be type of Struct")
     : null
 
@@ -27,7 +27,7 @@ function ShaderTemplate(_name, json) constructor {
       name: this.name,
       shader: this.shader,
       inherit: this.inherit,
-      properties: this.properties,
+      properties: JSON.clone(this.properties),
     }
 
     return json

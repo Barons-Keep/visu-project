@@ -217,8 +217,8 @@ function Test_VisuController_rewind(test) {
     .setState({
       description: test.description,
       amount: Struct.getDefault(json, "amount", 5),
-      minDuration: Struct.getDefault(json, "maxDuration", 0.2),
-      maxDuration: Struct.getDefault(json, "maxDuration", 3.0),
+      minDuration: Struct.getDefault(json, "minDuration", 2.0),
+      maxDuration: Struct.getDefault(json, "maxDuration", 5.0),
       target: 0,
       timer: new Timer(random_range(1, 2)),
       cooldown: new Timer(Struct.getDefault(json, "cooldown", 2.0)),
@@ -250,13 +250,14 @@ function Test_VisuController_rewind(test) {
           var trackService = controller.trackService
           if (task.state.timer.update().finished && task.state.amount > 0) {
             var delta = abs(trackService.time - task.state.target)
-            if (delta < 2) {
+            if (delta < 2.0) {
               task.state.count++
             }
             Logger.test("Test_VisuController_rewind", $"Current delta: {delta}, counter: {task.state.count}")
             task.state.timer.reset()
             task.state.timer.duration = random_range(task.state.minDuration, task.state.maxDuration)
             task.state.target = random(trackService.duration * 0.7500)
+            Logger.test("Test_VisuController_rewind", $"Current time: {trackService.time}, target: {task.state.target}, duration: {task.state.timer.duration}")
             controller.send(new Event("rewind", { 
               timestamp: task.state.target,
             }))
@@ -278,7 +279,7 @@ function Test_VisuController_rewind(test) {
                 task.state.stage = "cooldownAfter"
               }
             } else {
-              Logger.test("Test_VisuController_rewind", $"rejected, not matching target: {task.state.countTarget * 0.75}")
+              Logger.test("Test_VisuController_rewind", $"rejected, not matching target: {floor(task.state.countTarget * 0.75)}")
               task.reject()
             }
           }

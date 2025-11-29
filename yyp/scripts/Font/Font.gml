@@ -27,6 +27,7 @@ function _FontUtil() constructor {
       font = Assert.isType(FontUtil.fetch(json.name), Font)
     } catch (exception) {
       Logger.error("FontUtil", $"'parse' fatal error: {exception.message}")
+      Core.printStackTrace().printException(exception)
       if (Core.isType(defaultJson, Struct)) {
         Logger.warn("FontUtil", $"'parse' use defaultJson: {JSON.stringify(defaultJson)}")
         font = FontUtil.parse(defaultJson)

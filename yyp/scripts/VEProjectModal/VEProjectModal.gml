@@ -312,22 +312,11 @@ function VisuProjectForm(json = null) constructor {
           try {
             this.context.state.get("form").save()
           } catch (exception) {
-            Beans.get(BeanVisuController).send(new Event("spawn-popup", 
-              { message: $"Cannot update project: {exception.message}" }))
+            var message = $"Cannot update project: {exception.message}"
+            Logger.error("VisuProjectForm", message)
+            Core.printStackTrace().printException(exception)
+            Beans.get(BeanVisuController).send(new Event("spawn-popup", { message: message }))
             this.context.modal.send(new Event("close"))
-            return
-          }
-          return;//
-          this.context.modal.send(new Event("close"))
-          try {
-            Assert.isTrue(FileUtil.fileExists(path))
-            Beans.get(BeanVisuController).send(new Event("load", {
-              manifest: path,
-              autoplay: false
-            }))
-          } catch (exception) {
-            Beans.get(BeanVisuController).send(new Event("spawn-popup", 
-              { message: $"Cannot load the project: {exception.message}" }))
           }
         },
       },

@@ -22,6 +22,7 @@ void main() {
     }
   }
   outputPixel /= float(QUALITY) * float(DIRECTIONS) + 1.0;
+  outputPixel.a *= 2.0;
 
   /// Pass pixel to renderer
   gl_FragColor = inputColor * outputPixel;

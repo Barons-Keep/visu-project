@@ -230,10 +230,11 @@ function VisuEditorController() constructor {
           message: $"Project '{controller.trackService.track.name}' auto saved successfully at: '{path}'"
         }))
       } catch (exception) {
+        Logger.error(BeanVisuEditorController, $"Cannot auto save the project: {exception.message}")
+        Core.printStackTrace().printException(exception)
         controller.send(new Event("spawn-popup", { 
           message: $"Cannot save the project: {exception.message}"
         }))
-        Logger.error(BeanVisuEditorController, $"Cannot auto save the project: {exception.message}")
       }
     }
   }
@@ -805,7 +806,7 @@ function VisuEditorController() constructor {
     } catch (exception) {
       var message = $"'update-service-{service.name}' fatal error: {exception.message}"
       Logger.error(BeanVisuEditorController, message)
-      Core.printStackTrace()
+      Core.printStackTrace().printException(exception)
       controller.send(new Event("spawn-popup", { message: message }))
     }
   }
@@ -818,6 +819,7 @@ function VisuEditorController() constructor {
     } catch (exception) {
       var message = $"dispatcher fatal error: {exception.message}"
       Logger.error(BeanVisuEditorController, message)
+      Core.printStackTrace().printException(exception)
       this.send(new Event("spawn-popup", { message: message }))
     }
 
@@ -832,6 +834,7 @@ function VisuEditorController() constructor {
     } catch (exception) {
       var message = $"executor fatal error: {exception.message}"
       Logger.error(BeanVisuEditorController, message)
+      Core.printStackTrace().printException(exception)
       this.send(new Event("spawn-popup", { message: message }))
     }
 
@@ -864,7 +867,7 @@ function VisuEditorController() constructor {
     } catch (exception) {
       var message = $"'updateUIService' set fatal error: {exception.message}"
       Logger.error(BeanVisuEditorController, message)
-      Core.printStackTrace()
+      Core.printStackTrace().printException(exception)
       this.send(new Event("spawn-popup", { message: message }))
     }
 
@@ -928,6 +931,7 @@ function VisuEditorController() constructor {
           Callable.run(Struct.get(struct, "free"))
         } catch (exception) {
           Logger.error(BeanVisuEditorController, $"Unable to free '{key}'. {exception.message}")
+          Core.printStackTrace().printException(exception)
         }
       }, this)
     

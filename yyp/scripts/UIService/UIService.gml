@@ -60,7 +60,7 @@ function UIService(_context, config = {}): Service(config) constructor {
           removeHandler(this, event.data)
         } catch (exception) {
           Logger.error("UIService", $"'remove' fatal error: {exception.message}")
-          Core.printStackTrace()
+          Core.printStackTrace().printException(exception)
         }
       } else {
         removeHandler(this, event.data)

@@ -533,8 +533,8 @@ global.__grid_track_event = {
         "gr-cfg_use-focus-grid-treshold": Struct.parse.boolean(data, "gr-cfg_use-focus-grid-treshold"),
         "gr-cfg_focus-grid-treshold": Struct.parse.numberTransformer(data, "gr-cfg_focus-grid-treshold", {
           value: 8.0,
-          clampValue: { from: 0.0, to: 100.0 },
-          clampTarget: { from: 0.0, to: 100.0 },
+          clampValue: { from: 0.0, to: 512.0 },
+          clampTarget: { from: 0.0, to: 512.0 },
         }),
         "gr-cfg_change-focus-grid-treshold": Struct.parse.boolean(data, "gr-cfg_change-focus-grid-treshold"),
         "gr-cfg_grid-use-blend": Struct.parse.boolean(data, "gr-cfg_grid-use-blend"),

@@ -38,8 +38,9 @@ function Socket(config = {}) constructor {
       this.socket = network_create_socket(this.type)
       network_connect_raw(this.socket, this.host, this.port)   
     } catch (exception) {
-      Logger.error("Socket", exception.message)
       this.socket = null
+      Logger.error("Socket", exception.message)
+      Core.printStackTrace().printException(exception)
     }
 
     return this
@@ -57,7 +58,8 @@ function Socket(config = {}) constructor {
       network_send_raw(this.socket, buff, buffer_tell(buff))
       buffer_delete(buff)
     } catch (exception) {
-      Core.print("SendException", exception.message)
+      Logger.error("Socket", "SendException", exception.message)
+      Core.printStackTrace().printException(exception)
     }
 
     return this
@@ -73,7 +75,8 @@ function Socket(config = {}) constructor {
       network_destroy(this.socket)
       this.socket = null
     } catch (exception) {
-      Core.print("FreeException", exception.message)
+      Logger.error("Socket", "FreeException", exception.message)
+      Core.printStackTrace().printException(exception)
     }
   }
 }

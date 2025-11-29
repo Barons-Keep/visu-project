@@ -72,23 +72,6 @@ function Test_VisuMenu_select_track(test) {
           }
 
           item.onMouseReleasedLeft()
-          task.state.stage = "select_track"
-        },
-        select_track: function(task) {
-          var content = task.state.getContent()
-          if (!Optional.is(content)) {
-            return
-          }
-
-          var item = content.items.find(function(item) {
-            return String.contains(item.name, "0_menu-button-entry")
-          })
-
-          if (!Optional.is(item)) {
-            return
-          }
-
-          item.onMouseReleasedLeft()
           task.state.stage = "verify_open_track_setup"
         },
         verify_open_track_setup: function(task) {

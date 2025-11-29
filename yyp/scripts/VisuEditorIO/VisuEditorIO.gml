@@ -168,8 +168,10 @@ function VisuEditorIO() constructor {
           autoplay: false
         }))
       } catch (exception) {
-        controller.send(new Event("spawn-popup", 
-          { message: $"Cannot load the project: {exception.message}" }))
+        var message = $"Cannot load the project: {exception.message}"
+        Logger.error(BeanVisuEditorIO, message)
+        Core.printStackTrace().printException(exception)
+        controller.send(new Event("spawn-popup", { message: message }))
       }
     }
 
@@ -443,8 +445,9 @@ function VisuEditorIO() constructor {
           { message: $"Project '{controller.trackService.track.name}' saved successfully at: '{path}'" }))
       } catch (exception) {
         var message = $"Cannot save the project: {exception.message}"
+        Logger.error(BeanVisuEditorIO, message)
+        Core.printStackTrace().printException(exception)
         controller.send(new Event("spawn-popup", { message: message }))
-        Logger.error("VETitleBar", message)
       }
     }
 
@@ -768,11 +771,8 @@ function VisuEditorIO() constructor {
     } catch (exception) {
       var message = $"'VisuEditorIO::update' fatal error: {exception.message}"
       Logger.error(BeanVisuEditorIO, message)
-      
-      var controller = Beans.get(BeanVisuController)
-      if (Core.isType(controller, VisuController)) {
-        controller.send(new Event("spawn-popup", { message: message }))
-      }
+      Core.printStackTrace().printException(exception)
+      Beans.get(BeanVisuController).send(new Event("spawn-popup", { message: message }))
     }
 
     return this

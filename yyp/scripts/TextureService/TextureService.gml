@@ -58,6 +58,7 @@ function TextureService(config = {}): Service() constructor {
           sprite_delete(template.asset)
         } catch (exception) {
           Logger.error("TextureService", $"Unable to free texture '{name}'. {exception.message}")
+          Core.printStackTrace().printException(exception)
         }
       }).clear()
     },
@@ -90,6 +91,7 @@ function TextureService(config = {}): Service() constructor {
         sprite_delete(template.asset)
       } catch (exception) {
         Logger.error("TextureService", $"Free texture '{name}' exception: {exception.message}")
+        Core.printStackTrace().printException(exception)
       }
     }).clear()
     return this
@@ -116,6 +118,7 @@ function TextureService(config = {}): Service() constructor {
       task.promise.fullfill(config.name)
     } catch (exception) {
       task.promise.reject(exception.message)
+      Core.printStackTrace().printException(exception)
     }
 
     return this

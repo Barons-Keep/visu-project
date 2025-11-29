@@ -407,9 +407,10 @@ function VEAccordion(_editor, config = null) constructor {
       this.updateContainerObject(this.templateToolbar, renderTemplateToolbar)
       this.updateContainerObject(this.eventInspector, renderEventInspector)
     } catch (exception) {
-      var message = $"VEAccordion dispatcher fatal error: {exception.message}"
+      var message = $"dispatcher fatal error: {exception.message}"
+      Logger.error("VEAccordion", message)
+      Core.printStackTrace().printException(exception)
       Beans.get(BeanVisuController).send(new Event("spawn-popup", { message: message }))
-      Logger.error("UI", message)
     }
     return this
   }

@@ -723,7 +723,7 @@ global.__VisuBrushContainers = new Map(String, Callable, {
                 "name": name,
                 "type": type,
                 "color":"#FFFFFF",
-                "texture":"texture_baron",
+                "texture":"texture_ve_icon_event_1",
               })
               controller.brushService.saveTemplate(template)
 
@@ -2456,9 +2456,10 @@ function VEBrushToolbar(_editor) constructor {
     try {
       this.dispatcher.update()
     } catch (exception) {
-      var message = $"VEBrushToolbar dispatcher fatal error: {exception.message}"
+      var message = $"dispatcher fatal error: {exception.message}"
+      Logger.error("VEBrushToolbar", message)
+      Core.printStackTrace().printException(exception)
       Beans.get(BeanVisuController).send(new Event("spawn-popup", { message: message }))
-      Logger.error("UI", message)
     }
     return this
   }

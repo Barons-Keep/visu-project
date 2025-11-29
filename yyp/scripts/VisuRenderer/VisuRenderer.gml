@@ -351,6 +351,16 @@ function VisuRenderer() constructor {
   }
 
   ///@private
+  ///@param {Task} task
+  ///@param {Number|String} iterator
+  ///@param {UILayout} layout
+  renderTextureLoad = function(task, iterator, layout) {
+    if (task.name == "texture-load-task") {
+      task.state.render(task, layout)
+    }
+  }
+
+  ///@private
   ///@param {UILayout} layout
   ///@return {VisuRenderer}
   renderMenu = function(layout) {
@@ -471,6 +481,10 @@ function VisuRenderer() constructor {
     if (stateName == "splashscreen") {
       this.executor.tasks.forEach(this.renderSplashscreen, this.layout)
     } else {
+      if (stateName == "load") {
+        this.executor.tasks.forEach(this.renderTextureLoad, this.layout)
+      }
+      
       this.renderMenu(layout)
       this.renderGame(layout)
       this.renderUI(layout)

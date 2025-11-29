@@ -82,7 +82,7 @@ function VisuStateMachine(context, name) {
                     sound.play(0.0).setVolume(ostVolume, 1.0)
                   } catch (exception) {
                     Logger.error(BeanVisuController, $"Fatal error, splashscreen, {exception.message}")
-                    Core.printStackTrace()
+                    Core.printStackTrace().printException(exception)
                   }
                 }
 
@@ -161,7 +161,7 @@ function VisuStateMachine(context, name) {
           } catch (exception) {
             var message = $"'fsm::update' (state: 'splashscreen') fatal error: {exception.message}"
             Logger.error(BeanVisuController, message)
-            Core.printStackTrace()
+            Core.printStackTrace().printException(exception)
             fsm.dispatcher.send(new Event("transition", { name: "idle" }))
             Beans.get(BeanVisuController).send(new Event("spawn-popup", { message: message }))
           }
@@ -191,6 +191,8 @@ function VisuStateMachine(context, name) {
             fsmState.state.set("bkgTimer", new Timer(6.0 + random(10.0), { loop: Infinity }))
             fsmState.state.set("bkgColorTimer", new Timer(6.0 + random(10.0), { loop: Infinity }))
             fsmState.state.set("glitchTimer", new Timer(6.0 + random(10.0), { loop: Infinity }))
+
+            Logger.info(fsm.displayName, $"'{fsmState.name}::onStart' at track time {controller.trackService.time}")
           },
           onFinish: function(fsm, fsmState, data) {
             var controller = Beans.get(BeanVisuController)
@@ -296,21 +298,25 @@ function VisuStateMachine(context, name) {
       "game-over": {
         actions: {
           onStart: function(fsm, fsmState, data) {
+            var controller = Beans.get(BeanVisuController)
             var promises = new Map(String, Promise, {
-              "track": fsm.context.trackService.dispatcher
+              "track": controller.trackService.dispatcher
                 .execute(new Event("pause-track")),
             })
 
-            if (Optional.is(fsm.context.videoService.getVideo())) {
-              promises.set("video", fsm.context.videoService.dispatcher
+            if (Optional.is(controller.videoService.getVideo())) {
+              promises.set("video", controller.videoService.dispatcher
                 .execute(new Event("pause-video")))
             }
 
             fsmState.state.set("promises", promises)
-            fsm.context.menu.send(fsm.context.menu
+            controller.menu.send(controller.menu
               .factoryOpenMainMenuEvent({ 
                 titleLabel: "Game over"
               }))
+            
+              
+            Logger.info(fsm.displayName, $"'{fsmState.name}::onStart' at track time {controller.trackService.time}")
           },
         },
         update: function(fsm) {
@@ -355,6 +361,9 @@ function VisuStateMachine(context, name) {
             //Beans.get(BeanTextureService).free()
             
             controller.trackService.dispatcher.execute(new Event("close-track"))
+
+            var json = JSON.stringify(data, { pretty: true })
+            Logger.info(fsm.displayName, $"{fsmState.name}:\n{json}")
           },
         },
         update: function(fsm) {
@@ -369,7 +378,7 @@ function VisuStateMachine(context, name) {
           } catch (exception) {
             var message = $"'fsm::update' (state: 'load') fatal error: {exception.message}"
             Logger.error(BeanVisuController, message)
-            Core.printStackTrace()
+            Core.printStackTrace().printException(exception)
             Beans.get(BeanVisuController).send(new Event("spawn-popup", { message: message }))
             fsm.dispatcher.send(new Event("transition", { name: "idle" }))
             fsm.context.loader.fsm.dispatcher.send(new Event("transition", { name: "idle" }))
@@ -392,16 +401,17 @@ function VisuStateMachine(context, name) {
             var promises = new Map(String, Promise, {})
             fsmState.state.set("promises", promises)
 
-            var videoService = controller.videoService
-            if (Optional.is(videoService.getVideo())) {
-              promises.set("video", videoService.send(new Event("resume-video")))
+            if (Optional.is(controller.videoService.getVideo())) {
+              promises.set("video", controller.videoService.send(new Event("resume-video")))
             }
 
             ///@hack
-            var trackService = controller.trackService
-            if (trackService.isTrackLoaded() && !trackService.track.audio.isLoaded()) {
-              trackService.time = 0.0
+            if (controller.trackService.isTrackLoaded()
+                && !controller.trackService.track.audio.isLoaded()) {
+              controller.trackService.time = 0.0
             }
+
+            Logger.info(fsm.displayName, $"'{fsmState.name}::onStart' at track time {controller.trackService.time}")
           },
         },
         update: function(fsm) {
@@ -428,7 +438,7 @@ function VisuStateMachine(context, name) {
           } catch (exception) {
             var message = $"'fsm::update' (state: 'play') fatal error: {exception.message}"
             Logger.error(BeanVisuController, message)
-            Core.printStackTrace()
+            Core.printStackTrace().printException(exception)
             Beans.get(BeanVisuController).send(new Event("spawn-popup", { message: message }))
             fsm.dispatcher.send(new Event("transition", { name: "idle" }))
           }
@@ -445,18 +455,21 @@ function VisuStateMachine(context, name) {
       "pause": {
         actions: {
           onStart: function(fsm, fsmState, data) {
+            var controller = Beans.get(BeanVisuController)
             var promises = new Map(String, Promise, {
-              "track": fsm.context.trackService
+              "track": controller.trackService
                 .send(new Event("pause-track")),
             })
 
-            if (Optional.is(fsm.context.videoService.getVideo())) {
-              promises.set("video", fsm.context.videoService
+            if (Optional.is(controller.videoService.getVideo())) {
+              promises.set("video", controller.videoService
                 .send(new Event("pause-video")))
             }
 
             fsmState.state.set("promises", promises)
             fsmState.state.set("menuEvent", data)
+
+            Logger.info(fsm.displayName, $"'{fsmState.name}::onStart' at track time {controller.trackService.time}")
           },
         },
         update: function(fsm) {
@@ -479,7 +492,7 @@ function VisuStateMachine(context, name) {
           } catch (exception) {
             var message = $"'fsm::update' (state: 'pause') fatal error: {exception.message}"
             Logger.error(BeanVisuController, message)
-            Core.printStackTrace()
+            Core.printStackTrace().printException(exception)
             Beans.get(BeanVisuController).send(new Event("spawn-popup", { message: message }))
             fsm.dispatcher.send(new Event("transition", { name: "idle" }))
           }
@@ -496,9 +509,13 @@ function VisuStateMachine(context, name) {
       "paused": {
         actions: {
           onStart: function(fsm, fsmState, data) {
+            var controller = Beans.get(BeanVisuController)
             if (Core.isType(data, Event)) {
-              Beans.get(BeanVisuController).menu.send(data)
+              controller.menu.send(data)
             }
+
+            var to = JSON.stringify(data, { pretty: true })
+            Logger.info(fsm.displayName, $"'{fsmState.name}::onStart' at track time {controller.trackService.time}")
           },
           onFinish: function(fsm, fsmState, data) {
             Beans.get(BeanVisuController).menu.send(new Event("close", { fade: true }))
@@ -517,13 +534,14 @@ function VisuStateMachine(context, name) {
       "rewind": {
         actions: {
           onStart: function(fsm, fsmState, data) {
+            var controller = Beans.get(BeanVisuController)
             var promises = new Map(String, Promise, {
-              "pause-track": fsm.context.trackService
+              "pause-track": controller.trackService
                 .send(new Event("pause-track")),
             })
 
-            var trackDuration = fsm.context.trackService.duration
-            var video = fsm.context.videoService.getVideo()
+            var trackDuration = controller.trackService.duration
+            var video = controller.videoService.getVideo()
             if (Optional.is(video) && trackDuration > 0.0) {
               var videoData = JSON.clone(data)
               var videoDuration = video.getDuration()
@@ -531,7 +549,7 @@ function VisuStateMachine(context, name) {
                 videoData.timestamp = videoData.timestamp mod videoDuration
               }
               
-              promises.set("rewind-video", fsm.context.videoService
+              promises.set("rewind-video", controller.videoService
                 .send(new Event("rewind-video", videoData)))
             }
 
@@ -539,6 +557,9 @@ function VisuStateMachine(context, name) {
               .set("resume", data.resume)
               .set("data", data)
               .set("promises", promises)
+
+            var to = JSON.stringify(data, { pretty: true })
+            Logger.info(fsm.displayName, $"{fsmState.name} from {controller.trackService.time} to:\n{to}")
           },
         },
         update: function(fsm) {
@@ -551,8 +572,8 @@ function VisuStateMachine(context, name) {
                 if (filtered.size() != promises.size()) {
                   return
                 }
-              } catch (exception) {
-                var message = $"Rewind exception: {exception.message}"
+              } catch (ex) {
+                var message = $"Rewind exception: {ex.message}"
                 Logger.warn("VisuController", message)
                 //Beans.get(BeanVisuController).send(new Event("spawn-popup", { message: message }))
                 if (!promises.contains("rewind-video")) {
@@ -590,7 +611,7 @@ function VisuStateMachine(context, name) {
           } catch (exception) {
             var message = $"'fsm::update' (state: 'rewind') fatal error: {exception.message}"
             Logger.error(BeanVisuController, message)
-            Core.printStackTrace()
+            Core.printStackTrace().printException(exception)
             Beans.get(BeanVisuController).send(new Event("spawn-popup", { message: message }))
             fsm.dispatcher.send(new Event("transition", {
               name: this.state.get("resume") ? "play" : "pause",

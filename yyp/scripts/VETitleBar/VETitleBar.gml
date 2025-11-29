@@ -407,8 +407,10 @@ function VETitleBar(_editor) constructor {
                             quiet: true,
                           }))
                         } catch (exception) {
-                          Beans.get(BeanVisuController).send(new Event("spawn-popup", 
-                            { message: $"Cannot load the project: {exception.message}" }))
+                          var message = $"Cannot load project: {exception.message}"
+                          Logger.error("VETitleBar", message)
+                          Core.printStackTrace().printException(exception)
+                          Beans.get(BeanVisuController).send(new Event("spawn-popup", { message: message }))
                         }
                       }
                     },
@@ -447,9 +449,10 @@ function VETitleBar(_editor) constructor {
                             quiet: true,
                           }))
                         } catch (exception) {
-                          var message = $"Cannot save the project: {exception.message}"
-                          controller.send(new Event("spawn-popup", { message: message }))
+                          var message = $"Cannot save project: {exception.message}"
                           Logger.error("VETitleBar", message)
+                          Core.printStackTrace().printException(exception)
+                          Beans.get(BeanVisuController).send(new Event("spawn-popup", { message: message }))
                         }
                       },
                       preRender: function() {
@@ -499,9 +502,10 @@ function VETitleBar(_editor) constructor {
                             quiet: true,
                           }))
                         } catch (exception) {
-                          var message = $"Cannot save the project: {exception.message}"
-                          controller.send(new Event("spawn-popup", { message: message }))
+                          var message = $"Cannot save project: {exception.message}"
                           Logger.error("VETitleBar", message)
+                          Core.printStackTrace().printException(exception)
+                          Beans.get(BeanVisuController).send(new Event("spawn-popup", { message: message }))
                         }
                       },
                       preRender: function() {
@@ -1095,8 +1099,9 @@ function VETitleBar(_editor) constructor {
                           }))
                         } catch (exception) {
                           var message = $"Cannot open URL: {exception.message}"
-                          Beans.get(BeanVisuController).send(new Event("spawn-popup", { message: message }))
                           Logger.error("VETitleBar", message)
+                          Core.printStackTrace().printException(exception)
+                          Beans.get(BeanVisuController).send(new Event("spawn-popup", { message: message }))
                         }
                       }
                     },
@@ -1220,9 +1225,10 @@ function VETitleBar(_editor) constructor {
     try {
       this.dispatcher.update()
     } catch (exception) {
-      var message = $"VETitleBar dispatcher fatal error: {exception.message}"
+      var message = $"dispatcher fatal error: {exception.message}"
+      Logger.error("VETitleBar", message)
+      Core.printStackTrace().printException(exception)
       Beans.get(BeanVisuController).send(new Event("spawn-popup", { message: message }))
-      Logger.error("UI", message)
     }
     return this
   }

@@ -9,7 +9,7 @@
   "bitRate":128,
   "compression":0,
   "conversionMode":0,
-  "duration":0.1,
+  "duration":0.193537,
   "name":"sound_sfx_menu_move_cursor",
   "parent":{
     "name":"sfx",

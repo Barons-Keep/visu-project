@@ -120,7 +120,9 @@ function GridOverlayRenderer() constructor {
     this.parameters.x = 0.0
     this.parameters.y = 0.0
     this.backgroundColors.forEach(this.renderColor, this.parameters)
-    this.backgrounds.forEach(this.renderTexture, this.parameters)
+    if (Visu.settings.getValue("visu.graphics.bkg-tx")) {
+      this.backgrounds.forEach(this.renderTexture, this.parameters)
+    }
     return this
   }
 
@@ -148,7 +150,10 @@ function GridOverlayRenderer() constructor {
     this.parameters.x = 0.0
     this.parameters.y = 0.0
     this.foregroundColors.forEach(this.renderColor, this.parameters)
-    this.foregrounds.forEach(this.renderTexture, this.parameters)
+    if (Visu.settings.getValue("visu.graphics.frg-tx")) {
+      this.foregrounds.forEach(this.renderTexture, this.parameters)
+    }
+
     return this
   }
 

@@ -165,8 +165,8 @@ function VisuMenu(_config = null) constructor {
         Assert.isTrue(index++ <= MAX_INDEX, $"Exceed MAX_INDEX={MAX_INDEX}")
       }
     } catch (exception) {
-      Logger.error(BeanVisuController, $"Exception throwed while parsing track/manifest.json: {exception.message}")
-      Core.printStackTrace()
+      Logger.error("VisuMenu", $"Exception throwed while parsing track/manifest.json: {exception.message}")
+      Core.printStackTrace().printException(exception)
     }
 
     return nodes
@@ -625,7 +625,8 @@ function VisuMenu(_config = null) constructor {
               callback: new BindIntent(function() {
                 var controller = Beans.get(BeanVisuController)
                 var menu = controller.menu
-                menu.send(menu.factoryOpenVisuMenuNode("root.artists"))
+                var root = Core.getProperty("visu.menu.play.root", "root.tracks")
+                menu.send(menu.factoryOpenVisuMenuNode(root))
                 controller.sfxService.play("menu-select-entry")
               }),
               callbackData: config,
@@ -807,6 +808,7 @@ function VisuMenu(_config = null) constructor {
               onMouseReleasedLeft: function() {
                 this.callback()
               },
+              colorHoverOut: VisuTheme.color.deny,
             },
           }
         },
@@ -824,7 +826,7 @@ function VisuMenu(_config = null) constructor {
       {
         graphics: this.factoryOpenGraphicsSettingsMenuEvent,
         audio: this.factoryOpenAudioSettingsMenuEvent,
-        interface: this.factoryOpenInterfaceSettingsMenuEvent,
+        gameplay: this.factoryOpenGameplaySettingsMenuEvent,
         controls: this.factoryOpenControlsMenuEvent,
         developer: this.factoryOpenDeveloperMenuEvent,
         back: this.factoryOpenMainMenuEvent, 
@@ -884,18 +886,18 @@ function VisuMenu(_config = null) constructor {
           }
         },
         {
-          name: "settings_menu-button-entry_interface",
+          name: "settings_menu-button-entry_gameplay",
           template: VisuComponents.get("menu-button-entry"),
           layout: VisuLayouts.get("menu-button-entry"),
           config: {
             layout: { type: UILayoutType.VERTICAL },
             label: { 
-              text: "Interface",
+              text: "Gameplay",
               callback: new BindIntent(function() {
                 Beans.get(BeanVisuController).sfxService.play("menu-select-entry")
                 Beans.get(BeanVisuController).menu.send(Callable.run(this.callbackData))
               }),
-              callbackData: config.interface,
+              callbackData: config.gameplay,
               onMouseReleasedLeft: function() {
                 this.callback()
               },
@@ -1278,6 +1280,244 @@ function VisuMenu(_config = null) constructor {
           }
         },
         {
+          name: "graphics_menu-button-input-entry_vsync",
+          template: VisuComponents.get("menu-button-input-entry"),
+          layout: VisuLayouts.get("menu-button-input-entry"),
+          config: {
+            layout: { type: UILayoutType.VERTICAL },
+            label: { 
+              text: "VSync",
+              callback: new BindIntent(function() {
+                var value = Visu.settings.getValue("visu.graphics.vsync")
+                Visu.settings.setValue("visu.graphics.vsync", !value).save()
+                display_reset(Visu.settings.getValue("visu.graphics.aa"), Visu.settings.getValue("visu.graphics.vsync"))
+                Beans.get(BeanVisuController).sfxService.play("menu-use-entry")
+              }),
+              onMouseReleasedLeft: function() {
+                this.callback()
+              },
+            },
+            input: {
+              label: { text: "Enabled" },
+              callback: function() {
+                var value = Visu.settings.getValue("visu.graphics.vsync")
+                Visu.settings.setValue("visu.graphics.vsync", !value).save()
+                display_reset(Visu.settings.getValue("visu.graphics.aa"), Visu.settings.getValue("visu.graphics.vsync"))
+                Beans.get(BeanVisuController).sfxService.play("menu-use-entry")
+              },
+              updateCustom: function() {
+                this.label.text = Visu.settings.getValue("visu.graphics.vsync") ? "Enabled" : "Disabled"
+                this.label.alpha = this.label.text == "Enabled" ? 1.0 : 0.3
+              },
+              onMouseReleasedLeft: function() {
+                this.callback()
+              },
+            }
+          }
+        },
+        {
+          name: "graphics_menu-button-input-entry_bkt-glitch",
+          template: VisuComponents.get("menu-button-input-entry"),
+          layout: VisuLayouts.get("menu-button-input-entry"),
+          config: {
+            layout: { type: UILayoutType.VERTICAL },
+            label: { 
+              text: "Glitch effects",
+              callback: new BindIntent(function() {
+                var value = Visu.settings.getValue("visu.graphics.bkt-glitch")
+                Visu.settings.setValue("visu.graphics.bkt-glitch", !value).save()
+                Beans.get(BeanVisuController).sfxService.play("menu-use-entry")
+              }),
+              onMouseReleasedLeft: function() {
+                this.callback()
+              },
+            },
+            input: {
+              label: { text: "Enabled" },
+              callback: function() {
+                var value = Visu.settings.getValue("visu.graphics.bkt-glitch")
+                Visu.settings.setValue("visu.graphics.bkt-glitch", !value).save()
+                Beans.get(BeanVisuController).sfxService.play("menu-use-entry")
+              },
+              updateCustom: function() {
+                this.label.text = Visu.settings.getValue("visu.graphics.bkt-glitch") ? "Enabled" : "Disabled"
+                this.label.alpha = this.label.text == "Enabled" ? 1.0 : 0.3
+              },
+              onMouseReleasedLeft: function() {
+                this.callback()
+              },
+            }
+          }
+        },
+        {
+          name: "graphics_menu-button-input-entry_particle",
+          template: VisuComponents.get("menu-button-input-entry"),
+          layout: VisuLayouts.get("menu-button-input-entry"),
+          config: {
+            layout: { type: UILayoutType.VERTICAL },
+            label: { 
+              text: "Particles",
+              callback: new BindIntent(function() {
+                var value = Visu.settings.getValue("visu.graphics.particle")
+                Visu.settings.setValue("visu.graphics.particle", !value).save()
+                Beans.get(BeanVisuController).sfxService.play("menu-use-entry")
+              }),
+              onMouseReleasedLeft: function() {
+                this.callback()
+              },
+            },
+            input: {
+              label: { text: "Enabled" },
+              callback: function() {
+                var value = Visu.settings.getValue("visu.graphics.particle")
+                Visu.settings.setValue("visu.graphics.particle", !value).save()
+                Beans.get(BeanVisuController).sfxService.play("menu-use-entry")
+              },
+              updateCustom: function() {
+                this.label.text = Visu.settings.getValue("visu.graphics.particle") ? "Enabled" : "Disabled"
+                this.label.alpha = this.label.text == "Enabled" ? 1.0 : 0.3
+              },
+              onMouseReleasedLeft: function() {
+                this.callback()
+              },
+            }
+          }
+        },
+        {
+          name: "graphics_menu-button-input-entry_bkg-tx",
+          template: VisuComponents.get("menu-button-input-entry"),
+          layout: VisuLayouts.get("menu-button-input-entry"),
+          config: {
+            layout: { type: UILayoutType.VERTICAL },
+            label: { 
+              text: "Background textures",
+              callback: new BindIntent(function() {
+                var value = Visu.settings.getValue("visu.graphics.bkg-tx")
+                Visu.settings.setValue("visu.graphics.bkg-tx", !value).save()
+                Beans.get(BeanVisuController).sfxService.play("menu-use-entry")
+              }),
+              onMouseReleasedLeft: function() {
+                this.callback()
+              },
+            },
+            input: {
+              label: { text: "Enabled" },
+              callback: function() {
+                var value = Visu.settings.getValue("visu.graphics.bkg-tx")
+                Visu.settings.setValue("visu.graphics.bkg-tx", !value).save()
+                Beans.get(BeanVisuController).sfxService.play("menu-use-entry")
+              },
+              updateCustom: function() {
+                this.label.text = Visu.settings.getValue("visu.graphics.bkg-tx") ? "Enabled" : "Disabled"
+                this.label.alpha = this.label.text == "Enabled" ? 1.0 : 0.3
+              },
+              onMouseReleasedLeft: function() {
+                this.callback()
+              },
+            }
+          }
+        },
+        {
+          name: "graphics_menu-button-input-entry_frg-tx",
+          template: VisuComponents.get("menu-button-input-entry"),
+          layout: VisuLayouts.get("menu-button-input-entry"),
+          config: {
+            layout: { type: UILayoutType.VERTICAL },
+            label: { 
+              text: "Background textures",
+              callback: new BindIntent(function() {
+                var value = Visu.settings.getValue("visu.graphics.frg-tx")
+                Visu.settings.setValue("visu.graphics.frg-tx", !value).save()
+                Beans.get(BeanVisuController).sfxService.play("menu-use-entry")
+              }),
+              onMouseReleasedLeft: function() {
+                this.callback()
+              },
+            },
+            input: {
+              label: { text: "Enabled" },
+              callback: function() {
+                var value = Visu.settings.getValue("visu.graphics.frg-tx")
+                Visu.settings.setValue("visu.graphics.frg-tx", !value).save()
+                Beans.get(BeanVisuController).sfxService.play("menu-use-entry")
+              },
+              updateCustom: function() {
+                this.label.text = Visu.settings.getValue("visu.graphics.frg-tx") ? "Enabled" : "Disabled"
+                this.label.alpha = this.label.text == "Enabled" ? 1.0 : 0.3
+              },
+              onMouseReleasedLeft: function() {
+                this.callback()
+              },
+            }
+          }
+        },
+        /*
+        {
+          name: "graphics_menu-spin-select-entry_anti-aliasing",
+          template: VisuComponents.get("menu-spin-select-entry"),
+          layout: VisuLayouts.get("menu-spin-select-entry"),
+          config: { 
+            layout: { type: UILayoutType.VERTICAL },
+            label: { text: "Anti aliasing" },
+            previous: { 
+              aaRange: Core.fetchAARange(),
+              callback: function() {
+                var index = this.aaRange.findIndex(Lambda.equal, Visu.settings.getValue("visu.graphics.aa"))
+                if (!Optional.is(index)) {
+                  return
+                }
+                index = clamp(index - 1, 0, this.aaRange.size() - 1)
+                Visu.settings.setValue("visu.graphics.aa", this.aaRange.get(index)).save()
+                display_reset(Visu.settings.getValue("visu.graphics.aa"), Visu.settings.getValue("visu.graphics.vsync"))
+                Beans.get(BeanVisuController).sfxService.play("menu-use-entry")
+              },
+              updateCustom: function() {
+                var index = this.aaRange.findIndex(Lambda.equal, Visu.settings.getValue("visu.graphics.aa"))
+                if (!Optional.is(index)) {
+                  this.sprite.setAlpha(0.0)
+                } else if (index == 0) {
+                  this.sprite.setAlpha(0.15)
+                } else {
+                  this.sprite.setAlpha(1.0)
+                }
+              }
+            },
+            preview: {
+              label: {
+                text: string(int64(round(Visu.settings.getValue("visu.graphics.aa"))))
+              },
+              updateCustom: function() {
+                var value = round(Visu.settings.getValue("visu.graphics.aa"))
+                this.label.text = $"{string(int64(value))}"
+              },
+            },
+            next: { 
+              aaRange: Core.fetchAARange(),
+              callback: function() {
+                var index = this.aaRange.findIndex(Lambda.equal, Visu.settings.getValue("visu.graphics.aa"))
+                if (!Optional.is(index)) {
+                  return
+                }
+                index = clamp(index + 1, 0, this.aaRange.size() - 1)
+                Visu.settings.setValue("visu.graphics.aa", this.aaRange.get(index)).save()
+                display_reset(Visu.settings.getValue("visu.graphics.aa"), Visu.settings.getValue("visu.graphics.vsync"))
+                Beans.get(BeanVisuController).sfxService.play("menu-use-entry")
+              },
+              updateCustom: function() {
+                var index = this.aaRange.findIndex(Lambda.equal, Visu.settings.getValue("visu.graphics.aa"))
+                if (!Optional.is(index)) {
+                  this.sprite.setAlpha(0.0)
+                } else if (index == this.aaRange.size() - 1) {
+                  this.sprite.setAlpha(0.15)
+                } else {
+                  this.sprite.setAlpha(1.0)
+                }
+              }
+            },
+          },
+        },
+        */
+        {
           name: "graphics_menu-button-input-entry_bkg-shaders",
           template: VisuComponents.get("menu-button-input-entry"),
           layout: VisuLayouts.get("menu-button-input-entry"),
@@ -1476,176 +1716,6 @@ function VisuMenu(_config = null) constructor {
           },
         },
         {
-          name: "graphics_menu-button-input-entry_bkt-glitch",
-          template: VisuComponents.get("menu-button-input-entry"),
-          layout: VisuLayouts.get("menu-button-input-entry"),
-          config: {
-            layout: { type: UILayoutType.VERTICAL },
-            label: { 
-              text: "BKT Glitch",
-              callback: new BindIntent(function() {
-                var value = Visu.settings.getValue("visu.graphics.bkt-glitch")
-                Visu.settings.setValue("visu.graphics.bkt-glitch", !value).save()
-                Beans.get(BeanVisuController).sfxService.play("menu-use-entry")
-              }),
-              onMouseReleasedLeft: function() {
-                this.callback()
-              },
-            },
-            input: {
-              label: { text: "Enabled" },
-              callback: function() {
-                var value = Visu.settings.getValue("visu.graphics.bkt-glitch")
-                Visu.settings.setValue("visu.graphics.bkt-glitch", !value).save()
-                Beans.get(BeanVisuController).sfxService.play("menu-use-entry")
-              },
-              updateCustom: function() {
-                this.label.text = Visu.settings.getValue("visu.graphics.bkt-glitch") ? "Enabled" : "Disabled"
-                this.label.alpha = this.label.text == "Enabled" ? 1.0 : 0.3
-              },
-              onMouseReleasedLeft: function() {
-                this.callback()
-              },
-            }
-          }
-        },
-        {
-          name: "graphics_menu-button-input-entry_particle",
-          template: VisuComponents.get("menu-button-input-entry"),
-          layout: VisuLayouts.get("menu-button-input-entry"),
-          config: {
-            layout: { type: UILayoutType.VERTICAL },
-            label: { 
-              text: "Particle",
-              callback: new BindIntent(function() {
-                var value = Visu.settings.getValue("visu.graphics.particle")
-                Visu.settings.setValue("visu.graphics.particle", !value).save()
-                Beans.get(BeanVisuController).sfxService.play("menu-use-entry")
-              }),
-              onMouseReleasedLeft: function() {
-                this.callback()
-              },
-            },
-            input: {
-              label: { text: "Enabled" },
-              callback: function() {
-                var value = Visu.settings.getValue("visu.graphics.particle")
-                Visu.settings.setValue("visu.graphics.particle", !value).save()
-                Beans.get(BeanVisuController).sfxService.play("menu-use-entry")
-              },
-              updateCustom: function() {
-                this.label.text = Visu.settings.getValue("visu.graphics.particle") ? "Enabled" : "Disabled"
-                this.label.alpha = this.label.text == "Enabled" ? 1.0 : 0.3
-              },
-              onMouseReleasedLeft: function() {
-                this.callback()
-              },
-            }
-          }
-        },
-        {
-          name: "graphics_menu-button-input-entry_vsync",
-          template: VisuComponents.get("menu-button-input-entry"),
-          layout: VisuLayouts.get("menu-button-input-entry"),
-          config: {
-            layout: { type: UILayoutType.VERTICAL },
-            label: { 
-              text: "VSync",
-              callback: new BindIntent(function() {
-                var value = Visu.settings.getValue("visu.graphics.vsync")
-                Visu.settings.setValue("visu.graphics.vsync", !value).save()
-                display_reset(Visu.settings.getValue("visu.graphics.aa"), Visu.settings.getValue("visu.graphics.vsync"))
-                Beans.get(BeanVisuController).sfxService.play("menu-use-entry")
-              }),
-              onMouseReleasedLeft: function() {
-                this.callback()
-              },
-            },
-            input: {
-              label: { text: "Enabled" },
-              callback: function() {
-                var value = Visu.settings.getValue("visu.graphics.vsync")
-                Visu.settings.setValue("visu.graphics.vsync", !value).save()
-                display_reset(Visu.settings.getValue("visu.graphics.aa"), Visu.settings.getValue("visu.graphics.vsync"))
-                Beans.get(BeanVisuController).sfxService.play("menu-use-entry")
-              },
-              updateCustom: function() {
-                this.label.text = Visu.settings.getValue("visu.graphics.vsync") ? "Enabled" : "Disabled"
-                this.label.alpha = this.label.text == "Enabled" ? 1.0 : 0.3
-              },
-              onMouseReleasedLeft: function() {
-                this.callback()
-              },
-            }
-          }
-        },
-        /*
-        {
-          name: "graphics_menu-spin-select-entry_anti-aliasing",
-          template: VisuComponents.get("menu-spin-select-entry"),
-          layout: VisuLayouts.get("menu-spin-select-entry"),
-          config: { 
-            layout: { type: UILayoutType.VERTICAL },
-            label: { text: "Anti aliasing" },
-            previous: { 
-              aaRange: Core.fetchAARange(),
-              callback: function() {
-                var index = this.aaRange.findIndex(Lambda.equal, Visu.settings.getValue("visu.graphics.aa"))
-                if (!Optional.is(index)) {
-                  return
-                }
-                index = clamp(index - 1, 0, this.aaRange.size() - 1)
-                Visu.settings.setValue("visu.graphics.aa", this.aaRange.get(index)).save()
-                display_reset(Visu.settings.getValue("visu.graphics.aa"), Visu.settings.getValue("visu.graphics.vsync"))
-                Beans.get(BeanVisuController).sfxService.play("menu-use-entry")
-              },
-              updateCustom: function() {
-                var index = this.aaRange.findIndex(Lambda.equal, Visu.settings.getValue("visu.graphics.aa"))
-                if (!Optional.is(index)) {
-                  this.sprite.setAlpha(0.0)
-                } else if (index == 0) {
-                  this.sprite.setAlpha(0.15)
-                } else {
-                  this.sprite.setAlpha(1.0)
-                }
-              }
-            },
-            preview: {
-              label: {
-                text: string(int64(round(Visu.settings.getValue("visu.graphics.aa"))))
-              },
-              updateCustom: function() {
-                var value = round(Visu.settings.getValue("visu.graphics.aa"))
-                this.label.text = $"{string(int64(value))}"
-              },
-            },
-            next: { 
-              aaRange: Core.fetchAARange(),
-              callback: function() {
-                var index = this.aaRange.findIndex(Lambda.equal, Visu.settings.getValue("visu.graphics.aa"))
-                if (!Optional.is(index)) {
-                  return
-                }
-                index = clamp(index + 1, 0, this.aaRange.size() - 1)
-                Visu.settings.setValue("visu.graphics.aa", this.aaRange.get(index)).save()
-                display_reset(Visu.settings.getValue("visu.graphics.aa"), Visu.settings.getValue("visu.graphics.vsync"))
-                Beans.get(BeanVisuController).sfxService.play("menu-use-entry")
-              },
-              updateCustom: function() {
-                var index = this.aaRange.findIndex(Lambda.equal, Visu.settings.getValue("visu.graphics.aa"))
-                if (!Optional.is(index)) {
-                  this.sprite.setAlpha(0.0)
-                } else if (index == this.aaRange.size() - 1) {
-                  this.sprite.setAlpha(0.15)
-                } else {
-                  this.sprite.setAlpha(1.0)
-                }
-              }
-            },
-          },
-        },
-        */
-        {
           name: "graphics_menu-button-entry_back",
           template: VisuComponents.get("menu-button-entry"),
           layout: VisuLayouts.get("menu-button-entry"),
@@ -1819,7 +1889,7 @@ function VisuMenu(_config = null) constructor {
 
   ///@param {?Struct} [_config]
   ///@return {Event}
-  factoryOpenInterfaceSettingsMenuEvent = function(_config = null) {
+  factoryOpenGameplaySettingsMenuEvent = function(_config = null) {
     var config = Struct.appendUnique(
       _config,
       {
@@ -1831,18 +1901,18 @@ function VisuMenu(_config = null) constructor {
       back: config.back,
       layout: Beans.get(BeanVisuController).visuRenderer.layout,
       title: {
-        name: "interface_title",
+        name: "gameplay_title",
         template: VisuComponents.get("menu-title"),
         layout: VisuLayouts.get("menu-title"),
         config: {
           label: { 
-            text: "Interface",
+            text: "Gameplay",
           },
         },
       },
       content: new Array(Struct, [
         {
-          name: "interface_menu-button-input-entry_render-hud",
+          name: "gameplay_menu-button-input-entry_render-hud",
           template: VisuComponents.get("menu-button-input-entry"),
           layout: VisuLayouts.get("menu-button-input-entry"),
           config: {
@@ -1877,7 +1947,7 @@ function VisuMenu(_config = null) constructor {
         },
         /*
         {
-          name: "interface_menu-spin-select-entry_hud-posituion",
+          name: "gameplay_menu-spin-select-entry_hud-posituion",
           template: VisuComponents.get("menu-spin-select-entry"),
           layout: VisuLayouts.get("menu-spin-select-entry"),
           config: { 
@@ -1905,7 +1975,7 @@ function VisuMenu(_config = null) constructor {
         },
         */
         {
-          name: "interface_menu-button-input-entry_player-hint",
+          name: "gameplay_menu-button-input-entry_player-hint",
           template: VisuComponents.get("menu-button-input-entry"),
           layout: VisuLayouts.get("menu-button-input-entry"),
           config: {
@@ -1939,7 +2009,64 @@ function VisuMenu(_config = null) constructor {
           }
         },
         {
-          name: "interface_menu-spin-select-entry_scale-gui",
+          name: "gameplay_menu-spin-select-entry_dt",
+          template: VisuComponents.get("menu-spin-select-entry"),
+          layout: VisuLayouts.get("menu-spin-select-entry"),
+          config: { 
+            layout: { type: UILayoutType.VERTICAL },
+            label: { text: "Delta time" },
+            previous: { 
+              callback: function() {
+                var map = new Map(String, Number)
+                  .set(DeltaTimeMode.DEFAULT, 0)
+                  .set(DeltaTimeMode.STEADY, 1)
+                  .set(DeltaTimeMode.UNSTEADY, 2)
+                  .set(DeltaTimeMode.DISABLED, 3)
+                var pointer = map.getDefault(Visu.settings.getValue("visu.delta-time"), 0)
+                var target = clamp(int64(pointer - 1), -1, 4)
+                target = target == -1 ? 3 : (target == 4 ? 0 : target)
+                var value = map.findKey(Lambda.equal, target)
+
+                if (!Optional.is(value)) {
+                  return
+                }
+
+                Visu.settings.setValue("visu.delta-time", value).save()
+                Beans.get(BeanVisuController).sfxService.play("menu-use-entry")
+              },
+            },
+            preview: {
+              label: {
+                text: Visu.settings.getValue("visu.delta-time")
+              },
+              updateCustom: function() { 
+                this.label.text = Visu.settings.getValue("visu.delta-time")
+              },
+            },
+            next: { 
+              callback: function() {
+                var map = new Map(String, Number)
+                  .set(DeltaTimeMode.DEFAULT, 0)
+                  .set(DeltaTimeMode.STEADY, 1)
+                  .set(DeltaTimeMode.UNSTEADY, 2)
+                  .set(DeltaTimeMode.DISABLED, 3)
+                var pointer = map.getDefault(Visu.settings.getValue("visu.delta-time"), 0)
+                var target = clamp(int64(pointer + 1), -1, 4)
+                target = target == -1 ? 3 : (target == 4 ? 0 : target)
+                var value = map.findKey(Lambda.equal, target)
+
+                if (!Optional.is(value)) {
+                  return
+                }
+
+                Visu.settings.setValue("visu.delta-time", value).save()
+                Beans.get(BeanVisuController).sfxService.play("menu-use-entry")
+              },
+            },
+          },
+        },
+                {
+          name: "gameplay_menu-spin-select-entry_scale-gui",
           template: VisuComponents.get("menu-spin-select-entry"),
           layout: VisuLayouts.get("menu-spin-select-entry"),
           config: { 
@@ -1974,7 +2101,7 @@ function VisuMenu(_config = null) constructor {
           },
         },
         {
-          name: "interface_menu-button-entry_apply",
+          name: "gameplay_menu-button-entry_apply",
           template: VisuComponents.get("menu-button-entry"),
           layout: VisuLayouts.get("menu-button-entry"),
           config: {
@@ -2000,7 +2127,7 @@ function VisuMenu(_config = null) constructor {
           }
         },
         {
-          name: "interface_menu-button-entry_back",
+          name: "gameplay_menu-button-entry_back",
           template: VisuComponents.get("menu-button-entry"),
           layout: VisuLayouts.get("menu-button-entry"),
           config: {
@@ -2143,81 +2270,6 @@ function VisuMenu(_config = null) constructor {
       },
       content: new Array(Struct, [
         {
-          name: "developer_menu-spin-select-entry_difficulty",
-          template: VisuComponents.get("menu-spin-select-entry"),
-          layout: VisuLayouts.get("menu-spin-select-entry"),
-          config: { 
-            layout: { type: UILayoutType.VERTICAL },
-            label: { text: "Difficulty" },
-            previous: { 
-              callback: function() {
-                var map = new Map(String, Number)
-                  .set(Difficulty.EASY, 0)
-                  .set(Difficulty.NORMAL, 1)
-                  .set(Difficulty.HARD, 2)
-                  .set(Difficulty.LUNATIC, 3)
-                var pointer = map.getDefault(Visu.settings.getValue("visu.difficulty"), 1)
-                var target = clamp(int64(pointer - 1), 0, 3)
-                var value = map.findKey(function(value, key, target) {
-                  return value == target
-                }, target)
-
-                if (!Optional.is(value)) {
-                  return
-                }
-
-                Visu.settings.setValue("visu.difficulty", value).save()
-                Beans.get(BeanVisuController).sfxService.play("menu-use-entry")
-              },
-              updateCustom: function() {
-                var value = Visu.settings.getValue("visu.difficulty")
-                if (value == Difficulty.EASY) {
-                  this.sprite.setAlpha(0.15)
-                } else {
-                  this.sprite.setAlpha(1.0)
-                }
-              }
-            },
-            preview: {
-              label: {
-                text: Visu.settings.getValue("visu.difficulty")
-              },
-              updateCustom: function() { 
-                this.label.text = Visu.settings.getValue("visu.difficulty")
-              },
-            },
-            next: { 
-              callback: function() {
-                var map = new Map(String, Number)
-                  .set(Difficulty.EASY, 0)
-                  .set(Difficulty.NORMAL, 1)
-                  .set(Difficulty.HARD, 2)
-                  .set(Difficulty.LUNATIC, 3)
-                var pointer = map.getDefault(Visu.settings.getValue("visu.difficulty"), 1)
-                var target = clamp(int64(pointer + 1), 0, 3)
-                var value = map.findKey(function(value, key, target) {
-                  return value == target
-                }, target)
-
-                if (!Optional.is(value)) {
-                  return
-                }
-
-                Visu.settings.setValue("visu.difficulty", value).save()
-                Beans.get(BeanVisuController).sfxService.play("menu-use-entry")
-              },
-              updateCustom: function() {
-                var value = Visu.settings.getValue("visu.difficulty")
-                if (value == Difficulty.LUNATIC) {
-                  this.sprite.setAlpha(0.15)
-                } else {
-                  this.sprite.setAlpha(1.0)
-                }
-              }
-            },
-          },
-        },
-        {
           name: "developer_menu-button-input-entry_debug",
           template: VisuComponents.get("menu-button-input-entry"),
           layout: VisuLayouts.get("menu-button-input-entry"),
@@ -2245,6 +2297,40 @@ function VisuMenu(_config = null) constructor {
               },
               updateCustom: function() {
                 this.label.text = is_debug_overlay_open() ? "Enabled" : "Disabled"
+                this.label.alpha = this.label.text == "Enabled" ? 1.0 : 0.3
+              },
+              onMouseReleasedLeft: function() {
+                this.callback()
+              },
+            }
+          }
+        },
+        {
+          name: "developer_menu-button-input-entry_god-mode",
+          template: VisuComponents.get("menu-button-input-entry"),
+          layout: VisuLayouts.get("menu-button-input-entry"),
+          config: {
+            layout: { type: UILayoutType.VERTICAL },
+            label: { 
+              text: "God mode",
+              callback: new BindIntent(function() {
+                var value = Visu.settings.getValue("visu.god-mode")
+                Visu.settings.setValue("visu.god-mode", !value).save()
+                Beans.get(BeanVisuController).sfxService.play("menu-use-entry")
+              }),
+              onMouseReleasedLeft: function() {
+                this.callback()
+              },
+            },
+            input: {
+              label: { text: "Enabled" },
+              callback: function() {
+                var value = Visu.settings.getValue("visu.god-mode")
+                Visu.settings.setValue("visu.god-mode", !value).save()
+                Beans.get(BeanVisuController).sfxService.play("menu-use-entry")
+              },
+              updateCustom: function() {
+                this.label.text = Visu.settings.getValue("visu.god-mode") ? "Enabled" : "Disabled"
                 this.label.alpha = this.label.text == "Enabled" ? 1.0 : 0.3
               },
               onMouseReleasedLeft: function() {
@@ -2356,40 +2442,6 @@ function VisuMenu(_config = null) constructor {
           }
         },
         {
-          name: "developer_menu-button-input-entry_god-mode",
-          template: VisuComponents.get("menu-button-input-entry"),
-          layout: VisuLayouts.get("menu-button-input-entry"),
-          config: {
-            layout: { type: UILayoutType.VERTICAL },
-            label: { 
-              text: "God mode",
-              callback: new BindIntent(function() {
-                var value = Visu.settings.getValue("visu.god-mode")
-                Visu.settings.setValue("visu.god-mode", !value).save()
-                Beans.get(BeanVisuController).sfxService.play("menu-use-entry")
-              }),
-              onMouseReleasedLeft: function() {
-                this.callback()
-              },
-            },
-            input: {
-              label: { text: "Enabled" },
-              callback: function() {
-                var value = Visu.settings.getValue("visu.god-mode")
-                Visu.settings.setValue("visu.god-mode", !value).save()
-                Beans.get(BeanVisuController).sfxService.play("menu-use-entry")
-              },
-              updateCustom: function() {
-                this.label.text = Visu.settings.getValue("visu.god-mode") ? "Enabled" : "Disabled"
-                this.label.alpha = this.label.text == "Enabled" ? 1.0 : 0.3
-              },
-              onMouseReleasedLeft: function() {
-                this.callback()
-              },
-            }
-          }
-        },
-        {
           name: "developer_menu-button-input-entry_ws",
           template: VisuComponents.get("menu-button-input-entry"),
           layout: VisuLayouts.get("menu-button-input-entry"),
@@ -2441,42 +2493,81 @@ function VisuMenu(_config = null) constructor {
             }
           }
         },
-        /*
         {
-          name: "developer_menu-button-input-entry_optimalization-sort-entities-by-txgroup",
-          template: VisuComponents.get("menu-button-input-entry"),
-          layout: VisuLayouts.get("menu-button-input-entry"),
-          config: {
+          name: "developer_menu-spin-select-entry_difficulty",
+          template: VisuComponents.get("menu-spin-select-entry"),
+          layout: VisuLayouts.get("menu-spin-select-entry"),
+          config: { 
             layout: { type: UILayoutType.VERTICAL },
-            label: { 
-              text: "Sort entities by txgroup",
-              callback: new BindIntent(function() {
-                var value = Visu.settings.getValue("visu.optimalization.sort-entities-by-txgroup")
-                Visu.settings.setValue("visu.optimalization.sort-entities-by-txgroup", !value).save()
-                Beans.get(BeanVisuController).sfxService.play("menu-use-entry")
-              }),
-              onMouseReleasedLeft: function() {
-                this.callback()
-              },
-            },
-            input: {
-              label: { text: "Enabled" },
+            label: { text: "Difficulty" },
+            previous: { 
               callback: function() {
-                var value = Visu.settings.getValue("visu.optimalization.sort-entities-by-txgroup")
-                Visu.settings.setValue("visu.optimalization.sort-entities-by-txgroup", !value).save()
+                var map = new Map(String, Number)
+                  .set(Difficulty.EASY, 0)
+                  .set(Difficulty.NORMAL, 1)
+                  .set(Difficulty.HARD, 2)
+                  .set(Difficulty.LUNATIC, 3)
+                var pointer = map.getDefault(Visu.settings.getValue("visu.difficulty"), 1)
+                var target = clamp(int64(pointer - 1), 0, 3)
+                var value = map.findKey(function(value, key, target) {
+                  return value == target
+                }, target)
+
+                if (!Optional.is(value)) {
+                  return
+                }
+
+                Visu.settings.setValue("visu.difficulty", value).save()
                 Beans.get(BeanVisuController).sfxService.play("menu-use-entry")
               },
               updateCustom: function() {
-                this.label.text = Visu.settings.getValue("visu.optimalization.sort-entities-by-txgroup") ? "Enabled" : "Disabled"
-                this.label.alpha = this.label.text == "Enabled" ? 1.0 : 0.3
+                var value = Visu.settings.getValue("visu.difficulty")
+                if (value == Difficulty.EASY) {
+                  this.sprite.setAlpha(0.15)
+                } else {
+                  this.sprite.setAlpha(1.0)
+                }
+              }
+            },
+            preview: {
+              label: {
+                text: Visu.settings.getValue("visu.difficulty")
               },
-              onMouseReleasedLeft: function() {
-                this.callback()
+              updateCustom: function() { 
+                this.label.text = Visu.settings.getValue("visu.difficulty")
               },
-            }
-          }
+            },
+            next: { 
+              callback: function() {
+                var map = new Map(String, Number)
+                  .set(Difficulty.EASY, 0)
+                  .set(Difficulty.NORMAL, 1)
+                  .set(Difficulty.HARD, 2)
+                  .set(Difficulty.LUNATIC, 3)
+                var pointer = map.getDefault(Visu.settings.getValue("visu.difficulty"), 1)
+                var target = clamp(int64(pointer + 1), 0, 3)
+                var value = map.findKey(function(value, key, target) {
+                  return value == target
+                }, target)
+
+                if (!Optional.is(value)) {
+                  return
+                }
+
+                Visu.settings.setValue("visu.difficulty", value).save()
+                Beans.get(BeanVisuController).sfxService.play("menu-use-entry")
+              },
+              updateCustom: function() {
+                var value = Visu.settings.getValue("visu.difficulty")
+                if (value == Difficulty.LUNATIC) {
+                  this.sprite.setAlpha(0.15)
+                } else {
+                  this.sprite.setAlpha(1.0)
+                }
+              }
+            },
+          },
         },
-        */
         {
           name: "developer_menu-button-entry_restart",
           template: VisuComponents.get("menu-button-entry"),
@@ -2614,7 +2705,7 @@ function VisuMenu(_config = null) constructor {
             },
           }
         }
-      }, 5)
+      }, 1)
     }
 
     return event
@@ -2699,7 +2790,7 @@ function VisuMenu(_config = null) constructor {
           .get("applyLayout")),
         renderDefault: new BindIntent(Callable
           .run(UIUtil.renderTemplates
-          .get("renderDefault"))),
+          .get("renderDefaultNoSurface"))),
         render: function() {
           var uiAlpha = clamp(this.state.get("uiAlpha") + DELTA_TIME * this.state.get("uiAlphaFactor"), 0.0, 1.0)
           //var uiAlpha = clamp(this.state.get("uiAlpha") + DeltaTime.apply(this.state.get("uiAlphaFactor")), 0.0, 1.0)

@@ -176,6 +176,7 @@ function DisplayService(_controller, config = {}): Service() constructor {
       this.windowHeight = this.getHeight()
     } catch (exception) {
       Logger.error("ResizeEvent", exception.message)
+      Core.printStackTrace().printException(exception)
     }
     return this
   }

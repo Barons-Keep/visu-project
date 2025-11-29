@@ -9,7 +9,7 @@
   "bitRate":128,
   "compression":0,
   "conversionMode":0,
-  "duration":0.397687,
+  "duration":0.580635,
   "name":"sound_sfx_shroom_damage",
   "parent":{
     "name":"sfx",

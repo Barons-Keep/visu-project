@@ -105,17 +105,15 @@ function EventPump(_context, _dispatchers, config = {}) constructor {
       try {
         resolveEvent(event, this)
       } catch (exception) {
-        Logger.error(this.loggerPrefix, 
-          $"EventPump::execute fatal error: {exception.message}")
-        Core.printStackTrace()
+        Logger.error(this.loggerPrefix, $"EventPump::execute fatal error: {exception.message}")
+        Core.printStackTrace().printException(exception)
         
         if (Optional.is(event.promise)) {
           try {
             event.promise.reject(exception.message)
           } catch (ex) {
-            Logger.error(this.loggerPrefix, 
-              $"EventPump::execute fatal error while rejecting event promise: {ex.message}")
-            Core.printStackTrace()
+            Logger.error(this.loggerPrefix, $"EventPump::execute fatal error while rejecting event promise: {ex.message}")
+            Core.printStackTrace().printException(ex)
           }
         }
   
@@ -123,9 +121,8 @@ function EventPump(_context, _dispatchers, config = {}) constructor {
           try {
             this.exceptionCallback(event, exception)
           } catch (ex) {
-            Logger.error(this.loggerPrefix, 
-              $"EventPump::execute fatal error while running exceptionCallback: {ex.message}")
-            Core.printStackTrace()
+            Logger.error(this.loggerPrefix, $"EventPump::execute fatal error while running exceptionCallback: {ex.message}")
+            Core.printStackTrace().printException(ex)
           }
         }
       }
@@ -160,7 +157,7 @@ function EventPump(_context, _dispatchers, config = {}) constructor {
         eventPump.execute(event)
       } catch (exception) {
         Logger.error(eventPump.loggerPrefix, $"eventPump.free(freeStrategy=EXECUTE) fatal error: {exception.message}")
-        Core.printStackTrace()
+        Core.printStackTrace().printException(exception)
       }
     }
 
@@ -171,7 +168,7 @@ function EventPump(_context, _dispatchers, config = {}) constructor {
         }
       } catch (exception) {
         Logger.error(eventPump.loggerPrefix, $"eventPump.free(freeStrategy=REJECT) fatal error: {exception.message}")
-        Core.printStackTrace()
+        Core.printStackTrace().printException(exception)
       }
     }
 

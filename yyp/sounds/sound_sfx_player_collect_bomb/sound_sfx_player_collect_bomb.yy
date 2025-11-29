@@ -9,7 +9,7 @@
   "bitRate":128,
   "compression":0,
   "conversionMode":0,
-  "duration":0.4,
+  "duration":0.774195,
   "name":"sound_sfx_player_collect_bomb",
   "parent":{
     "name":"sfx",

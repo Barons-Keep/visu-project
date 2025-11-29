@@ -67,7 +67,7 @@ function SoundService(): Service() constructor {
   ///@param {?SoundIntent} [intent]
   ///@return {SoundService}
   loadOGG = function(name, path, intent = null) {
-    Logger.debug(BeanSoundService, $"Load ogg sound {name} from {path}")
+    Logger.debug(BeanSoundService, $"Load OGG sound '{name}'\n{path}")
     var stream = audio_create_stream(path)
     this.sounds.add(stream, name)
 
@@ -110,6 +110,7 @@ function SoundService(): Service() constructor {
         audio_destroy_stream(sound)
       } catch (exception) {
         Logger.error("SoundService", $"Free sound '{name}' exception: {exception.message}")
+        Core.printStackTrace().printException(exception)
       }
     }, staticSounds)
 
@@ -127,6 +128,7 @@ function SoundService(): Service() constructor {
         this.unloadAudioGroup(audioGroupId)
       } catch (exception) {
         Logger.error("SoundService", $"Free audioGroupId '{name}' exception: {exception.message}")
+        Core.printStackTrace().printException(exception)
       }
     }, staticSounds).clear()
 

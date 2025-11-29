@@ -9,7 +9,7 @@
   "bitRate":128,
   "compression":0,
   "conversionMode":0,
-  "duration":1.438367,
+  "duration":4.64517,
   "name":"sound_sfx_player_die",
   "parent":{
     "name":"sfx",

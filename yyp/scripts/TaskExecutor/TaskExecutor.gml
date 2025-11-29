@@ -72,17 +72,15 @@ function TaskExecutor(_context, config = {}) constructor {
       try {
         resolveTask(task, index, executor)
       } catch (exception) {
-        Logger.error(executor.loggerPrefix, 
-          $"TaskExecutor::execute fatal error: {exception.message}")
-        Core.printStackTrace()
+        Logger.error(executor.loggerPrefix, $"TaskExecutor::execute fatal error: {exception.message}")
+        Core.printStackTrace().printException(exception)
         
         if (Optional.is(task.promise)) {
           try {
             task.promise.reject(exception.message)
           } catch (ex) {
-            Logger.error(executor.loggerPrefix, 
-              $"TaskExecutor::execute fatal error while rejecting task promise: {ex.message}")
-            Core.printStackTrace()
+            Logger.error(executor.loggerPrefix, $"TaskExecutor::execute fatal error while rejecting task promise: {ex.message}")
+            Core.printStackTrace().printException(ex)
           }
         }
   
@@ -90,9 +88,8 @@ function TaskExecutor(_context, config = {}) constructor {
           try {
             executor.exceptionCallback(task, exception)
           } catch (ex) {
-            Logger.error(executor.loggerPrefix, 
-              $"TaskExecutor::execute fatal error while running exceptionCallback: {ex.message}")
-            Core.printStackTrace()
+            Logger.error(executor.loggerPrefix, $"TaskExecutor::execute fatal error while running exceptionCallback: {ex.message}")
+            Core.printStackTrace().printException(ex)
           }
         }
       }
@@ -126,7 +123,7 @@ function TaskExecutor(_context, config = {}) constructor {
         }
       } catch (exception) {
         Logger.error(executor.loggerPrefix, $"executor.free(freeStrategy=FULLFILL) fatal error: {exception.message}")
-        Core.printStackTrace()
+        Core.printStackTrace().printException(exception)
       }
     }
 
@@ -138,7 +135,7 @@ function TaskExecutor(_context, config = {}) constructor {
         }
       } catch (exception) {
         Logger.error(executor.loggerPrefix, $"executor.free(freeStrategy=REJECT) fatal error: {exception.message}")
-        Core.printStackTrace()
+        Core.printStackTrace().printException(exception)
       }
     }
 

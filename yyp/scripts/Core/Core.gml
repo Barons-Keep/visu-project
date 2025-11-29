@@ -136,7 +136,7 @@ function _Core() constructor {
       }
     } catch (exception) {
       Logger.error("Core.isType", $"'{type}' Fatal error: {exception.message}")
-      Core.printStackTrace()
+      Core.printStackTrace().printException(exception)
     }
     return false
   }
@@ -223,7 +223,7 @@ function _Core() constructor {
   ///@return {Core}
   static printStackTrace = function() {
     gml_pragma("forceinline")
-    var stackTrace = debug_get_callstack(50)
+    var stackTrace = debug_get_callstack(256)
     var size = GMArray.size(stackTrace)
     for (var index = 0; index < size; index++) {
       var line = string(stackTrace[index])
@@ -232,6 +232,18 @@ function _Core() constructor {
         show_debug_message(line)
       }
     }
+    return Core
+  }
+
+  ///@param {?Struct} exception
+  ///@return {Core}
+  static printException = function(exception) {
+    gml_pragma("forceinline")
+    Logger.error("Core::printException", Struct.getIfType(exception, "message", String, ""))
+    GMArray.forEach(Struct.getIfType(exception, "stacktrace", GMArray, []), function(line, idx) {
+      Core.print("       ", line)
+    })
+    
     return Core
   }
 
@@ -260,6 +272,7 @@ function _Core() constructor {
 
     } catch (exception) {
       Logger.error("Core", $"Unable to load properties from file. {exception.message}")
+      Core.printStackTrace().printException(exception)
     }
 
     return Core

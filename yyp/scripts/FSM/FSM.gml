@@ -104,7 +104,8 @@ function FSM(_context, config) constructor {
     var targetState = new FSMState(name, this.states.get(name))
     if (Core.isType(this.currentState, FSMState)) {
       if (!this.currentState.transitions.contains(name)) {
-        Logger.warn(this.displayName, $"\Transition not allowed: \{ from: \"{this.currentState.name}\" to: \"{name}\" \}")
+        var message = $"Transition from '{this.currentState.name}' to '{name}' is not supported"
+        Logger.warn(this.displayName, message)
         return this
       }
       
@@ -116,12 +117,16 @@ function FSM(_context, config) constructor {
         this, this.currentState, data)
     }
 
+    var from = this.currentState != null ? this.currentState.name : "null"
     this.currentState = targetState
+    
+    Logger.info(this.displayName, $"Transition from '{from}' to '{this.currentState.name}'")
+
     if (targetState.actions.contains("onStart")) {
       Callable.run(targetState.actions.get("onStart"), 
         this, targetState, data)
     }
-    Logger.debug(this.displayName, $"Transition to state: \"{name}\"")
+
     return this
   }
 

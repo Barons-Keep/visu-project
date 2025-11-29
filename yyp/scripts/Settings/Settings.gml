@@ -42,8 +42,9 @@ function SettingEntry(json) constructor {
   try {
     value = Optional.is(Struct.get(json, "value")) ? this.validate(Struct.get(json, "value")) : this.defaultValue
   } catch (exception) {
-    Logger.error("SettingEntry", $"Unable to set value for SettingEntry '{this.name}'. {exception.message}")
     value = this.defaultValue
+    Logger.error("SettingEntry", $"Unable to set value for SettingEntry '{this.name}'. {exception.message}")
+    Core.printStackTrace().printException(exception)
   }
 
   ///@param {any} value
@@ -135,6 +136,7 @@ function Settings(_path) constructor {
       }, this)
     } catch (exception) {
       Logger.error("Settings", $"Corrupted settings '{path}'. {exception.message}")
+      Core.printStackTrace().printException(exception)
     }
     
     return this

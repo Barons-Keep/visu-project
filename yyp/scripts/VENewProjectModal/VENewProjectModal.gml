@@ -351,8 +351,10 @@ function VisuNewProjectForm(json = null) constructor {
           try {
             this.context.state.get("form").save(path)
           } catch (exception) {
-            Beans.get(BeanVisuController).send(new Event("spawn-popup", 
-              { message: $"Cannot create project: {exception.message}" }))
+            var message = $"Cannot create project: {exception.message}"
+            Logger.error("VisuNewProjectForm", message)
+            Core.printStackTrace().printException(exception)
+            Beans.get(BeanVisuController).send(new Event("spawn-popup", { message: message }))
             this.context.modal.send(new Event("close"))
             return
           }
@@ -365,8 +367,11 @@ function VisuNewProjectForm(json = null) constructor {
               autoplay: false
             }))
           } catch (exception) {
-            Beans.get(BeanVisuController).send(new Event("spawn-popup", 
-              { message: $"Cannot load the project: {exception.message}" }))
+            var message = $"Cannot reload project: {exception.message}"
+            Logger.error("VisuNewProjectForm", message)
+            Core.printStackTrace().printException(exception)
+            Beans.get(BeanVisuController).send(new Event("spawn-popup", { message: message }))
+            this.context.modal.send(new Event("close"))
           }
         },
       },

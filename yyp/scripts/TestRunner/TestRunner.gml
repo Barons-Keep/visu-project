@@ -188,7 +188,7 @@ function TestRunner() constructor {
       this.testSuite = null
     } catch (exception) {
       Logger.error("TestRunner::update", $"Exception: {exception.message}")
-      Core.printStackTrace()
+      Core.printStackTrace().printException(exception)
       try {
         this.saveReport()
         this.testSuite = null
@@ -200,7 +200,7 @@ function TestRunner() constructor {
         }
       } catch (ex) {
         Logger.error("TestRunner::update", $"Unable to save test results: {ex.message}")
-        Core.printStackTrace()
+        Core.printStackTrace().printException(ex)
       }
 
       this.shutdown()

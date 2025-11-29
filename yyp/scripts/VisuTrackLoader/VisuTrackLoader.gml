@@ -101,7 +101,7 @@ function VisuTrackLoader(_controller): Service() constructor {
           } catch (exception) {
             var message = $"'clear-state' fatal error: {exception.message}"
             Logger.error("VisuTrackLoader", message)
-            Core.printStackTrace()
+            Core.printStackTrace().printException(exception)
             fsm.dispatcher.send(new Event("transition", { name: "idle" }))
             Beans.get(BeanVisuController).send(new Event("spawn-popup", { message: message }))
           }
@@ -170,7 +170,7 @@ function VisuTrackLoader(_controller): Service() constructor {
           } catch (exception) {
             var message = $"'parse-manifest' fatal error: {exception.message}"
             Logger.error("VisuTrackLoader", message)
-            Core.printStackTrace()
+            Core.printStackTrace().printException(exception)
             fsm.dispatcher.send(new Event("transition", { name: "idle" }))
             Beans.get(BeanVisuController).send(new Event("spawn-popup", { message: message }))
           }
@@ -200,7 +200,7 @@ function VisuTrackLoader(_controller): Service() constructor {
                   .setPromise(new Promise()
                     .setState({ 
                       callback: function(prototype, json, iterator, acc) {
-                        //Logger.debug("VisuTrackLoader", $"Load texture '{json.name}'")
+                        Logger.debug("VisuTrackLoader", $"Load texture '{json.name}'")
                         acc.promises.forEach(function(promise, key) {
                           if (promise.status == PromiseStatus.REJECTED) {
                             throw new Exception($"Found rejected load-texture promise for key '{key}'")
@@ -235,7 +235,7 @@ function VisuTrackLoader(_controller): Service() constructor {
                   .setPromise(new Promise()
                     .setState({ 
                       callback: function(prototype, json, key, acc) {
-                        //Logger.debug("VisuTrackLoader", $"Load sound intent '{key}'")
+                        Logger.debug("VisuTrackLoader", $"Load sound intent '{key}'")
                         var soundService = acc.soundService
                         var soundIntent = new prototype(json)
                         var visuWASM = Callable.run("VisuWASM")
@@ -273,7 +273,7 @@ function VisuTrackLoader(_controller): Service() constructor {
                   .setPromise(new Promise()
                     .setState({ 
                       callback: function(prototype, json, key, acc) {
-                        //Logger.debug("VisuTrackLoader", $"Load shader template '{key}'")
+                        Logger.debug("VisuTrackLoader", $"Load shader template '{key}'")
                         acc.set(key, new prototype(key, json))
                       },
                       acc: controller.shaderPipeline.templates,
@@ -326,7 +326,7 @@ function VisuTrackLoader(_controller): Service() constructor {
                   .setPromise(new Promise()
                     .setState({ 
                       callback: function(prototype, json, key, acc) {
-                        //Logger.debug("VisuTrackLoader", $"Load bullet template '{key}'")
+                        Logger.debug("VisuTrackLoader", $"Load bullet template '{key}'")
                         acc.set(key, new prototype(key, json))
                       },
                       acc: controller.bulletService.templates,
@@ -345,7 +345,7 @@ function VisuTrackLoader(_controller): Service() constructor {
                   .setPromise(new Promise()
                     .setState({ 
                       callback: function(prototype, json, key, acc) {
-                        //Logger.debug("VisuTrackLoader", $"Load coin template '{key}'")
+                        Logger.debug("VisuTrackLoader", $"Load coin template '{key}'")
                         acc.set(key, new prototype(key, json))
                       },
                       acc: controller.coinService.templates,
@@ -364,7 +364,7 @@ function VisuTrackLoader(_controller): Service() constructor {
                   .setPromise(new Promise()
                     .setState({ 
                       callback: function(prototype, json, key, acc) {
-                        //Logger.debug("VisuTrackLoader", $"Load subtitle template '{key}'")
+                        Logger.debug("VisuTrackLoader", $"Load subtitle template '{key}'")
                         acc.set(key, new prototype(key, json))
                       },
                       acc: controller.subtitleService.templates,
@@ -383,7 +383,7 @@ function VisuTrackLoader(_controller): Service() constructor {
                   .setPromise(new Promise()
                     .setState({ 
                       callback: function(prototype, json, key, acc) {
-                        //Logger.debug("VisuTrackLoader", $"Load shroom template '{key}'")
+                        Logger.debug("VisuTrackLoader", $"Load shroom template '{key}'")
                         acc.set(key, new prototype(key, json))
                       },
                       acc: controller.shroomService.templates,
@@ -402,7 +402,7 @@ function VisuTrackLoader(_controller): Service() constructor {
                   .setPromise(new Promise()
                     .setState({ 
                       callback: function(prototype, json, key, acc) {
-                        //Logger.debug("VisuTrackLoader", $"Load particle template '{key}'")
+                        Logger.debug("VisuTrackLoader", $"Load particle template '{key}'")
                         acc.set(key, new prototype(key, json))
                       },
                       acc: controller.particleService.templates,
@@ -467,7 +467,7 @@ function VisuTrackLoader(_controller): Service() constructor {
                     .setPromise(new Promise()
                       .setState({ 
                         callback: function(prototype, json, index, acc) {
-                          //Logger.debug("VisuTrackLoader", $"Load brush '{json.name}'")
+                          Logger.debug("VisuTrackLoader", $"Load brush '{json.name}'")
                           acc.saveTemplate(new prototype(json))
                         },
                         acc: {
@@ -525,7 +525,7 @@ function VisuTrackLoader(_controller): Service() constructor {
           } catch (exception) {
             var message = $"'create-parser-tasks' fatal error: {exception.message}"
             Logger.error("VisuTrackLoader", message)
-            Core.printStackTrace()
+            Core.printStackTrace().printException(exception)
             fsm.dispatcher.send(new Event("transition", { name: "idle" }))
             Beans.get(BeanVisuController).send(new Event("spawn-popup", { message: message }))
           }
@@ -545,7 +545,7 @@ function VisuTrackLoader(_controller): Service() constructor {
             fsmState.state
               .set("video", video)
               .set("tasks", tasks)
-              .set("parsePrimaryCooldown", new Timer(0.5))
+              .set("parsePrimaryCooldown", new Timer(0.128))
               .set("promises", new Map(String, Promise, {
                 "texture": addTask(tasks.get("texture"), executor),
                 "sound": addTask(tasks.get("sound"), executor),
@@ -581,7 +581,7 @@ function VisuTrackLoader(_controller): Service() constructor {
           } catch (exception) {
             var message = $"'parse-primary-assets' fatal error: {exception.message}"
             Logger.error("VisuTrackLoader", message)
-            Core.printStackTrace()
+            Core.printStackTrace().printException(exception)
             fsm.dispatcher.send(new Event("transition", { name: "idle" }))
             Beans.get(BeanVisuController).send(new Event("spawn-popup", { message: message }))
           }
@@ -623,7 +623,7 @@ function VisuTrackLoader(_controller): Service() constructor {
           } catch (exception) {
             var message = $"'parse-video' fatal error: {exception.message}"
             Logger.error("VisuTrackLoader", message)
-            Core.printStackTrace()
+            Core.printStackTrace().printException(exception)
             fsm.dispatcher.send(new Event("transition", { name: "idle" }))
             Beans.get(BeanVisuController).send(new Event("spawn-popup", { message: message }))
           }
@@ -685,7 +685,7 @@ function VisuTrackLoader(_controller): Service() constructor {
           } catch (exception) {
             var message = $"'parse-secondary-assets' fatal error: {exception.message}"
             Logger.error("VisuTrackLoader", message)
-            Core.printStackTrace()
+            Core.printStackTrace().printException(exception)
             fsm.dispatcher.send(new Event("transition", { name: "idle" }))
             Beans.get(BeanVisuController).send(new Event("spawn-popup", { message: message }))
           }
@@ -711,47 +711,48 @@ function VisuTrackLoader(_controller): Service() constructor {
               .setState({
                 stack: stack,
                 setup: false,
-              })
-              .setPromise(new Promise())
-              .whenUpdate(function() {
-                if (!this.state.setup) {
-                  if (Beans.get(BeanVisuController).visuRenderer.spinnerFactor < 1.0) {
-                    this.state.setup = true
+                render: function(task) {
+                  if (!task.state.setup) {
+                    if (Beans.get(BeanVisuController).visuRenderer.spinnerFactor < 1.0) {
+                      task.state.setup = true
+                    }
+                    return
                   }
-                  return
-                }
 
-                try {
-                  repeat (16) {
-                    if (this.state.stack.size() == 0) {
-                      this.fullfill()
-                      break
-                    } else {
-                      var template = this.state.stack.pop()
-                      for (var index = 0; index < template.frames; index++) {
-                        draw_sprite_ext(
-                          template.asset, 
-                          index, 
-                          random(GuiWidth()), 
-                          random(GuiHeight()),
-                          random(10.0),
-                          random(10.0),
-                          random(360.0),
-                          make_color_rgb(irandom(255), irandom(255), irandom(255)),
-                          1.0
-                        )
+                  try {
+                    repeat (16) {
+                      if (task.state.stack.size() == 0) {
+                        task.fullfill()
+                        break
+                      } else {
+                        var template = task.state.stack.pop()
+                        for (var index = 0; index < template.frames; index++) {
+                          Logger.debug("VisuRenderer", $"Render texture '{template.name}'")
+                          draw_sprite_ext(
+                            template.asset, 
+                            index, 
+                            random(GuiWidth()), 
+                            random(GuiHeight()),
+                            1.0 + random(10.0),
+                            1.0 + random(10.0),
+                            random(360.0),
+                            make_color_rgb(irandom(255), irandom(255), irandom(255)),
+                            1.0 / 255.0
+                          )
+                        }
                       }
                     }
+                  } catch (exception) {
+                    Logger.error("VisuRenderer", $"texture-load-task exception: {exception.message}")
+                    Core.printStackTrace().printException(exception)
+                    task.reject()
                   }
-                } catch (exception) {
-                  Logger.error("VisuTrackLoader", $"texture-load-task exception: {exception.message}")
-                  Core.printStackTrace()
-                  this.reject()
-                }
+                },
               })
+              .setPromise(new Promise())
 
             fsmState.state.set("texture-load-task", textureLoadTask)
-            fsmState.state.set("cooldown-timer", new Timer(0.125))
+            fsmState.state.set("cooldown-timer", new Timer(0.128))
 
             var controller = Beans.get(BeanVisuController)
             controller.visuRenderer.executor.add(textureLoadTask)
@@ -848,7 +849,7 @@ function VisuTrackLoader(_controller): Service() constructor {
           } catch (exception) {
             var message = $"'cooldown' fatal error: {exception.message}"
             Logger.error("VisuTrackLoader", message)
-            Core.printStackTrace()
+            Core.printStackTrace().printException(exception)
             fsm.dispatcher.send(new Event("transition", { name: "idle" }))
             Beans.get(BeanVisuController).send(new Event("spawn-popup", { message: message }))
           }
@@ -899,9 +900,9 @@ function VisuTrackLoader(_controller): Service() constructor {
     try {
       this.fsm.update()
     } catch (exception) {
-      var message = $"VisuTrackLoader::FSM fatal error: {exception.message}"
+      var message = $"FSM fatal error: {exception.message}"
       Logger.error("VisuTrackLoader", message)
-      Core.printStackTrace()
+      Core.printStackTrace().printException(exception)
       Beans.get(BeanVisuController).send(new Event("spawn-popup", { message: message }))
     }
 
@@ -912,9 +913,9 @@ function VisuTrackLoader(_controller): Service() constructor {
     try {
       this.executor.update()
     } catch (exception) {
-      var message = $"VisuTrackLoader::executor fatal error: {exception.message}"
+      var message = $"executor fatal error: {exception.message}"
       Logger.error("VisuTrackLoader", message)
-      Core.printStackTrace()
+      Core.printStackTrace().printException(exception)
       this.executor.tasks.clear()
       this.fsm.dispatcher.send(new Event("transition", { name: "idle" }))
       Beans.get(BeanVisuController).send(new Event("spawn-popup", { message: message }))

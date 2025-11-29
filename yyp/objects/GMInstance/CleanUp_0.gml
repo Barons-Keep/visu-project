@@ -14,5 +14,6 @@
     }
   } catch (exception) {
     Logger.error("GMInstance", $"dereference __context fatal error: {exception.message}")
+    Core.printStackTrace().printException(exception)
   }
 

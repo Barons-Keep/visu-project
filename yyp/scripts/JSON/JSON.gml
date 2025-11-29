@@ -240,6 +240,7 @@ function _JSON() constructor {
       }
     } catch (exception) {
       Logger.error("JSON::parse", exception.message)
+      Core.printStackTrace().printException(exception)
     }
     
     return result
@@ -254,6 +255,7 @@ function _JSON() constructor {
       result = json_stringify(object, Struct.getDefault(config, "pretty", false))
     } catch (exception) {
       Logger.error("JSON::stringify", exception.message)
+      Core.printStackTrace().printException(exception)
     }
     return result
   }
@@ -298,6 +300,7 @@ function _JSON() constructor {
         })
     } catch (exception) {
       Logger.error("JSON::parserTask", exception.message)
+      Core.printStackTrace().printException(exception)
     }
 
     return task

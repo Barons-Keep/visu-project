@@ -551,7 +551,6 @@ function VEStatusBar(_editor) constructor {
                 var server = Beans.get(BeanVisuController).server
                 this.label.text = server.isRunning() ? $"ws: {server.port}" : ""
               } catch (exception) {
-                Logger.error("VEStatusBar", exception.message)
                 this.label.text = ""
               }
             },
@@ -650,9 +649,10 @@ function VEStatusBar(_editor) constructor {
     try {
       this.dispatcher.update()
     } catch (exception) {
-      var message = $"VEStatusBar dispatcher fatal error: {exception.message}"
+      var message = $"dispatcher fatal error: {exception.message}"
+      Logger.error("VEStatusBar", message)
+      Core.printStackTrace().printException(exception)
       Beans.get(BeanVisuController).send(new Event("spawn-popup", { message: message }))
-      Logger.error("UI", message)
     }
     return this
   }

@@ -156,13 +156,28 @@ function VisuController(layerName) constructor {
       }))
     },
     "play": function(event) {
+      if (Core.isType(this.fsm.currentState, FSMState)
+          && this.fsm.currentState == "play") {
+        return
+      }
+
       this.fsm.dispatcher.send(new Event("transition", { name: "play" }))
     },
     "pause": function(event) {
+      if (Core.isType(this.fsm.currentState, FSMState)
+          && this.fsm.currentState == "pause") {
+        return
+      }
+
       this.fsm.dispatcher.send(new Event("transition", Struct
         .appendUnique({ name: "pause" }, event.data)))
     },
     "rewind": function(event) {
+      if (Core.isType(this.fsm.currentState, FSMState)
+          && this.fsm.currentState == "rewind") {
+        return
+      }
+
       var fsmEvent = new Event("transition", { 
         name: "rewind", 
         data: {
@@ -388,7 +403,7 @@ function VisuController(layerName) constructor {
           } catch (exception) {
             Visu._serverVersion = null
             Logger.error(BeanVisuController, $"serverVersion fatal error: {exception.message}")
-            Core.printStackTrace()
+            Core.printStackTrace().printException(exception)
           }
         },
       }))
@@ -446,6 +461,25 @@ function VisuController(layerName) constructor {
 
   ///@private
   ///@return {VisuController}
+  updateDeltaTimeMode = function() {
+    if (!Beans.exists(BeanDeltaTimeService)) {
+      Beans.add(Beans.factory(BeanDeltaTimeService, GMServiceInstance, this.layerId,
+        new DeltaTimeService()))
+    }    
+    
+    var deltaTimeService = Beans.get(BeanDeltaTimeService)
+    if (deltaTimeService == null) {
+      return this
+    }
+
+    var mode = Visu.settings.getValue("visu.delta-time")
+    deltaTimeService.setMode(mode)
+
+    return this
+  }
+
+  ///@private
+  ///@return {VisuController}
   updateGCFrameTime = function() {
     if (gc_get_target_frame_time() != this.gcFrameTime) {
       Logger.info(BeanVisuController, $"updateGCFrameTime: {this.gcFrameTime}")
@@ -463,7 +497,8 @@ function VisuController(layerName) constructor {
     try {
       service.struct.update()
     } catch (exception) {
-      controller.exceptionDebugHandler($"'{service.name}::update' fatal error: {exception.message}")
+      var message = $"'VisuController::updateService' for '{service.name}::update' fatal error: {exception.message}"
+      controller.exceptionDebugHandler(message, exception)
     }
   }
 
@@ -472,14 +507,15 @@ function VisuController(layerName) constructor {
   ///@param {Number} iterator
   ///@param {VisuController} controller
   updateGameplayService = function(service, iterator, controller) {
-    try {
+  try {
       if (service.name == "trackService") {
         service.struct.update()
       } else if (controller.fsm.getStateName() != "rewind") {
         service.struct.update()
       }
     } catch (exception) {
-      controller.exceptionDebugHandler($"'{service.name}::update' fatal error: {exception.message}")
+      var message = $"'VisuController::updateGameplayService' for '{service.name}::update' fatal error: {exception.message}"
+      controller.exceptionDebugHandler(message, exception)
     }
   }
 
@@ -503,7 +539,7 @@ function VisuController(layerName) constructor {
     } catch (exception) {
       var message = $"'uiService::update' fatal error: {exception.message}"
       Logger.error(BeanVisuController, message)
-      Core.printStackTrace()
+      Core.printStackTrace().printException(exception)
       this.send(new Event("spawn-popup", { message: message }))
     }
 
@@ -628,7 +664,7 @@ function VisuController(layerName) constructor {
     } catch (exception) {
       var message = $"'watchdog' fatal error: {exception.message}"
       Logger.error(BeanVisuController, message)
-      Core.printStackTrace()
+      Core.printStackTrace().printException(exception)
       this.send(new Event("spawn-popup", { message: message }))
     }
 
@@ -636,9 +672,10 @@ function VisuController(layerName) constructor {
   }
 
   ///@param {String} message
-  exceptionDebugHandler = function(message) {
+  ///@param {?Struct} exception
+  exceptionDebugHandler = function(message, exception) {
     Logger.error(BeanVisuController, message)
-    Core.printStackTrace()
+    Core.printStackTrace().printException(exception)
     this.send(new Event("spawn-popup", { message: message }))
 
     var stateName = this.trackService.isTrackLoaded() ? "pause" : "idle"
@@ -703,6 +740,7 @@ function VisuController(layerName) constructor {
   ///@return {VisuController}
   update = function() {
     this.updateDebugTimer.start()
+    this.updateDeltaTimeMode()
     this.updateDebugFPS()
     this.updateGCFrameTime()
     this.updateUIServices()
@@ -735,7 +773,7 @@ function VisuController(layerName) constructor {
     } catch (exception) {
       var message = $"'render' fatal error: {exception.message}"
       Logger.error(BeanVisuController, message)
-      Core.printStackTrace()
+      Core.printStackTrace().printException(exception)
       Beans.get(BeanVisuController).send(new Event("spawn-popup", { message: message }))
       GPU.reset.shader()
       GPU.reset.surface()
@@ -765,7 +803,7 @@ function VisuController(layerName) constructor {
     } catch (exception) {
       var message = $"'renderGUI' fatal error: {exception.message}"
       Logger.error(BeanVisuController, message)
-      Core.printStackTrace()
+      Core.printStackTrace().printException(exception)
       Beans.get(BeanVisuController).send(new Event("spawn-popup", { message: message }))
       GPU.reset.shader()
       GPU.reset.surface()
@@ -872,7 +910,7 @@ function VisuController(layerName) constructor {
     } catch (exception) {
       var message = $"'onNetworkEvent' fatal error: {exception.message}"
       Logger.error(BeanVisuController, message)
-      Core.printStackTrace()
+      Core.printStackTrace().printException(exception)
       this.send(new Event("spawn-popup", { message: message }))
     }
 
@@ -900,11 +938,11 @@ function VisuController(layerName) constructor {
       })
       .forEach(function(struct, key, context) {
         try {
-          Logger.debug(BeanVisuController, $"'free' (key: '{key}') resolved")
+          Logger.debug(BeanVisuController, $"Free '{key}'")
           Callable.run(Struct.get(struct, "free"))
         } catch (exception) {
-          Logger.error(BeanVisuController, $"'free' (key: '{key}') fatal error: {exception.message}")
-          Core.printStackTrace()
+          Logger.error(BeanVisuController, $"Free '{key}' fatal error: {exception.message}")
+          Core.printStackTrace().printException(exception)
         }
       }, this)
     
