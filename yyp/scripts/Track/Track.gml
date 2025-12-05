@@ -549,12 +549,15 @@ function TrackChannel(json, config = null) constructor {
         var event = events.get(pointer)
         if (timestamp >= event.timestamp) {
           this.pointer = pointer
-          //Logger.debug("Track", $"(channel: '{this.name}', timestamp: {timestamp}) dispatch event: '{event.callableName}'")
-          if (!this.muted) {
-            event.callable(event.parseData(event.data), this)
+          if (this.muted) {
+            continue
           }
+
+          //Logger.debug("Track", $"(channel: '{this.name}', timestamp: {timestamp}) dispatch event: '{event.callableName}'")
+          event.callable(event.parsedData, this)
         }
       }
+
       return this
     }
 
@@ -600,6 +603,9 @@ function TrackEvent(json, config = null): Event("TrackEvent") constructor {
 
   ///@type {Callable}
   parseData = Struct.getIfType(handler, "parse", Callable, Lambda.passthrough)
+
+  ///@type {Struct}
+  parsedData = this.parseData(this.data)
 
   ///@type {Callable}
   serializeData = Struct.getIfType(handler, "serialize", Callable, Struct.serialize)

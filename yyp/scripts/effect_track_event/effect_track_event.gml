@@ -380,6 +380,7 @@ global.__effect_track_event = {
         return
       }
 
+      Struct.get(data, "ef-cfg_particle-z").reset()
       var gridService = controller.gridService
       var properties = gridService.properties
       var pump = gridService.dispatcher

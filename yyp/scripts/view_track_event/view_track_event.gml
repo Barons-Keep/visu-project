@@ -81,6 +81,13 @@ global.__view_track_event = {
         return
       }
 
+      Struct.get(data, "vw-cam_x").reset()
+      Struct.get(data, "vw-cam_y").reset()
+      Struct.get(data, "vw-cam_z").reset()
+      Struct.get(data, "vw-cam_dir").reset()
+      Struct.get(data, "vw-cam_pitch").reset()
+      Struct.get(data, "vw-cam_move-speed").reset()
+      Struct.get(data, "vw-cam_move-angle").reset()
       var gridService = controller.gridService
       var pump = gridService.dispatcher
       var executor = gridService.executor
@@ -228,6 +235,7 @@ global.__view_track_event = {
         "vw-layer_fade-out": Struct.parse.number(data, "vw-layer_fade-out", 0.0, 0.0, 999.9),
         "vw-layer_use-texture": Struct.parse.boolean(data, "vw-layer_use-texture"),
         "vw-layer_texture": texture,
+        "_vw-layer_texture": texture.serialize(),
         "vw-layer_use-texture-blend": useTextureBlend,
         "vw-layer_texture-blend": textureBlend,
         "vw-layer_use-col": Struct.parse.boolean(data, "vw-layer_use-col"),
@@ -302,6 +310,15 @@ global.__view_track_event = {
         
         task.state.set("stage", "fade-out")
       }
+
+      Struct.get(data, "vw-layer_spd").reset()
+      Struct.get(data, "vw-layer_dir").reset()
+      Struct.get(data, "vw-layer_scale-x").reset()
+      Struct.get(data, "vw-layer_scale-y").reset()
+      Struct.set(data, "vw-layer_texture", Struct.parse.sprite(data, "_vw-layer_texture")
+        .setBlend(Struct.get(data, "vw-layer_use-texture-blend")
+          ? Struct.get(data, "vw-layer_texture-blend").toGMColor()
+          : c_white))
 
       var controller = Beans.get(BeanVisuController)
       if (!controller.isChannelDifficultyValid(channel)) {
@@ -523,6 +540,8 @@ global.__view_track_event = {
         return
       }
 
+      Struct.get(data, "vw-sub_dir").reset()
+      Struct.get(data, "vw-sub_spd").reset()
       var subtitleService = Beans.get(BeanVisuController).subtitleService
 
       ///@description feature TODO view.subtitle.add

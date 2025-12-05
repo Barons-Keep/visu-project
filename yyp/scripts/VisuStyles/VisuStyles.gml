@@ -187,5 +187,47 @@ global.__VisuStyles = new Map(String, Callable, {
       backgroundMargin: { top: 6, left: 6, bottom: 6, right: 6 },
     }
   },
+  "menu-slider-entry": {
+    label: {
+      align: { v: VAlign.CENTER, h: HAlign.LEFT },
+      font: "font_kodeo_mono_18_bold",
+      color: VisuTheme.color.text,
+      outline: true,
+      outlineColor: VisuTheme.color.side,
+      offset: { x: 24 },
+      useScaleWithOffset: true,
+      enableColorWrite: false,
+      //colorHoverOver: VisuTheme.color.accentLight,
+      //colorHoverOut: VisuTheme.color.sideDark,
+      //backgroundColor: VisuTheme.color.side,
+      backgroundAlpha: 0.75,
+      backgroundMargin: { top: 6, left: 6, bottom: 6, right: 6 },
+    },
+    slider: {
+      backgroundColor: VisuTheme.color.side,
+      backgroundMargin: { top: 6, bottom: 6, left: -10, right: -8 },
+      backgroundAlpha: 0.75,
+      pointer: {
+        name: "texture_empty",
+        scaleX: 0.25,
+        scaleY: 0.25,
+        blend: VisuTheme.color.accent,
+      },
+      progress: {
+        thickness: 8.0,
+        blend: VisuTheme.color.accentLight,
+        line: { name: "texture_grid_line_bold" },
+        cornerFrom: { name: "texture_empty" },
+        cornerTo: { name: "texture_empty" },
+      },
+      background: {
+        thickness: 8.0,
+        blend: VisuTheme.color.sideDark,
+        line: { name: "texture_grid_line_bold" },
+        cornerFrom: { name: "texture_grid_line_bold" },
+        cornerTo: { name: "texture_grid_line_bold" },
+      },
+    },
+  },
 })
 #macro VisuStyles global.__VisuStyles

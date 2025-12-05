@@ -120,6 +120,43 @@ global.__VisuLayouts = new Map(String, Callable, {
 
   ///@param {?Struct} [config]
   ///@return {Struct}
+  "menu-slider-entry": function(config = null) {
+    return {
+      name: "menu-slider-entry",
+      type: Core.isEnum(Struct.get(config, "type"), UILayoutType)
+        ? config.type
+        : UILayoutType.VERTICAL,
+      collection: true,
+      x: function() { return 0 },
+      y: function() { return this.collection.getIndex() * this.height() },
+      width: function() { return this.context.width() },
+      height: function() { return VISU_MENU_ENTRY_HEIGHT },
+      nodes: {
+        label: {
+          name: "menu-slider-entry.label",
+          x: function() { return this.context.x() },
+          y: function() { return this.context.y() },
+          width: function() { return this.context.width() * 0.66 },
+          height: function() { return this.context.height() },
+        },
+        slider: {
+          name: "menu-slider-entry.slider",
+          x: function() { return this.context.nodes.label.right() + this.__margin.left },
+          width: function() { return this.context.width()
+            - this.__margin.left 
+            - this.__margin.right 
+            - this.context.nodes.label.width() 
+            - this.context.nodes.label.__margin.left
+            - this.context.nodes.label.__margin.right },
+          margin: { left: 16, right: 20 },
+          height: function() { return this.context.height() },
+        },
+      }
+    }
+  },
+
+  ///@param {?Struct} [config]
+  ///@return {Struct}
   "menu-keyboard-key-entry": function(config = null) {
     return {
       name: "menu-keyboard-key-entry",

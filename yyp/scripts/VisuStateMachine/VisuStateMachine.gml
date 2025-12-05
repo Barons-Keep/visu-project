@@ -79,7 +79,7 @@ function VisuStateMachine(context, name) {
                   try {
                     var sound = Assert.isType(SoundUtil.fetch("sound_sfx_intro", { loop: false }), Sound, "sound_sfx_intro must be sound")
                     var ostVolume = Visu.settings.getValue("visu.audio.ost-volume")
-                    sound.play(0.0).setVolume(ostVolume, 1.0)
+                    sound.play(0.0).setVolume(ostVolume, 0.2)
                   } catch (exception) {
                     Logger.error(BeanVisuController, $"Fatal error, splashscreen, {exception.message}")
                     Core.printStackTrace().printException(exception)
@@ -217,12 +217,12 @@ function VisuStateMachine(context, name) {
             var ostVolume = Visu.settings.getValue("visu.audio.ost-volume")
             if (!controller.ostSound.isLoaded()) {
               //controller.ostSound.play(0.0).rewind(random(90.0)).setVolume(ostVolume, 2.0)
-              controller.ostSound.play(0.0).setVolume(ostVolume, 2.0)
+              controller.ostSound.play(0.0).setVolume(ostVolume, 0.2)
             } else if (controller.ostSound.isPaused()) {
-              controller.ostSound.resume().setVolume(ostVolume, 2.0)
+              controller.ostSound.resume().setVolume(ostVolume, 0.2)
             } else if (controller.ostSound.isPlaying()
                 && ostVolume != controller.ostSound.getVolume()) {
-              controller.ostSound.setVolume(ostVolume, 2.0)
+              controller.ostSound.setVolume(ostVolume, 0.2)
             }
           }
   

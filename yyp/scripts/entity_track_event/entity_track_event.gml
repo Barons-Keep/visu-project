@@ -233,6 +233,7 @@ global.__entity_track_event = {
         "en-shr_inherit": Struct.getIfType(data, "en-shr_inherit", GMArray, [ ]),
         "en-shr_use-texture": Struct.parse.boolean(data, "en-shr_use-texture"),
         "en-shr_texture": Struct.parse.sprite(data, "en-shr_texture"),
+        "_en-shr_texture": Struct.get(data, "en-shr_texture"),
         "en-shr_use-mask": Struct.parse.boolean(data, "en-shr_use-mask"),
         "en-shr_mask": Struct.parse.rectangle(data, "en-shr_mask"),
         "en-shr_use-em": Struct.parse.boolean(data, "en-shr_use-em"),
@@ -245,7 +246,18 @@ global.__entity_track_event = {
       if (!controller.isChannelDifficultyValid(channel)) {
         return
       }
+      
+      if (Struct.get(data, "en-shr_em-use-cfg") == false) {
+        Struct.get(data, "en-shr_em-angle").reset()
+        Struct.get(data, "en-shr_em-per-array-dir").reset()
+        Struct.get(data, "en-shr_em-spd").reset()
+        Struct.get(data, "en-shr_em-offset-x").reset()
+        Struct.get(data, "en-shr_em-offset-y").reset()
+        Struct.get(data, "en-shr_em-wiggle-freq").reset()
+        Struct.get(data, "en-shr_em-wiggle-amp").reset()
+      }
 
+      Struct.set(data, "en-shr_texture", Struct.parse.sprite(data, "_en-shr_texture"))
       var spd = abs(Struct.get(data, "en-shr_spd")
         + (Struct.get(data, "en-shr_use-spd-rng")
           ? (random(Struct.get(data, "en-shr_spd-rng") / 2.0)
@@ -578,6 +590,7 @@ global.__entity_track_event = {
           SHROOM_SPAWN_AMOUNT),
         "en-blt_use-texture": Struct.parse.boolean(data, "en-blt_use-texture"),
         "en-blt_texture": Struct.parse.sprite(data, "en-blt_texture"),
+        "_en-blt_texture": Struct.get(data, "en-blt_texture"),
         "en-blt_use-mask": Struct.parse.boolean(data, "en-blt_use-mask"),
         "en-blt_mask": Struct.parse.rectangle(data, "en-blt_mask"),
         "en-blt_use-em": Struct.parse.boolean(data, "en-blt_use-em"),
@@ -589,6 +602,17 @@ global.__entity_track_event = {
       var controller = Beans.get(BeanVisuController)
       if (!controller.isChannelDifficultyValid(channel)) {
         return
+      }
+
+      if (Struct.get(data, "en-blt_em-use-cfg") == false) {
+        Struct.get(data, "en-blt_em-angle").reset()
+        Struct.get(data, "en-blt_em-per-array-dir").reset()
+        Struct.get(data, "en-blt_em-spd").reset()
+        Struct.get(data, "en-blt_em-offset-x").reset()
+        Struct.get(data, "en-blt_em-offset-y").reset()
+        Struct.get(data, "en-blt_em-wiggle-freq").reset()
+        Struct.get(data, "en-blt_em-wiggle-amp").reset()
+        Struct.set(data, "en-blt_texture", Struct.parse.sprite(data, "_en-blt_texture"))
       }
 
       var spd = abs(Struct.get(data, "en-blt_spd")
@@ -817,6 +841,7 @@ global.__entity_track_event = {
         "en-pl_hide-stats": Struct.parse.boolean(data, "en-pl_hide-stats", TRACK_EVENT_DEFAULT_HIDDEN_VALUE),
         "en-pl_hide-cfg": Struct.parse.boolean(data, "en-pl_hide-cfg"), TRACK_EVENT_DEFAULT_HIDDEN_VALUE,
         "en-pl_texture": Struct.parse.sprite(data, "en-pl_texture", { name: "texture_player" }),
+        "_en-pl_texture": Struct.getDefault(data, "en-pl_texture", { name: "texture_player" }),
         "en-pl_use-mask": Struct.parse.boolean(data, "en-pl_use-mask"),
         "en-pl_mask": Struct.parse.rectangle(data, "en-pl_mask"),
         "en-pl_reset-pos": Struct.parse.boolean(data, "en-pl_reset-pos"),
@@ -859,6 +884,7 @@ global.__entity_track_event = {
         return
       }
       
+      Struct.set(data, "en-pl_texture", Struct.parse.sprite(data, "_en-pl_texture"))
       ///@description feature TODO entity.player.spawn
       controller.playerService.send(new Event("spawn-player", {
         "sprite": Struct.get(data, "en-pl_texture").serialize(),
@@ -933,6 +959,10 @@ global.__entity_track_event = {
         return
       }
 
+      Struct.get(data, "en-cfg_z-shr").reset()
+      Struct.get(data, "en-cfg_z-player").reset()
+      Struct.get(data, "en-cfg_z-coin").reset()
+      Struct.get(data, "en-cfg_z-bullet").reset()
       var gridService = controller.gridService
       var properties = gridService.properties
       var pump = gridService.dispatcher

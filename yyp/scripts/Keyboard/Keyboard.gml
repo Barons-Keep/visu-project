@@ -163,7 +163,7 @@ function PrioritizedPressedKeyUpdater(json = null) constructor {
 
   ///@private
   ///@type {Timer}
-  cooldown = new Timer(Struct.getIfType(json, "treshold", Number, 0.1), { loop: Infinity })
+  cooldown = new Timer(Struct.getIfType(json, "cooldown", Number, 0.1), { loop: Infinity })
 
   ///@private
   ///@type {Array<Struct>}

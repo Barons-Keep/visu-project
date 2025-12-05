@@ -1766,97 +1766,123 @@ function VisuMenu(_config = null) constructor {
       },
       content: new Array(Struct, [
         {
-          name: "audio_menu-spin-select-entry_ost-volume",
-          template: VisuComponents.get("menu-spin-select-entry"),
-          layout: VisuLayouts.get("menu-spin-select-entry"),
+          name: "audio_menu-slider-entry_ost-volume",
+          template: VisuComponents.get("menu-slider-entry"),
+          layout: VisuLayouts.get("menu-slider-entry"),
           config: { 
             layout: { type: UILayoutType.VERTICAL },
             label: { text: "OST volume" },
-            previous: { 
+            slider: {
+              value: round(Visu.settings.getValue("visu.audio.ost-volume") * 100.0),
+              minValue: 0.0,
+              maxValue: 100.0,
+              snapValue: 1.0,
+              updatePosition: function(mouseX, mouseY) {
+                this.callback()
+              },
               callback: function() {
-                var value = clamp(Visu.settings.getValue("visu.audio.ost-volume") - 0.05, 0.0, 1.0)
-                Visu.settings.setValue("visu.audio.ost-volume", value).save()
-                Beans.get(BeanVisuController).sfxService.play("menu-use-entry")
-              },
-              updateCustom: function() {
-                var value = clamp(Visu.settings.getValue("visu.audio.ost-volume"), 0.0, 1.0)
-                if (value == 0.0) {
-                  this.sprite.setAlpha(0.15)
-                } else {
-                  this.sprite.setAlpha(1.0)
+                var value = round(Visu.settings.getValue("visu.audio.ost-volume") * 100.0)
+                if (this.value == value) {
+                  return
                 }
-              }
-            },
-            preview: {
-              label: {
-                text: "N/A"
-              },
-              updateCustom: function() {
-                var value = round(Visu.settings.getValue("visu.audio.ost-volume") * 100)
-                this.label.text = $"{string(int64(value))}%"
-              },
-            },
-            next: { 
-              callback: function() {
-                var value = clamp(Visu.settings.getValue("visu.audio.ost-volume") + 0.05, 0.0, 1.0)
-                Visu.settings.setValue("visu.audio.ost-volume", value).save()
-                Beans.get(BeanVisuController).sfxService.play("menu-use-entry")
-              },
-              updateCustom: function() {
-                var value = clamp(Visu.settings.getValue("visu.audio.ost-volume"), 0.0, 1.0)
-                if (value == 1.0) {
-                  this.sprite.setAlpha(0.15)
-                } else {
-                  this.sprite.setAlpha(1.0)
+
+                Visu.settings.setValue("visu.audio.ost-volume", this.value / 100.0).save()
+                var sfx = Beans.get(BeanVisuController).sfxService.get("menu-move-cursor")
+                if (sfx == null) {
+                  return
                 }
+
+                var size = sfx.queue.size()
+                if (size == 0) {
+                  sfx.play()
+                } else {
+                  var sound = sfx.queue.tail().sound
+                  if (sound.getPosition() / sound.getDuration() > 0.5) {
+                    sfx.play()
+                  }
+                }
+              },
+              postRender: function() {
+                var label = Struct.get(this, "label")
+                if (label == null) {
+                  label = new UILabel({
+                    text: $"{string(int64(this.value * 1.0))}%",
+                    align: { v: VAlign.CENTER, h: HAlign.CENTER },
+                    font: "font_kodeo_mono_18_bold",
+                    color: VisuTheme.color.text,
+                    outline: true,
+                    outlineColor: VisuTheme.color.side,
+                    useScale: false,
+                  })
+                  Struct.set(this, "label", label)
+                }
+                
+                label.text = $"{string(int64(this.value * 1.0))}%"
+                label.render(
+                  this.context.area.getX() + this.area.getX() + (this.area.getWidth() / 2.0),
+                  this.context.area.getY() + this.area.getY() + (this.area.getHeight() / 2.0)
+                )
               }
             },
           },
         },
         {
-          name: "audio_menu-spin-select-entry_sfx-volume",
-          template: VisuComponents.get("menu-spin-select-entry"),
-          layout: VisuLayouts.get("menu-spin-select-entry"),
+          name: "audio_menu-slider-entry_sfx-volume",
+          template: VisuComponents.get("menu-slider-entry"),
+          layout: VisuLayouts.get("menu-slider-entry"),
           config: { 
             layout: { type: UILayoutType.VERTICAL },
             label: { text: "SFX volume" },
-            previous: { 
+            slider: {
+              value: round(Visu.settings.getValue("visu.audio.sfx-volume") * 100.0),
+              minValue: 0.0,
+              maxValue: 100.0,
+              snapValue: 1.0,
+              updatePosition: function(mouseX, mouseY) {
+                this.callback()
+              },
               callback: function() {
-                var value = clamp(Visu.settings.getValue("visu.audio.sfx-volume") - 0.05, 0.0, 1.0)
-                Visu.settings.setValue("visu.audio.sfx-volume", value).save()
-                Beans.get(BeanVisuController).sfxService.play("menu-use-entry")
-              },
-              updateCustom: function() {
-                var value = clamp(Visu.settings.getValue("visu.audio.sfx-volume"), 0.0, 1.0)
-                if (value == 0.0) {
-                  this.sprite.setAlpha(0.15)
-                } else {
-                  this.sprite.setAlpha(1.0)
+                var value = round(Visu.settings.getValue("visu.audio.sfx-volume") * 100.0)
+                if (this.value == value) {
+                  return
                 }
-              }
-            },
-            preview: {
-              label: {
-                text: "N/A"
-              },
-              updateCustom: function() {
-                var value = round(Visu.settings.getValue("visu.audio.sfx-volume") * 100)
-                this.label.text = $"{string(int64(value))}%"
-              },
-            },
-            next: { 
-              callback: function() {
-                var value = clamp(Visu.settings.getValue("visu.audio.sfx-volume") + 0.05, 0.0, 1.0)
-                Visu.settings.setValue("visu.audio.sfx-volume", value).save()
-                Beans.get(BeanVisuController).sfxService.play("menu-use-entry")
-              },
-              updateCustom: function() {
-                var value = clamp(Visu.settings.getValue("visu.audio.sfx-volume"), 0.0, 1.0)
-                if (value == 1.0) {
-                  this.sprite.setAlpha(0.15)
-                } else {
-                  this.sprite.setAlpha(1.0)
+
+                Visu.settings.setValue("visu.audio.sfx-volume", this.value / 100.0).save()
+                var sfx = Beans.get(BeanVisuController).sfxService.get("menu-move-cursor")
+                if (sfx == null) {
+                  return
                 }
+
+                var size = sfx.queue.size()
+                if (size == 0) {
+                  sfx.play()
+                } else {
+                  var sound = sfx.queue.tail().sound
+                  if (sound.getPosition() / sound.getDuration() > 0.5) {
+                    sfx.play()
+                  }
+                }
+              },
+              postRender: function() {
+                var label = Struct.get(this, "label")
+                if (label == null) {
+                  label = new UILabel({
+                    text: $"{string(int64(this.value * 1.0))}%",
+                    align: { v: VAlign.CENTER, h: HAlign.CENTER },
+                    font: "font_kodeo_mono_18_bold",
+                    color: VisuTheme.color.text,
+                    outline: true,
+                    outlineColor: VisuTheme.color.side,
+                    useScale: false,
+                  })
+                  Struct.set(this, "label", label)
+                }
+                
+                label.text = $"{string(int64(this.value * 1.0))}%"
+                label.render(
+                  this.context.area.getX() + this.area.getX() + (this.area.getWidth() / 2.0),
+                  this.context.area.getY() + this.area.getY() + (this.area.getHeight() / 2.0)
+                )
               }
             },
           },
@@ -2877,8 +2903,8 @@ function VisuMenu(_config = null) constructor {
             space: KeyboardKeyType.SPACE,
             enter: KeyboardKeyType.ENTER,
           }),
-          "keyUpdater": new PrioritizedPressedKeyUpdater(),
-          "playerKeyUpdater": new PrioritizedPressedKeyUpdater(),
+          "keyUpdater": new PrioritizedPressedKeyUpdater({ cooldown: 0.05 }),
+          "playerKeyUpdater": new PrioritizedPressedKeyUpdater({ cooldown: 0.05 }),
         }),
         scrollbarY: { align: HAlign.RIGHT },
         fetchViewHeight: function() {
@@ -3010,6 +3036,8 @@ function VisuMenu(_config = null) constructor {
                 type = "menu-button-input-entry"
               } else if (String.contains(component.name, "menu-spin-select-entry")) {
                 type = "menu-spin-select-entry"
+              } if (String.contains(component.name, "menu-slider-entry")) {
+                type = "menu-slider-entry"
               }
 
               switch (type) {
@@ -3033,6 +3061,19 @@ function VisuMenu(_config = null) constructor {
                     previous.callback()
                   }
                   break
+                case "menu-slider-entry":
+                  var slider = component.items.find(function(item, index, name) { 
+                    return String.contains(item.name, name) && Core.isType(Struct.get(item, "callback"), Callable)
+                  }, "slider")
+                  
+                  if (Optional.is(slider)) {
+                    slider.value = clamp(slider.value - slider.snapValue, slider.minValue, slider.maxValue)
+                    if (slider.store != null && value != slider.store.getValue()) {
+                      slider.store.set(slider.value)
+                    }
+                    slider.callback()
+                  }
+                  break
               }
             }
           }
@@ -3047,6 +3088,8 @@ function VisuMenu(_config = null) constructor {
                 type = "menu-button-input-entry"
               } else if (String.contains(component.name, "menu-spin-select-entry")) {
                 type = "menu-spin-select-entry"
+              } if (String.contains(component.name, "menu-slider-entry")) {
+                type = "menu-slider-entry"
               }
 
               switch (type) {
@@ -3070,6 +3113,19 @@ function VisuMenu(_config = null) constructor {
                     next.callback()
                   }
                   break
+                case "menu-slider-entry":
+                  var slider = component.items.find(function(item, index, name) { 
+                    return String.contains(item.name, name) && Core.isType(Struct.get(item, "callback"), Callable)
+                  }, "slider")
+                  
+                  if (Optional.is(slider)) {
+                    slider.value = clamp(slider.value + slider.snapValue, slider.minValue, slider.maxValue)
+                    if (slider.store != null && value != slider.store.getValue()) {
+                      slider.store.set(slider.value)
+                    }
+                    slider.callback()
+                  }
+                  break
               }
             }
           }
@@ -3088,6 +3144,8 @@ function VisuMenu(_config = null) constructor {
                 type = "menu-spin-select-entry"
               } else if (String.contains(component.name, "menu-keyboard-key-entry")) {
                 type = "menu-keyboard-key-entry"
+              } if (String.contains(component.name, "menu-slider-entry")) {
+                type = "menu-slider-entry"
               }
 
               switch (type) {
@@ -3111,6 +3169,8 @@ function VisuMenu(_config = null) constructor {
                   if (Optional.is(label)) {
                     label.callback()
                   }
+                  break
+                case "menu-slider-entry":
                   break
               }
             }

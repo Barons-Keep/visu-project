@@ -52,7 +52,7 @@ function TestSuite(json = {}) constructor {
     var result = this.results.get(this.testsPointer)
     if (this.testsPointer == this.resultsPointer) {
       var test = this.tests.get(this.testsPointer)
-      Logger.test("TestSuite", $"Run test {test}")
+      Logger.test("TestSuite", $"Run test {test.handler}")
       var task = Assert.isType(Callable.run(test.handler, test),
         Task, "TestSuite.update task must be type of task")
       executor.add(task)
@@ -62,7 +62,7 @@ function TestSuite(json = {}) constructor {
       this.resultsPointer++
     } else {
       result._stop = unixTimestamp
-      result.duration = result._stop - result._start
+      result.duration = (result._stop - result._start) * 1000.0
       switch (result.promise.status) {
         case PromiseStatus.REJECTED:
           this.finished = this.stopAfterFailure ? true : this.finished

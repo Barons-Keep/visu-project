@@ -120,6 +120,10 @@ global.__grid_track_event = {
         return
       }
 
+      Struct.get(data, "gr-area_h").reset()
+      Struct.get(data, "gr-area_h-size").reset()
+      Struct.get(data, "gr-area_v").reset()
+      Struct.get(data, "gr-area_v-size").reset()
       var gridService = controller.gridService
       var properties = gridService.properties
       var pump = gridService.dispatcher
@@ -251,6 +255,9 @@ global.__grid_track_event = {
         return
       }
 
+      Struct.get(data, "gr-c_amount").reset()
+      Struct.get(data, "gr-c_main-size").reset()
+      Struct.get(data, "gr-c_side-size").reset()
       var gridService = controller.gridService
       var properties = gridService.properties
       var pump = gridService.dispatcher
@@ -396,6 +403,9 @@ global.__grid_track_event = {
         return
       }
 
+      Struct.get(data, "gr-r_amount").reset()
+      Struct.get(data, "gr-r_main-size").reset()
+      Struct.get(data, "gr-r_side-size").reset()
       var gridService = controller.gridService
       var properties = gridService.properties
       var pump = gridService.dispatcher
@@ -566,6 +576,9 @@ global.__grid_track_event = {
         return
       }
 
+      Struct.get(data, "gr-cfg_spd").reset()
+      Struct.get(data, "gr-cfg_z").reset()
+      Struct.get(data, "gr-cfg_focus-grid-treshold").reset()
       var gridService = controller.gridService
       var properties = gridService.properties
       var pump = gridService.dispatcher

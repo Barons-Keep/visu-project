@@ -60,17 +60,19 @@ function UISliderHorizontal(name, json = null) {
     ///@param {Number} mouseY
     updateValue: new BindIntent(Assert.isType(Struct.getDefault(json, "updateValue", function(mouseX, mouseY) {
       var position = clamp((this.context.area.getX() + mouseX - this.context.area.getX() - this.area.getX()) / this.area.getWidth(), 0.0, 1.0)
-      if (this.snapValue > 0.0) {
-        position = (floor(position / this.snapValue) * this.snapValue)
-      }
-
       var length = abs(this.minValue - this.maxValue) * position
-      var value = clamp(this.minValue + length, this.minValue, this.maxValue)
-      if (value != this.value) {
-        this.updatePosition(mouseX, mouseY)
+      if (this.snapValue > 0.0) {
+        length = round(length / this.snapValue) * this.snapValue
       }
 
-      if (Optional.is(this.store) && value != this.store.getValue()) {
+      var value = clamp(this.minValue + length, this.minValue, this.maxValue)
+      if (this.store == null) {
+        if (value != this.value) {
+          this.value = value
+          this.updatePosition(mouseX, mouseY)
+        }
+      } else if (value != this.store.getValue()) {
+        this.updatePosition(mouseX, mouseY)
         this.store.set(value)
       }
     }), Callable)),
