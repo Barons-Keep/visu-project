@@ -24,7 +24,7 @@
   "visu.player.force-god-mode": false,
   "visu.manifest.load-brushes": true,
   "visu.manifest.parse-track-async": true,
-  "visu.manifest.parse-track-event-step": 32,
+  "visu.manifest.parse-track-event-step": 8,
   "visu.io.mouse-moved.cooldown": 3.0,
   "visu.files-service.dispatcher.limit": 1.0,
   "visu.player.force.tresholds": [ 0, 50, 125, 250 ],
