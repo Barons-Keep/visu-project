@@ -374,7 +374,7 @@ function _Core() constructor {
     }
   }
 
-  ///@return {Number}
+  ///@return {Number} in milliseconds
   static getCurrentUnixTimestamp = function() {
     if (this.unixEpochTimestamp == null) {
       var timezone = date_get_timezone()
@@ -382,8 +382,9 @@ function _Core() constructor {
       this.unixEpochTimestamp = date_create_datetime(1970, 1, 1, 0, 0, 0)
       date_set_timezone(timezone)
     }
-    
-    return floor(date_second_span(floor(this.unixEpochTimestamp), date_current_datetime()))
+
+    var seconds = date_second_span(floor(this.unixEpochTimestamp), date_current_datetime())
+    return floor(seconds * 1000.0)
   }
 }
 global.__Core = new _Core()

@@ -134,7 +134,7 @@ global.__VisuStyles = new Map(String, Callable, {
       colorHoverOver: VisuTheme.color.accentLight,
       colorHoverOut: VisuTheme.color.sideDark,
       backgroundAlpha: 0.75,
-      backgroundMargin: { top: 6, left: 6, bottom: 6, right: 3 },
+      backgroundMargin: { top: 6, left: 6, bottom: 6, right: 1 },
     },
     preview: {
       label: {
@@ -145,7 +145,7 @@ global.__VisuStyles = new Map(String, Callable, {
       },
       colorHoverOver: VisuTheme.color.accentLight,
       colorHoverOut: VisuTheme.color.sideDark,
-      backgroundMargin: { top: 6, left: 3, bottom: 6, right: 3 },
+      backgroundMargin: { top: 6, left: 0, bottom: 6, right: 0 },
       backgroundAlpha: 0.75,
     },
     next: {
@@ -155,7 +155,7 @@ global.__VisuStyles = new Map(String, Callable, {
       },
       colorHoverOver: VisuTheme.color.accentLight,
       colorHoverOut: VisuTheme.color.sideDark,
-      backgroundMargin: { top: 6, left: 3, bottom: 6, right: 6 },
+      backgroundMargin: { top: 6, left: 1, bottom: 6, right: 6 },
       backgroundAlpha: 0.75,
     },
   },

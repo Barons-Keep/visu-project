@@ -1,5 +1,13 @@
 ///@package io.alkapivo.visu.ui
 
+///@type {String}
+#macro VISU_MENU_BUTTON_INPUT_ENTRY_TRUE_TEXT " ON "
+
+
+///@type {String}
+#macro VISU_MENU_BUTTON_INPUT_ENTRY_FALSE_TEXT " OFF"
+
+
 ///@enum
 function _VisuMenuEntryEventType(): Enum() constructor {
   OPEN_NODE = "open-node"
@@ -8,6 +16,87 @@ function _VisuMenuEntryEventType(): Enum() constructor {
 }
 global.__VisuMenuEntryEventType = new _VisuMenuEntryEventType()
 #macro VisuMenuEntryEventType global.__VisuMenuEntryEventType
+
+
+///@param {String} sfxName
+function playCleanSFX(sfxName) {
+  var controller = Beans.get(BeanVisuController)
+  if (controller == null) {
+    return
+  }
+
+  var sfx = controller.sfxService.get(sfxName)
+  if (sfx == null) {
+    return
+  }
+
+  var size = sfx.queue.size()
+  if (size == 0) {
+    sfx.play()
+    return
+  }
+
+  var sound = sfx.queue.tail().sound
+  if (sound == null) {
+    return
+  }
+
+  if (sound.getPosition() / sound.getDuration() > 0.5) {
+    sfx.play()
+  }
+}
+
+
+///@return {Callable}
+function factoryPostRenderVisuMenuSliderEntry() {
+  return function() {
+    var label = Struct.get(this, "label")
+    if (label == null) {
+      label = new UILabel({
+        text: $"{string(int64(this.value))}",
+        align: { v: VAlign.CENTER, h: HAlign.CENTER },
+        font: "font_kodeo_mono_18_bold",
+        color: VisuTheme.color.text,
+        outline: true,
+        outlineColor: VisuTheme.color.side,
+        useScale: false,
+      })
+      Struct.set(this, "label", label)
+    }
+    
+    label.text = $"{string(int64(this.value))}"
+    label.render(
+      this.context.area.getX() + this.area.getX() + (this.area.getWidth() / 2.0),
+      this.context.area.getY() + this.area.getY() + (this.area.getHeight() / 2.0)
+    )
+  }
+}
+
+
+///@return {Callable}
+function factoryPostRenderVisuMenuSliderEntryPercentage() {
+  return function() {
+    var label = Struct.get(this, "label")
+    if (label == null) {
+      label = new UILabel({
+        text: $"{string(int64(this.value))}%",
+        align: { v: VAlign.CENTER, h: HAlign.CENTER },
+        font: "font_kodeo_mono_18_bold",
+        color: VisuTheme.color.text,
+        outline: true,
+        outlineColor: VisuTheme.color.side,
+        useScale: false,
+      })
+      Struct.set(this, "label", label)
+    }
+    
+    label.text = $"{string(int64(this.value))}%"
+    label.render(
+      this.context.area.getX() + this.area.getX() + (this.area.getWidth() / 2.0),
+      this.context.area.getY() + this.area.getY() + (this.area.getHeight() / 2.0)
+    )
+  }
+}
 
 
 ///@param {String} name
@@ -1159,14 +1248,14 @@ function VisuMenu(_config = null) constructor {
               },
             },
             input: {
-              label: { text: "Enabled" },
+              label: { text: VISU_MENU_BUTTON_INPUT_ENTRY_TRUE_TEXT },
               callback: function() {
                 var value = Visu.settings.getValue("visu.graphics.auto-resize")
                 Visu.settings.setValue("visu.graphics.auto-resize", !value).save()
               },
               updateCustom: function() {
-                this.label.text = Visu.settings.getValue("visu.graphics.auto-resize") ? "Enabled" : "Disabled"
-                this.label.alpha = this.label.text == "Enabled" ? 1.0 : 0.3
+                this.label.text = Visu.settings.getValue("visu.graphics.auto-resize") ? VISU_MENU_BUTTON_INPUT_ENTRY_TRUE_TEXT : VISU_MENU_BUTTON_INPUT_ENTRY_FALSE_TEXT
+                this.label.alpha = this.label.text == VISU_MENU_BUTTON_INPUT_ENTRY_TRUE_TEXT ? 1.0 : 0.3
               },
               onMouseReleasedLeft: function() {
                 this.callback()
@@ -1232,8 +1321,8 @@ function VisuMenu(_config = null) constructor {
                 }
               },
               updateCustom: function() {
-                this.label.text = Beans.get(BeanVisuController).displayService.getFullscreen() ? "Enabled" : "Disabled"
-                this.label.alpha = this.label.text == "Enabled" ? 1.0 : 0.3
+                this.label.text = Beans.get(BeanVisuController).displayService.getFullscreen() ? VISU_MENU_BUTTON_INPUT_ENTRY_TRUE_TEXT : VISU_MENU_BUTTON_INPUT_ENTRY_FALSE_TEXT
+                this.label.alpha = this.label.text == VISU_MENU_BUTTON_INPUT_ENTRY_TRUE_TEXT ? 1.0 : 0.3
               },
               onMouseReleasedLeft: function() {
                 this.callback()
@@ -1270,8 +1359,8 @@ function VisuMenu(_config = null) constructor {
                 Beans.get(BeanVisuController).sfxService.play("menu-use-entry")
               },
               updateCustom: function() {
-                this.label.text = Beans.get(BeanVisuController).displayService.getBorderlessWindow() ? "Enabled" : "Disabled"
-                this.label.alpha = this.label.text == "Enabled" ? 1.0 : 0.3
+                this.label.text = Beans.get(BeanVisuController).displayService.getBorderlessWindow() ? VISU_MENU_BUTTON_INPUT_ENTRY_TRUE_TEXT : VISU_MENU_BUTTON_INPUT_ENTRY_FALSE_TEXT
+                this.label.alpha = this.label.text == VISU_MENU_BUTTON_INPUT_ENTRY_TRUE_TEXT ? 1.0 : 0.3
               },
               onMouseReleasedLeft: function() {
                 this.callback()
@@ -1298,7 +1387,7 @@ function VisuMenu(_config = null) constructor {
               },
             },
             input: {
-              label: { text: "Enabled" },
+              label: { text: VISU_MENU_BUTTON_INPUT_ENTRY_TRUE_TEXT },
               callback: function() {
                 var value = Visu.settings.getValue("visu.graphics.vsync")
                 Visu.settings.setValue("visu.graphics.vsync", !value).save()
@@ -1306,8 +1395,8 @@ function VisuMenu(_config = null) constructor {
                 Beans.get(BeanVisuController).sfxService.play("menu-use-entry")
               },
               updateCustom: function() {
-                this.label.text = Visu.settings.getValue("visu.graphics.vsync") ? "Enabled" : "Disabled"
-                this.label.alpha = this.label.text == "Enabled" ? 1.0 : 0.3
+                this.label.text = Visu.settings.getValue("visu.graphics.vsync") ? VISU_MENU_BUTTON_INPUT_ENTRY_TRUE_TEXT : VISU_MENU_BUTTON_INPUT_ENTRY_FALSE_TEXT
+                this.label.alpha = this.label.text == VISU_MENU_BUTTON_INPUT_ENTRY_TRUE_TEXT ? 1.0 : 0.3
               },
               onMouseReleasedLeft: function() {
                 this.callback()
@@ -1333,15 +1422,15 @@ function VisuMenu(_config = null) constructor {
               },
             },
             input: {
-              label: { text: "Enabled" },
+              label: { text: VISU_MENU_BUTTON_INPUT_ENTRY_TRUE_TEXT },
               callback: function() {
                 var value = Visu.settings.getValue("visu.graphics.bkt-glitch")
                 Visu.settings.setValue("visu.graphics.bkt-glitch", !value).save()
                 Beans.get(BeanVisuController).sfxService.play("menu-use-entry")
               },
               updateCustom: function() {
-                this.label.text = Visu.settings.getValue("visu.graphics.bkt-glitch") ? "Enabled" : "Disabled"
-                this.label.alpha = this.label.text == "Enabled" ? 1.0 : 0.3
+                this.label.text = Visu.settings.getValue("visu.graphics.bkt-glitch") ? VISU_MENU_BUTTON_INPUT_ENTRY_TRUE_TEXT : VISU_MENU_BUTTON_INPUT_ENTRY_FALSE_TEXT
+                this.label.alpha = this.label.text == VISU_MENU_BUTTON_INPUT_ENTRY_TRUE_TEXT ? 1.0 : 0.3
               },
               onMouseReleasedLeft: function() {
                 this.callback()
@@ -1367,15 +1456,15 @@ function VisuMenu(_config = null) constructor {
               },
             },
             input: {
-              label: { text: "Enabled" },
+              label: { text: VISU_MENU_BUTTON_INPUT_ENTRY_TRUE_TEXT },
               callback: function() {
                 var value = Visu.settings.getValue("visu.graphics.particle")
                 Visu.settings.setValue("visu.graphics.particle", !value).save()
                 Beans.get(BeanVisuController).sfxService.play("menu-use-entry")
               },
               updateCustom: function() {
-                this.label.text = Visu.settings.getValue("visu.graphics.particle") ? "Enabled" : "Disabled"
-                this.label.alpha = this.label.text == "Enabled" ? 1.0 : 0.3
+                this.label.text = Visu.settings.getValue("visu.graphics.particle") ? VISU_MENU_BUTTON_INPUT_ENTRY_TRUE_TEXT : VISU_MENU_BUTTON_INPUT_ENTRY_FALSE_TEXT
+                this.label.alpha = this.label.text == VISU_MENU_BUTTON_INPUT_ENTRY_TRUE_TEXT ? 1.0 : 0.3
               },
               onMouseReleasedLeft: function() {
                 this.callback()
@@ -1401,15 +1490,15 @@ function VisuMenu(_config = null) constructor {
               },
             },
             input: {
-              label: { text: "Enabled" },
+              label: { text: VISU_MENU_BUTTON_INPUT_ENTRY_TRUE_TEXT },
               callback: function() {
                 var value = Visu.settings.getValue("visu.graphics.bkg-tx")
                 Visu.settings.setValue("visu.graphics.bkg-tx", !value).save()
                 Beans.get(BeanVisuController).sfxService.play("menu-use-entry")
               },
               updateCustom: function() {
-                this.label.text = Visu.settings.getValue("visu.graphics.bkg-tx") ? "Enabled" : "Disabled"
-                this.label.alpha = this.label.text == "Enabled" ? 1.0 : 0.3
+                this.label.text = Visu.settings.getValue("visu.graphics.bkg-tx") ? VISU_MENU_BUTTON_INPUT_ENTRY_TRUE_TEXT : VISU_MENU_BUTTON_INPUT_ENTRY_FALSE_TEXT
+                this.label.alpha = this.label.text == VISU_MENU_BUTTON_INPUT_ENTRY_TRUE_TEXT ? 1.0 : 0.3
               },
               onMouseReleasedLeft: function() {
                 this.callback()
@@ -1435,15 +1524,15 @@ function VisuMenu(_config = null) constructor {
               },
             },
             input: {
-              label: { text: "Enabled" },
+              label: { text: VISU_MENU_BUTTON_INPUT_ENTRY_TRUE_TEXT },
               callback: function() {
                 var value = Visu.settings.getValue("visu.graphics.frg-tx")
                 Visu.settings.setValue("visu.graphics.frg-tx", !value).save()
                 Beans.get(BeanVisuController).sfxService.play("menu-use-entry")
               },
               updateCustom: function() {
-                this.label.text = Visu.settings.getValue("visu.graphics.frg-tx") ? "Enabled" : "Disabled"
-                this.label.alpha = this.label.text == "Enabled" ? 1.0 : 0.3
+                this.label.text = Visu.settings.getValue("visu.graphics.frg-tx") ? VISU_MENU_BUTTON_INPUT_ENTRY_TRUE_TEXT : VISU_MENU_BUTTON_INPUT_ENTRY_FALSE_TEXT
+                this.label.alpha = this.label.text == VISU_MENU_BUTTON_INPUT_ENTRY_TRUE_TEXT ? 1.0 : 0.3
               },
               onMouseReleasedLeft: function() {
                 this.callback()
@@ -1535,15 +1624,15 @@ function VisuMenu(_config = null) constructor {
               },
             },
             input: {
-              label: { text: "Enabled" },
+              label: { text: VISU_MENU_BUTTON_INPUT_ENTRY_TRUE_TEXT },
               callback: function() {
                 var value = Visu.settings.getValue("visu.graphics.bkg-shaders")
                 Visu.settings.setValue("visu.graphics.bkg-shaders", !value).save()
                 Beans.get(BeanVisuController).sfxService.play("menu-use-entry")
               },
               updateCustom: function() {
-                this.label.text = Visu.settings.getValue("visu.graphics.bkg-shaders") ? "Enabled" : "Disabled"
-                this.label.alpha = this.label.text == "Enabled" ? 1.0 : 0.3
+                this.label.text = Visu.settings.getValue("visu.graphics.bkg-shaders") ? VISU_MENU_BUTTON_INPUT_ENTRY_TRUE_TEXT : VISU_MENU_BUTTON_INPUT_ENTRY_FALSE_TEXT
+                this.label.alpha = this.label.text == VISU_MENU_BUTTON_INPUT_ENTRY_TRUE_TEXT ? 1.0 : 0.3
               },
               onMouseReleasedLeft: function() {
                 this.callback()
@@ -1569,15 +1658,15 @@ function VisuMenu(_config = null) constructor {
               },
             },
             input: {
-              label: { text: "Enabled" },
+              label: { text: VISU_MENU_BUTTON_INPUT_ENTRY_TRUE_TEXT },
               callback: function() {
                 var value = Visu.settings.getValue("visu.graphics.main-shaders")
                 Visu.settings.setValue("visu.graphics.main-shaders", !value).save()
                 Beans.get(BeanVisuController).sfxService.play("menu-use-entry")
               },
               updateCustom: function() {
-                this.label.text = Visu.settings.getValue("visu.graphics.main-shaders") ? "Enabled" : "Disabled"
-                this.label.alpha = this.label.text == "Enabled" ? 1.0 : 0.3
+                this.label.text = Visu.settings.getValue("visu.graphics.main-shaders") ? VISU_MENU_BUTTON_INPUT_ENTRY_TRUE_TEXT : VISU_MENU_BUTTON_INPUT_ENTRY_FALSE_TEXT
+                this.label.alpha = this.label.text == VISU_MENU_BUTTON_INPUT_ENTRY_TRUE_TEXT ? 1.0 : 0.3
               },
               onMouseReleasedLeft: function() {
                 this.callback()
@@ -1603,15 +1692,15 @@ function VisuMenu(_config = null) constructor {
               },
             },
             input: {
-              label: { text: "Enabled" },
+              label: { text: VISU_MENU_BUTTON_INPUT_ENTRY_TRUE_TEXT },
               callback: function() {
                 var value = Visu.settings.getValue("visu.graphics.combined-shaders")
                 Visu.settings.setValue("visu.graphics.combined-shaders", !value).save()
                 Beans.get(BeanVisuController).sfxService.play("menu-use-entry")
               },
               updateCustom: function() {
-                this.label.text = Visu.settings.getValue("visu.graphics.combined-shaders") ? "Enabled" : "Disabled"
-                this.label.alpha = this.label.text == "Enabled" ? 1.0 : 0.3
+                this.label.text = Visu.settings.getValue("visu.graphics.combined-shaders") ? VISU_MENU_BUTTON_INPUT_ENTRY_TRUE_TEXT : VISU_MENU_BUTTON_INPUT_ENTRY_FALSE_TEXT
+                this.label.alpha = this.label.text == VISU_MENU_BUTTON_INPUT_ENTRY_TRUE_TEXT ? 1.0 : 0.3
               },
               onMouseReleasedLeft: function() {
                 this.callback()
@@ -1620,98 +1709,58 @@ function VisuMenu(_config = null) constructor {
           }
         },
         {
-          name: "graphics_menu-spin-select-entry_shaders-limit",
-          template: VisuComponents.get("menu-spin-select-entry"),
-          layout: VisuLayouts.get("menu-spin-select-entry"),
+          name: "graphics_menu-slider-entry_shaders-limit",
+          template: VisuComponents.get("menu-slider-entry"),
+          layout: VisuLayouts.get("menu-slider-entry"),
           config: { 
             layout: { type: UILayoutType.VERTICAL },
             label: { text: "Max simultaneous shaders" },
-            previous: { 
+            slider: {
+              value: round(Visu.settings.getValue("visu.graphics.shaders-limit")),
+              minValue: 0.0,
+              maxValue: DEFAULT_SHADER_PIPELINE_LIMIT,
+              snapValue: 1.0,
+              updatePosition: function(mouseX, mouseY) {
+                this.callback()
+              },
               callback: function() {
-                var value = clamp(int64(Visu.settings.getValue("visu.graphics.shaders-limit") - 1), 1, DEFAULT_SHADER_PIPELINE_LIMIT)
-                Visu.settings.setValue("visu.graphics.shaders-limit", value).save()
-                Beans.get(BeanVisuController).sfxService.play("menu-use-entry")
-              },
-              updateCustom: function() {
-              var value = clamp(int64(Visu.settings.getValue("visu.graphics.shaders-limit")), 1, DEFAULT_SHADER_PIPELINE_LIMIT)
-                if (value == 1) {
-                  this.sprite.setAlpha(0.15)
-                } else {
-                  this.sprite.setAlpha(1.0)
+                var value = round(Visu.settings.getValue("visu.graphics.shaders-limit"))
+                if (this.value == value) {
+                  return
                 }
-              }
-            },
-            preview: {
-              label: {
-                text: string(int64(Visu.settings.getValue("visu.graphics.shaders-limit")))
+
+                Visu.settings.setValue("visu.graphics.shaders-limit", this.value).save()
+                playCleanSFX("menu-move-cursor")
               },
-              updateCustom: function() { 
-                var value = Visu.settings.getValue("visu.graphics.shaders-limit")
-                this.label.text = string(int64(value))
-              },
-            },
-            next: { 
-              callback: function() {
-                var value = clamp(int64(Visu.settings.getValue("visu.graphics.shaders-limit") + 1), 1, DEFAULT_SHADER_PIPELINE_LIMIT)
-                Visu.settings.setValue("visu.graphics.shaders-limit", value).save()
-                Beans.get(BeanVisuController).sfxService.play("menu-use-entry")
-              },
-              updateCustom: function() {
-                var value = clamp(int64(Visu.settings.getValue("visu.graphics.shaders-limit")), 1, DEFAULT_SHADER_PIPELINE_LIMIT)
-                if (value == DEFAULT_SHADER_PIPELINE_LIMIT) {
-                  this.sprite.setAlpha(0.15)
-                } else {
-                  this.sprite.setAlpha(1.0)
-                }
-              }
+              postRender: factoryPostRenderVisuMenuSliderEntry(),
             },
           },
         },
         {
-          name: "graphics_menu-spin-select-entry_shader-quality",
-          template: VisuComponents.get("menu-spin-select-entry"),
-          layout: VisuLayouts.get("menu-spin-select-entry"),
+          name: "graphics_menu-slider-entry_shader-quality",
+          template: VisuComponents.get("menu-slider-entry"),
+          layout: VisuLayouts.get("menu-slider-entry"),
           config: { 
             layout: { type: UILayoutType.VERTICAL },
             label: { text: "Shaders quality" },
-            previous: { 
+            slider: {
+              value: round(Visu.settings.getValue("visu.graphics.shader-quality") * 100.0),
+              minValue: 1.0,
+              maxValue: 100.0,
+              snapValue: 1.0,
+              updatePosition: function(mouseX, mouseY) {
+                this.callback()
+              },
               callback: function() {
-                var value = clamp(Visu.settings.getValue("visu.graphics.shader-quality") - 0.1, 0.1, 1.0)
-                Visu.settings.setValue("visu.graphics.shader-quality", value).save()
-                Beans.get(BeanVisuController).sfxService.play("menu-use-entry")
-              },
-              updateCustom: function() {
-                var value = clamp(Visu.settings.getValue("visu.graphics.shader-quality"), 0.1, 1.0)
-                if (value == 0.1) {
-                  this.sprite.setAlpha(0.15)
-                } else {
-                  this.sprite.setAlpha(1.0)
+                var value = round(Visu.settings.getValue("visu.graphics.shader-quality") * 100.0)
+                if (this.value == value) {
+                  return
                 }
-              }
-            },
-            preview: {
-              label: {
-                text: string(int64(round(Visu.settings.getValue("visu.graphics.shader-quality") * 10)))
+
+                Visu.settings.setValue("visu.graphics.shader-quality", this.value / 100.0).save()
+                playCleanSFX("menu-move-cursor")
               },
-              updateCustom: function() {
-                var value = round(Visu.settings.getValue("visu.graphics.shader-quality") * 10)
-                this.label.text = $"{string(int64(value * 10))}%"
-              },
-            },
-            next: { 
-              callback: function() {
-                var value = clamp(Visu.settings.getValue("visu.graphics.shader-quality") + 0.1, 0.1, 1.0)
-                Visu.settings.setValue("visu.graphics.shader-quality", value).save()
-                Beans.get(BeanVisuController).sfxService.play("menu-use-entry")
-              },
-              updateCustom: function() {
-                var value = clamp(Visu.settings.getValue("visu.graphics.shader-quality"), 0.1, 1.0)
-                if (value == 1.0) {
-                  this.sprite.setAlpha(0.15)
-                } else {
-                  this.sprite.setAlpha(1.0)
-                }
-              }
+              postRender: factoryPostRenderVisuMenuSliderEntryPercentage(),
             },
           },
         },
@@ -1787,42 +1836,9 @@ function VisuMenu(_config = null) constructor {
                 }
 
                 Visu.settings.setValue("visu.audio.ost-volume", this.value / 100.0).save()
-                var sfx = Beans.get(BeanVisuController).sfxService.get("menu-move-cursor")
-                if (sfx == null) {
-                  return
-                }
-
-                var size = sfx.queue.size()
-                if (size == 0) {
-                  sfx.play()
-                } else {
-                  var sound = sfx.queue.tail().sound
-                  if (sound.getPosition() / sound.getDuration() > 0.5) {
-                    sfx.play()
-                  }
-                }
+                playCleanSFX("menu-move-cursor")
               },
-              postRender: function() {
-                var label = Struct.get(this, "label")
-                if (label == null) {
-                  label = new UILabel({
-                    text: $"{string(int64(this.value * 1.0))}%",
-                    align: { v: VAlign.CENTER, h: HAlign.CENTER },
-                    font: "font_kodeo_mono_18_bold",
-                    color: VisuTheme.color.text,
-                    outline: true,
-                    outlineColor: VisuTheme.color.side,
-                    useScale: false,
-                  })
-                  Struct.set(this, "label", label)
-                }
-                
-                label.text = $"{string(int64(this.value * 1.0))}%"
-                label.render(
-                  this.context.area.getX() + this.area.getX() + (this.area.getWidth() / 2.0),
-                  this.context.area.getY() + this.area.getY() + (this.area.getHeight() / 2.0)
-                )
-              }
+              postRender: factoryPostRenderVisuMenuSliderEntryPercentage(),
             },
           },
         },
@@ -1848,42 +1864,9 @@ function VisuMenu(_config = null) constructor {
                 }
 
                 Visu.settings.setValue("visu.audio.sfx-volume", this.value / 100.0).save()
-                var sfx = Beans.get(BeanVisuController).sfxService.get("menu-move-cursor")
-                if (sfx == null) {
-                  return
-                }
-
-                var size = sfx.queue.size()
-                if (size == 0) {
-                  sfx.play()
-                } else {
-                  var sound = sfx.queue.tail().sound
-                  if (sound.getPosition() / sound.getDuration() > 0.5) {
-                    sfx.play()
-                  }
-                }
+                playCleanSFX("menu-move-cursor")
               },
-              postRender: function() {
-                var label = Struct.get(this, "label")
-                if (label == null) {
-                  label = new UILabel({
-                    text: $"{string(int64(this.value * 1.0))}%",
-                    align: { v: VAlign.CENTER, h: HAlign.CENTER },
-                    font: "font_kodeo_mono_18_bold",
-                    color: VisuTheme.color.text,
-                    outline: true,
-                    outlineColor: VisuTheme.color.side,
-                    useScale: false,
-                  })
-                  Struct.set(this, "label", label)
-                }
-                
-                label.text = $"{string(int64(this.value * 1.0))}%"
-                label.render(
-                  this.context.area.getX() + this.area.getX() + (this.area.getWidth() / 2.0),
-                  this.context.area.getY() + this.area.getY() + (this.area.getHeight() / 2.0)
-                )
-              }
+              postRender: factoryPostRenderVisuMenuSliderEntryPercentage(),
             },
           },
         },
@@ -1955,15 +1938,15 @@ function VisuMenu(_config = null) constructor {
               },
             },
             input: {
-              label: { text: "Enabled" },
+              label: { text: VISU_MENU_BUTTON_INPUT_ENTRY_TRUE_TEXT },
               callback: function() {
                 var value = Visu.settings.getValue("visu.interface.render-hud")
                 Visu.settings.setValue("visu.interface.render-hud", !value).save()
                 Beans.get(BeanVisuController).sfxService.play("menu-use-entry")
               },
               updateCustom: function() {
-                this.label.text = Visu.settings.getValue("visu.interface.render-hud") ? "Enabled" : "Disabled"
-                this.label.alpha = this.label.text == "Enabled" ? 1.0 : 0.3
+                this.label.text = Visu.settings.getValue("visu.interface.render-hud") ? VISU_MENU_BUTTON_INPUT_ENTRY_TRUE_TEXT : VISU_MENU_BUTTON_INPUT_ENTRY_FALSE_TEXT
+                this.label.alpha = this.label.text == VISU_MENU_BUTTON_INPUT_ENTRY_TRUE_TEXT ? 1.0 : 0.3
               },
               onMouseReleasedLeft: function() {
                 this.callback()
@@ -2018,15 +2001,15 @@ function VisuMenu(_config = null) constructor {
               },
             },
             input: {
-              label: { text: "Enabled" },
+              label: { text: VISU_MENU_BUTTON_INPUT_ENTRY_TRUE_TEXT },
               callback: function() {
                 var value = Visu.settings.getValue("visu.interface.player-hint")
                 Visu.settings.setValue("visu.interface.player-hint", !value).save()
                 Beans.get(BeanVisuController).sfxService.play("menu-use-entry")
               },
               updateCustom: function() {
-                this.label.text = Visu.settings.getValue("visu.interface.player-hint") ? "Enabled" : "Disabled"
-                this.label.alpha = this.label.text == "Enabled" ? 1.0 : 0.3
+                this.label.text = Visu.settings.getValue("visu.interface.player-hint") ? VISU_MENU_BUTTON_INPUT_ENTRY_TRUE_TEXT : VISU_MENU_BUTTON_INPUT_ENTRY_FALSE_TEXT
+                this.label.alpha = this.label.text == VISU_MENU_BUTTON_INPUT_ENTRY_TRUE_TEXT ? 1.0 : 0.3
               },
               onMouseReleasedLeft: function() {
                 this.callback()
@@ -2091,38 +2074,32 @@ function VisuMenu(_config = null) constructor {
             },
           },
         },
-                {
-          name: "gameplay_menu-spin-select-entry_scale-gui",
-          template: VisuComponents.get("menu-spin-select-entry"),
-          layout: VisuLayouts.get("menu-spin-select-entry"),
+        {
+          name: "gameplay_menu-slider-entry_scale-gui",
+          template: VisuComponents.get("menu-slider-entry"),
+          layout: VisuLayouts.get("menu-slider-entry"),
           config: { 
             layout: { type: UILayoutType.VERTICAL },
             label: { text: "GUI scale" },
-            previous: { 
+            slider: {
+              value: round(Visu.settings.getValue("visu.interface.scale") * 100.0),
+              minValue: 50.0,
+              maxValue: 400.0,
+              snapValue: 1.0,
+              updatePosition: function(mouseX, mouseY) {
+                this.callback()
+              },
               callback: function() {
-                var scaleIntent = Struct.getIfType(this.context, "scaleIntent", Number, Visu.settings.getValue("visu.interface.scale"))
-                var value = clamp(scaleIntent - 0.05, 0.5, 4.0)
-                Struct.set(this.context, "scaleIntent", value)
-                Beans.get(BeanVisuController).sfxService.play("menu-use-entry")
+                var value = round(Struct.getIfType(this.context, "scaleIntent", Number, Visu.settings.getValue("visu.interface.scale")) * 100.0)
+                if (this.value == value) {
+                  return
+                }
+
+                Visu.settings.setValue("visu.interface.scale", this.value / 100.0).save()
+                Struct.set(this.context, "scaleIntent", this.value / 100.0)
+                playCleanSFX("menu-move-cursor")
               },
-            },
-            preview: {
-              label: {
-                text: "N/A"
-              },
-              updateCustom: function() {
-                var scaleIntent = Struct.getIfType(this.context, "scaleIntent", Number, Visu.settings.getValue("visu.interface.scale"))
-                Struct.set(this.context, "scaleIntent", scaleIntent)
-                this.label.text = $"{string(floor(scaleIntent * 100))}%"
-              },
-            },
-            next: { 
-              callback: function() {
-                var scaleIntent = Struct.getIfType(this.context, "scaleIntent", Number, Visu.settings.getValue("visu.interface.scale"))
-                var value = clamp(scaleIntent + 0.05, 0.5, 4.0)
-                Struct.set(this.context, "scaleIntent", value)
-                Beans.get(BeanVisuController).sfxService.play("menu-use-entry")
-              },
+              postRender: factoryPostRenderVisuMenuSliderEntryPercentage(),
             },
           },
         },
@@ -2314,7 +2291,7 @@ function VisuMenu(_config = null) constructor {
               },
             },
             input: {
-              label: { text: "Enabled" },
+              label: { text: VISU_MENU_BUTTON_INPUT_ENTRY_TRUE_TEXT },
               callback: function() {
                 var value = !is_debug_overlay_open()
                 Visu.settings.setValue("visu.debug", value).save()
@@ -2322,8 +2299,8 @@ function VisuMenu(_config = null) constructor {
                 Beans.get(BeanVisuController).sfxService.play("menu-use-entry")
               },
               updateCustom: function() {
-                this.label.text = is_debug_overlay_open() ? "Enabled" : "Disabled"
-                this.label.alpha = this.label.text == "Enabled" ? 1.0 : 0.3
+                this.label.text = is_debug_overlay_open() ? VISU_MENU_BUTTON_INPUT_ENTRY_TRUE_TEXT : VISU_MENU_BUTTON_INPUT_ENTRY_FALSE_TEXT
+                this.label.alpha = this.label.text == VISU_MENU_BUTTON_INPUT_ENTRY_TRUE_TEXT ? 1.0 : 0.3
               },
               onMouseReleasedLeft: function() {
                 this.callback()
@@ -2349,15 +2326,15 @@ function VisuMenu(_config = null) constructor {
               },
             },
             input: {
-              label: { text: "Enabled" },
+              label: { text: VISU_MENU_BUTTON_INPUT_ENTRY_TRUE_TEXT },
               callback: function() {
                 var value = Visu.settings.getValue("visu.god-mode")
                 Visu.settings.setValue("visu.god-mode", !value).save()
                 Beans.get(BeanVisuController).sfxService.play("menu-use-entry")
               },
               updateCustom: function() {
-                this.label.text = Visu.settings.getValue("visu.god-mode") ? "Enabled" : "Disabled"
-                this.label.alpha = this.label.text == "Enabled" ? 1.0 : 0.3
+                this.label.text = Visu.settings.getValue("visu.god-mode") ? VISU_MENU_BUTTON_INPUT_ENTRY_TRUE_TEXT : VISU_MENU_BUTTON_INPUT_ENTRY_FALSE_TEXT
+                this.label.alpha = this.label.text == VISU_MENU_BUTTON_INPUT_ENTRY_TRUE_TEXT ? 1.0 : 0.3
               },
               onMouseReleasedLeft: function() {
                 this.callback()
@@ -2383,15 +2360,15 @@ function VisuMenu(_config = null) constructor {
               },
             },
             input: {
-              label: { text: "Enabled" },
+              label: { text: VISU_MENU_BUTTON_INPUT_ENTRY_TRUE_TEXT },
               callback: function() {
                 var value = Visu.settings.getValue("visu.debug.render-entities-mask")
                 Visu.settings.setValue("visu.debug.render-entities-mask", !value).save()
                 Beans.get(BeanVisuController).sfxService.play("menu-use-entry")
               },
               updateCustom: function() {
-                this.label.text = Visu.settings.getValue("visu.debug.render-entities-mask") ? "Enabled" : "Disabled"
-                this.label.alpha = this.label.text == "Enabled" ? 1.0 : 0.3
+                this.label.text = Visu.settings.getValue("visu.debug.render-entities-mask") ? VISU_MENU_BUTTON_INPUT_ENTRY_TRUE_TEXT : VISU_MENU_BUTTON_INPUT_ENTRY_FALSE_TEXT
+                this.label.alpha = this.label.text == VISU_MENU_BUTTON_INPUT_ENTRY_TRUE_TEXT ? 1.0 : 0.3
               },
               onMouseReleasedLeft: function() {
                 this.callback()
@@ -2417,15 +2394,15 @@ function VisuMenu(_config = null) constructor {
               },
             },
             input: {
-              label: { text: "Enabled" },
+              label: { text: VISU_MENU_BUTTON_INPUT_ENTRY_TRUE_TEXT },
               callback: function() {
                 var value = Visu.settings.getValue("visu.debug.render-debug-chunks")
                 Visu.settings.setValue("visu.debug.render-debug-chunks", !value).save()
                 Beans.get(BeanVisuController).sfxService.play("menu-use-entry")
               },
               updateCustom: function() {
-                this.label.text = Visu.settings.getValue("visu.debug.render-debug-chunks") ? "Enabled" : "Disabled"
-                this.label.alpha = this.label.text == "Enabled" ? 1.0 : 0.3
+                this.label.text = Visu.settings.getValue("visu.debug.render-debug-chunks") ? VISU_MENU_BUTTON_INPUT_ENTRY_TRUE_TEXT : VISU_MENU_BUTTON_INPUT_ENTRY_FALSE_TEXT
+                this.label.alpha = this.label.text == VISU_MENU_BUTTON_INPUT_ENTRY_TRUE_TEXT ? 1.0 : 0.3
               },
               onMouseReleasedLeft: function() {
                 this.callback()
@@ -2451,15 +2428,15 @@ function VisuMenu(_config = null) constructor {
               },
             },
             input: {
-              label: { text: "Enabled" },
+              label: { text: VISU_MENU_BUTTON_INPUT_ENTRY_TRUE_TEXT },
               callback: function() {
                 var value = Visu.settings.getValue("visu.debug.render-surfaces")
                 Visu.settings.setValue("visu.debug.render-surfaces", !value).save()
                 Beans.get(BeanVisuController).sfxService.play("menu-use-entry")
               },
               updateCustom: function() {
-                this.label.text = Visu.settings.getValue("visu.debug.render-surfaces") ? "Enabled" : "Disabled"
-                this.label.alpha = this.label.text == "Enabled" ? 1.0 : 0.3
+                this.label.text = Visu.settings.getValue("visu.debug.render-surfaces") ? VISU_MENU_BUTTON_INPUT_ENTRY_TRUE_TEXT : VISU_MENU_BUTTON_INPUT_ENTRY_FALSE_TEXT
+                this.label.alpha = this.label.text == VISU_MENU_BUTTON_INPUT_ENTRY_TRUE_TEXT ? 1.0 : 0.3
               },
               onMouseReleasedLeft: function() {
                 this.callback()
@@ -2494,7 +2471,7 @@ function VisuMenu(_config = null) constructor {
               },
             },
             input: {
-              label: { text: "Enabled" },
+              label: { text: VISU_MENU_BUTTON_INPUT_ENTRY_TRUE_TEXT },
               callback: function() {
                 var value = false
                 var controller = Beans.get(BeanVisuController)
@@ -2510,8 +2487,8 @@ function VisuMenu(_config = null) constructor {
                 controller.sfxService.play("menu-use-entry")
               },
               updateCustom: function() {
-                this.label.text = Beans.get(BeanVisuController).server.isRunning() ? "Enabled" : "Disabled"
-                this.label.alpha = this.label.text == "Enabled" ? 1.0 : 0.3
+                this.label.text = Beans.get(BeanVisuController).server.isRunning() ? VISU_MENU_BUTTON_INPUT_ENTRY_TRUE_TEXT : VISU_MENU_BUTTON_INPUT_ENTRY_FALSE_TEXT
+                this.label.alpha = this.label.text == VISU_MENU_BUTTON_INPUT_ENTRY_TRUE_TEXT ? 1.0 : 0.3
               },
               onMouseReleasedLeft: function() {
                 this.callback()
@@ -2692,8 +2669,8 @@ function VisuMenu(_config = null) constructor {
           input: {
             label: { text: "" },
             updateCustom: function() {
-              this.label.text = Optional.is(Beans.get(Visu.modules().editor.controller)) ? "Enabled" : "Disabled"
-              this.label.alpha = this.label.text == "Enabled" ? 1.0 : 0.3
+              this.label.text = Optional.is(Beans.get(Visu.modules().editor.controller)) ? VISU_MENU_BUTTON_INPUT_ENTRY_TRUE_TEXT : VISU_MENU_BUTTON_INPUT_ENTRY_FALSE_TEXT
+              this.label.alpha = this.label.text == VISU_MENU_BUTTON_INPUT_ENTRY_TRUE_TEXT ? 1.0 : 0.3
             },
             callback: function() {
               Beans.get(BeanVisuController).sfxService.play("menu-use-entry")
@@ -2817,9 +2794,14 @@ function VisuMenu(_config = null) constructor {
         renderDefault: new BindIntent(Callable
           .run(UIUtil.renderTemplates
           .get("renderDefaultNoSurface"))),
+        __render: function() {
+          var uiAlpha = clamp(this.state.get("uiAlpha") + DELTA_TIME * this.state.get("uiAlphaFactor"), 0.0, 1.0)
+          this.state.set("uiAlpha", uiAlpha)
+          this.renderDefault()
+        },
         render: function() {
           var uiAlpha = clamp(this.state.get("uiAlpha") + DELTA_TIME * this.state.get("uiAlphaFactor"), 0.0, 1.0)
-          //var uiAlpha = clamp(this.state.get("uiAlpha") + DeltaTime.apply(this.state.get("uiAlphaFactor")), 0.0, 1.0)
+          //var uiAlpha = clamp(this.state.get("uiAlpha") + DeltaTime.apply(this.state.get("uiAlphaFactor")), 0.0, 1.0) 
           this.state.set("uiAlpha", uiAlpha)
           if (this.surface == null) {
             this.surface = new Surface({ width: this.area.getWidth(), height: this.area.getHeight() })

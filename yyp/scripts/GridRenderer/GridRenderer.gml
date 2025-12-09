@@ -34,7 +34,7 @@ function GridRenderer() constructor {
 
   ///@private
   ///@type {Surface}
-  focusGridSurface = new Surface({ width: GuiWidth(), height: GuiHeight() })
+  //focusGridSurface = new Surface({ width: GuiWidth(), height: GuiHeight() })
 
   ///@private
   ///@type {Surface}
@@ -2105,8 +2105,8 @@ function GridRenderer() constructor {
     this.shaderGridSurface
       .renderStretched(width, height, width * 2.0, height * 1.0)
 
-    this.focusGridSurface
-      .renderStretched(width, height, width * 0.0, height * 2.0)
+    //this.focusGridSurface
+    //  .renderStretched(width, height, width * 0.0, height * 2.0)
     this.shaderCombinedSurface
       .renderStretched(width, height, width * 2.0, height * 2.0)
 
@@ -2118,7 +2118,7 @@ function GridRenderer() constructor {
     GPU.render.text(marginX + (width * 1.0), marginY + (height * 1.0), "gameSurface", 1.0, 0.0, alpha, color, font, alignH, alignV, outlineColor, outlineFactor)
     GPU.render.text(marginX + (width * 2.0), marginY + (height * 1.0), "shaderGridSurface", 1.0, 0.0, alpha, color, font, alignH, alignV, outlineColor, outlineFactor)
     
-    GPU.render.text(marginX + (width * 0.0), marginY + (height * 2.0), "focusGridSurface", 1.0, 0.0, alpha, color, font, alignH, alignV, outlineColor, outlineFactor)
+    //GPU.render.text(marginX + (width * 0.0), marginY + (height * 2.0), "focusGridSurface", 1.0, 0.0, alpha, color, font, alignH, alignV, outlineColor, outlineFactor)
     GPU.render.text(marginX + (width * 2.0), marginY + (height * 2.0), "shaderCombinedSurface", 1.0, 0.0, alpha, color, font, alignH, alignV, outlineColor, outlineFactor)
     
     return this
@@ -2213,9 +2213,9 @@ function GridRenderer() constructor {
       .update(width, height)
       .renderOn(this.renderGridItemSurface, layout, true)
 
-    this.focusGridSurface
-      .update(width, height)
-      .renderOn(this.renderFocusGridSurface, layout, true)
+    //this.focusGridSurface
+    //  .update(width, height)
+    //  .renderOn(this.renderFocusGridSurface, layout, true)
 
     this.shaderBackgroundSurface
       .update(shaderWidth, shaderHeight)
@@ -2252,9 +2252,9 @@ function GridRenderer() constructor {
       this.renderGUIGameSurface(layout)
     }
 
-    if (properties.renderSupportGrid) {
-      this.renderGUIFocusGridSurface(layout)
-    }
+    //if (properties.renderSupportGrid) {
+    //  this.renderGUIFocusGridSurface(layout)
+    //}
 
     if (Visu.settings.getValue("visu.interface.player-hint")) {
       this.renderPlayerHint(controller.playerService, layout)
@@ -2273,7 +2273,7 @@ function GridRenderer() constructor {
     this.backgroundSurface.free()
     this.gridSurface.free()
     this.gridItemSurface.free()
-    this.focusGridSurface.free()
+    //this.focusGridSurface.free()
     this.gameSurface.free()
     this.shaderGridSurface.free()
     this.shaderBackgroundSurface.free()

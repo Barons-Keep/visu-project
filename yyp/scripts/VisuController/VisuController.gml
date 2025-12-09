@@ -821,6 +821,7 @@ function VisuController(layerName) constructor {
     Logger.info(BeanVisuController, "onSceneEnter")
     audio_stop_all()
     VideoUtil.runGC()
+    Visu.settings.setExecutor(this.executor)
     if (Core.getProperty("visu.manifest.load-on-start", false) && !VISU_MANIFEST_LOAD_ON_START_DISPATCHED) {
       var task = new Task("load-manifest")
         .setTimeout(60.0)
@@ -890,6 +891,7 @@ function VisuController(layerName) constructor {
     Logger.info(BeanVisuController, "onSceneLeave")
     audio_stop_all()
     VideoUtil.runGC()
+    Visu.settings.setExecutor(null)
     return this
   }
 

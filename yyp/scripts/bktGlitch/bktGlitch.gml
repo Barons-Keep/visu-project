@@ -96,6 +96,7 @@ function bktglitch_init() {
 	buffer_set_surface(_buffer, _surface, 0)
 	
 	global.bktGlitchNoiseSprite = sprite_create_from_surface(_surface, 0, 0, NOISE_TEXTURE_SIZE, NOISE_TEXTURE_SIZE, false, false, 0, 0)
+
 	surface_free(_surface)
 	buffer_delete(_buffer)
 }

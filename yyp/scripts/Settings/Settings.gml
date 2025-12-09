@@ -72,13 +72,20 @@ function SettingEntry(json) constructor {
 }
 
 
+///@param {String} _path
 function Settings(_path) constructor {
 
   ///@type {Map<String, SettingEntry>}
   container = new Map(String, SettingEntry)
 
   ///@type {String}
-  path = Assert.isType(_path, String)
+  path = Assert.isType(_path, String, "Settings::path must be type of String")
+
+  ///@type {?Task}
+  task = null
+
+  ///@type {?TaskExecutor}
+  executor = null
 
   ///@param {String} name
   ///@return {any}
@@ -114,6 +121,21 @@ function Settings(_path) constructor {
     return this
   }
 
+  ///@type {?TaskExecutor} [executor]
+  ///@return {Settings}
+  setExecutor = function(executor = null) {
+    var executorName = Core.isType(executor, TaskExecutor) ? executor.loggerPrefix : "null"
+    Logger.info("Settings", $"Settings::setExecutor({executorName})")
+    this.executor = executor
+    if (this.task != null) {
+      Logger.info("Settings", "Force Settings::saveToFile() because Settings::setExecutor was invoked")
+      this.saveToFile()
+      this.task = null
+    }
+
+    return this
+  }
+
   ///@param {String} name
   remove = function(name) {
     this.container.remove(name)
@@ -135,28 +157,59 @@ function Settings(_path) constructor {
         settings.set(new SettingEntry(entry))
       }, this)
     } catch (exception) {
-      Logger.error("Settings", $"Corrupted settings '{path}'. {exception.message}")
+      Logger.error("Settings", $"Corrupted settings '{path}'")
       Core.printStackTrace().printException(exception)
     }
     
     return this
   }
 
-  ///@return {Settings}
-  save = function() {
+  saveToFile = function() {
     var json = {
-      "version":"1",
-      "model":"Collection<io.alkapivo.core.util.SettingEntry>",
+      "version": "1",
+      "model": "Collection<io.alkapivo.core.util.SettingEntry>",
       "data": this.container.toArray(function(settingsEntry) {
         return settingsEntry.serialize()
       }, null, Struct).getContainer()
     }
 
-    Beans.get(BeanFileService).send(new Event("save-file")
-      .setData(new File({ 
-        path: this.path,
-        data: JSON.stringify(json, { pretty: true })
-      })))
+    Beans.get(BeanFileService).send(new Event("save-file").setData(new File({ 
+      path: this.path,
+      data: JSON.stringify(json, { pretty: true })
+    })))
+
+    return this
+  }
+
+  ///@return {Settings}
+  save = function() {
+    if (this.executor == null) {
+      this.saveToFile()
+    } else if (this.task == null) {
+      var settings = this
+      this.task = new Task("save-settings")
+        .setState({
+          settings: settings,
+          cooldown: new Timer(0.5),
+        })
+        .setTimeout(5.0)
+        .whenTimeout(function() {
+          Logger.info("Settings", "Force Settings::saveToFile() due to Settings::task timeout")
+          this.state.settings.saveToFile()
+          this.state.settings.task = null
+        })
+        .whenUpdate(function() {
+          if (!this.state.cooldown.update().finished) {
+            return
+          }
+
+          this.state.settings.saveToFile()
+          this.state.settings.task = null
+          this.fullfill()
+        })
+      this.executor.add(this.task)
+    }
+
     return this
   }
 }

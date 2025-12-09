@@ -818,7 +818,6 @@
     {"id":{"name":"shader_led","path":"shaders/shader_led/shader_led.yy",},},
     {"id":{"name":"shader_lighting_with_glow","path":"shaders/shader_lighting_with_glow/shader_lighting_with_glow.yy",},},
     {"id":{"name":"shader_magnify","path":"shaders/shader_magnify/shader_magnify.yy",},},
-    {"id":{"name":"shader_monster","path":"shaders/shader_monster/shader_monster.yy",},},
     {"id":{"name":"shader_mosaic","path":"shaders/shader_mosaic/shader_mosaic.yy",},},
     {"id":{"name":"shader_nog_betere_2","path":"shaders/shader_nog_betere_2/shader_nog_betere_2.yy",},},
     {"id":{"name":"shader_octagrams","path":"shaders/shader_octagrams/shader_octagrams.yy",},},
@@ -1039,8 +1038,8 @@
   "templateType":"game",
   "TextureGroups":[
     {"$GMTextureGroup":"","%Name":"Default","autocrop":true,"border":8,"compressFormat":"bz2","customOptions":"","directory":"","groupParent":null,"isScaled":true,"loadType":"default","mipsToGenerate":0,"name":"Default","resourceType":"GMTextureGroup","resourceVersion":"2.0","targets":-1,},
-    {"$GMTextureGroup":"","%Name":"texturegroup_wallpaper","autocrop":true,"border":2,"compressFormat":"png","customOptions":"","directory":"","groupParent":null,"isScaled":true,"loadType":"default","mipsToGenerate":0,"name":"texturegroup_wallpaper","resourceType":"GMTextureGroup","resourceVersion":"2.0","targets":-1,},
-    {"$GMTextureGroup":"","%Name":"texturegroup_game","autocrop":true,"border":2,"compressFormat":"png","customOptions":"","directory":"","groupParent":null,"isScaled":true,"loadType":"default","mipsToGenerate":0,"name":"texturegroup_game","resourceType":"GMTextureGroup","resourceVersion":"2.0","targets":-1,},
+    {"$GMTextureGroup":"","%Name":"texturegroup_wallpaper","autocrop":true,"border":8,"compressFormat":"png","customOptions":"","directory":"","groupParent":null,"isScaled":true,"loadType":"default","mipsToGenerate":-1,"name":"texturegroup_wallpaper","resourceType":"GMTextureGroup","resourceVersion":"2.0","targets":-1,},
+    {"$GMTextureGroup":"","%Name":"texturegroup_game","autocrop":true,"border":8,"compressFormat":"png","customOptions":"","directory":"","groupParent":null,"isScaled":true,"loadType":"default","mipsToGenerate":-1,"name":"texturegroup_game","resourceType":"GMTextureGroup","resourceVersion":"2.0","targets":-1,},
     {"$GMTextureGroup":"","%Name":"texturegroup_ui","autocrop":true,"border":2,"compressFormat":"png","customOptions":"","directory":"","groupParent":null,"isScaled":true,"loadType":"default","mipsToGenerate":0,"name":"texturegroup_ui","resourceType":"GMTextureGroup","resourceVersion":"2.0","targets":-1,},
   ],
 }

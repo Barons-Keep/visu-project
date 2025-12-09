@@ -324,15 +324,6 @@ global.__shaders = {
       "iTint": "VECTOR3"
     }
   },
-  "shader_monster": {
-    "type": "GLSL_ES",
-    "uniforms": {
-      "iTime": "FLOAT",
-      "iResolution": "VECTOR2",
-      "iTint": "VECTOR3",
-      "iSize": "FLOAT"
-    }
-  },
   "shader_clouds_2d": {
     "type": "GLSL_ES",
     "uniforms": {
@@ -427,7 +418,6 @@ global.__depreacted_shaders = {
   "shader_colors_embody": true,
   "shader_grid_space": true,
   "shader_002_blue": true,
-  "shader_monster": true,
   "shader_flame": true,
   "shader_whirlpool": true,
   "shader_warp_speed_2": true,
@@ -632,12 +622,6 @@ global.__SHADER_CONFIGS = {
     "iTreshold": { __type: "FLOAT" },
     "iDistance": { __type: "FLOAT" },
     "iTint": { __type: "VECTOR3" },
-  },
-  "shader_monster": {
-    "iTime": { __type: "FLOAT" },
-    "iResolution": { __type: "VECTOR2" },
-    "iTint": { __type: "VECTOR3" },
-    "iSize": { __type: "FLOAT" },
   },
   "shader_clouds_2d": {
     "iTime": { __type: "FLOAT" },

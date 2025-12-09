@@ -332,7 +332,6 @@
     {"name":"shader_led","order":3,"path":"shaders/shader_led/shader_led.yy",},
     {"name":"shader_lighting_with_glow","order":11,"path":"shaders/shader_lighting_with_glow/shader_lighting_with_glow.yy",},
     {"name":"shader_magnify","order":4,"path":"shaders/shader_magnify/shader_magnify.yy",},
-    {"name":"shader_monster","order":17,"path":"shaders/shader_monster/shader_monster.yy",},
     {"name":"shader_mosaic","order":5,"path":"shaders/shader_mosaic/shader_mosaic.yy",},
     {"name":"shader_octagrams","order":4,"path":"shaders/shader_octagrams/shader_octagrams.yy",},
     {"name":"shader_phantom_star","order":5,"path":"shaders/shader_phantom_star/shader_phantom_star.yy",},
