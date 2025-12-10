@@ -62,6 +62,20 @@ function DisplayService(_controller, config = {}): Service() constructor {
   ///@private
   ///@type {Number}
   previousGuiHeight = this.windowHeight * this.scale
+
+  ///@private
+  ///@type {DisplayTimingMethodConstant}
+  timingMethod = Core.getProperty("core.display-service.timing-method", "SLEEP") == "SLEEP" ? tm_sleep : tm_countvsyncs
+
+  ///@private
+  ///@type {Number}
+  sleepMargin = Core.getProperty("core.display-service.sleep-margin", 10)
+
+  Logger.info("DisplayService", $"Setup timing method {this.timingMethod}")
+  display_set_timing_method(this.timingMethod)
+  
+  Logger.info("DisplayService", $"Setup sleep margin {this.sleepMargin}")
+  display_set_sleep_margin(this.sleepMargin)
   
   ///@return {Number}
   getWidth = function() {
@@ -188,6 +202,20 @@ function DisplayService(_controller, config = {}): Service() constructor {
         || context.previousHeight != window_get_height()
         || context.previousGuiWidth != display_get_gui_width()
         || context.previousGuiHeight != display_get_gui_height()
+    }
+
+    timingMethod = display_get_timing_method()
+    if (timingMethod != this.timingMethod) {
+      Logger.info("DisplayService", $"Update timing method to {this.timingMethod}")
+      display_set_timing_method(this.timingMethod)
+    }
+
+    if (this.timingMethod == tm_sleep) {
+      var sleepMargin = display_get_sleep_margin()
+      if (sleepMargin != this.sleepMargin) {
+        Logger.info("DisplayService", $"Update sleep margin from {sleepMargin} to {this.sleepMargin}")
+        display_set_sleep_margin(this.sleepMargin)
+      }
     }
 
     if (this.state == "idle" || this.state == "resized") {
