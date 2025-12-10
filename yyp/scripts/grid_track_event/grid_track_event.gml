@@ -499,11 +499,9 @@ global.__grid_track_event = {
         "gr-cfg_hide-grid-z": Struct.parse.boolean(data, "gr-cfg_hide-grid-z", TRACK_EVENT_DEFAULT_HIDDEN_VALUE),
         "gr-cfg_hide-focus-grid": Struct.parse.boolean(data, "gr-cfg_hide-focus-grid", TRACK_EVENT_DEFAULT_HIDDEN_VALUE),
         "gr-cfg_hide-focus-col": Struct.parse.boolean(data, "gr-cfg_hide-focus-col", TRACK_EVENT_DEFAULT_HIDDEN_VALUE),
-        "gr-cfg_hide-focus-grid-col": Struct.parse.boolean(data, "gr-cfg_hide-focus-grid-col", TRACK_EVENT_DEFAULT_HIDDEN_VALUE),
         "gr-cfg_hide-focus-grid-treshold": Struct.parse.boolean(data, "gr-cfg_hide-focus-grid-treshold", TRACK_EVENT_DEFAULT_HIDDEN_VALUE),
         "gr-cfg_hide-focus-grid-alpha": Struct.parse.boolean(data, "gr-cfg_hide-focus-grid-alpha", TRACK_EVENT_DEFAULT_HIDDEN_VALUE),
         "gr-cfg_hide-focus-color-alpha": Struct.parse.boolean(data, "gr-cfg_hide-focus-color-alpha", TRACK_EVENT_DEFAULT_HIDDEN_VALUE),
-        "gr-cfg_hide-focus-alpha": Struct.parse.boolean(data, "gr-cfg_hide-focus-alpha", TRACK_EVENT_DEFAULT_HIDDEN_VALUE),
         "gr-cfg_hide-cls": Struct.parse.boolean(data, "gr-cfg_hide-cls", TRACK_EVENT_DEFAULT_HIDDEN_VALUE),
         "gr-cfg_hide-cls-col": Struct.parse.boolean(data, "gr-cfg_hide-cls-col", TRACK_EVENT_DEFAULT_HIDDEN_VALUE),
         "gr-cfg_hide-cls-alpha": Struct.parse.boolean(data, "gr-cfg_hide-cls-alpha", TRACK_EVENT_DEFAULT_HIDDEN_VALUE),
@@ -661,14 +659,6 @@ global.__grid_track_event = {
         "gr-cfg_focus-col-spd",
         "supportColor",
         properties, pump, executor)
-
-      ///@description feature TODO focus.blend-color
-      Visu.resolveColorTransformerTrackEvent(data, 
-        "gr-cfg_focus-use-grid-col",
-        "gr-cfg_focus-grid-col",
-        "gr-cfg_focus-grid-col-spd",
-        "supportGridColor",
-        properties, pump, executor)
       
       ///@description feature TODO focus-color.alpha
       Visu.resolveNumberTransformerTrackEvent(data, 
@@ -684,14 +674,6 @@ global.__grid_track_event = {
         "gr-cfg_focus-grid-alpha",
         "gr-cfg_change-focus-grid-alpha",
         "supportGridAlpha",
-        properties, pump, executor)
-
-      ///@description feature TODO focus.alpha
-      Visu.resolveNumberTransformerTrackEvent(data, 
-        "gr-cfg_use-focus-alpha",
-        "gr-cfg_focus-alpha",
-        "gr-cfg_change-focus-alpha",
-        "supportFocusAlpha",
         properties, pump, executor)
 
       var editor = Beans.get(Visu.modules().editor.controller)

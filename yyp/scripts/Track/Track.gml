@@ -526,6 +526,14 @@ function TrackChannel(json, config = null) constructor {
       return this
     }
 
+  ///@param {TrackChannel} trackChannel
+  ///@param {Event} event
+  executeEventCallable = Optional.is(Struct.getIfType(config, "executeEventCallable", Callable))
+    ? method(this, config.executeEventCallable)
+    : function(event, trackChannel) {
+      event.callable(event.parseData(event.data), trackChannel)
+    }
+
   ///@param {Number} timestamp
   ///@return {TrackChannel}
   update = Optional.is(Struct.getIfType(config, "update", Callable))
@@ -536,26 +544,29 @@ function TrackChannel(json, config = null) constructor {
       }
       this.time = timestamp
 
-      if (events.size() == 0) {
+      var size = events.size()
+      if (size == 0) {
         return this
       }
 
       for (var index = 0; index < this.MAX_EXECUTION_PER_FRAME; index++) {
         var pointer = this.pointer == null ? 0 : (this.pointer + 1)
-        if (pointer == events.size()) {
+        if (pointer == size) {
           break
         }
 
         var event = events.get(pointer)
-        if (timestamp >= event.timestamp) {
-          this.pointer = pointer
-          if (this.muted) {
-            continue
-          }
-
-          //Logger.debug("Track", $"(channel: '{this.name}', timestamp: {timestamp}) dispatch event: '{event.callableName}'")
-          event.callable(event.parsedData, this)
+        if (timestamp < event.timestamp) {
+          continue
         }
+        
+        this.pointer = pointer
+        if (this.muted) {
+          continue
+        }
+
+        //Logger.debug("Track", $"(channel: '{this.name}', timestamp: {timestamp}) dispatch event: '{event.callableName}'")
+        this.executeEventCallable(event, this)
       }
 
       return this
@@ -605,7 +616,7 @@ function TrackEvent(json, config = null): Event("TrackEvent") constructor {
   parseData = Struct.getIfType(handler, "parse", Callable, Lambda.passthrough)
 
   ///@type {Struct}
-  parsedData = this.parseData(this.data)
+  parsedData = null
 
   ///@type {Callable}
   serializeData = Struct.getIfType(handler, "serialize", Callable, Struct.serialize)

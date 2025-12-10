@@ -209,6 +209,9 @@ function VisuMenuEntry(json) constructor {
   ///@type {String}
   name = Assert.isType(json.name, String)
 
+  ///@type {String}
+  title = Struct.getIfType(json, "title", String, "")
+
   ///@type {VisuMenuEntryEvent}
   event = new VisuMenuEntryEvent(json.event)
 }
@@ -316,6 +319,9 @@ function VisuMenu(_config = null) constructor {
             layout: VisuLayouts.get("menu-button-entry"),
             config: {
               layout: { type: UILayoutType.VERTICAL },
+              title: {
+                text: entry.title,
+              },
               label: { 
                 text: entry.name,
                 callback: new BindIntent(function() {
@@ -2085,7 +2091,7 @@ function VisuMenu(_config = null) constructor {
               value: round(Visu.settings.getValue("visu.interface.scale") * 100.0),
               minValue: 50.0,
               maxValue: 400.0,
-              snapValue: 1.0,
+              snapValue: 5.0,
               updatePosition: function(mouseX, mouseY) {
                 this.callback()
               },
@@ -2584,7 +2590,7 @@ function VisuMenu(_config = null) constructor {
                 VISU_FORCE_GOD_MODE_DISPATCHED = false
                 Scene.open("scene_visu", {
                   VisuController: {
-                    initialState: { name: Core.getProperty("visu.skip-splashscreen") ? "idle" : "splashscreen", },
+                    initialState: { name: Core.getProperty("visu.splashscreen.skip") ? "idle" : "splashscreen", },
                   },
                 })
                 return new Event("close")

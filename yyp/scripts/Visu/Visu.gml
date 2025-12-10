@@ -20,6 +20,11 @@ global.__BRUSH_TOOLBAR_ENTRY_STEP = 1
 #macro BRUSH_TOOLBAR_ENTRY_STEP global.__BRUSH_TOOLBAR_ENTRY_STEP
 
 
+///@type {Boolean}
+global.__PRELOAD_TRACK_EVENT = false
+#macro PRELOAD_TRACK_EVENT global.__PRELOAD_TRACK_EVENT
+
+
 ///@type {Number}
 global.__FLIP_VALUE = 1
 #macro FLIP_VALUE global.__FLIP_VALUE
@@ -964,7 +969,7 @@ function _Visu() constructor {
 
               Core.setProperty("visu.manifest.load-on-start", false)
               Core.setProperty("visu.menu.open-on-start", false)
-              Core.setProperty("visu.skip-splashscreen", true)
+              Core.setProperty("visu.splashscreen.skip", true)
 
               Beans.get(BeanTestRunner).push(args.get(0))
 
@@ -988,7 +993,7 @@ function _Visu() constructor {
             handler: function(args) {
               Core.setProperty("visu.manifest.load-on-start", false)
               Core.setProperty("visu.menu.open-on-start", false)
-              Core.setProperty("visu.skip-splashscreen", true)
+              Core.setProperty("visu.splashscreen.skip", true)
 
               String.split(args.get(0), ",").forEach(function(path) {
                 var test = String.trim(path)
@@ -1188,8 +1193,10 @@ function _Visu() constructor {
     ShaderAstralFlow.install(SHADERS, SHADER_CONFIGS)
     ShaderCloudySky.install(SHADERS, SHADER_CONFIGS)
     ShaderDeepSpace.install(SHADERS, SHADER_CONFIGS)
+    ShaderDissolve.install(SHADERS, SHADER_CONFIGS)
     ShaderFractalBloom.install(SHADERS, SHADER_CONFIGS)
     ShaderFunkFlux.install(SHADERS, SHADER_CONFIGS)
+    ShaderGaussianBlur.install(SHADERS, SHADER_CONFIGS)
     //ShaderHyperspace.install(SHADERS, SHADER_CONFIGS)
     ShaderPolycular.install(SHADERS, SHADER_CONFIGS)
     ShaderWarpPulse.install(SHADERS, SHADER_CONFIGS)
@@ -1226,6 +1233,7 @@ function _Visu() constructor {
     BRUSH_ENTRY_STEP = Core.getProperty("visu.const.BRUSH_ENTRY_STEP", BRUSH_ENTRY_STEP)
     BRUSH_TOOLBAR_ENTRY_STEP = Core.getProperty("visu.const.BRUSH_TOOLBAR_ENTRY_STEP", BRUSH_TOOLBAR_ENTRY_STEP)
     FLIP_VALUE = Core.getProperty("visu.const.FLIP_VALUE", FLIP_VALUE)
+    PRELOAD_TRACK_EVENT = Core.getProperty("visu.manifest.parse-track-event-preload", PRELOAD_TRACK_EVENT)
   }
 
   static initFileService = function(layerId) {

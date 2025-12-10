@@ -1,20 +1,20 @@
-///@shader shaderGaussianBlur
-///@description Vertex shader.
-	
-attribute vec3 in_Position;
-attribute vec4 in_Colour;
-attribute vec2 in_TextureCoord;
+///@package io.alkapivo.core
+///@description shader_gaussian_blur
 
-varying vec4 inputColor;
-varying vec2 inputTexture;
+// Vertex Attributes
+attribute vec3 in_Position;     // (x, y, z)
+attribute vec4 in_Colour;       // (r, g, b, a)
+attribute vec2 in_TextureCoord; // (u, v)
 
+// Varying Outputs to Fragment Shader
+varying vec2 v_texcoord;
+varying vec4 v_color;
 
 void main() {
-  vec4 objectSpacePosition = vec4(in_Position.x, in_Position.y, in_Position.z, 1.0);
-  gl_Position = gm_Matrices[MATRIX_WORLD_VIEW_PROJECTION] * objectSpacePosition;
-  
-  /// Pass varying to fragment shader
-  inputColor = in_Colour;
-  inputTexture = in_TextureCoord;
+  // Transform vertex position by combined model-view-projection matrix
+  gl_Position = gm_Matrices[MATRIX_WORLD_VIEW_PROJECTION] * vec4(in_Position, 1.0);
+
+  // Pass through color and texture coordinate to fragment shader
+  v_color = in_Colour;
+  v_texcoord = in_TextureCoord;
 }
-	

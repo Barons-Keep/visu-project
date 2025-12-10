@@ -309,6 +309,24 @@ function VisuTrackLoader(_controller): Service() constructor {
                               }
                             }
                           },
+                          parseEvent: (PRELOAD_TRACK_EVENT
+                            ? function(event, index, config = null) {
+                              var trackEvent = new TrackEvent(event, config)
+                              trackEvent.parsedData = trackEvent.parseData(trackEvent.data)
+                              return trackEvent
+                            }
+                            : function(event, index, config = null) {
+                              return new TrackEvent(event, config)
+                            }
+                          ),
+                          executeEventCallable: (PRELOAD_TRACK_EVENT
+                            ? function(event, trackChannel) {
+                              event.callable(event.parsedData, trackChannel)
+                            }
+                            : function(event, trackChannel) {
+                              event.callable(event.parseData(event.data), trackChannel)
+                            }
+                          ),
                         }))
                       },
                       acc: { trackService: controller.trackService },
@@ -417,6 +435,7 @@ function VisuTrackLoader(_controller): Service() constructor {
 
             fsmState.state.set("promises", promises)
             fsmState.state.set("events", events)
+            fsmState.state.set("events-cooldown", new Timer(Core.getProperty("visu.manifest.file-cooldown", 0.128)))
             
             if (Core.isType(Struct.get(data.manifest, "video"), String)) {
               fsmState.state.set("video", new Event("open-video", {
@@ -494,6 +513,12 @@ function VisuTrackLoader(_controller): Service() constructor {
             var promises = this.state.get("promises")
             var events = this.state.get("events")
             if (events.size() > 0) {
+              var cooldown = this.state.get("events-cooldown")
+              if (!cooldown.update().finished) {
+                return
+              }
+
+              cooldown.reset()
               var event = events.pop()
               event.callback(promises, event.name, event.data)
               return
@@ -545,7 +570,7 @@ function VisuTrackLoader(_controller): Service() constructor {
             fsmState.state
               .set("video", video)
               .set("tasks", tasks)
-              .set("parsePrimaryCooldown", new Timer(0.128))
+              .set("parsePrimaryCooldown", new Timer(Core.getProperty("visu.manifest.parse-cooldown", 0.0)))
               .set("promises", new Map(String, Promise, {
                 "texture": addTask(tasks.get("texture"), executor),
                 "sound": addTask(tasks.get("sound"), executor),
@@ -752,7 +777,7 @@ function VisuTrackLoader(_controller): Service() constructor {
               .setPromise(new Promise())
 
             fsmState.state.set("texture-load-task", textureLoadTask)
-            fsmState.state.set("cooldown-timer", new Timer(0.128))
+            fsmState.state.set("cooldown-timer", new Timer(Core.getProperty("visu.manifest.loaded-cooldown", 0.128)))
 
             var controller = Beans.get(BeanVisuController)
             controller.visuRenderer.executor.add(textureLoadTask)

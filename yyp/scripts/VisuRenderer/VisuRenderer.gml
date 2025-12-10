@@ -148,26 +148,7 @@ function VisuRenderer() constructor {
 
   ///@private
   ///@type {Struct}
-  Assert.isTrue(shader_is_compiled(shader_gaussian_blur), "shader_gaussian_blur must be compiled")
-  shaderGaussianBlur = {
-    uniformSize: shader_get_uniform(shader_gaussian_blur, "size"),
-    setSize: function(width, height, value) {
-      shader_set_uniform_f(this.uniformSize, width, height, value)
-      return this
-    },
-    setShader: function() {
-      shader_set(shader_gaussian_blur)
-      return this
-    },
-    render: function(handler, data) {
-      handler(data)
-      return this
-    },
-    resetShader: function() {
-      shader_reset()
-      return this
-    },
-  }
+  shaderGaussianBlur = ShaderUtil.fetch("shader_gaussian_blur")
 
   ///@private
   ///@type {Boolean}
@@ -261,65 +242,114 @@ function VisuRenderer() constructor {
       gridService.avgTime.add(timeSum)
       gridService.avgCircular.add(fpsReal)
 
-      /*
-      fps:     xxxx    | fps-real:     xxxx
-      fps-min: xxxx    | fps-real-avg: xxxx    
-      -----------------|-----------------------
-      update: xxxxx ms | total:       xxxxx ms
-      render: xxxxx ms | avg:         xxxxx ms
-      -----------------|-----------------------
-      shrooms: xxxx    | dt:        xxxxxxx
-      bullets: xxxx    | dt-max:    xxxxxxx
-      */
-      var a1 = String.format(fps, 4, 0) // fps
-      var a2 = String.format(this.debugMinFPS, 4, 0) // fps-min
-      var b1 = String.format(gridService.avgCircular.value, 4, 0) // fps-real
-      var b2 = String.format(gridService.avgCircular.value, 4, 0) // fps-real-avg
-      var c1 = String.format(updateSum, 2, 2) // update
-      var c2 = String.format(renderSum, 2, 2) // render
-      var d1 = String.format(timeSum, 2, 2) // total
-      var d2 = String.format(gridService.avgTime.get(), 2, 2) // avg
-      var e1 = String.format(shrooms, 4, 0) // shrooms
-      var e2 = String.format(bullets, 4, 0) // bullets
+      var a1 = String.format(fps, 4, 0)
+      var a2 = String.format(this.debugMinFPS, 4, 0)
+      var b1 = String.format(fpsReal, 4, 0)
+      var b2 = String.format(gridService.avgCircular.value, 4, 0)
+      var c1 = String.format(updateSum, 2, 2)
+      var c2 = String.format(renderSum, 2, 2)
+      var d1 = String.format(timeSum, 2, 2)
+      var d2 = String.format(gridService.avgTime.get(), 2, 2)
+      var e1 = String.format(shrooms, 4, 0)
+      var e2 = String.format(bullets, 4, 0)
       var f1 = String.format(deltaTime, 1, 5)
       var f2 = String.format(this.debugMaxDelta, 1, 5)
-      var text = $"fps:     {a1}    | fps-real:     {b1}    \n"
-               + $"fps-min: {a2}    | fps-real-avg: {b2}    \n"    
-               +  "-----------------|-----------------------\n"
-               + $"update: { c1} ms | total:       { d1} ms \n"
-               + $"render: { c2} ms | avg:         { d2} ms \n"
-               +  "-----------------|-----------------------\n"
-               + $"shrooms: {e1}    | dt:        {   f1}    \n"
-               + $"bullets: {e2}    | dt-max:    {   f2}    \n"
-        
-      GPU.render.text(64, 80, text, 1.0, 0.0, 1.0, c_lime, 
-        GPU_DEFAULT_FONT_BOLD, HAlign.LEFT, VAlign.TOP, c_black, 1.0)
+      var text = "" 
+        + $"fps:     {a1}    | fps-real:     {b1}\n"
+        + $"fps-min: {a2}    | fps-real-avg: {b2}\n"    
+        +  "-----------------|-------------------\n"
+        + $"update: { c1} ms | total:    { d1} ms\n"
+        + $"render: { c2} ms | avg:      { d2} ms\n"
+        +  "-----------------|-------------------\n"
+        + $"shrooms: {e1}    | dt:        {   f1}\n"
+        + $"bullets: {e2}    | dt-max:    {   f2}\n"
+      
+      /*
+            fps:     xxxx    | fps-real:     xxxx
+            fps-min: xxxx    | fps-real-avg: xxxx    
+            -----------------|-------------------
+            update: xxxxx ms | total:    xxxxx ms
+            render: xxxxx ms | avg:      xxxxx ms
+            -----------------|-------------------
+            shrooms: xxxx    | dt:        xxxxxxx
+            bullets: xxxx    | dt-max:    xxxxxxx
+      */
+
+      GPU.render.text(
+        layout.x() + layout.width() - 60, 
+        layout.y() + 80, 
+        text, 
+        1.0, 
+        0.0, 
+        1.0, 
+        c_lime, 
+        GPU_DEFAULT_FONT_BOLD, 
+        HAlign.RIGHT, 
+        VAlign.TOP, 
+        c_black, 
+        1.0
+      )
     }
 
     var gridCamera = this.gridRenderer.camera
     var gridCameraMessage = ""
     if ((enableEditor || enableDebugOverlay)
         && (gridCamera.enableKeyboardLook || gridCamera.enableMouseLook)) {
-      gridCameraMessage = gridCameraMessage 
-        + $"x:     {gridCamera.x + (sin(this.gridRenderer.camera.breathTimer2.time) * GRID_SERVICE_PIXEL_WIDTH * -1.0)}\n"
-        + $"y:     {gridCamera.y}\n"
-        + $"z:     {gridCamera.z}\n"
-        + $"pitch: {gridCamera.pitch + (sin(this.gridRenderer.camera.breathTimer1.time) * BREATH_TIMER_FACTOR_1)}\n"
-        + $"angle: {gridCamera.angle + (sin(this.gridRenderer.camera.breathTimer2.time / 4.0) * BREATH_TIMER_FACTOR_2)}\n"
-        + $"view.x: {gridService.view.x}\n"
-        + $"view.y: {gridService.view.y}\n"
+
+      var g1 = String.format(gridCamera.x + (sin(this.gridRenderer.camera.breathTimer2.time) * GRID_SERVICE_PIXEL_WIDTH * -1.0), 4, 2)
+      var g2 = String.format(gridCamera.y, 4, 2)
+      var g3 = String.format(gridCamera.z, 4, 2)
+      var g4 = String.format(gridCamera.pitch + (sin(this.gridRenderer.camera.breathTimer1.time) * BREATH_TIMER_FACTOR_1), 4, 2)
+      var g5 = String.format(gridCamera.angle + (sin(this.gridRenderer.camera.breathTimer2.time / 4.0) * BREATH_TIMER_FACTOR_2), 4, 2)
+      var h1 = String.format(gridService.view.x, 4, 2)
+      var h2 = String.format(gridService.view.x, 4, 2)
+      gridCameraMessage += ""
+        + $"| x:         {g1}\n"
+        + $"| y:         {g2}\n"
+        + $"| z:         {g3}\n"
+        + $"| pitch:     {g4}\n"
+        + $"| angle:     {g5}\n"
+        + $"|-------------------\n"
+        + $"| view.x:    {h1}\n"
+        + $"| view.y:    {h2}\n"
+      /*
+            | x:         xxxx.xx
+            | y:         xxxx.xx
+            | z:         xxxx.xx
+            | pitch:     xxxx.xx
+            | angle:     xxxx.xx
+            |-------------------
+            | view.x:    xxxx.xx
+            | view.y:    xxxx.xx
+      */
 
       var player = controller.playerService.player
-      if (player != null) {
-        gridCameraMessage = gridCameraMessage 
-          + $"player.x: {player.x}\n"
-          + $"player.y: {player.y}\n"
-      }
-    }
-    
-    if (gridCameraMessage != "") {
-      GPU.render.text(32, GuiHeight() - 32, gridCameraMessage, 1.0, 0.0, 1.0, 
-        c_lime, GPU_DEFAULT_FONT_BOLD, HAlign.LEFT, VAlign.BOTTOM, c_black, 1.0)
+      var i1 = String.format((player == null ? 0.0 : player.x), 4, 2)
+      var i2 = String.format((player == null ? 0.0 : player.y), 4, 2)
+      gridCameraMessage += player == null ? "" :
+        + $"|-------------------\n"
+        + $"| player.x:  {i1}\n"
+        + $"| player.y:  {i2}\n"
+      /*
+            |-------------------
+            | player.x:  xxxx.xx
+            | player.y:  xxxx.xx
+      */
+
+      GPU.render.text(
+        layout.x() + layout.width() - 60,
+        layout.y() + layout.height() - 80,
+        gridCameraMessage,
+        1.0,
+        0.0,
+        1.0, 
+        c_lime,
+        GPU_DEFAULT_FONT_BOLD,
+        HAlign.RIGHT,
+        VAlign.BOTTOM,
+        c_black,
+        1.0
+      )
     }
 
     return this
@@ -412,15 +442,17 @@ function VisuRenderer() constructor {
       return this
     }
 
-    this.blur.update()
-    this.shaderGaussianBlur
-      .setShader()
-      .setSize(layout.width(), layout.height(), this.blur.value)
-      .render(Visu.settings.getValue("visu.debug.render-surfaces")
-        ? this.gridRenderer.renderDebugSurfaces
-        : this.gridRenderer.renderGUIGameSurface, layout)
-      .resetShader()
-    
+    var renderBlur = Visu.settings.getValue("visu.debug.render-surfaces")
+      ? this.gridRenderer.renderDebugSurfaces
+      : this.gridRenderer.renderGUIGameSurface
+
+    GPU.set.shader(this.shaderGaussianBlur)
+    var uniform = this.shaderGaussianBlur.uniforms.get("u_resolution")
+    uniform.setter(uniform.asset, layout.width(), layout.height())
+    this.shaderGaussianBlur.uniforms.get("u_size").set(this.blur.update().value)
+    renderBlur(layout)
+    GPU.reset.shader()
+
     return this
   }
 

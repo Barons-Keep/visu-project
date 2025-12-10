@@ -195,19 +195,9 @@ function GridProperties(config = null) constructor {
   ///@type {Number}
   supportGridAlpha = Struct.getIfType(config, "supportGridAlpha", Number, 0.0)
 
-  ///@type {Number}
-  supportFocusAlpha = Struct.getIfType(config, "supportFocusAlpha", Number, 0.0)
-
   ///@type {Color}
   supportColor = Assert.isType(ColorUtil.fromHex(Struct
     .getDefault(config, "supportColor", "#ffffff")), Color)
-
-  ///@type {Color}
-  supportGridColor = Assert.isType(ColorUtil.fromHex(Struct
-    .getDefault(config, "supportGridColor", "#ffffff")), Color)
-
-  ///@type {BlendConfig}
-  supportBlendConfig = new BlendConfig(Struct.getIfType(config, "supportBlendConfig", Struct))
   #endregion
 
   ///@type {Color}

@@ -1,30 +1,64 @@
-///@shader shaderGaussianBlur
-///@description Fragment shader.
-///@uniform {vec3(width, height, radius)} size
+///@package io.alkapivo.core
+///@description shader_gaussian_blur
 
-varying vec2 inputTexture;
-varying vec4 inputColor;
-
-uniform vec3 size; 
-
-const int QUALITY = 8;
-const int DIRECTIONS = 16;
-const float TWO_PI = 6.28318530718;
+// Constants
+#define QUALITY 8
+#define DIRECTIONS 16
 
 
+// Varying Outputs
+///*
+varying vec2 v_texcoord;
+varying vec4 v_color;
+//*/
+
+
+// Uniform
+///*
+uniform vec2 u_resolution;
+uniform float u_size;
+//*/
+
+
+// Main
 void main() {
+  float r = u_size;
+  vec2 texel = vec2(1.0 / u_resolution.x, 1.0 / u_resolution.y);
+  vec4 sum = texture2D(gm_BaseTexture, v_texcoord);
 
-  vec2 radius = (size.z / size.xy);
-  vec4 outputPixel = texture2D(gm_BaseTexture, inputTexture);
-  for(float d = 0.0; d < TWO_PI; d += (TWO_PI / float(DIRECTIONS))) {
-    for(float i = (1.0 / float(QUALITY)); i <= 1.0; i += (1.0 / float(QUALITY))) {
-      outputPixel += texture2D(gm_BaseTexture, inputTexture + vec2(cos(d), sin(d)) * radius * i);
+  if (r > 0.0) {
+    // Precomputed direction vectors (must be assigned at runtime for GMS)
+    vec2 dirs[16];
+    dirs[0]  = vec2( 1.0,  0.0);
+    dirs[1]  = vec2( 0.9239,  0.3827);
+    dirs[2]  = vec2( 0.7071,  0.7071);
+    dirs[3]  = vec2( 0.3827,  0.9239);
+    dirs[4]  = vec2( 0.0,   1.0);
+    dirs[5]  = vec2(-0.3827,  0.9239);
+    dirs[6]  = vec2(-0.7071,  0.7071);
+    dirs[7]  = vec2(-0.9239,  0.3827);
+    dirs[8]  = vec2(-1.0,   0.0);
+    dirs[9]  = vec2(-0.9239, -0.3827);
+    dirs[10] = vec2(-0.7071, -0.7071);
+    dirs[11] = vec2(-0.3827, -0.9239);
+    dirs[12] = vec2( 0.0,  -1.0);
+    dirs[13] = vec2( 0.3827, -0.9239);
+    dirs[14] = vec2( 0.7071, -0.7071);
+    dirs[15] = vec2( 0.9239, -0.3827);
+
+    float stepScale = r / float(QUALITY);
+    for (int d = 0; d < DIRECTIONS; d++) {
+      vec2 dir = dirs[d] * texel;
+      for (int i = 1; i <= QUALITY; i++) {
+        sum += texture2D(
+          gm_BaseTexture,
+          v_texcoord + dir * (float(i) * stepScale)
+        );
+      }
     }
+
+    sum /= float(QUALITY * DIRECTIONS + 1);
   }
-  outputPixel /= float(QUALITY) * float(DIRECTIONS) + 1.0;
-  outputPixel.a *= 2.0;
 
-  /// Pass pixel to renderer
-  gl_FragColor = inputColor * outputPixel;
+  gl_FragColor = v_color * sum;
 }
-

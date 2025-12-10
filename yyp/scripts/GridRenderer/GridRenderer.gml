@@ -34,10 +34,6 @@ function GridRenderer() constructor {
 
   ///@private
   ///@type {Surface}
-  //focusGridSurface = new Surface({ width: GuiWidth(), height: GuiHeight() })
-
-  ///@private
-  ///@type {Surface}
   gameSurface = new Surface({ width: GuiWidth(), height: GuiHeight() })
 
   ///@private
@@ -1177,8 +1173,8 @@ function GridRenderer() constructor {
 
     
     
-    var supportGridColor = gridService.properties.supportGridColor
-    var luminance = (0.2126 * supportGridColor.red * 255.0) + (0.7152 * supportGridColor.green * 255.0) + (0.0722 * supportGridColor.blue * 255.0)
+    var supportColor = gridService.properties.supportColor
+    var luminance = (0.2126 * supportColor.red * 255.0) + (0.7152 * supportColor.green * 255.0) + (0.0722 * supportColor.blue * 255.0)
     var contrastGMColor = luminance > 128 ? c_black : c_white
 
     var focusCooldown = Struct.get(player.handler, "focusCooldown")
@@ -1193,7 +1189,7 @@ function GridRenderer() constructor {
     var _x = (player.x - ((player.sprite.texture.width * player.sprite.scaleX) / (2.0 * GRID_SERVICE_PIXEL_WIDTH)) + ((player.sprite.texture.offsetX * player.sprite.scaleX) / GRID_SERVICE_PIXEL_WIDTH) - gridService.view.x) * GRID_SERVICE_PIXEL_WIDTH,
     var _y = (player.y - ((player.sprite.texture.height * player.sprite.scaleY) / (2.0 * GRID_SERVICE_PIXEL_HEIGHT)) + ((player.sprite.texture.offsetY * player.sprite.scaleY) / GRID_SERVICE_PIXEL_HEIGHT) - gridService.view.y) * GRID_SERVICE_PIXEL_HEIGHT
     draw_sprite_ext(texture_player_shadow, 0, _x, _y, scaleX * 0.75, scaleY * 0.75, 0.0, contrastGMColor, alpha * 1.0)
-    draw_sprite_ext(texture_player_shadow, 0, _x, _y, scaleX * 2.25, scaleY * 2.25, 0.0, supportGridColor.toGMColor(), alpha * 0.85)
+    draw_sprite_ext(texture_player_shadow, 0, _x, _y, scaleX * 2.25, scaleY * 2.25, 0.0, supportColor.toGMColor(), alpha * 0.85)
 
     return this
   }
@@ -1687,38 +1683,6 @@ function GridRenderer() constructor {
   ///@private
   ///@param {UILayout} layout
   ///@return {GridRenderer}
-  renderFocusGridSurface = function(layout) {
-    var controller = Beans.get(BeanVisuController)
-    var properties = controller.gridService.properties
-    if (!properties.renderSupportGrid) {
-      return this
-    }
-
-    var width = this.focusGridSurface.width
-    var height = this.focusGridSurface.height
-    var size = properties.supportGridTreshold
-    var color = properties.supportColor.toGMColor()
-    var gridColor = properties.supportGridColor.toGMColor()
-    var focusColor = gridColor
-    var colorAlpha = properties.supportColorAlpha
-    var gridAlpha = properties.supportGridAlpha
-    var focusAlpha = properties.supportFocusAlpha
-    var blendConfig = properties.supportBlendConfig
-    var shaderGaussianBlur = controller.visuRenderer.shaderGaussianBlur
-    GPU.render.clear(color, colorAlpha)
-
-    this.gridSurface.renderStretched(width, height, 0, 0, gridAlpha, color, blendConfig)
-    shaderGaussianBlur.setShader().setSize(width, height, size)
-    this.gridItemSurface.renderStretched(width, height, 0, 0, gridAlpha, color, blendConfig)
-    shaderGaussianBlur.resetShader()
-    this.gridItemSurface.renderStretched(width, height, 0, 0, focusAlpha, focusColor, blendConfig)
-
-    return this
-  }
-
-  ///@private
-  ///@param {UILayout} layout
-  ///@return {GridRenderer}
   renderBackgroundGlitch = function(layout) {
     this.backgroundSurface.renderStretched(layout.width(), layout.height())
     return this
@@ -2011,20 +1975,6 @@ function GridRenderer() constructor {
   }
 
   ///@private
-  ///@param {UILayout} layout
-  ///@return {GridRenderer}
-  renderGUIFocusGridSurface = function(layout) {
-    this.focusGridSurface.renderStretched(
-      layout.width(),
-      layout.height(),
-      layout.x(),
-      layout.y()
-    )
-
-    return this
-  }
-
-  ///@private
   ///@param {PlayerService} playerService
   ///@param {UILayout} layout
   ///@return {GrindRenderer}
@@ -2105,8 +2055,6 @@ function GridRenderer() constructor {
     this.shaderGridSurface
       .renderStretched(width, height, width * 2.0, height * 1.0)
 
-    //this.focusGridSurface
-    //  .renderStretched(width, height, width * 0.0, height * 2.0)
     this.shaderCombinedSurface
       .renderStretched(width, height, width * 2.0, height * 2.0)
 
@@ -2118,7 +2066,6 @@ function GridRenderer() constructor {
     GPU.render.text(marginX + (width * 1.0), marginY + (height * 1.0), "gameSurface", 1.0, 0.0, alpha, color, font, alignH, alignV, outlineColor, outlineFactor)
     GPU.render.text(marginX + (width * 2.0), marginY + (height * 1.0), "shaderGridSurface", 1.0, 0.0, alpha, color, font, alignH, alignV, outlineColor, outlineFactor)
     
-    //GPU.render.text(marginX + (width * 0.0), marginY + (height * 2.0), "focusGridSurface", 1.0, 0.0, alpha, color, font, alignH, alignV, outlineColor, outlineFactor)
     GPU.render.text(marginX + (width * 2.0), marginY + (height * 2.0), "shaderCombinedSurface", 1.0, 0.0, alpha, color, font, alignH, alignV, outlineColor, outlineFactor)
     
     return this
@@ -2127,12 +2074,30 @@ function GridRenderer() constructor {
   ///@param {UILayout} layout
   ///@return {GridRenderer}
   renderGUIGameSurface = function(layout) {
-    this.gameSurface.renderStretched(
-      layout.width(),
-      layout.height(),
-      layout.x(),
-      layout.y()
-    )
+    var controller = Beans.get(BeanVisuController)
+    var properties = controller.gridService.properties
+    var _width = layout.width()
+    var _height = layout.height()
+    var _x = layout.x()
+    var _y = layout.y()
+    if (!properties.renderSupportGrid) {
+      this.gameSurface.renderStretched(_width, _height, _x, _y)
+    } else {
+      var color = properties.supportColor.toGMColor()
+      var colorAlpha = properties.supportColorAlpha
+      var gridAlpha = properties.supportGridAlpha
+      var size = properties.supportGridTreshold
+      var shaderGaussianBlur = controller.visuRenderer.shaderGaussianBlur
+
+      GPU.set.shader(shaderGaussianBlur)
+      var uniform = shaderGaussianBlur.uniforms.get("u_resolution")
+      uniform.setter(uniform.asset, _width, _height)
+      shaderGaussianBlur.uniforms.get("u_size").set(size)
+      this.gameSurface.renderStretched(_width, _height, _x, _y, colorAlpha, color)
+      GPU.reset.shader()
+
+      this.gridSurface.renderStretched(_width, _height, _x, _y, gridAlpha)
+    }
 
     return this
   }
@@ -2213,10 +2178,6 @@ function GridRenderer() constructor {
       .update(width, height)
       .renderOn(this.renderGridItemSurface, layout, true)
 
-    //this.focusGridSurface
-    //  .update(width, height)
-    //  .renderOn(this.renderFocusGridSurface, layout, true)
-
     this.shaderBackgroundSurface
       .update(shaderWidth, shaderHeight)
       .renderOn(this.renderShaderBackgroundSurface, layout, false)
@@ -2252,10 +2213,6 @@ function GridRenderer() constructor {
       this.renderGUIGameSurface(layout)
     }
 
-    //if (properties.renderSupportGrid) {
-    //  this.renderGUIFocusGridSurface(layout)
-    //}
-
     if (Visu.settings.getValue("visu.interface.player-hint")) {
       this.renderPlayerHint(controller.playerService, layout)
     }
@@ -2273,7 +2230,6 @@ function GridRenderer() constructor {
     this.backgroundSurface.free()
     this.gridSurface.free()
     this.gridItemSurface.free()
-    //this.focusGridSurface.free()
     this.gameSurface.free()
     this.shaderGridSurface.free()
     this.shaderBackgroundSurface.free()

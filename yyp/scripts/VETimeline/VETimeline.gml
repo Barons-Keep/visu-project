@@ -2280,7 +2280,9 @@ function VETimeline(_editor) constructor {
           var key = this.items.generateKey(event.timestamp * (100 + random(1000000) + random(100000)))
           var name = Core.isType(_name, String) ? _name : $"channel_{channelName}_event_{key}"
           var component = this.controller.containers.get("ve-timeline-channels").collection.get(channelName)
-          event.parsedData = event.parseData(event.data)
+          if (PRELOAD_TRACK_EVENT) {
+            event.parsedData = event.parseData(event.data)
+          }
 
           return UIButton(
             name,

@@ -78,6 +78,23 @@ global.__VisuComponents = new Map(String, Callable, {
           false
         )
       ),
+      UIText(
+        $"title_{name}_menu-button-entry",
+        Struct.appendRecursive(
+          Struct.appendRecursive(
+            { 
+              layout: layout.nodes.label,
+              updateArea: Callable
+                .run(UIUtil.updateAreaTemplates
+                .get("applyCollectionLayout")),
+            }, 
+            VisuStyles.get("menu-button-entry").title,
+            false
+          ),
+          Struct.get(config, "title"),
+          false
+        )
+      ),
     ])
   },
 

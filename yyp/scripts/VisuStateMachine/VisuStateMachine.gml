@@ -9,7 +9,7 @@ function VisuStateMachine(context, name) {
       initialState: Struct.getIfType(
         Struct.get(Scene.getIntent(), BeanVisuController),
         "initialState", Struct, {
-          name: Core.getProperty("visu.skip-splashscreen") ? "idle" : "splashscreen",
+          name: Core.getProperty("visu.splashscreen.skip") ? "idle" : "splashscreen",
         }),
     }
   }
@@ -37,7 +37,10 @@ function VisuStateMachine(context, name) {
               bkgFactor: (FRAME_MS / 64.0) * -30.0,
               fadeInEmitt: false,
               fadeOutEmitt: false,
+              sfxSkip: false,
               sfxPlayed: false,
+              shaderDissolve: ShaderUtil.fetch("shader_dissolve"),
+              sfx: null,
               logo: Assert.isType(SpriteUtil.parse({ name: "texture_barons_keep" }), Sprite, 
                 "logo must be type of Sprite"),
               label: new UILabel({
@@ -77,20 +80,24 @@ function VisuStateMachine(context, name) {
                   task.state.sfxPlayed = true
                   //controller.sfxService.play("menu-splashscreen")
                   try {
-                    var sound = Assert.isType(SoundUtil.fetch("sound_sfx_intro", { loop: false }), Sound, "sound_sfx_intro must be sound")
+                    var sfx = Assert.isType(SoundUtil.fetch("sound_sfx_intro", { loop: false }), Sound, "sound_sfx_intro must be sound")
                     var ostVolume = Visu.settings.getValue("visu.audio.ost-volume")
-                    sound.play(0.0).setVolume(ostVolume, 0.2)
+                    task.state.sfx = sfx.play(0.0).setVolume(ostVolume, 0.0)
                   } catch (exception) {
                     Logger.error(BeanVisuController, $"Fatal error, splashscreen, {exception.message}")
                     Core.printStackTrace().printException(exception)
                   }
                 }
 
+                if (task.state.sfx != null && !task.state.sfxSkip && task.state.skip) {
+                  task.state.sfxSkip = true
+                  task.state.sfx.setVolume(0.0, task.state.fadeOut.duration)
+                }
                 
                 var interval = 5
                 var duration = 3
                 var amount = 3
-                if (!task.state.fadeInEmitt) {
+                if (!task.state.fadeInEmitt && Core.getProperty("visu.splashscreen.spawn-particles", false)) {
                   task.state.fadeInEmitt = true
                   controller.particleService.spawnParticleEmitter(
                     "main",
@@ -104,27 +111,21 @@ function VisuStateMachine(context, name) {
                     FRAME_MS * interval
                   )
                 }
-
                 controller.particleService.update().systems.get("main").render()
-                if (shader_is_compiled(shader_dissolve)) {
-                  var u_time = shader_get_uniform(shader_dissolve, "u_time")
 
-                  var time = (0.75 * task.state.fadeIn.getProgress())
-                    + (2.5 * task.state.duration.getProgress())
-                    + (0.75 * task.state.fadeOut.getProgress())
-                  shader_set(shader_dissolve)
-                  shader_set_uniform_f(u_time, 6.0 + time)
-                  task.state.logo
-                    .scaleToFit(max(displayService.minWidth, ((time * 50.0) + width) / 1.5), max(displayService.minHeight, ((time * 50.0) + height) / 1.5))
-                    .setAlpha(task.state.alpha)
-                    .render(width / 2.0, height / 2.0)
-                  shader_reset()
-                } else {
-                  task.state.logo
-                    .scaleToFit(max(displayService.minWidth, width / 1.5), max(displayService.minHeight, height / 1.5))
-                    .setAlpha(task.state.alpha)
-                    .render(width / 2.0, height / 2.0)
-                }
+                var shaderDissolve = task.state.shaderDissolve
+                var time = (0.75 * task.state.fadeIn.getProgress())
+                  + (2.5 * task.state.duration.getProgress())
+                  + (0.75 * task.state.fadeOut.getProgress())
+                GPU.set.shader(shaderDissolve)
+                shaderDissolve.uniforms
+                  .get("u_time")
+                  .set(6.0 + time)
+                task.state.logo
+                  .scaleToFit(max(displayService.minWidth, ((time * 50.0) + width) / 1.5), max(displayService.minHeight, ((time * 50.0) + height) / 1.5))
+                  .setAlpha(task.state.alpha)
+                  .render(width / 2.0, height / 2.0)
+                GPU.reset.shader()
 
                 task.state.label
                   .setAlpha(task.state.skipAlpha)

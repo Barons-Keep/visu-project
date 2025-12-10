@@ -33,8 +33,13 @@ function ShaderUniform(_asset, _name, _type) constructor {
   ///@type {GMShaderUniform}
   asset = Assert.isType(shader_get_uniform(_asset, this.name), GMShaderUniform, $"Cannot parse uniform {name}")
 
+  ///@type {Callable}
+  setter = Lambda.passthrough
+
   ///@param {any} value
-  static set = function(value) { }
+  static set = function(value) { 
+    this.setter(value)
+  }
 }
 
 
@@ -44,9 +49,13 @@ function ShaderUniform(_asset, _name, _type) constructor {
 function ShaderUniformColor(_asset, _name, _type = ShaderUniformType.COLOR): ShaderUniform(_asset, _name, _type) constructor {
 
   ///@override
+  ///@type {Callable}
+  setter = shader_set_uniform_f
+
+  ///@override
   ///@param {Color} color
   static set = function(color) {
-    shader_set_uniform_f(this.asset, color.red, color.green, color.blue)
+    this.setter(this.asset, color.red, color.green, color.blue)
   }
 }
 
@@ -57,9 +66,13 @@ function ShaderUniformColor(_asset, _name, _type = ShaderUniformType.COLOR): Sha
 function ShaderUniformFloat(_asset, _name, _type = ShaderUniformType.FLOAT): ShaderUniform(_asset, _name, _type) constructor {
 
   ///@override
+  ///@type {Callable}
+  setter = shader_set_uniform_f
+
+  ///@override
   ///@param {Number} value
   static set = function(value) {
-    shader_set_uniform_f(this.asset, value)
+    this.setter(this.asset, value)
   }
 }
 
@@ -69,9 +82,13 @@ function ShaderUniformFloat(_asset, _name, _type = ShaderUniformType.FLOAT): Sha
 function ShaderUniformConstFloat(_asset, _name, _type = ShaderUniformType.CONST_FLOAT): ShaderUniform(_asset, _name, _type) constructor {
 
   ///@override
+  ///@type {Callable}
+  setter = shader_set_uniform_f
+
+  ///@override
   ///@param {Number} value
   static set = function(value) {
-    shader_set_uniform_f(this.asset, value)
+    this.setter(this.asset, value)
   }
 }
 
@@ -82,9 +99,13 @@ function ShaderUniformConstFloat(_asset, _name, _type = ShaderUniformType.CONST_
 function ShaderUniformVector2(_asset, _name, _type = ShaderUniformType.VECTOR2): ShaderUniform(_asset, _name, _type) constructor {
 
   ///@override
+  ///@type {Callable}
+  setter = shader_set_uniform_f
+
+  ///@override
   ///@param {Vector2} vec2
   static set = function(vec2) {
-    shader_set_uniform_f(this.asset, vec2.x, vec2.y)
+    this.setter(this.asset, vec2.x, vec2.y)
   }
 }
 
@@ -95,9 +116,13 @@ function ShaderUniformVector2(_asset, _name, _type = ShaderUniformType.VECTOR2):
 function ShaderUniformVector3(_asset, _name, _type = ShaderUniformType.VECTOR3): ShaderUniform(_asset, _name, _type) constructor {
 
   ///@override
+  ///@type {Callable}
+  setter = shader_set_uniform_f
+
+  ///@override
   ///@param {Vector3} vec3
   static set = function(vec3) {
-    shader_set_uniform_f(this.asset, vec3.x, vec3.y, vec3.z)
+    this.setter(this.asset, vec3.x, vec3.y, vec3.z)
   }
 }
 
@@ -108,9 +133,13 @@ function ShaderUniformVector3(_asset, _name, _type = ShaderUniformType.VECTOR3):
 function ShaderUniformVector4(_asset, _name, _type = ShaderUniformType.VECTOR4): ShaderUniform(_asset, _name, _type) constructor {
 
   ///@override
+  ///@type {Callable}
+  setter = shader_set_uniform_f
+
+  ///@override
   ///@param {Vector4} vec4
   static set = function(vec4) {
-    shader_set_uniform_f(this.asset, vec4.x, vec4.y, vec4.z, vec4.a)
+    this.setter(this.asset, vec4.x, vec4.y, vec4.z, vec4.a)
   }
 }
 
@@ -121,9 +150,13 @@ function ShaderUniformVector4(_asset, _name, _type = ShaderUniformType.VECTOR4):
 function ShaderUniformResolution(_asset, _name, _type = ShaderUniformType.RESOLUTION): ShaderUniform(_asset, _name, _type) constructor {
 
   ///@override
+  ///@type {Callable}
+  setter = shader_set_uniform_f
+
+  ///@override
   ///@param {Vector2} vec2
   static set = function(vec2) {
-    shader_set_uniform_f(this.asset, vec2.x, vec2.y)
+    this.setter(this.asset, vec2.x, vec2.y)
   }
 }
 
@@ -134,8 +167,12 @@ function ShaderUniformResolution(_asset, _name, _type = ShaderUniformType.RESOLU
 function ShaderUniformAudioWaveform(_asset, _name, _type = ShaderUniformType.AUDIO_WAVEFORM): ShaderUniform(_asset, _name, _type) constructor {
 
   ///@override
+  ///@type {Callable}
+  setter = shader_set_uniform_f_array
+
+  ///@override
   ///@param {Number} value
   static set = function(value) {
-    shader_set_uniform_f_array(this.asset, SHADER_AUDIO_WAVEFORM_VALUE)
+    this.setter(this.asset, SHADER_AUDIO_WAVEFORM_VALUE)
   }
 }

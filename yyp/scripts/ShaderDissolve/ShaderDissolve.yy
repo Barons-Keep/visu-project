@@ -1,12 +1,13 @@
 {
-  "$GMShader":"",
-  "%Name":"shader_dissolve",
-  "name":"shader_dissolve",
+  "$GMScript":"v1",
+  "%Name":"ShaderDissolve",
+  "isCompatibility":false,
+  "isDnD":false,
+  "name":"ShaderDissolve",
   "parent":{
     "name":"shader_dissolve",
     "path":"folders/io.alkapivo.core/resource/shader/screen/shader_dissolve.yy",
   },
-  "resourceType":"GMShader",
+  "resourceType":"GMScript",
   "resourceVersion":"2.0",
-  "type":1,
 }
