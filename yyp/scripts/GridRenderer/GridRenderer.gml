@@ -1818,7 +1818,7 @@ function GridRenderer() constructor {
     }
 
     if (properties.renderSupportGrid) {
-      this.gridSurface.renderStretched(width, height, 0, 0, properties.supportGridAlpha)
+      this.gridItemSurface.renderStretched(width, height, 0, 0, properties.supportGridAlpha)
     }
 
     return this
