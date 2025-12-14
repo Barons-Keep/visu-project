@@ -1328,40 +1328,69 @@ function GridRenderer() constructor {
   ///@param {UILayout} layout
   ///@return {GridRenderer}
   renderBackgroundSurface = function(layout) {
-    static beginCamera = function(renderer, properties, width, height) {
-      var depths = properties.depths
-      var camera = renderer.camera
-      var gmCamera = camera.get()
-      var cameraAngle = camera.angle + (sin(camera.breathTimer2.time / 4.0) * BREATH_TIMER_FACTOR_2)
-      var cameraPitch = camera.pitch + (sin(camera.breathTimer1.time) * BREATH_TIMER_FACTOR_1)
-      var xto = camera.x + (sin(camera.breathTimer2.time) * GRID_SERVICE_PIXEL_WIDTH * -1.0)
-      var yto = camera.y
-      var zto = camera.z
-      var xfrom = xto + dcos(cameraAngle) * dcos(cameraPitch)
-      var yfrom = yto - dsin(cameraAngle) * dcos(cameraPitch)
-      var zfrom = zto - dsin(cameraPitch)
-      var baseX = GRID_SERVICE_PIXEL_WIDTH + GRID_SERVICE_PIXEL_WIDTH * 0.5
-      var baseY = GRID_SERVICE_PIXEL_HEIGHT + GRID_SERVICE_PIXEL_HEIGHT * 0.5
-      camera.viewMatrix = matrix_build_lookat(xfrom, yfrom, zfrom, xto, yto, zto, 0, 0, 1)
-      camera.projectionMatrix = matrix_build_projection_perspective_fov(-60, -1 * (width / height), 1, 32000) 
-      camera_set_view_mat(gmCamera, camera.viewMatrix)
-      camera_set_proj_mat(gmCamera, camera.projectionMatrix)
-      camera_apply(gmCamera)
-      matrix_set(matrix_world, matrix_build(
-        baseX, baseY, depths.gridZ - 10, 
-        global.cameraRollSpeed, global.cameraPitchSpeed, global.cameraYawSpeed,
-        1, 1, 1
-      ))
-    }
+    static renderLayer = function(context, controller, gridService, shroomService, particleService, properties, width, height) {
+      
+      static beginCamera = function(renderer, properties, width, height) {
+        var depths = properties.depths
+        var camera = renderer.camera
+        var gmCamera = camera.get()
+        var cameraAngle = camera.angle + (sin(camera.breathTimer2.time / 4.0) * BREATH_TIMER_FACTOR_2)
+        var cameraPitch = camera.pitch + (sin(camera.breathTimer1.time) * BREATH_TIMER_FACTOR_1)
+        var xto = camera.x + (sin(camera.breathTimer2.time) * GRID_SERVICE_PIXEL_WIDTH * -1.0)
+        var yto = camera.y
+        var zto = camera.z
+        var xfrom = xto + dcos(cameraAngle) * dcos(cameraPitch)
+        var yfrom = yto - dsin(cameraAngle) * dcos(cameraPitch)
+        var zfrom = zto - dsin(cameraPitch)
+        var baseX = GRID_SERVICE_PIXEL_WIDTH + GRID_SERVICE_PIXEL_WIDTH * 0.5
+        var baseY = GRID_SERVICE_PIXEL_HEIGHT + GRID_SERVICE_PIXEL_HEIGHT * 0.5
+        camera.viewMatrix = matrix_build_lookat(xfrom, yfrom, zfrom, xto, yto, zto, 0, 0, 1)
+        camera.projectionMatrix = matrix_build_projection_perspective_fov(-60, -1 * (width / height), 1, 32000) 
+        camera_set_view_mat(gmCamera, camera.viewMatrix)
+        camera_set_proj_mat(gmCamera, camera.projectionMatrix)
+        camera_apply(gmCamera)
+        matrix_set(matrix_world, matrix_build(
+          baseX, baseY, depths.gridZ - 10, 
+          global.cameraRollSpeed, global.cameraPitchSpeed, global.cameraYawSpeed,
+          1, 1, 1
+        ))
+      }
 
-    static endCamera = function(camera, width, height) {
-      var gmCamera = camera.get()
-      camera.viewMatrix = matrix_build_lookat(width, height, -1000, width, height, 0, 0, 1, 0)
-      camera.projectionMatrix = matrix_build_projection_ortho(width, height, 1, 32000);
-      camera_set_view_mat(gmCamera, camera.viewMatrix)
-      camera_set_proj_mat(gmCamera, camera.projectionMatrix)
-      camera_apply(gmCamera)
-      matrix_set(matrix_world, matrix_build(width / 2, height / 2, -1, 0, 0, 0, 1, 1, 1))
+      static endCamera = function(camera, width, height) {
+        var gmCamera = camera.get()
+        camera.viewMatrix = matrix_build_lookat(width, height, -1000, width, height, 0, 0, 1, 0)
+        camera.projectionMatrix = matrix_build_projection_ortho(width, height, 1, 32000);
+        camera_set_view_mat(gmCamera, camera.viewMatrix)
+        camera_set_proj_mat(gmCamera, camera.projectionMatrix)
+        camera_apply(gmCamera)
+        matrix_set(matrix_world, matrix_build(width / 2, height / 2, -1, 0, 0, 0, 1, 1, 1))
+      }
+
+      if (properties.renderVideoAfter) {
+        if (properties.renderBackground) {
+          context.overlayRenderer.renderBackgrounds(width, height)
+          beginCamera(context, properties, width, height)
+          context.overlayRenderer.renderGrids(width, height, (width * 0.5) - (GRID_SERVICE_PIXEL_WIDTH / 2.0), (height * 0.5) + (GRID_SERVICE_PIXEL_HEIGHT / 2.0))
+          endCamera(context.camera, width, height)
+        }
+          
+        if (properties.renderVideo) {
+          context.overlayRenderer.renderVideo(width, height, properties.videoAlpha,
+            properties.videoBlendColor.toGMColor(), properties.videoBlendConfig)
+        }
+      } else {
+        if (properties.renderVideo) {
+          context.overlayRenderer.renderVideo(width, height, properties.videoAlpha,
+            properties.videoBlendColor.toGMColor(), properties.videoBlendConfig)
+        }
+      
+        if (properties.renderBackground) {
+          context.overlayRenderer.renderBackgrounds(width, height)
+          beginCamera(context, properties, width, height)
+          context.overlayRenderer.renderGrids(width, height, (width * 0.5) - (GRID_SERVICE_PIXEL_WIDTH / 2.0), (height * 0.5) + (GRID_SERVICE_PIXEL_HEIGHT / 2.0))
+          endCamera(context.camera, width, height)
+        }
+      }
     }
 
     var controller = Beans.get(BeanVisuController)
@@ -1376,30 +1405,21 @@ function GridRenderer() constructor {
     //GPU.render.clear(c_black, 0.0)
     GPU.render.clear(properties.gridClearColor.toGMColor(), properties.gridClearFrameAlpha)
 
-    if (properties.renderVideoAfter) {
-      if (properties.renderBackground) {
-        this.overlayRenderer.renderBackgrounds(width, height)
-        beginCamera(this, properties, width, height)
-        this.overlayRenderer.renderGrids(width, height, (width * 0.5) - (GRID_SERVICE_PIXEL_WIDTH / 2.0), (height * 0.5) + (GRID_SERVICE_PIXEL_HEIGHT / 2.0))
-        endCamera(this.camera, width, height)
-      }
-        
-      if (properties.renderVideo) {
-        this.overlayRenderer.renderVideo(width, height, properties.videoAlpha,
-          properties.videoBlendColor.toGMColor(), properties.videoBlendConfig)
-      }
+    if (properties.renderSupportGrid) {
+      var color = properties.supportColor.toGMColor()
+      var colorAlpha = properties.supportColorAlpha
+      var gridAlpha = properties.supportGridAlpha
+      var size = properties.supportGridTreshold
+      var shaderGaussianBlur = controller.visuRenderer.shaderGaussianBlur
+
+      GPU.set.shader(shaderGaussianBlur)
+      var uniform = shaderGaussianBlur.uniforms.get("u_resolution")
+      uniform.setter(uniform.asset, width, height)
+      shaderGaussianBlur.uniforms.get("u_size").set(size)
+      renderLayer(this, controller, gridService, shroomService, particleService, properties, width, height)
+      GPU.reset.shader()
     } else {
-      if (properties.renderVideo) {
-        this.overlayRenderer.renderVideo(width, height, properties.videoAlpha,
-          properties.videoBlendColor.toGMColor(), properties.videoBlendConfig)
-      }
-    
-      if (properties.renderBackground) {
-        this.overlayRenderer.renderBackgrounds(width, height)
-        beginCamera(this, properties, width, height)
-        this.overlayRenderer.renderGrids(width, height, (width * 0.5) - (GRID_SERVICE_PIXEL_WIDTH / 2.0), (height * 0.5) + (GRID_SERVICE_PIXEL_HEIGHT / 2.0))
-        endCamera(this.camera, width, height)
-      }
+      renderLayer(this, controller, gridService, shroomService, particleService, properties, width, height)
     }
 
     return this
@@ -1806,7 +1826,11 @@ function GridRenderer() constructor {
     }
 
     if (properties.renderForeground) {
-      this.overlayRenderer.renderForegrounds(layout.width(), layout.height())
+      this.overlayRenderer.renderForegrounds(width, height)
+    }
+
+    if (properties.renderSupportGrid) {
+      this.gridSurface.renderStretched(width, height, 0, 0, properties.supportGridAlpha)
     }
 
     return this
@@ -2080,25 +2104,7 @@ function GridRenderer() constructor {
     var _height = layout.height()
     var _x = layout.x()
     var _y = layout.y()
-    if (!properties.renderSupportGrid) {
-      this.gameSurface.renderStretched(_width, _height, _x, _y)
-    } else {
-      var color = properties.supportColor.toGMColor()
-      var colorAlpha = properties.supportColorAlpha
-      var gridAlpha = properties.supportGridAlpha
-      var size = properties.supportGridTreshold
-      var shaderGaussianBlur = controller.visuRenderer.shaderGaussianBlur
-
-      GPU.set.shader(shaderGaussianBlur)
-      var uniform = shaderGaussianBlur.uniforms.get("u_resolution")
-      uniform.setter(uniform.asset, _width, _height)
-      shaderGaussianBlur.uniforms.get("u_size").set(size)
-      this.gameSurface.renderStretched(_width, _height, _x, _y, colorAlpha, color)
-      GPU.reset.shader()
-
-      this.gridSurface.renderStretched(_width, _height, _x, _y, gridAlpha)
-    }
-
+    this.gameSurface.renderStretched(_width, _height, _x, _y)
     return this
   }
 
