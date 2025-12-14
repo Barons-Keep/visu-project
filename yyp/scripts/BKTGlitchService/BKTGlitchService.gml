@@ -84,6 +84,12 @@ function BKTGlitchService() constructor {
   ///@type {Number}
   factor = 0.1
 
+  ///@type {Number}
+  time = 0.0
+
+  ///@type {Boolean}
+  isEmpty = false
+
   ///@type {Map<String, Struct>}
   configs = new Map(String, Struct, {
     "clear": {
@@ -173,9 +179,6 @@ function BKTGlitchService() constructor {
     }
   }))
 
-  ///@type {Number}
-  time = 0.0
-
   ///@param {Event} event
   ///@return {?Promise}
   send = function(event) {
@@ -190,7 +193,7 @@ function BKTGlitchService() constructor {
     this.dispatcher.update()
     this.width = width
     this.height = height
-    __bktgtlich_ui_step(this.rng, this.factor)
+    this.isEmpty = __bktgtlich_ui_step(this.rng, this.factor)
     this.rng = false
 
     //if (keyboard_check_pressed(vk_enter)) {
@@ -203,10 +206,15 @@ function BKTGlitchService() constructor {
   ///@param {any} data
   ///@return {BKTGlitch}
   renderOn = function(callback, data) {
-    bktglitch_activate(this.width, this.height, this.time)
-		__bktgtlich_pass_uniforms_from_ui()
-    callback(data)
-    bktglitch_deactivate()
+    if (this.isEmpty) {
+      callback(data)
+    } else {
+      bktglitch_activate(this.width, this.height, this.time)
+		  __bktgtlich_pass_uniforms_from_ui()
+      callback(data)
+      bktglitch_deactivate() 
+    }
+
     return this
   }
 }

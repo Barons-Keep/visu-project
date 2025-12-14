@@ -63,22 +63,30 @@ function __bktgtlich_ui_init() {
 	}
 
 
+  ///@param {Boolean} rng
+  ///@param {Number} factor
+  ///@return {Boolean}
   function __bktgtlich_ui_step(rng, factor) {
+    var size = array_length(attr)
     if (rng) {
-      for (var i = 0; i < array_length(attr); i++) {
+      for (var i = 0; i < size; i++) {
         if (i == prop.intensity) {
           continue 
         }
         valTo[i]  = random_range(limit[i, 0], limit[i, 1])
         attr[i] = valTo[i] 
       }
+      return false
     } else {
-      for (var i = 0; i < array_length(attr); i++) {
+      var sum = 0.0
+      for (var i = 0; i < size; i++) {
         if (i == prop.intensity) {
           continue 
         }
-        attr[i] = clamp(attr[i] - factor, 0, 1000.0)
+        attr[i] = clamp(attr[i] - factor, 0.0, 1000.0)
+        sum += attr[i]
       }
+      return sum == 0.0
     }
   }
 
@@ -249,77 +257,77 @@ function __bktgtlich_ui_init() {
       lineSpeed: {
         minValue: 0.0,
         maxValue: 0.7,
-        defValue: 0.0
+        defValue: 0.0,
       },
       lineShift: {
         minValue: 0.0,
         maxValue: 0.3,
-        defValue: 0.0
+        defValue: 0.0,
       },
       lineResolution: {
         minValue: 0.0,
         maxValue: 3.0,
-        defValue: 0
+        defValue: 0.0,
       },
       lineVertShift: {
         minValue: 0.0,
         maxValue: 1.0,
-        defValue: 0.0
+        defValue: 0.0,
       },
       lineDrift: {
         minValue: 0.0,
         maxValue: 0.5,
-        defValue: 0
+        defValue: 0.0,
       },
       jumbleSpeed: {
-        minValue: 0,
+        minValue: 0.0,
         maxValue: 0.8,
-        defValue: 0
+        defValue: 0.0,
       },
       jumbleShift: {
-        minValue: 0,
+        minValue: 0.0,
         maxValue: 2.2,
-        defValue: 0
+        defValue: 0.0,
       },
       jumbleResolution: {
-        minValue: 0,
+        minValue: 0.0,
         maxValue: 0.64,
-        defValue: 0
+        defValue: 0.0,
       },
       jumbleness: {
-        minValue: 0,
-        maxValue: 0,
-        defValue: 0
+        minValue: 0.0,
+        maxValue: 0.0,
+        defValue: 0.0,
       },
       dispersion: {
-        minValue: 0,
-        maxValue: 0,
-        defValue: 0
+        minValue: 0.0,
+        maxValue: 0.0,
+        defValue: 0.0,
       },
       channelShift: {
-        minValue: 0,
-        maxValue: 0,
-        defValue: 0
+        minValue: 0.0,
+        maxValue: 0.0,
+        defValue: 0.0,
       },
       noiseLevel: {
-        minValue: 0,
-        maxValue: 0,
-        defValue: 0
+        minValue: 0.0,
+        maxValue: 0.0,
+        defValue: 0.0,
       },
       shakiness: {
-        minValue: 0,
-        maxValue: 0,
-        defValue: 0
+        minValue: 0.0,
+        maxValue: 0.0,
+        defValue: 0.0,
       },
       rngSeed: {
-        minValue: 0,
-        maxValue: 0,
-        defValue: 0
+        minValue: 0.0,
+        maxValue: 0.0,
+        defValue: 0.0,
       },
       intensity: {
         minValue: 0.0,
         maxValue: 0.0,
-        defValue: 0.08
+        defValue: 0.0,
       }
     }
 

@@ -26,7 +26,7 @@
     },
     "bktGlitch": {
       "remote": "https://github.com/Alkapivo/fyi.odditica.bktGlitch-gml.git",
-      "revision": "25.12.09"
+      "revision": "25.12.14"
     },
     "track": {
       "remote": "https://github.com/Barons-Keep/visu-track.git",

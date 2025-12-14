@@ -38,24 +38,12 @@ function GridRenderer() constructor {
 
   ///@private
   ///@type {Surface}
-  shaderGridSurface = new Surface({ 
+  ///*
+  shaderBufferSurface = new Surface({ 
     width: ceil(GuiWidth() * Visu.settings.getValue("visu.graphics.shader-quality", 1.0)), 
     height: ceil(GuiHeight() * Visu.settings.getValue("visu.graphics.shader-quality", 1.0)),
   })
-
-  ///@private
-  ///@type {Surface}
-  shaderBackgroundSurface = new Surface({ 
-    width: ceil(GuiWidth() * Visu.settings.getValue("visu.graphics.shader-quality", 1.0)), 
-    height: ceil(GuiHeight() * Visu.settings.getValue("visu.graphics.shader-quality", 1.0)),
-  })
-  
-  ///@private
-  ///@type {Surface}
-  shaderCombinedSurface = new Surface({ 
-    width: ceil(GuiWidth() * Visu.settings.getValue("visu.graphics.shader-quality", 1.0)), 
-    height: ceil(GuiHeight() * Visu.settings.getValue("visu.graphics.shader-quality", 1.0)),
-  })
+  //*/
 
   ///@private
   ///@type {BKTGlitchService}
@@ -68,101 +56,6 @@ function GridRenderer() constructor {
   ///@private
   ///@type {BKTGlitchService}
   combinedGlitchService = new BKTGlitchService()
-
-  ///@private
-  ///@return {VisuHUDRenderer}
-  setGlitchServiceConfig = function(glitchService, factor = 0.0, useConfig = true) {
-    var config = {
-      lineSpeed: {
-        defValue: 0.01,
-        minValue: 0.0,
-        maxValue: 0.5,
-      },
-      lineShift: {
-        defValue: 0.0,
-        minValue: 0.0,
-        maxValue: 0.05,
-      },
-      lineResolution: {
-        defValue: 0.0,
-        minValue: 0.0,
-        maxValue: 3.0,
-      },
-      lineVertShift: {
-        defValue: 0.0,
-        minValue: 0.0,
-        maxValue: 1.0,
-      },
-      lineDrift: {
-        defValue: 0.0,
-        minValue: 0.0,
-        maxValue: 1.0,
-      },
-      jumbleSpeed: {
-        defValue: 4.5,
-        minValue: 0.0,
-        maxValue: 25.0,
-      },
-      jumbleShift: {
-        defValue: 0.059999999999999998,
-        minValue: 0.0,
-        maxValue: 1.0,
-      },
-      jumbleResolution: {
-        defValue: 0.25,
-        minValue: 0.0,
-        maxValue: 1.0,
-      },
-      jumbleness: {
-        defValue: 0.10000000000000001,
-        minValue: 0.0,
-        maxValue: 1.0,
-      },
-      dispersion: {
-        defValue: 0.002,
-        minValue: 0.0,
-        maxValue: 0.5,
-      },
-      channelShift: {
-        defValue: 0.00050000000000000001,
-        minValue: 0.0,
-        maxValue: 0.05,
-      },
-      noiseLevel: {
-        defValue: 0.10000000000000001,
-        minValue: 0.0,
-        maxValue: 1.0,
-      },
-      shakiness: {
-        defValue: 0.5,
-        minValue: 0.0,
-        maxValue: 10.0,
-      },
-      rngSeed: {
-        defValue: 0.66600000000000004,
-        minValue: 0.0,
-        maxValue: 1.0,
-      },
-      intensity: {
-        defValue: 0.40000000000000002,
-        minValue: 0.0,
-        maxValue: 5.0,
-      },
-    }
-
-    if (useConfig) {
-      glitchService.dispatcher
-        .execute(new Event("load-config", config))
-    }
-
-    glitchService.dispatcher
-      .execute(new Event("spawn-glitch", { 
-        factor: factor, 
-        rng: !useConfig
-      }))
-    
-      return this
-  }
 
   ///@private
   ///@type {Timer}
@@ -199,6 +92,101 @@ function GridRenderer() constructor {
   ///@private
   ///@type {?PathTrack}
   pathTrack = null;//new PathTrack().build(3.0 * GAME_FPS)
+
+  ///@private
+  ///@return {VisuHUDRenderer}
+  setGlitchServiceConfig = function(glitchService, factor = 0.0, useConfig = true) {
+    var config = {
+      lineSpeed: {
+        defValue: 0.0,
+        minValue: 0.0,
+        maxValue: 0.5,
+      },
+      lineShift: {
+        defValue: 0.0,
+        minValue: 0.0,
+        maxValue: 0.05,
+      },
+      lineResolution: {
+        defValue: 0.0,
+        minValue: 0.0,
+        maxValue: 3.0,
+      },
+      lineVertShift: {
+        defValue: 0.0,
+        minValue: 0.0,
+        maxValue: 1.0,
+      },
+      lineDrift: {
+        defValue: 0.0,
+        minValue: 0.0,
+        maxValue: 1.0,
+      },
+      jumbleSpeed: {
+        defValue: 0.0,
+        minValue: 0.0,
+        maxValue: 25.0,
+      },
+      jumbleShift: {
+        defValue: 0.0,
+        minValue: 0.0,
+        maxValue: 1.0,
+      },
+      jumbleResolution: {
+        defValue: 0.0,
+        minValue: 0.0,
+        maxValue: 1.0,
+      },
+      jumbleness: {
+        defValue: 0.0,
+        minValue: 0.0,
+        maxValue: 1.0,
+      },
+      dispersion: {
+        defValue: 0.0,
+        minValue: 0.0,
+        maxValue: 0.5,
+      },
+      channelShift: {
+        defValue: 0.0,
+        minValue: 0.0,
+        maxValue: 0.05,
+      },
+      noiseLevel: {
+        defValue: 0.0,
+        minValue: 0.0,
+        maxValue: 1.0,
+      },
+      shakiness: {
+        defValue: 0.0,
+        minValue: 0.0,
+        maxValue: 10.0,
+      },
+      rngSeed: {
+        defValue: 0.0,
+        minValue: 0.0,
+        maxValue: 1.0,
+      },
+      intensity: {
+        defValue: 0.0,
+        minValue: 0.0,
+        maxValue: 5.0,
+      },
+    }
+
+    if (useConfig) {
+      glitchService.dispatcher
+        .execute(new Event("load-config", config))
+    }
+
+    glitchService.dispatcher
+      .execute(new Event("spawn-glitch", { 
+        factor: factor, 
+        rng: !useConfig
+      }))
+    
+      return this
+  }
 
   ///@private
   ///@param {GridService} gridService
@@ -1841,10 +1829,11 @@ function GridRenderer() constructor {
   ///@return {GridRenderer}
   renderShaderBackgroundSurface = function(layout) {
     static renderBackgroundShader = function(task, index, gridRenderer) {
-      GPU.set.surface(gridRenderer.shaderBackgroundSurface)
+      var surface = gridRenderer.shaderBufferSurface
+      GPU.set.surface(surface)
       gridRenderer.backgroundSurface.renderStretched(
-        gridRenderer.shaderGridSurface.width, 
-        gridRenderer.shaderGridSurface.height, 
+        surface.width, 
+        surface.height, 
         0, 
         0,
         task.state.getDefault("alpha", 1.0)
@@ -1853,8 +1842,9 @@ function GridRenderer() constructor {
     }
 
     static postRenderBackgroundShader = function(task, index, gridRenderer) {
+      var surface = gridRenderer.shaderBufferSurface
       GPU.set.surface(gridRenderer.backgroundSurface)
-      gridRenderer.shaderBackgroundSurface.renderStretched(
+      surface.renderStretched(
         gridRenderer.backgroundSurface.width, 
         gridRenderer.backgroundSurface.height, 
         0, 
@@ -1871,11 +1861,12 @@ function GridRenderer() constructor {
       return this
     }
 
-    var width = this.shaderGridSurface.width
-    var height = this.shaderGridSurface.height
+    var surface = this.shaderBufferSurface
+    var width = surface.width
+    var height = surface.height
     var shaderPipeline = controller.shaderBackgroundPipeline
 
-    GPU.set.surface(this.shaderBackgroundSurface)
+    GPU.set.surface(surface)
     GPU.render.clear(c_black, 0.0)
     //GPU.render.clear(properties.shaderClearColor.toGMColor(), properties.shaderClearFrameAlpha)
     GPU.reset.surface()
@@ -1893,10 +1884,11 @@ function GridRenderer() constructor {
   ///@return {GridRenderer}
   renderShaderGridSurface = function(layout) {
     static renderGridShader = function(task, index, gridRenderer) {
-      GPU.set.surface(gridRenderer.shaderGridSurface)
+      var surface = gridRenderer.shaderBufferSurface
+      GPU.set.surface(surface)
       gridRenderer.gridSurface.renderStretched(
-        gridRenderer.shaderGridSurface.width, 
-        gridRenderer.shaderGridSurface.height, 
+        surface.width, 
+        surface.height, 
         0, 
         0,
         task.state.getDefault("alpha", 1.0)
@@ -1905,8 +1897,9 @@ function GridRenderer() constructor {
     }
 
     static postRenderGridShader = function(task, index, gridRenderer) {
+      var surface = gridRenderer.shaderBufferSurface
       GPU.set.surface(gridRenderer.gridSurface)
-      gridRenderer.shaderGridSurface.renderStretched(
+      surface.renderStretched(
         gridRenderer.gridSurface.width, 
         gridRenderer.gridSurface.height, 
         0, 
@@ -1923,11 +1916,12 @@ function GridRenderer() constructor {
       return this
     }
 
-    var width = this.shaderGridSurface.width
-    var height = this.shaderGridSurface.height
+    var surface = this.shaderBufferSurface
+    var width = surface.width
+    var height = surface.height
     var shaderPipeline = controller.shaderPipeline
 
-    GPU.set.surface(this.shaderGridSurface)
+    GPU.set.surface(surface)
     GPU.render.clear(c_black, 0.0)
     //if (properties.shaderClearFrame) {
     //  GPU.render.clear(properties.shaderClearColor.toGMColor(), properties.shaderClearFrameAlpha)
@@ -1951,10 +1945,11 @@ function GridRenderer() constructor {
   ///@return {GridRenderer}
   renderShaderCombinedSurface = function(layout) {
     static renderCombinedShader = function(task, index, gridRenderer) {
-      GPU.set.surface(gridRenderer.shaderCombinedSurface)
+      var surface = gridRenderer.shaderBufferSurface
+      GPU.set.surface(surface)
       gridRenderer.gameSurface.renderStretched(
-        gridRenderer.shaderCombinedSurface.width, 
-        gridRenderer.shaderCombinedSurface.height, 
+        surface.width, 
+        surface.height, 
         0, 
         0,
         task.state.getDefault("alpha", 1.0)
@@ -1963,8 +1958,9 @@ function GridRenderer() constructor {
     }
     
     static postRenderCombinedShader = function(task, index, gridRenderer) {
+      var surface = gridRenderer.shaderBufferSurface
       GPU.set.surface(gridRenderer.gameSurface)
-      gridRenderer.shaderCombinedSurface.renderStretched(
+      surface.renderStretched(
         gridRenderer.gameSurface.width, 
         gridRenderer.gameSurface.height, 
         0, 
@@ -1981,11 +1977,12 @@ function GridRenderer() constructor {
       return this
     }
 
-    var width = this.shaderCombinedSurface.width
-    var height = this.shaderCombinedSurface.height
+    var surface = this.shaderBufferSurface
+    var width = surface.width
+    var height = surface.height
     var shaderPipeline = controller.shaderCombinedPipeline
 
-    GPU.set.surface(this.shaderCombinedSurface)
+    GPU.set.surface(surface)
     GPU.render.clear(c_black, 0.0)
     //GPU.render.clear(properties.shaderClearColor.toGMColor(), properties.shaderClearFrameAlpha)
     GPU.reset.surface()
@@ -2053,8 +2050,8 @@ function GridRenderer() constructor {
   ///@private
   ///@return {GrindRenderer}
   renderDebugSurfaces = function() {
-    var width = round(GuiWidth() / 3.0)
-    var height = round(GuiHeight() / 3.0)
+    var width = round(GuiWidth() / 2.0)
+    var height = round(GuiHeight() / 2.0)
     var marginX = 28
     var marginY = 28
     var alpha = 1.0
@@ -2069,28 +2066,17 @@ function GridRenderer() constructor {
       .renderStretched(width, height, width * 0.0, height * 0.0)
     this.backgroundSurface
       .renderStretched(width, height, width * 1.0, height * 0.0)
-    this.shaderBackgroundSurface
-      .renderStretched(width, height, width * 2.0, height * 0.0)
     
     this.gridSurface
       .renderStretched(width, height, width * 0.0, height * 1.0)
     this.gameSurface
       .renderStretched(width, height, width * 1.0, height * 1.0)
-    this.shaderGridSurface
-      .renderStretched(width, height, width * 2.0, height * 1.0)
-
-    this.shaderCombinedSurface
-      .renderStretched(width, height, width * 2.0, height * 2.0)
 
     GPU.render.text(marginX + (width * 0.0), marginY + (height * 0.0), "gridItemSurface", 1.0, 0.0, alpha, color, font, alignH, alignV, outlineColor, outlineFactor)
     GPU.render.text(marginX + (width * 1.0), marginY + (height * 0.0), "backgroundSurface", 1.0, 0.0, alpha, color, font, alignH, alignV, outlineColor, outlineFactor)
-    GPU.render.text(marginX + (width * 2.0), marginY + (height * 0.0), "shaderBackgroundSurface", 1.0, 0.0, alpha, color, font, alignH, alignV, outlineColor, outlineFactor)
     
     GPU.render.text(marginX + (width * 0.0), marginY + (height * 1.0), "gridSurface", 1.0, 0.0, alpha, color, font, alignH, alignV, outlineColor, outlineFactor)
     GPU.render.text(marginX + (width * 1.0), marginY + (height * 1.0), "gameSurface", 1.0, 0.0, alpha, color, font, alignH, alignV, outlineColor, outlineFactor)
-    GPU.render.text(marginX + (width * 2.0), marginY + (height * 1.0), "shaderGridSurface", 1.0, 0.0, alpha, color, font, alignH, alignV, outlineColor, outlineFactor)
-    
-    GPU.render.text(marginX + (width * 2.0), marginY + (height * 2.0), "shaderCombinedSurface", 1.0, 0.0, alpha, color, font, alignH, alignV, outlineColor, outlineFactor)
     
     return this
   }
@@ -2184,20 +2170,16 @@ function GridRenderer() constructor {
       .update(width, height)
       .renderOn(this.renderGridItemSurface, layout, true)
 
-    this.shaderBackgroundSurface
+    this.shaderBufferSurface
       .update(shaderWidth, shaderHeight)
       .renderOn(this.renderShaderBackgroundSurface, layout, false)
-    
-    this.shaderGridSurface
-      .update(shaderWidth, shaderHeight)
       .renderOn(this.renderShaderGridSurface, layout, false)
-    
+
     this.gameSurface
       .update(width, height)
       .renderOn(this.renderGameSurface, layout, true)
 
-    this.shaderCombinedSurface
-      .update(shaderWidth, shaderHeight)
+    this.shaderBufferSurface
       .renderOn(this.renderShaderCombinedSurface, layout, false)
 
     return this
@@ -2237,9 +2219,7 @@ function GridRenderer() constructor {
     this.gridSurface.free()
     this.gridItemSurface.free()
     this.gameSurface.free()
-    this.shaderGridSurface.free()
-    this.shaderBackgroundSurface.free()
-    this.shaderCombinedSurface.free()
+    this.shaderBufferSurface.free()
     return this
   }
 
