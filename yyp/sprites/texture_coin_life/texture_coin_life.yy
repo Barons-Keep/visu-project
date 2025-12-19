@@ -1,5 +1,5 @@
 {
-  "$GMSprite":"",
+  "$GMSprite":"v2",
   "%Name":"texture_coin_life",
   "bboxMode":0,
   "bbox_bottom":47,
@@ -12,7 +12,7 @@
   "edgeFiltering":false,
   "For3D":false,
   "frames":[
-    {"$GMSpriteFrame":"","%Name":"79de8292-b0db-408f-9cc7-5cd07e1cb70b","name":"79de8292-b0db-408f-9cc7-5cd07e1cb70b","resourceType":"GMSpriteFrame","resourceVersion":"2.0",},
+    {"$GMSpriteFrame":"v1","%Name":"79de8292-b0db-408f-9cc7-5cd07e1cb70b","name":"79de8292-b0db-408f-9cc7-5cd07e1cb70b","resourceType":"GMSpriteFrame","resourceVersion":"2.0",},
   ],
   "gridX":0,
   "gridY":0,

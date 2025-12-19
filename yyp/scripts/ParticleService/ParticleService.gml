@@ -86,7 +86,9 @@ function ParticleSystem(_layerName) constructor {
   ///@type {Stack<ParticleTemplate>}
   gc = new Stack(ParticleTemplate)
 
-  clear = function() {
+  ///@param {Boolean} [runGC]
+  ///@return {ParticleSystem}
+  clear = function(runGC = false) {
     this.executor.tasks.forEach(TaskUtil.fullfill).clear()
     if (!Core.isType(this.asset, GMParticleSystem)) {
       Logger.debug("ParticleSystem", $"clear: System '{this.layerName}' must be type of GMParticleSystem. GC size: {this.gc.size()}")
@@ -94,6 +96,10 @@ function ParticleSystem(_layerName) constructor {
     }
 
     part_particles_clear(this.asset)
+    if (!runGC) {
+      return this
+    }
+
     this.gc.forEach(function(template) {
       Logger.debug("ParticleSystem", $"Clear particle template, name: {template.name}")
       template.free()
@@ -135,17 +141,16 @@ function ParticleSystem(_layerName) constructor {
     
     part_system_drawit(this.asset)
   }
-    
+   
+  ///@return {ParticleService}
   free = function() {
-    if (Core.isType(this.asset, GMParticleSystem)) {
-      part_particles_clear(this.asset)
-      this.gc.forEach(function(template) {
-        Logger.debug("ParticleSystem", $"Clear particle template, name: {template.name}")
-        template.free()
-      })
-
-      part_system_destroy(this.asset)
-    }
+    Logger.debug("ParticleSystem", $"Free '{this.layerName}'")
+    part_system_destroy(this.asset)
+    this.gc.forEach(function(template) {
+      Logger.debug("ParticleType", $"Free '{template.particle.name}'")
+      part_type_destroy(template.particle.asset)
+    })
+    return this
   }
 }
 
@@ -217,11 +222,10 @@ function ParticleService(config = null): Service() constructor {
       event.data.system.executor.add(task)
     },
     "clear-particles": function(event) {
-      this.systems.forEach(function(system) {
-        system.clear()
-      })
+      this.systems.forEach(function(system) { system.clear(false) })
     },
     "reset-templates": function(event) {
+      this.systems.forEach(function(system) { system.clear(true) })
       this.templates.clear()
       this.dispatcher.container.clear()
     },

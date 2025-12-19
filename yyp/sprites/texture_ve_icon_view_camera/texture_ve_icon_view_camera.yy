@@ -1,5 +1,5 @@
 {
-  "$GMSprite":"",
+  "$GMSprite":"v2",
   "%Name":"texture_ve_icon_view_camera",
   "bboxMode":0,
   "bbox_bottom":31,
@@ -12,7 +12,7 @@
   "edgeFiltering":false,
   "For3D":false,
   "frames":[
-    {"$GMSpriteFrame":"","%Name":"8ebc7412-1a2c-45d8-85c2-948f4beaf8d2","name":"8ebc7412-1a2c-45d8-85c2-948f4beaf8d2","resourceType":"GMSpriteFrame","resourceVersion":"2.0",},
+    {"$GMSpriteFrame":"v1","%Name":"8ebc7412-1a2c-45d8-85c2-948f4beaf8d2","name":"8ebc7412-1a2c-45d8-85c2-948f4beaf8d2","resourceType":"GMSpriteFrame","resourceVersion":"2.0",},
   ],
   "gridX":0,
   "gridY":0,

@@ -1,5 +1,5 @@
 {
-  "$GMSprite":"",
+  "$GMSprite":"v2",
   "%Name":"texture_ve_cursor_tool_select",
   "bboxMode":0,
   "bbox_bottom":29,
@@ -12,7 +12,7 @@
   "edgeFiltering":false,
   "For3D":false,
   "frames":[
-    {"$GMSpriteFrame":"","%Name":"0cc8057d-496b-4a4e-a1be-edbd2c753f08","name":"0cc8057d-496b-4a4e-a1be-edbd2c753f08","resourceType":"GMSpriteFrame","resourceVersion":"2.0",},
+    {"$GMSpriteFrame":"v1","%Name":"0cc8057d-496b-4a4e-a1be-edbd2c753f08","name":"0cc8057d-496b-4a4e-a1be-edbd2c753f08","resourceType":"GMSpriteFrame","resourceVersion":"2.0",},
   ],
   "gridX":0,
   "gridY":0,

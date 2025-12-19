@@ -1,5 +1,5 @@
 {
-  "$GMSprite":"",
+  "$GMSprite":"v2",
   "%Name":"texture_baron_wallpaper_1",
   "bboxMode":0,
   "bbox_bottom":619,
@@ -12,7 +12,7 @@
   "edgeFiltering":false,
   "For3D":false,
   "frames":[
-    {"$GMSpriteFrame":"","%Name":"c2fb3e3d-ff21-4e59-aeee-bcfcca2f74d9","name":"c2fb3e3d-ff21-4e59-aeee-bcfcca2f74d9","resourceType":"GMSpriteFrame","resourceVersion":"2.0",},
+    {"$GMSpriteFrame":"v1","%Name":"c2fb3e3d-ff21-4e59-aeee-bcfcca2f74d9","name":"c2fb3e3d-ff21-4e59-aeee-bcfcca2f74d9","resourceType":"GMSpriteFrame","resourceVersion":"2.0",},
   ],
   "gridX":0,
   "gridY":0,

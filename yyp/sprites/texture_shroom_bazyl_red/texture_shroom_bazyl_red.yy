@@ -1,5 +1,5 @@
 {
-  "$GMSprite":"",
+  "$GMSprite":"v2",
   "%Name":"texture_shroom_bazyl_red",
   "bboxMode":0,
   "bbox_bottom":252,
@@ -12,8 +12,8 @@
   "edgeFiltering":false,
   "For3D":false,
   "frames":[
-    {"$GMSpriteFrame":"","%Name":"c0fd3b4f-3df5-486b-b97a-0b59b870a646","name":"c0fd3b4f-3df5-486b-b97a-0b59b870a646","resourceType":"GMSpriteFrame","resourceVersion":"2.0",},
-    {"$GMSpriteFrame":"","%Name":"6c066cc2-8d1d-4af3-8159-c86bb0a4b569","name":"6c066cc2-8d1d-4af3-8159-c86bb0a4b569","resourceType":"GMSpriteFrame","resourceVersion":"2.0",},
+    {"$GMSpriteFrame":"v1","%Name":"c0fd3b4f-3df5-486b-b97a-0b59b870a646","name":"c0fd3b4f-3df5-486b-b97a-0b59b870a646","resourceType":"GMSpriteFrame","resourceVersion":"2.0",},
+    {"$GMSpriteFrame":"v1","%Name":"6c066cc2-8d1d-4af3-8159-c86bb0a4b569","name":"6c066cc2-8d1d-4af3-8159-c86bb0a4b569","resourceType":"GMSpriteFrame","resourceVersion":"2.0",},
   ],
   "gridX":0,
   "gridY":0,

@@ -1,5 +1,5 @@
 {
-  "$GMSprite":"",
+  "$GMSprite":"v2",
   "%Name":"texture_ve_trackcontrol_button_pause",
   "bboxMode":0,
   "bbox_bottom":25,
@@ -12,7 +12,7 @@
   "edgeFiltering":false,
   "For3D":false,
   "frames":[
-    {"$GMSpriteFrame":"","%Name":"eae92c16-56c8-4094-9da3-1fa8d6f30240","name":"eae92c16-56c8-4094-9da3-1fa8d6f30240","resourceType":"GMSpriteFrame","resourceVersion":"2.0",},
+    {"$GMSpriteFrame":"v1","%Name":"eae92c16-56c8-4094-9da3-1fa8d6f30240","name":"eae92c16-56c8-4094-9da3-1fa8d6f30240","resourceType":"GMSpriteFrame","resourceVersion":"2.0",},
   ],
   "gridX":0,
   "gridY":0,

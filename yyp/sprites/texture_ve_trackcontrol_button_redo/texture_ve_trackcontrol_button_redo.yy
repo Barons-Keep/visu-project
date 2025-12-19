@@ -1,5 +1,5 @@
 {
-  "$GMSprite":"",
+  "$GMSprite":"v2",
   "%Name":"texture_ve_trackcontrol_button_redo",
   "bboxMode":0,
   "bbox_bottom":17,
@@ -12,7 +12,7 @@
   "edgeFiltering":false,
   "For3D":false,
   "frames":[
-    {"$GMSpriteFrame":"","%Name":"e8fc8197-398d-48b4-9efc-c84d26d8221b","name":"e8fc8197-398d-48b4-9efc-c84d26d8221b","resourceType":"GMSpriteFrame","resourceVersion":"2.0",},
+    {"$GMSpriteFrame":"v1","%Name":"e8fc8197-398d-48b4-9efc-c84d26d8221b","name":"e8fc8197-398d-48b4-9efc-c84d26d8221b","resourceType":"GMSpriteFrame","resourceVersion":"2.0",},
   ],
   "gridX":0,
   "gridY":0,

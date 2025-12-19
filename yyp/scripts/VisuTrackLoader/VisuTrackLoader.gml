@@ -732,45 +732,91 @@ function VisuTrackLoader(_controller): Service() constructor {
               stack.push(template)
             }, stack)
 
+            var particles = new Stack(ParticleTemplate)
+            Beans.get(BeanVisuController).particleService.templates.forEach(function(template, name, stack) {
+              stack.push(template)
+            }, particles)
+
+            Visu.assets().particleTemplates.forEach(function(template, name, stack) {
+              stack.push(template)
+            }, particles)
+
             var textureLoadTask = new Task("texture-load-task")
               .setState({
                 stack: stack,
+                particles: particles,
                 setup: false,
                 render: function(task) {
                   if (!task.state.setup) {
                     if (Beans.get(BeanVisuController).visuRenderer.spinnerFactor < 1.0) {
                       task.state.setup = true
                     }
+
                     return
                   }
 
-                  try {
-                    repeat (16) {
-                      if (task.state.stack.size() == 0) {
-                        task.fullfill()
-                        break
-                      } else {
-                        var template = task.state.stack.pop()
-                        for (var index = 0; index < template.frames; index++) {
-                          Logger.debug("VisuRenderer", $"Render texture '{template.name}'")
-                          draw_sprite_ext(
-                            template.asset, 
-                            index, 
-                            random(GuiWidth()), 
-                            random(GuiHeight()),
-                            1.0 + random(10.0),
-                            1.0 + random(10.0),
-                            random(360.0),
-                            make_color_rgb(irandom(255), irandom(255), irandom(255)),
-                            1.0 / 255.0
+                  if (task.state.particles.size() > 0) {
+                    try {
+                      repeat (8) {
+                        if (task.state.particles.size() == 0) {
+                          break
+                        } else {
+                          var particle = task.state.particles.pop()
+                          var particleService = Beans.get(BeanVisuController).particleService
+                          var area = new Rectangle(0.0, 0.0, 10.0, 10.0)
+                          particleService.spawnParticleEmitter(
+                            "main",
+                            particle.name,
+                            (area.getX() + 0.5) * GRID_SERVICE_PIXEL_WIDTH,
+                            (area.getY() + 0.5) * GRID_SERVICE_PIXEL_HEIGHT,
+                            (area.getX() + area.getWidth() + 0.5) * GRID_SERVICE_PIXEL_WIDTH,
+                            (area.getY() + area.getHeight() + 0.5) * GRID_SERVICE_PIXEL_HEIGHT,
+                            FRAME_MS,
+                            1.0,
+                            FRAME_MS,
+                            ParticleEmitterShape.RECTANGLE,
+                            ParticleEmitterDistribution.LINEAR
                           )
+
+                          particleService.dispatcher.execute(new Event("clear-particles"))
                         }
                       }
+                    } catch (exception) {
+                      Logger.error("VisuRenderer", $"particle-load-task exception: {exception.message}")
+                      Core.printStackTrace().printException(exception)
+                      task.reject()
+                      return
                     }
-                  } catch (exception) {
-                    Logger.error("VisuRenderer", $"texture-load-task exception: {exception.message}")
-                    Core.printStackTrace().printException(exception)
-                    task.reject()
+                  } else {
+                    try {
+                      repeat (8) {
+                        if (task.state.stack.size() == 0) {
+                          task.fullfill()
+                          break
+                        } else {
+                          var template = task.state.stack.pop()
+                          for (var index = 0; index < template.frames; index++) {
+                            Logger.debug("VisuRenderer", $"Render texture '{template.name}'")
+                            draw_sprite_ext(
+                              template.asset, 
+                              index, 
+                              random(GuiWidth()), 
+                              random(GuiHeight()),
+                              1.0 + random(10.0),
+                              1.0 + random(10.0),
+                              random(360.0),
+                              make_color_rgb(irandom(255), irandom(255), irandom(255)),
+                              1.0 / 255.0
+                            )
+                          }
+                        }
+                      }
+                    } catch (exception) {
+                      Logger.error("VisuRenderer", $"texture-load-task exception: {exception.message}")
+                      Core.printStackTrace().printException(exception)
+                      task.reject()
+                      return
+                    }
                   }
                 },
               })

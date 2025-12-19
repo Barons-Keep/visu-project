@@ -1,5 +1,5 @@
 {
-  "$GMSprite":"",
+  "$GMSprite":"v2",
   "%Name":"texture_icon_ease_out_quart",
   "bboxMode":0,
   "bbox_bottom":31,
@@ -12,7 +12,7 @@
   "edgeFiltering":false,
   "For3D":false,
   "frames":[
-    {"$GMSpriteFrame":"","%Name":"2889c9e9-608e-4e3f-b0d6-54fd2a703c4a","name":"2889c9e9-608e-4e3f-b0d6-54fd2a703c4a","resourceType":"GMSpriteFrame","resourceVersion":"2.0",},
+    {"$GMSpriteFrame":"v1","%Name":"2889c9e9-608e-4e3f-b0d6-54fd2a703c4a","name":"2889c9e9-608e-4e3f-b0d6-54fd2a703c4a","resourceType":"GMSpriteFrame","resourceVersion":"2.0",},
   ],
   "gridX":0,
   "gridY":0,

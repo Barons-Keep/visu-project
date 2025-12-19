@@ -1,5 +1,5 @@
 {
-  "$GMSprite":"",
+  "$GMSprite":"v2",
   "%Name":"texture_shroom_baron_magenta",
   "bboxMode":0,
   "bbox_bottom":250,
@@ -12,8 +12,8 @@
   "edgeFiltering":false,
   "For3D":false,
   "frames":[
-    {"$GMSpriteFrame":"","%Name":"11b2133c-4e21-4b92-9f96-16bba3551d19","name":"11b2133c-4e21-4b92-9f96-16bba3551d19","resourceType":"GMSpriteFrame","resourceVersion":"2.0",},
-    {"$GMSpriteFrame":"","%Name":"cb2280d5-f903-44e4-9c6b-b2dbee20001d","name":"cb2280d5-f903-44e4-9c6b-b2dbee20001d","resourceType":"GMSpriteFrame","resourceVersion":"2.0",},
+    {"$GMSpriteFrame":"v1","%Name":"11b2133c-4e21-4b92-9f96-16bba3551d19","name":"11b2133c-4e21-4b92-9f96-16bba3551d19","resourceType":"GMSpriteFrame","resourceVersion":"2.0",},
+    {"$GMSpriteFrame":"v1","%Name":"cb2280d5-f903-44e4-9c6b-b2dbee20001d","name":"cb2280d5-f903-44e4-9c6b-b2dbee20001d","resourceType":"GMSpriteFrame","resourceVersion":"2.0",},
   ],
   "gridX":0,
   "gridY":0,

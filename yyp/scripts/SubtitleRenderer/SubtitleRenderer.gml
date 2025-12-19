@@ -9,8 +9,8 @@ function SubtitleRenderer() constructor {
     subtitleService.executor.tasks.forEach(function(task, iterator, canvas) {
       var subtitle = task.state.subtitle
       GPU.set.font(subtitle.font.asset)
-        .set.align.h(subtitle.align)
-        .set.align.v(subtitle.align)
+        .set.align.h(subtitle.align.h)
+        .set.align.v(subtitle.align.v)
 
       var guiWidth = canvas.width()
       var guiHeight = canvas.height()

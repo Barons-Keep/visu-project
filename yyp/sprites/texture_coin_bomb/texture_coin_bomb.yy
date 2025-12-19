@@ -1,5 +1,5 @@
 {
-  "$GMSprite":"",
+  "$GMSprite":"v2",
   "%Name":"texture_coin_bomb",
   "bboxMode":0,
   "bbox_bottom":47,
@@ -12,7 +12,7 @@
   "edgeFiltering":false,
   "For3D":false,
   "frames":[
-    {"$GMSpriteFrame":"","%Name":"e46b2328-8cb8-4b9e-a79f-fd0ed82c6048","name":"e46b2328-8cb8-4b9e-a79f-fd0ed82c6048","resourceType":"GMSpriteFrame","resourceVersion":"2.0",},
+    {"$GMSpriteFrame":"v1","%Name":"e46b2328-8cb8-4b9e-a79f-fd0ed82c6048","name":"e46b2328-8cb8-4b9e-a79f-fd0ed82c6048","resourceType":"GMSpriteFrame","resourceVersion":"2.0",},
   ],
   "gridX":0,
   "gridY":0,

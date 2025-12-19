@@ -1,5 +1,5 @@
 {
-  "$GMSprite":"",
+  "$GMSprite":"v2",
   "%Name":"texture_ve_trackcontrol_button_undo",
   "bboxMode":0,
   "bbox_bottom":17,
@@ -12,7 +12,7 @@
   "edgeFiltering":false,
   "For3D":false,
   "frames":[
-    {"$GMSpriteFrame":"","%Name":"61c9bf22-25bf-42df-9d13-5a8ec4eab461","name":"61c9bf22-25bf-42df-9d13-5a8ec4eab461","resourceType":"GMSpriteFrame","resourceVersion":"2.0",},
+    {"$GMSpriteFrame":"v1","%Name":"61c9bf22-25bf-42df-9d13-5a8ec4eab461","name":"61c9bf22-25bf-42df-9d13-5a8ec4eab461","resourceType":"GMSpriteFrame","resourceVersion":"2.0",},
   ],
   "gridX":0,
   "gridY":0,

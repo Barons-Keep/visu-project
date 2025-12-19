@@ -1,5 +1,5 @@
 {
-  "$GMSprite":"",
+  "$GMSprite":"v2",
   "%Name":"texture_slider_color_picker",
   "bboxMode":0,
   "bbox_bottom":3,
@@ -12,7 +12,7 @@
   "edgeFiltering":false,
   "For3D":false,
   "frames":[
-    {"$GMSpriteFrame":"","%Name":"65262b3f-9e6e-47c1-9bfa-8dfbd3ac3c2f","name":"65262b3f-9e6e-47c1-9bfa-8dfbd3ac3c2f","resourceType":"GMSpriteFrame","resourceVersion":"2.0",},
+    {"$GMSpriteFrame":"v1","%Name":"65262b3f-9e6e-47c1-9bfa-8dfbd3ac3c2f","name":"65262b3f-9e6e-47c1-9bfa-8dfbd3ac3c2f","resourceType":"GMSpriteFrame","resourceVersion":"2.0",},
   ],
   "gridX":0,
   "gridY":0,

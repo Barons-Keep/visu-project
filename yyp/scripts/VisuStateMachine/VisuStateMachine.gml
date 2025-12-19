@@ -407,10 +407,10 @@ function VisuStateMachine(context, name) {
             }
 
             ///@hack
-            if (controller.trackService.isTrackLoaded()
-                && !controller.trackService.track.audio.isLoaded()) {
-              controller.trackService.time = 0.0
-            }
+            //if (controller.trackService.isTrackLoaded()
+            //    && !controller.trackService.track.audio.isLoaded()) {
+            //  controller.trackService.time = 0.0
+            //}
 
             Logger.info(fsm.displayName, $"'{fsmState.name}::onStart' at track time {controller.trackService.time}")
           },
@@ -515,7 +515,6 @@ function VisuStateMachine(context, name) {
               controller.menu.send(data)
             }
 
-            var to = JSON.stringify(data, { pretty: true })
             Logger.info(fsm.displayName, $"'{fsmState.name}::onStart' at track time {controller.trackService.time}")
           },
           onFinish: function(fsm, fsmState, data) {
@@ -559,8 +558,10 @@ function VisuStateMachine(context, name) {
               .set("data", data)
               .set("promises", promises)
 
-            var to = JSON.stringify(data, { pretty: true })
-            Logger.info(fsm.displayName, $"{fsmState.name} from {controller.trackService.time} to:\n{to}")
+            var to = Struct.getIfType(data, "timestamp", Number) == null
+              ? JSON.stringify(data, { pretty: false })
+              : Struct.get(data, "timestamp")
+            Logger.info(fsm.displayName, $"{fsmState.name} from {controller.trackService.time} to: {to}")
           },
         },
         update: function(fsm) {

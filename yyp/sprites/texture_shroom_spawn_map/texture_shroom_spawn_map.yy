@@ -1,5 +1,5 @@
 {
-  "$GMSprite":"",
+  "$GMSprite":"v2",
   "%Name":"texture_shroom_spawn_map",
   "bboxMode":0,
   "bbox_bottom":143,
@@ -12,7 +12,7 @@
   "edgeFiltering":false,
   "For3D":false,
   "frames":[
-    {"$GMSpriteFrame":"","%Name":"46cf9282-454c-4d06-a0a9-cc1ce2ddf839","name":"46cf9282-454c-4d06-a0a9-cc1ce2ddf839","resourceType":"GMSpriteFrame","resourceVersion":"2.0",},
+    {"$GMSpriteFrame":"v1","%Name":"46cf9282-454c-4d06-a0a9-cc1ce2ddf839","name":"46cf9282-454c-4d06-a0a9-cc1ce2ddf839","resourceType":"GMSpriteFrame","resourceVersion":"2.0",},
   ],
   "gridX":0,
   "gridY":0,

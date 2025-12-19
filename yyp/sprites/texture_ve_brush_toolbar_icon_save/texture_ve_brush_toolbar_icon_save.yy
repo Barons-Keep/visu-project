@@ -1,5 +1,5 @@
 {
-  "$GMSprite":"",
+  "$GMSprite":"v2",
   "%Name":"texture_ve_brush_toolbar_icon_save",
   "bboxMode":0,
   "bbox_bottom":28,
@@ -12,7 +12,7 @@
   "edgeFiltering":false,
   "For3D":false,
   "frames":[
-    {"$GMSpriteFrame":"","%Name":"dcf6d694-421d-4091-9065-52f0a6f8b3c6","name":"dcf6d694-421d-4091-9065-52f0a6f8b3c6","resourceType":"GMSpriteFrame","resourceVersion":"2.0",},
+    {"$GMSpriteFrame":"v1","%Name":"dcf6d694-421d-4091-9065-52f0a6f8b3c6","name":"dcf6d694-421d-4091-9065-52f0a6f8b3c6","resourceType":"GMSpriteFrame","resourceVersion":"2.0",},
   ],
   "gridX":0,
   "gridY":0,

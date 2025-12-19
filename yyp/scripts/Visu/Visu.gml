@@ -40,6 +40,19 @@ global.__VISU_FORCE_GOD_MODE_DISPATCHED = false
 #macro VISU_FORCE_GOD_MODE_DISPATCHED global.__VISU_FORCE_GOD_MODE_DISPATCHED
 
 
+///@type {Boolean}
+global.__VISU_BOOT_UP = false
+#macro VISU_BOOT_UP global.__VISU_BOOT_UP
+
+///@type {Boolean}
+global.__VISU_LOAD_PROPERTIES = false
+#macro VISU_LOAD_PROPERTIES global.__VISU_LOAD_PROPERTIES
+
+///@type {Boolean}
+global.__VISU_LOAD_SETTINGS = false
+#macro VISU_LOAD_SETTINGS global.__VISU_LOAD_SETTINGS
+
+
 ///@hack
 #macro TEMPLATE_ENTRY_STEP global.__BRUSH_ENTRY_STEP
 #macro TEMPLATE_TOOLBAR_ENTRY_STEP global.__BRUSH_TOOLBAR_ENTRY_STEP
@@ -1209,18 +1222,27 @@ function _Visu() constructor {
   }
 
   static boot = function() {
+    if (VISU_BOOT_UP) {
+      return
+    }
+
     Logger.info("Visu", "run::boot()")
     randomize()
     initBeans()
     initGPU()
     initGMTF()
     this.initShaders()
+    VISU_BOOT_UP = true
   }
   
   static loadProperties = function() {
+    if (VISU_LOAD_PROPERTIES) {
+      return
+    }
+    
     //Logger.info("Visu", "run::loadProperties()")
     Core.loadProperties(FileUtil.get($"{working_directory}core-properties.json"))
-
+    
     Core.loadProperties(FileUtil.get($"{working_directory}visu-properties.json"))
 
     var editorConstructor = Core.getConstructor("VisuEditorController")
@@ -1234,6 +1256,7 @@ function _Visu() constructor {
     BRUSH_TOOLBAR_ENTRY_STEP = Core.getProperty("visu.const.BRUSH_TOOLBAR_ENTRY_STEP", BRUSH_TOOLBAR_ENTRY_STEP)
     FLIP_VALUE = Core.getProperty("visu.const.FLIP_VALUE", FLIP_VALUE)
     PRELOAD_TRACK_EVENT = Core.getProperty("visu.manifest.parse-track-event-preload", PRELOAD_TRACK_EVENT)
+    VISU_LOAD_PROPERTIES = true
   }
 
   static initFileService = function(layerId) {
@@ -1249,6 +1272,10 @@ function _Visu() constructor {
   }
 
   static loadSettings = function() {
+    if (VISU_LOAD_SETTINGS) {
+      return
+    }
+
     //Logger.info("Visu", "run::loadSettings()")
     this.settings.set(new SettingEntry({ name: "visu.editor.autosave", type: SettingTypes.BOOLEAN, defaultValue: false }))
       .set(new SettingEntry({ name: "visu.language", type: SettingTypes.STRING, defaultValue: LanguageType.en_EN }))
@@ -1346,6 +1373,8 @@ function _Visu() constructor {
       this.settings.setValue("visu.god-mode", true).save()
       VISU_FORCE_GOD_MODE_DISPATCHED = true
     }
+
+    VISU_LOAD_SETTINGS = true
   }
 
   static initDisplay = function() {

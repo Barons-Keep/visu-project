@@ -259,10 +259,11 @@ function _VideoUtil() constructor {
 
   ///@return {VideoUtil}
   runGC = function() {
-    Logger.debug("Video", $"gcVideo, video status before: {VideoStatusNames.get(video_get_status())}")
+    var before = VideoStatusNames.get(video_get_status())
     video_close()
     VIDEO_CONTEXT = null
-    Logger.debug("Video", $"gcVideo, video status after: {VideoStatusNames.get(video_get_status())}")
+    var after = VideoStatusNames.get(video_get_status())
+    Logger.debug("Video", $"runGC(): Video status: \{ \"before\": \"{before}\", \"after\": \"{after}\" }")
     return this
   }
 }

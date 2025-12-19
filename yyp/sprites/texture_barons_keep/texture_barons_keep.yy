@@ -1,5 +1,5 @@
 {
-  "$GMSprite":"",
+  "$GMSprite":"v2",
   "%Name":"texture_barons_keep",
   "bboxMode":0,
   "bbox_bottom":1044,
@@ -12,7 +12,7 @@
   "edgeFiltering":false,
   "For3D":false,
   "frames":[
-    {"$GMSpriteFrame":"","%Name":"f1be2d14-ade0-45ac-a24d-c7ee62d949f2","name":"f1be2d14-ade0-45ac-a24d-c7ee62d949f2","resourceType":"GMSpriteFrame","resourceVersion":"2.0",},
+    {"$GMSpriteFrame":"v1","%Name":"f1be2d14-ade0-45ac-a24d-c7ee62d949f2","name":"f1be2d14-ade0-45ac-a24d-c7ee62d949f2","resourceType":"GMSpriteFrame","resourceVersion":"2.0",},
   ],
   "gridX":0,
   "gridY":0,

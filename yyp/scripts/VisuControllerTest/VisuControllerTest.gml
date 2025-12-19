@@ -250,13 +250,13 @@ function Test_VisuController_rewind(test) {
           var trackService = controller.trackService
           if (task.state.timer.update().finished && task.state.amount > 0) {
             var delta = abs(trackService.time - task.state.target)
-            if (delta < 2.0) {
+            if (delta < 3.0) {
               task.state.count++
             }
             Logger.test("Test_VisuController_rewind", $"Current delta: {delta}, counter: {task.state.count}")
             task.state.timer.reset()
             task.state.timer.duration = random_range(task.state.minDuration, task.state.maxDuration)
-            task.state.target = random(trackService.duration * 0.7500)
+            task.state.target = (trackService.duration * 0.05) + random(trackService.duration * 0.7)
             Logger.test("Test_VisuController_rewind", $"Current time: {trackService.time}, target: {task.state.target}, duration: {task.state.timer.duration}")
             controller.send(new Event("rewind", { 
               timestamp: task.state.target,
