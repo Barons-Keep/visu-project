@@ -10,7 +10,7 @@
   "core.display-service.center.offset.y": 0.0,
   "core.display-service.resize.tick": 2,
   "core.display-service.sleep-margin": 10.0,
-  "core.display-service.timing-method": "VSYNCS",
+  "core.display-service.timing-method": "COUNTVSYNCS_WINALT",
   "core.delta-time.steady": false,
   "core.delta-time.clamp-to-fps": false,
   "core.delta-time.performance.logger": false,

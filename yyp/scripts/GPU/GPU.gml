@@ -28,26 +28,6 @@ function _BlendMode(): Enum() constructor {
   REVERSE_SUBTRACT = bm_reverse_subtract
   MIN = bm_min
   MAX = bm_max
-
-  ///@override
-  ///@return {Array<String>}
-  keys = function() {
-    static filterKeys = function(key) {
-      return key != "_keys"
-          && key != "keys"
-          && key != "get"
-          && key != "getKey"
-          && key != "findKey"
-          && key != "contains"
-          && key != "containsKey"
-    }
-
-    if (this._keys == null) {
-      this._keys = new Array(String, GMArray.sort(GMArray.filter(Struct.keys(this), filterKeys)))
-    }
-
-    return this._keys
-  }
 }
 global.__BlendMode = new _BlendMode()
 #macro BlendMode global.__BlendMode
@@ -211,26 +191,6 @@ function _BlendModeExt(): Enum() constructor {
   DEST_COLOUR = bm_dest_colour
   INV_DEST_ALPHA = bm_inv_dest_alpha
   INV_DEST_COLOUR = bm_inv_dest_colour
-
-  ///@override
-  ///@return {Array<String>}
-  keys = function() {
-    static filterKeys = function(key) {
-      return key != "_keys"
-          && key != "keys"
-          && key != "get"
-          && key != "getKey"
-          && key != "findKey"
-          && key != "contains"
-          && key != "containsKey"
-    }
-
-    if (this._keys == null) {
-      this._keys = new Array(String, GMArray.sort(GMArray.filter(Struct.keys(this), filterKeys)))
-    }
-
-    return this._keys
-  }
 }
 global.__BlendModeExt = new _BlendModeExt()
 #macro BlendModeExt global.__BlendModeExt
@@ -243,26 +203,6 @@ function _BlendEquation(): Enum() constructor {
   REVERSE_SUBTRACT = bm_eq_reverse_subtract
   MIN = bm_eq_min
   MAX = bm_eq_max
-  
-  ///@override
-  ///@return {Array<String>}
-  keys = function() {
-    static filterKeys = function(key) {
-      return key != "_keys"
-          && key != "keys"
-          && key != "get"
-          && key != "getKey"
-          && key != "findKey"
-          && key != "contains"
-          && key != "containsKey"
-    }
-
-    if (this._keys == null) {
-      this._keys = new Array(String, GMArray.sort(GMArray.filter(Struct.keys(this), filterKeys)))
-    }
-
-    return this._keys
-  }
 }
 global.__BlendEquation = new _BlendEquation()
 #macro BlendEquation global.__BlendEquation
@@ -273,26 +213,6 @@ function _VAlign(): Enum() constructor {
   TOP = fa_top
   CENTER = fa_middle
   BOTTOM = fa_bottom
-
-  ///@override
-  ///@return {Array<String>}
-  keys = function() {
-    static filterKeys = function(key) {
-      return key != "_keys"
-          && key != "keys"
-          && key != "get"
-          && key != "getKey"
-          && key != "findKey"
-          && key != "contains"
-          && key != "containsKey"
-    }
-
-    if (this._keys == null) {
-      this._keys = new Array(String, GMArray.sort(GMArray.filter(Struct.keys(this), filterKeys)))
-    }
-
-    return this._keys
-  }
 }
 global.__VAlign = new _VAlign()
 #macro VAlign global.__VAlign
@@ -303,26 +223,6 @@ function _HAlign(): Enum() constructor {
   LEFT = fa_left
   CENTER = fa_center
   RIGHT = fa_right
-
-  ///@override
-  ///@return {Array<String>}
-  keys = function() {
-    static filterKeys = function(key) {
-      return key != "_keys"
-          && key != "keys"
-          && key != "get"
-          && key != "getKey"
-          && key != "findKey"
-          && key != "contains"
-          && key != "containsKey"
-    }
-
-    if (this._keys == null) {
-      this._keys = new Array(String, GMArray.sort(GMArray.filter(Struct.keys(this), filterKeys)))
-    }
-
-    return this._keys
-  }
 }
 global.__HAlign = new _HAlign()
 #macro HAlign global.__HAlign

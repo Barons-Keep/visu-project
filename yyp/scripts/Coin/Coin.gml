@@ -5,26 +5,6 @@ function _CoinCategory(): Enum() constructor {
   POINT = "point"
   BOMB = "bomb"
   LIFE = "life"
-
-  ///@override
-  ///@return {Array<String>}
-  keys = function() {
-    static filterKeys = function(key) {
-      return key != "_keys"
-          && key != "keys"
-          && key != "get"
-          && key != "getKey"
-          && key != "findKey"
-          && key != "contains"
-          && key != "containsKey"
-    }
-
-    if (this._keys == null) {
-      this._keys = new Array(String, GMArray.sort(GMArray.filter(Struct.keys(this), filterKeys)))
-    }
-
-    return this._keys
-  }
 }
 global.__CoinCategory = new _CoinCategory()
 #macro CoinCategory global.__CoinCategory

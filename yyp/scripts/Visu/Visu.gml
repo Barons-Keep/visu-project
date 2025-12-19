@@ -52,6 +52,9 @@ global.__VISU_LOAD_PROPERTIES = false
 global.__VISU_LOAD_SETTINGS = false
 #macro VISU_LOAD_SETTINGS global.__VISU_LOAD_SETTINGS
 
+///@type {Boolean}
+global.__VISU_PARSE_CLI = false
+#macro VISU_PARSE_CLI global.__VISU_PARSE_CLI
 
 ///@hack
 #macro TEMPLATE_ENTRY_STEP global.__BRUSH_ENTRY_STEP
@@ -1545,8 +1548,13 @@ function _Visu() constructor {
   }
 
   static parseCli = function() {
+    if (VISU_PARSE_CLI) {
+      return
+    }
+
     //Logger.info("Visu", "run::parseCli()")
     this.cliParser().parse()
+    VISU_PARSE_CLI = true
   }
   
   ///@param {String} [layerName]

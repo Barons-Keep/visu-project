@@ -5,26 +5,6 @@ function _WallpaperType(): Enum() constructor {
   BACKGROUND = "BACKGROUND"
   GRID = "GRID"
   FOREGROUND = "FOREGROUND"
-
-  ///@override
-  ///@return {Array<String>}
-  keys = function() {
-    static filterKeys = function(key) {
-      return key != "_keys"
-          && key != "keys"
-          && key != "get"
-          && key != "getKey"
-          && key != "findKey"
-          && key != "contains"
-          && key != "containsKey"
-    }
-
-    if (this._keys == null) {
-      this._keys = new Array(String, GMArray.sort(GMArray.filter(Struct.keys(this), filterKeys)))
-    }
-
-    return this._keys
-  }
 }
 global.__WallpaperType = new _WallpaperType()
 #macro WallpaperType global.__WallpaperType

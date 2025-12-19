@@ -2588,6 +2588,10 @@ function VisuMenu(_config = null) constructor {
               callback: new BindIntent(function() {
                 VISU_MANIFEST_LOAD_ON_START_DISPATCHED = false
                 VISU_FORCE_GOD_MODE_DISPATCHED = false
+                VISU_BOOT_UP = false
+                VISU_LOAD_PROPERTIES = false
+                VISU_LOAD_SETTINGS = false
+                VISU_PARSE_CLI = false
                 Scene.open("scene_visu", {
                   VisuController: {
                     initialState: { name: Core.getProperty("visu.splashscreen.skip") ? "idle" : "splashscreen", },

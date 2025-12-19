@@ -11,6 +11,16 @@ global.__Cursor = new _Cursor()
 #macro Cursor global.__Cursor
 
 
+///@enum
+function _TimingMethod(): Enum() constructor {
+  COUNTSYNC = tm_countvsyncs
+  COUNTSYNC_WINALT = tm_countvsyncs_winalt
+  SLEEP = tm_sleep
+}
+global.__TimingMethod = new _TimingMethod()
+#macro TimingMethod global.__TimingMethod
+
+
 ///@param {Controller} _controller
 ///@param {Struct} [config]
 function DisplayService(_controller, config = {}): Service() constructor {
@@ -65,18 +75,22 @@ function DisplayService(_controller, config = {}): Service() constructor {
 
   ///@private
   ///@type {DisplayTimingMethodConstant}
-  timingMethod = Core.getProperty("core.display-service.timing-method", "SLEEP") == "SLEEP" ? tm_sleep : tm_countvsyncs
+  timingMethod = TimingMethod.getDefault(Core.getProperty("core.display-service.timing-method"), TimingMethod.COUNTSYNC)
 
   ///@private
   ///@type {Number}
   sleepMargin = Core.getProperty("core.display-service.sleep-margin", 10)
 
-  Logger.info("DisplayService", $"Setup timing method {this.timingMethod}")
-  display_set_timing_method(this.timingMethod)
-  
-  Logger.info("DisplayService", $"Setup sleep margin {this.sleepMargin}")
-  display_set_sleep_margin(this.sleepMargin)
-  
+  ///@return {DisplayService}
+  init = function() {
+    Logger.info("DisplayService", $"Setup timing method {TimingMethod.getKey(this.timingMethod)}")
+    display_set_timing_method(this.timingMethod)
+
+    Logger.info("DisplayService", $"Setup sleep margin {this.sleepMargin}")
+    display_set_sleep_margin(this.sleepMargin)
+    return this
+  }
+
   ///@return {Number}
   getWidth = function() {
     return window_get_width()
@@ -206,7 +220,7 @@ function DisplayService(_controller, config = {}): Service() constructor {
 
     timingMethod = display_get_timing_method()
     if (timingMethod != this.timingMethod) {
-      Logger.info("DisplayService", $"Update timing method to {this.timingMethod}")
+      Logger.info("DisplayService", $"Update timing method to {TimingMethod.getKey(this.timingMethod)}")
       display_set_timing_method(this.timingMethod)
     }
 
@@ -240,4 +254,6 @@ function DisplayService(_controller, config = {}): Service() constructor {
     }
     return this
   }
+
+  this.init()
 }

@@ -757,7 +757,7 @@ function VisuTrackLoader(_controller): Service() constructor {
 
                   if (task.state.particles.size() > 0) {
                     try {
-                      repeat (8) {
+                      repeat (4) {
                         if (task.state.particles.size() == 0) {
                           break
                         } else {
@@ -789,7 +789,7 @@ function VisuTrackLoader(_controller): Service() constructor {
                     }
                   } else {
                     try {
-                      repeat (8) {
+                      repeat (4) {
                         if (task.state.stack.size() == 0) {
                           task.fullfill()
                           break

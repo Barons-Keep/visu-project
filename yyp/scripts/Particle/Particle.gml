@@ -19,26 +19,6 @@ function _ParticleShape(): Enum() constructor {
   CLOUD = pt_shape_cloud	
   SMOKE = pt_shape_smoke	
   SNOW = pt_shape_snow
-
-  ///@override
-  ///@return {Array<String>}
-  keys = function() {
-    static filterKeys = function(key) {
-      return key != "_keys"
-          && key != "keys"
-          && key != "get"
-          && key != "getKey"
-          && key != "findKey"
-          && key != "contains"
-          && key != "containsKey"
-    }
-
-    if (this._keys == null) {
-      this._keys = new Array(String, GMArray.sort(GMArray.filter(Struct.keys(this), filterKeys)))
-    }
-
-    return this._keys
-  }
 }
 global.__ParticleShape = new _ParticleShape()
 #macro ParticleShape global.__ParticleShape

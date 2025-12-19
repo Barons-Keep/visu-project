@@ -38,6 +38,13 @@ function Enum() constructor {
     return Struct.get(this, key)
   }
 
+  ///@param {String} key
+  ///@param {any} [defaultValue]
+  ///@return {any}
+  getDefault = function(key, defaultValue = null) {
+    return this.containsKey(key) ? this.get(key) : defaultValue
+  }
+
   ///@param {any} value
   ///@return {any}
   findKey = function(value) {
@@ -67,6 +74,7 @@ function Enum() constructor {
       return key != "_keys"
           && key != "keys"
           && key != "get"
+          && key != "getDefault"
           && key != "getKey"
           && key != "findKey"
           && key != "contains"
@@ -74,7 +82,7 @@ function Enum() constructor {
     }
 
     if (this._keys == null) {
-      this._keys = new Array(String, GMArray.filter(Struct.keys(this), filterKeys))
+      this._keys = new Array(String, GMArray.sort(GMArray.filter(Struct.keys(this), filterKeys)))
     }
 
     return this._keys

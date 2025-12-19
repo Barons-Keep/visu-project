@@ -34,26 +34,6 @@ function _EaseType(): Enum() constructor {
   IN_BOUNCE = "IN_BOUNCE"
   OUT_BOUNCE = "OUT_BOUNCE"
   IN_OUT_BOUNCE = "IN_OUT_BOUNCE"
-
-  ///@override
-  ///@return {Array<String>}
-  keys = function() {
-    static filterKeys = function(key) {
-      return key != "_keys"
-          && key != "keys"
-          && key != "get"
-          && key != "getKey"
-          && key != "findKey"
-          && key != "contains"
-          && key != "containsKey"
-    }
-
-    if (this._keys == null) {
-      this._keys = new Array(String, GMArray.sort(GMArray.filter(Struct.keys(this), filterKeys)))
-    }
-
-    return this._keys
-  }
 }
 global.__EaseType = new _EaseType()
 #macro EaseType global.__EaseType
