@@ -128,7 +128,12 @@ function StoreItem(_name, json) constructor {
     //  subscribers.remove(index)
     //  //Logger.debug("Store", $"Remove subscriber: \{ \"key\": \"{this.name}\", \"subscriber\": \"{name}\" \}")
     //}
+    var subscriber = this.subscribers.get(name)
     this.subscribers.remove(name)
+    if (subscriber != null) {
+      delete subscriber
+    }
+    
     return this
   }
 

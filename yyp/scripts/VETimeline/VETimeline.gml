@@ -74,6 +74,7 @@ function VETimeline(_editor) constructor {
         })
       },
       activeChunks: new Collection({
+        keys: function() { return this.chunks.keys() },
         chunks: new Map(String, Chunk),
         size: function() {
           var acc = {

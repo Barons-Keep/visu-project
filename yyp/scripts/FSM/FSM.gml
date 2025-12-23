@@ -117,7 +117,11 @@ function FSM(_context, config) constructor {
         this, this.currentState, data)
     }
 
-    var from = this.currentState != null ? this.currentState.name : "null"
+    var from = "null"
+    if (this.currentState != null) {
+      from = this.currentState.name
+      delete this.currentState
+    }
     this.currentState = targetState
     
     Logger.info(this.displayName, $"Transition from '{from}' to '{this.currentState.name}'")

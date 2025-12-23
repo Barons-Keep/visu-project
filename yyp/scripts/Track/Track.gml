@@ -241,17 +241,18 @@ function Track(json, config = null) constructor {
   removeChannel = Core.isType(Struct.get(config, "removeChannel"), Callable)
     ? method(this, config.removeChannel)
     : function(name) {
-      if (!this.channels.contains(name)) {
+      var channel = this.channels.get(name)
+      if (channel == null) {
         return this
       }
 
       Logger.info("Track", $"Remove channel '{name}'")
-      var index = this.channels.get(name).index
       this.channels.remove(name).forEach(function(channel, name, index) {
         if (channel.index > index) {
           channel.index = channel.index - 1
         }
-      }, index)
+      }, channel.index)
+      delete channel
 
       return this
     }

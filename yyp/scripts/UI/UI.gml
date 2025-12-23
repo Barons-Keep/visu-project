@@ -287,6 +287,84 @@ function UI(config = {}) constructor {
       return true
     }
 
+  ///@param {String} name
+  ///@param {Number} _x
+  ///@param {Number} _y
+  ///@return {Boolean}
+  dispatchHandler = function(name, _x, _y) {
+    static isValidItem = function(item, name, event) {
+      return item.support(event) && item.collide(event)
+    }
+    
+    if (this.enableScrollbarY) {
+      var halign = this.scrollbarY.align
+      this.area.setWidth(this.area.getWidth() + this.scrollbarY.width)
+      if (halign == HAlign.LEFT) {
+        this.area.setX(this.area.getX() - this.scrollbarY.width)
+      }
+
+      if (!Core.isType(_x, Number) || !Core.isType(_y, Number) || !this.area.collide(_x, _y)) {
+        this.area.setWidth(this.area.getWidth() - this.scrollbarY.width)
+        if (halign == HAlign.LEFT) {
+          this.area.setX(this.area.getX() + this.scrollbarY.width)
+        }
+        return false
+      }
+
+      this.area.setWidth(this.area.getWidth() - this.scrollbarY.width)
+      if (halign == HAlign.LEFT) {
+        this.area.setX(this.area.getX() + this.scrollbarY.width)
+      }
+    }
+
+    var item = null
+    if (Core.isType(this.items, Map)) {
+      var keys = this.items.keys()
+      var size = keys.size()
+      for (var index = 0; index < size; index++) {
+        var key = keys.get(index)
+        var entry = this.items.get(key)
+        var result = entry.supportHandler(name) && entry.collideHandler(_x, _y)
+        if (result) {
+          item = entry
+          break
+        }
+      }
+    } else {
+      item = this.items.find(isValidItem, new Event(name, { x: _x, y: _y }))
+    }
+   
+    if (item == null) {
+      var containerHandler = Struct.get(this, $"on{name}")
+      if (containerHandler != null) {
+        containerHandler()
+        return true
+      } else {
+        return !this.propagate
+      }
+    }
+
+    var dispatcher = item.fetchEventPumpHandler(name)
+    if (dispatcher == null) {
+      return true
+    }
+
+    if (name == "MouseHoverOver") {
+      if (item.isHoverOver) {
+        return true
+      }
+
+      if (this.hoverItem != item) {
+        this.hoverItem = item
+        this.clampUpdateTimer(0.9000)
+      }
+      item.isHoverOver = true
+    }
+
+    dispatcher(new Event(name, { x: _x, y: _y })) //fffuck
+    return true
+  }
+  
   ///@param {UIItem} item
   ///@param {?Boolean} [updateArea]
   ///@return {UI} 
@@ -314,8 +392,9 @@ function UI(config = {}) constructor {
     ? Assert.isType(method(this, config.remove), Callable)
     : function(name) {
       var item = this.items.get(name)
-      if (Optional.is(item)) {
+      if (item != null) {
         item.free()
+        delete item
       }
       this.areaWatchdog.signal()
       this.items.remove(name)

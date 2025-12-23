@@ -376,9 +376,11 @@ function Particle(json) constructor {
   ///@return {Particle}
   free = function() {
     if (this.asset != null && part_type_exists(this.asset)) {
+      Logger.debug("Particle", $"Free Particle '{this.name}'")
       part_type_destroy(this.asset)
     }
 
+    this.asset = null
     return this
   }
 }

@@ -99,6 +99,8 @@ function EventPump(_context, _dispatchers, config = {}) constructor {
       if (Core.isType(event.promise, Promise)) {
         event.promise.fullfill(response)
       }
+
+      delete event
     }
 
     if (this.catchException) {

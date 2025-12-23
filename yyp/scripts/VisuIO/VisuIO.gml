@@ -123,6 +123,63 @@ function VisuIO() constructor {
       })
     }
 
+    var _x = MouseUtil.getMouseX() 
+    var _y = MouseUtil.getMouseY()
+    if (this.mouse.buttons.left.pressed) {
+      controller.uiService.send(generateMouseEvent("MousePressedLeft"))
+    }
+
+    if (this.mouse.buttons.left.released) {
+      controller.uiService.send(generateMouseEvent("MouseReleasedLeft"))
+      controller.displayService.setCursor(Cursor.DEFAULT)
+    }
+
+    if (this.mouse.buttons.left.drag) {
+      controller.uiService.send(generateMouseEvent("MouseDragLeft"))
+    }
+
+    if (this.mouse.buttons.left.drop) {
+      controller.uiService.send(generateMouseEvent("MouseDropLeft"))
+    }
+
+    if (this.mouse.buttons.right.pressed) {
+      controller.uiService.send(generateMouseEvent("MousePressedRight"))
+    }
+
+    if (this.mouse.buttons.right.released) {
+      controller.uiService.send(generateMouseEvent("MouseReleasedRight"))
+    }
+    
+    if (this.mouse.buttons.wheelUp.on) {  
+      controller.uiService.send(generateMouseEvent("MouseWheelUp"))
+    }
+    
+    if (this.mouse.buttons.wheelDown.on) {  
+      controller.uiService.send(generateMouseEvent("MouseWheelDown"))
+    }
+
+    if (MouseUtil.hasMoved() && this.mouseMoved == 0) {  
+      this.mouseMoved = this.mouseMovedCooldown
+      //controller.uiService.send(generateMouseEvent("MouseHoverOver"))
+      controller.uiService.mouseEventHandler("MouseHoverOver", _x, _y)
+    } else if (this.mouseMoved > 0) {
+      this.mouseMoved = clamp(this.mouseMoved - 1, 0, this.mouseMovedCooldown)
+    }
+
+    return this
+  }
+
+  ///@private
+  ///@param {VisuController} controller
+  ///@return {VisuIO}
+  __mouseEvent = function(controller) {
+    static generateMouseEvent = function(name) {
+      return new Event(name, { 
+        x: MouseUtil.getMouseX(), 
+        y: MouseUtil.getMouseY(),
+      })
+    }
+
     if (this.mouse.buttons.left.pressed) {
       controller.uiService.send(generateMouseEvent("MousePressedLeft"))
     }

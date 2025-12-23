@@ -99,7 +99,7 @@ function CoinService(): Service() constructor {
   ///@return {CoinService}
   update = function() { 
     this.dispatcher.update()
-    this.coins.forEach(this.updateCoin, Beans.get(BeanVisuController)).runGC()
+    this.coins.forEach(this.updateCoin, Beans.get(BeanVisuController)).runGC(true)
     return this
   }
 

@@ -700,6 +700,8 @@ function VisuEditorIO() constructor {
       return this
     }
 
+    var _x = MouseUtil.getMouseX()
+    var _y = MouseUtil.getMouseY()
     if (this.mouse.buttons.left.pressed) {
       editor.uiService.send(generateMouseEvent("MousePressedLeft"))
     }
@@ -735,7 +737,8 @@ function VisuEditorIO() constructor {
 
     if (MouseUtil.hasMoved() && this.mouseMoved == 0) {  
       this.mouseMoved = this.mouseMovedCooldown
-      editor.uiService.send(generateMouseEvent("MouseHoverOver"))
+      //editor.uiService.send(generateMouseEvent("MouseHoverOver"))
+      editor.uiService.mouseEventHandler("MouseHoverOver", _x, _y)
     } else if (this.mouseMoved > 0) {
       this.mouseMoved = clamp(this.mouseMoved - 1, 0, this.mouseMovedCooldown)
     }

@@ -80,11 +80,19 @@ function UIItem(_name, config = {}) constructor {
     return !this.hidden.value && Core.isType(Struct.get(this, $"on{event.name}"), Callable)
   }))
 
+  supportHandler = function(name) {
+    return !this.hidden.value && Struct.get(this, $"on{name}") != null
+  }
+
   ///@param {Event} event
   ///@return {?Callable}
   fetchEventPump = method(this, Struct.getIfType(config, "fetchEventPump", Callable, function(event) {
     return this.support(event) ? Struct.get(this, $"on{event.name}") : null
   }))
+
+  fetchEventPumpHandler = function(name) {
+    return !this.hidden.value ? Struct.get(this, $"on{name}") : null
+  }
 
   ///@param {any} event
   ///@return {Boolean}
@@ -94,6 +102,16 @@ function UIItem(_name, config = {}) constructor {
       Struct.get(event.data, "y") - this.context.area.getY() - this.context.offset.y
     )
   }))
+
+  ///@param {Number} x
+  ///@param {Number} y
+  ///@return {Boolean}
+  collideHandler = function(x, y) {
+    return !this.hidden.value && this.area.collide(
+      x - this.context.area.getX() - this.context.offset.x, 
+      y - this.context.area.getY() - this.context.offset.y
+    )
+  }
 
   updateArea = Struct.contains(config, "updateArea")
     ? method(this, Assert.isType(Struct.get(config, "updateArea"), Callable))

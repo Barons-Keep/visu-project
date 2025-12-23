@@ -205,13 +205,12 @@ function GridOverlayRenderer() constructor {
       }
     }
     
-    this.backgrounds.forEach(gcFilter, this.backgrounds.gc).runGC()
-    this.grids.forEach(gcFilter, this.grids.gc).runGC()
-    this.foregrounds.forEach(gcFilter, this.foregrounds.gc).runGC()
-
-    this.backgroundColors.forEach(gcColorFilter, this.backgroundColors.gc).runGC()
-    this.gridColors.forEach(gcColorFilter, this.gridColors.gc).runGC()
-    this.foregroundColors.forEach(gcColorFilter, this.foregroundColors.gc).runGC()
+    this.backgrounds.forEach(gcFilter, this.backgrounds.gc).runGC(true)
+    this.grids.forEach(gcFilter, this.grids.gc).runGC(true)
+    this.foregrounds.forEach(gcFilter, this.foregrounds.gc).runGC(true)
+    this.backgroundColors.forEach(gcColorFilter, this.backgroundColors.gc).runGC(true)
+    this.gridColors.forEach(gcColorFilter, this.gridColors.gc).runGC(true)
+    this.foregroundColors.forEach(gcColorFilter, this.foregroundColors.gc).runGC(true)
     return this
   }
 }

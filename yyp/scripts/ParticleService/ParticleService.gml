@@ -42,13 +42,9 @@ function ParticleSystem(_layerName) constructor {
   ///@type {TaskExecutor}
   executor = new TaskExecutor(this)
 
-  ///@private
-  ///@type {Stack<ParticleTemplate>}
-  gc = new Stack(ParticleTemplate)
-
   ///@param {Boolean} [runGC]
   ///@return {ParticleSystem}
-  clear = function(runGC = false) {
+  clear = function() {
     this.executor.tasks.forEach(TaskUtil.fullfill).clear()
     if (!Core.isType(this.asset, GMParticleSystem)) {
       Logger.debug("ParticleSystem", $"clear: System '{this.layerName}' must be type of GMParticleSystem. GC size: {this.gc.size()}")
@@ -56,15 +52,6 @@ function ParticleSystem(_layerName) constructor {
     }
 
     part_particles_clear(this.asset)
-    if (!runGC) {
-      return this
-    }
-
-    this.gc.forEach(function(template) {
-      Logger.debug("ParticleSystem", $"Clear particle template, name: {template.name}")
-      template.free()
-    })
-
     return this
   }
 
@@ -106,10 +93,6 @@ function ParticleSystem(_layerName) constructor {
   free = function() {
     Logger.debug("ParticleSystem", $"Free '{this.layerName}'")
     part_system_destroy(this.asset)
-    this.gc.forEach(function(template) {
-      Logger.debug("ParticleType", $"Free '{template.particle.name}'")
-      part_type_destroy(template.particle.asset)
-    })
     return this
   }
 }
@@ -182,25 +165,23 @@ function ParticleService(config = null): Service() constructor {
       event.data.system.executor.add(task)
     },
     "clear-particles": function(event) {
-      this.systems.forEach(function(system) { system.clear(false) })
+      this.systems.forEach(function(system) { system.clear() })
     },
     "reset-templates": function(event) {
-      this.systems.forEach(function(system) { system.clear(true) })
-      this.templates.clear()
       this.dispatcher.container.clear()
+      this.templates.forEach(function(template) { template.free() }).clear()
+      this.systems.forEach(function(system) { system.clear() })
     },
   }))
 
-  ///@param {ParticleSystem} system
   ///@param {String} name
   ///@return {?ParticleTemplate}
-  factoryParticle = function(system, name) {
+  factoryParticle = function(name) {
     var template = this.getTemplate(name)
     if (template != null) {
       if (template.particle == null) {
         Logger.debug("ParticleService", $"Add new Particle Type, name: {name}")
         template.particle = new Particle(template)
-        system.gc.push(template)
       }
 
       return template
@@ -220,7 +201,7 @@ function ParticleService(config = null): Service() constructor {
     }
 
     var particleName = Struct.getDefault(config, "particleName", "particle-default")
-    var template = this.factoryParticle(system, particleName)
+    var template = this.factoryParticle(particleName)
     if (template == null) {
       Logger.warn("ParticleService", $"Found null particle-template for name: {particleName}, system: {systemName}")
       return
@@ -259,7 +240,7 @@ function ParticleService(config = null): Service() constructor {
       return
     }
 
-    var template = this.factoryParticle(system, particleName)
+    var template = this.factoryParticle(particleName)
     if (template == null) {
       Logger.warn("ParticleService", $"Found null particle-template for name: {particleName}, system: {systemName}")
       return
@@ -333,9 +314,13 @@ function ParticleService(config = null): Service() constructor {
   }
 
   free = function() {
+    this.templates.forEach(function(template) {
+      template.free()
+    }).clear()
+
     this.systems.forEach(function(system) {
       system.free()
-    })
+    }).clear()
   }
 
   this.send(new Event("reset-templates"))

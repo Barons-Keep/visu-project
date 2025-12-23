@@ -114,9 +114,9 @@ function _Core() constructor {
         case GMShaderUniform: return (result == "number" || result == "ref") && object != -1
         case GMShaderSampler: return (result == "number" || result == "ref") && object != -1
         case GMScene: return result == "ref" && asset_get_type(object) == asset_room
-        case GMSound: return (result == "number" || result == "ref") && audio_exists(object)
-        case GMSurface: return result == "ref" && surface_exists(object)
-        case GMVideoSurface: return result == "ref" && surface_exists(object)
+        case GMSound: return (result == "ref" || result == "number") && audio_exists(object)
+        case GMSurface: return (result == "ref" || result == "number") && surface_exists(object)
+        case GMVideoSurface: return (result == "ref" || result == "number") && surface_exists(object)
         case GMTileset: return result == "ref"
         case GMTexture: return (result == "ref" || result == "number") && sprite_exists(object)
         case GMParticleSystem: return result == "ref" && part_system_exists(object)

@@ -97,27 +97,31 @@ function GridItemChunkService(_size) constructor {
     return this
   }
 
+  removeAcc = {
+    get: null,
+    item: null,
+  }
   ///@param {GridItem} item
   ///@throws {AssertException|Exception}
   ///@return {GridItemChunkService}
   remove = function(item) {
-    Assert.isType(item, GridItem, "[GridItemChunkService::remove(item)] argument 'item' must be a type of GridItem")
+    //Assert.isType(item, GridItem, "[GridItemChunkService::remove(item)] argument 'item' must be a type of GridItem")
+    this.removeAcc.get = this.get
+    this.removeAcc.item = item
     item.chunkPosition.keys.forEach(function(key, iterator, acc) {
       var chunk = acc.get(key)
       var index = chunk.findIndex(Lambda.equal, acc.item)
-      if (!Optional.is(index)) {
+      if (index == null) {
         var message = $"GridItem with uid '{acc.item.uid}' wasn't found in chunk '{key}'"
         Logger.error("GridItemChunkService::remove(item)", message)
-        Core.printStackTrace()
+        Core.printStackTrace().printException(exception)
         throw new Exception(message)
       }
 
       chunk.remove(index)
-    }, {
-      get: this.get,
-      item: item,
-    })
+    }, this.removeAcc)
 
+    delete item.chunkPosition
     item.chunkPosition = null
     return this
   }
@@ -150,7 +154,7 @@ function GridItemChunkService(_size) constructor {
         if (!Optional.is(index)) {
           var message = $"GridItem with uid '{item.uid}' wasn't found in chunk '{key}'"
           Logger.error("GridItemChunkService::update(item)", message)
-          Core.printStackTrace()
+          Core.printStackTrace().printException(exception)
           throw new Exception(message)
         }
         chunk.remove(index)
@@ -166,10 +170,10 @@ function GridItemChunkService(_size) constructor {
         for (var column = 0; column <= position.finish.x - position.start.x; column++) {
           var key = this.getKey(position.start.x + column, position.start.y + row)
           var chunk = this.get(key)
-          if (Optional.is(chunk.findIndex(Lambda.equal, item))) {
+          if (chunk.findIndex(Lambda.equal, item) != null) {
             var message = $"GridItem with uid '{item.uid}' was already added to chunk '{key}'"
             Logger.error("GridItemChunkService::update(item)", message)
-            Core.printStackTrace()
+            Core.printStackTrace().printException(exception)
             throw new Exception(message)
           }
   
@@ -184,7 +188,7 @@ function GridItemChunkService(_size) constructor {
 
   ///@return {GridItemChunkService}
   clear = function() {
-    this.chunks.clear()
+    this.chunks.forEach(function(chunk) { delete chunk } ).clear()
     return this
   }
 }
@@ -783,23 +787,24 @@ function GridService(_config = null) constructor {
     }
   }
 
+  moveGridItemsAcc = {
+    view: null,
+    chunkService: null,
+  }
   ///@private
   ///@return {GridService}
   moveGridItems = function() {
     var controller = Beans.get(BeanVisuController)
     var view = controller.gridService.view
-    controller.bulletService.bullets.forEach(this.moveBullet, {
-      view: view,
-      chunkService: controller.bulletService.chunkService,
-    })
-
-    controller.shroomService.shrooms.forEach(this.moveShroom, {
-      view: view,
-      chunkService: controller.shroomService.chunkService,
-    })
+    this.moveGridItemsAcc.view = view
+    this.moveGridItemsAcc.chunkService = controller.bulletService.chunkService
+    controller.bulletService.bullets.forEach(this.moveBullet, this.moveGridItemsAcc)
+    
+    this.moveGridItemsAcc.chunkService = controller.shroomService.chunkService
+    controller.shroomService.shrooms.forEach(this.moveShroom, this.moveGridItemsAcc)
 
     var player = controller.playerService.player
-    if (Core.isType(player, Player)) {
+    if (player != null) {
       player.move()
     }
     return this
@@ -817,23 +822,24 @@ function GridService(_config = null) constructor {
         bullet.signal("shroomCollision", shroom)
       }
     }
+
     static shroomBullet = function(player, bullet) {
       if (bullet.fadeIn >= 1.0 && player.collide(bullet)) {
         player.signal("bulletCollision", bullet)
         bullet.signal("playerCollision", player)
       }
     }
-    static playerLambda = function(key, index, acc) {
-      acc.chunkService.get(key).forEach(acc.playerBullet, acc.bullet)
-    }
 
     switch (bullet.producer) {
       case Player:
-        bullet.chunkPosition.keys.forEach(playerLambda, {
-          chunkService: controller.shroomService.chunkService,
-          playerBullet: playerBullet,
-          bullet: bullet,
-        })
+        var keys = bullet.chunkPosition.keys
+        var size = keys.size()
+        for (var idx = 0; idx < size; idx++) {
+          var key = keys.get(idx)
+          controller.shroomService.chunkService
+            .get(key)
+            .forEach(playerBullet, bullet)
+        }
         //controller.shroomService.shrooms.forEach(playerBullet, bullet)
         break
       case Shroom:

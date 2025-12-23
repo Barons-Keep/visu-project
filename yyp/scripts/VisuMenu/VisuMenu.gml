@@ -2101,7 +2101,7 @@ function VisuMenu(_config = null) constructor {
                   return
                 }
 
-                Visu.settings.setValue("visu.interface.scale", this.value / 100.0).save()
+                //Visu.settings.setValue("visu.interface.scale", this.value / 100.0).save()
                 Struct.set(this.context, "scaleIntent", this.value / 100.0)
                 playCleanSFX("menu-move-cursor")
               },
@@ -2132,6 +2132,13 @@ function VisuMenu(_config = null) constructor {
               onMouseReleasedLeft: function() {
                 this.callback()
               },
+              preRender: function() {
+                var scale = Struct.getIfType(this.context, "scaleIntent", Number, Visu.settings.getValue("visu.interface.scale"))
+                var displayService = Beans.get(BeanVisuController).displayService
+                var width = Math.getEvenCeil(displayService.getWidth() / scale)
+                var height = Math.getEvenCeil(displayService.getHeight() / scale)
+                this.label.text = $"Apply GUI Scale\n[ {width} x {height} ]"
+              }
             },
           }
         },
@@ -2592,6 +2599,7 @@ function VisuMenu(_config = null) constructor {
                 VISU_LOAD_PROPERTIES = false
                 VISU_LOAD_SETTINGS = false
                 VISU_PARSE_CLI = false
+                //VISU_DISPLAY_SERVICE_SETUP = false
                 Scene.open("scene_visu", {
                   VisuController: {
                     initialState: { name: Core.getProperty("visu.splashscreen.skip") ? "idle" : "splashscreen", },
@@ -2747,11 +2755,12 @@ function VisuMenu(_config = null) constructor {
           "visu-menu.content": {
             name: "visu-menu.content",
             x: function() { return this.context.x() + ((this.context.width() - this.width()) / 2.0) },
+            //x: function() { return this.context.x() + clamp(this.context.width() * 0.15, 80, 384) },
             y: function() { return Struct.get(this.context.nodes, "visu-menu.title").bottom() 
               + this.__margin.top 
               + ((this._height(this.context, this.__margin) - this.height()) / 2.0)
             },
-            width: function() { return max(this.context.width() * 0.3, 540) },
+            width: function() { return max(this.context.width() * 0.3, 640) },
             viewHeight: 0.0,
             height: function() {
               this.viewHeight = clamp(this.viewHeight, 0.0, this._height(this.context, this.__margin))

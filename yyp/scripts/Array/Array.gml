@@ -416,13 +416,25 @@ function Array(_type = any, _container = null) constructor {
   }
 
   ///@return {Array}
-  static runGC = function() {
+  static runGC = function(dereference = false) {
     static removeIndex = function(index, gcIndex, array) {
       array.remove(index)
     }
 
+    static dereferenceAndRemoveIndex = function(index, gcIndex, array) {
+      var item = array.get(index)
+      if (Core.isType(item, Struct)) {
+        delete item
+      }
+      array.remove(index)
+    }
+
     if (this.gc != null && this.gc.size() > 0) {
-      this.gc.forEach(removeIndex, this)
+      if (dereference) {
+        this.gc.forEach(dereferenceAndRemoveIndex, this)
+      } else {
+        this.gc.forEach(removeIndex, this)
+      }
     }
 
     return this

@@ -918,17 +918,13 @@ function VisuEditorController() constructor {
   free = function() {
     Struct.toMap(this)
       .filter(function(value) {
-        if (!Core.isType(value, Struct)
-          || !Struct.contains(value, "free")
-          || !Core.isType(Struct.get(value, "free"), Callable)) {
-          return false
-        }
-        return true
+        return Core.isType(Struct.get(value, "free"), Callable)
       })
       .forEach(function(struct, key, context) {
         try {
           Logger.debug(BeanVisuEditorController, $"Free '{key}'")
-          Callable.run(Struct.get(struct, "free"))
+          var freeHandler = Struct.get(struct, "free")
+          freeHandler()
         } catch (exception) {
           Logger.error(BeanVisuEditorController, $"Unable to free '{key}'. {exception.message}")
           Core.printStackTrace().printException(exception)

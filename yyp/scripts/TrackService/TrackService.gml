@@ -98,7 +98,11 @@ function TrackService(_context, config = {}): Service() constructor {
   ///@return {TrackService}
   closeTrack = function() {
     this.stop()
-    this.track = null
+    if (this.track != null) {
+      delete this.track
+      this.track = null
+    }
+
     Logger.debug("TrackService", "Track was closed successfully")
     return this
   }
@@ -159,7 +163,7 @@ function TrackService(_context, config = {}): Service() constructor {
       return this
     }
 
-    if (Optional.is(this.rewindFrom) && Optional.is(this.rewindTo)) {
+    if (this.rewindFrom != null && this.rewindTo != null) {
       var audioPosition = this.track.audio.isLoaded() 
         ? this.track.audio.getPosition() 
         : this.time

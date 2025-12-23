@@ -65,6 +65,14 @@ function Texture(_asset, config = null) constructor {
 }
 
 
+///@type {Struct}
+global.__TEXTURE_TEMPLATE_ACC = {
+  template: null,
+  json: null,
+}
+#macro TEXTURE_TEMPLATE_ACC global.__TEXTURE_TEMPLATE_ACC
+
+
 ///@param {String} _name
 ///@param {Struct} json
 function TextureTemplate(_name, json) constructor {
@@ -94,27 +102,25 @@ function TextureTemplate(_name, json) constructor {
   
   ///@return {Struct}
   static serialize = function() {
-    var template = this
-    var acc = {
-      template: template,
-      json: {},
-    }
-    
-    GMArray.forEach(Struct.keys(this), function(field, index, acc) {
+    static serializeField = function(field, index, acc) {
       if (field == "asset" || field == "serialize") {
         return
       }
       
       var value = Struct.get(acc.template, field)
-      if (Optional.is(value)) {
+      if (value != null) {
         value = field == "file" 
           ? (value == "" ? value : FileUtil.getFilenameFromPath(value)) 
           : value
         Struct.set(acc.json, field, value)
       }
-    }, acc)
-     
-    return acc.json
+    }
+
+    TEXTURE_TEMPLATE_ACC.template = this
+    TEXTURE_TEMPLATE_ACC.json = {}
+    GMArray.forEach(Struct.keys(this), serializeField, TEXTURE_TEMPLATE_ACC)
+
+    return TEXTURE_TEMPLATE_ACC.json
   }
 }
 
@@ -149,8 +155,8 @@ function _TextureUtil() constructor {
   static exists = function(name) {
     gml_pragma("forceinline")
     var textureService = Beans.get(BeanTextureService)
-    if (Optional.is(textureService) 
-      && Optional.is(textureService.templates.get(name))) {
+    if (textureService != null
+        && textureService.templates.get(name) != null) {
       return true
     }
 
@@ -169,11 +175,10 @@ function _TextureUtil() constructor {
     }
 
     var textureService = Beans.get(BeanTextureService)
-    if (Optional.is(textureService) && !Struct.getDefault(config, "disableTextureService", false)) {
+    if (textureService != null && !Struct.getDefault(config, "disableTextureService", false)) {
       var template = textureService.getTemplate(name)
-      if (Optional.is(template)) {
-        return new Texture(template.asset, 
-          Optional.is(config) ? config : template)
+      if (template != null) {
+        return new Texture(template.asset, config != null ? config : template)
       }
     }
 

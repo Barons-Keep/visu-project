@@ -279,7 +279,7 @@ function ShroomService(_controller, config = {}): Service() constructor {
     //this.optimalizationSortEntitiesByTxGroup = Visu.settings.getValue("visu.optimalization.sort-entities-by-txgroup")
     this.dispatcher.update()
     this.executor.update()
-    this.shrooms.forEach(this.updateShroom, this).runGC()
+    this.shrooms.forEach(this.updateShroom, this).runGC(true)
     return this
   }
 

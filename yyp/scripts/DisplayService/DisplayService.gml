@@ -13,9 +13,10 @@ global.__Cursor = new _Cursor()
 
 ///@enum
 function _TimingMethod(): Enum() constructor {
+  SLEEP = tm_sleep
   COUNTSYNC = tm_countvsyncs
   COUNTSYNC_WINALT = tm_countvsyncs_winalt
-  SLEEP = tm_sleep
+  SYSTEMTIMING = tm_systemtiming
 }
 global.__TimingMethod = new _TimingMethod()
 #macro TimingMethod global.__TimingMethod

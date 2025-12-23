@@ -254,7 +254,7 @@ function BulletService(_controller): Service() constructor {
     //this.optimalizationSortEntitiesByTxGroup = Visu.settings.getValue("visu.optimalization.sort-entities-by-txgroup")
     this.dispatcher.update()
     this.executor.update()
-    this.bullets.forEach(this.updateBullet, this).runGC()
+    this.bullets.forEach(this.updateBullet, this).runGC(true)
     return this
   }
 }

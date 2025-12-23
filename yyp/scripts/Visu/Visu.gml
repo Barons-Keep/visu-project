@@ -44,17 +44,26 @@ global.__VISU_FORCE_GOD_MODE_DISPATCHED = false
 global.__VISU_BOOT_UP = false
 #macro VISU_BOOT_UP global.__VISU_BOOT_UP
 
+
 ///@type {Boolean}
 global.__VISU_LOAD_PROPERTIES = false
 #macro VISU_LOAD_PROPERTIES global.__VISU_LOAD_PROPERTIES
+
 
 ///@type {Boolean}
 global.__VISU_LOAD_SETTINGS = false
 #macro VISU_LOAD_SETTINGS global.__VISU_LOAD_SETTINGS
 
+
 ///@type {Boolean}
 global.__VISU_PARSE_CLI = false
 #macro VISU_PARSE_CLI global.__VISU_PARSE_CLI
+
+
+///@type {Boolean}
+global.__VISU_DISPLAY_SERVICE_SETUP = false
+#macro VISU_DISPLAY_SERVICE_SETUP global.__VISU_DISPLAY_SERVICE_SETUP
+
 
 ///@hack
 #macro TEMPLATE_ENTRY_STEP global.__BRUSH_ENTRY_STEP
@@ -1576,11 +1585,11 @@ function _Visu() constructor {
     this.initTextureService(layerId)
     this.initSoundService(layerId)
     this.initDialogueDesignerService(layerId)
-    this.initTestRunner(layerId)
     this.initEditor(layerId)
     this.initVisu(layerId, layerName)
     this.initDebugSFX()
     this.initDebug()
+    this.initTestRunner(layerId)
     this.parseCli()
 
     return this

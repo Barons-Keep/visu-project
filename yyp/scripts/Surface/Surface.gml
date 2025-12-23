@@ -49,6 +49,9 @@ function Surface(config = null) constructor {
   ///@type {Boolean}
   depth = Struct.getIfType(config, "depth", Boolean, false)
 
+  ///@type {String}
+  //key = null // used by SURFACE_COUNTER
+
   ///@param {?Number} [width]
   ///@param {?Number} [height]
   ///@return {Surface}
@@ -64,14 +67,17 @@ function Surface(config = null) constructor {
 
     if (!Core.isType(this.asset, GMSurface)) {
       surface_depth_disable(!this.depth)
+      //SURFACE_COUNTER.surfaceCreate(this, this.width, this.height, this.format)
       this.asset = surface_create(this.width, this.height, this.format)
       this.updated = true
     } else {
       if (this.depth && !surface_has_depth(this.asset)) {
+        //SURFACE_COUNTER.surfaceFree(this)
         surface_free(this.asset)
         this.asset = null
         
         surface_depth_disable(!this.depth)
+        //SURFACE_COUNTER.surfaceCreate(this, this.width, this.height, this.format)
         this.asset = surface_create(this.width, this.height, this.format)
         this.updated = true
       }
@@ -79,6 +85,7 @@ function Surface(config = null) constructor {
 
     if (surface_get_format(this.asset) != this.format) {
       surface_depth_disable(!this.depth)
+      //SURFACE_COUNTER.surfaceCreate(this, this.width, this.height, this.format)
       this.asset = surface_create(this.width, this.height, this.format)
       this.updated = true
     }
@@ -211,7 +218,65 @@ function Surface(config = null) constructor {
 
   free = function() {
     if (Core.isType(this.asset, GMSurface)) {
+      //SURFACE_COUNTER.surfaceFree(this)
       surface_free(this.asset)
     }
   }
 }
+
+
+/*
+#macro SURFACE_COUNTER global.surfaceCounter
+global.surfaceCounter = {
+  count: 0,
+  surfaces: null,
+  uidPointer: int64(0),
+  generateUid: function() {
+    if (SURFACE_COUNTER.uidPointer >= MAX_INT_64 - 1) {
+      Logger.warn("Surface", $"Reached maximum available value for uidPointer ('{MAX_INT_64}'). Reset uidPointer to '0'")
+      SURFACE_COUNTER.uidPointer = int64(0)
+    }
+    SURFACE_COUNTER.uidPointer++
+    return md5_string_utf8(string(SURFACE_COUNTER.uidPointer))
+  },
+  surfaceCreate: function(context, width, height, format) {
+    context.key = SURFACE_COUNTER.generateUid()
+    context.asset = surface_create(width, height, format)
+    SURFACE_COUNTER.addKey(context.key)
+    Core.print("surface create", context.key)
+  },
+  surfaceFree: function(context) {
+    surface_free(context.asset)
+    SURFACE_COUNTER.removeKey(context.key)
+    Core.print("surface free", context.key)
+  },
+  addKey: function(key) {
+    if (SURFACE_COUNTER.surfaces == null) {
+      SURFACE_COUNTER.surfaces = new Map(String, Boolean)
+    }
+
+    if (SURFACE_COUNTER.surfaces.contains(key)) {
+      Logger.error("Surface", $"addKey: key exists: {key}")
+      return
+    }
+
+    SURFACE_COUNTER.count++
+    SURFACE_COUNTER.surfaces.add(true, key)
+  },
+  removeKey: function(key) {
+    if (SURFACE_COUNTER.surfaces == null) {
+      SURFACE_COUNTER.surfaces = new Map(String, Boolean)
+    }
+
+    if (!SURFACE_COUNTER.surfaces.contains(key)) {
+      Logger.error("Surface", $"removeKey: key exists exists: {key}")
+      return
+    }
+
+    SURFACE_COUNTER.surfaces.remove(key)
+  },
+  report: function() {
+    Logger.test("Surface", $"size: {SURFACE_COUNTER.surfaces.size()}, count: {SURFACE_COUNTER.count}")
+  }
+}
+*/

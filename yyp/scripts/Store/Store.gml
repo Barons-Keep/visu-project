@@ -2,11 +2,12 @@
 
 ///@param {Struct} json
 function Store(json) constructor {
+  static parseContainer = function(item, key) {
+    return new StoreItem(key, item)
+  }
 
   ///@type {Map<String, any>}
-  container = Struct.toMap(json, String, StoreItem, function(item, key) {
-    return new StoreItem(key, item)
-  })
+  container = Struct.toMap(json, String, StoreItem, parseContainer)
 
   ///@param {String} name
   ///@return {?StoreItem}
@@ -52,13 +53,16 @@ function Store(json) constructor {
   ///@throws {Exception}
   static parse = function(json) {
     gml_pragma("forceinline")
-    Struct.forEach(json, function(value, key, store) {
+    static parseItem = function(value, key, store) {
       var item = store.get(key)
       if (!Core.isType(item, StoreItem)) {
         throw new Exception($"Unable to parse \{ '{key}': '{value}' \}")
       }
+
       item.set(value)
-    }, this)
+    }
+
+    Struct.forEach(json, parseItem, this)
     return this
   }
 }

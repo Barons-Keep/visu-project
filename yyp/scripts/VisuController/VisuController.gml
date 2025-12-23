@@ -355,18 +355,21 @@ function VisuController(layerName) constructor {
   ///@private
   ///@return {VisuController}
   init = function() {
-    var width = Visu.settings.getValue("visu.window.width", 1440),
-    var height = Visu.settings.getValue("visu.window.height", 900)
-    var fullscreen = Visu.settings.getValue("visu.fullscreen", false)
-    var borderlessWindow = Visu.settings.getValue("visu.borderless-window", false)
-    this.displayService
-      .resize(width, height)
-      .setBorderlessWindow(borderlessWindow)
-      .setFullscreen(fullscreen)
-      .setCaption(game_display_name)
-      .setCursor(Cursor.DEFAULT)
-      .center()
-    
+    this.displayService.setCursor(Cursor.DEFAULT)
+    if (!VISU_DISPLAY_SERVICE_SETUP) {
+      var width = Visu.settings.getValue("visu.window.width", 1440),
+      var height = Visu.settings.getValue("visu.window.height", 900)
+      var fullscreen = Visu.settings.getValue("visu.fullscreen", false)
+      var borderlessWindow = Visu.settings.getValue("visu.borderless-window", false)
+      this.displayService
+        .resize(width, height)
+        .setBorderlessWindow(borderlessWindow)
+        .setFullscreen(fullscreen)
+        .setCaption(game_display_name)
+        .center()
+      VISU_DISPLAY_SERVICE_SETUP = true
+    }
+
     this.sfxService
       .set("player-collect-bomb", new SFX("sound_sfx_player_collect_bomb"))
       .set("player-collect-life", new SFX("sound_sfx_player_collect_life"))
@@ -424,7 +427,7 @@ function VisuController(layerName) constructor {
   updateCursor = function() {
     var cursor = this.displayService.getCursor()
     var editor = Beans.get(Visu.modules().editor.controller)
-    if (Optional.is(editor)) {
+    if (editor != null) {
       if (editor.renderUI && cursor == Cursor.NONE && cursor_sprite == -1) {
         this.displayService.setCursor(Cursor.DEFAULT)
       } else if (!editor.renderUI && !this.menu.enabled && cursor != Cursor.NONE) {
@@ -639,18 +642,15 @@ function VisuController(layerName) constructor {
         this.sfxService.setVolume(sfxVolume)
       }
 
-      if (Optional.is(this.watchdogPromise)) {
+      if (this.watchdogPromise != null) {
         this.watchdogPromise = this.watchdogPromise.status == PromiseStatus.PENDING
           ? this.watchdogPromise
           : null
         return this
-      }
-
-      if (!Optional.is(this.watchdogPromise)
-        && this.trackService.isTrackLoaded()
-        && !this.trackService.track.audio.isLoaded() 
-        && 1 > abs(this.trackService.time - this.trackService.duration)
-        && this.fsm.getStateName() == "play") {
+      } else if (this.trackService.isTrackLoaded()
+          && !this.trackService.track.audio.isLoaded() 
+          && 1 > abs(this.trackService.time - this.trackService.duration)
+          && this.fsm.getStateName() == "play") {
         
         Logger.info("VisuController", $"Track finished at {this.trackService.time}")
         this.watchdogPromise = this.send(new Event("pause").setPromise(new Promise()))
@@ -931,17 +931,13 @@ function VisuController(layerName) constructor {
   free = function() {
     Struct.toMap(this)
       .filter(function(value) {
-        if (!Core.isType(value, Struct)
-          || !Struct.contains(value, "free")
-          || !Core.isType(Struct.get(value, "free"), Callable)) {
-          return false
-        }
-        return true
+        return Core.isType(Struct.get(value, "free"), Callable)
       })
       .forEach(function(struct, key, context) {
         try {
           Logger.debug(BeanVisuController, $"Free '{key}'")
-          Callable.run(Struct.get(struct, "free"))
+          var freeHandler = Struct.get(struct, "free")
+          freeHandler()
         } catch (exception) {
           Logger.error(BeanVisuController, $"Free '{key}' fatal error: {exception.message}")
           Core.printStackTrace().printException(exception)

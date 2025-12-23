@@ -109,7 +109,7 @@ function TaskExecutor(_context, config = {}) constructor {
 
   ///@return {TaskExecutor}
   update = function() {
-    this.tasks.forEach(this.execute, this).runGC()
+    this.tasks.forEach(this.execute, this).runGC(true)
     return this
   }
 

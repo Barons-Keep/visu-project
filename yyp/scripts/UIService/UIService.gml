@@ -24,17 +24,33 @@ function UIService(_context, config = {}): Service(config) constructor {
 
   ///@private
   ///@param {String} name
+  ///@param {Number} _x
+  ///@param {Number} _y
+  ///@param {EventPump} dispatcher
+  mouseEventHandler = function(name, _x, _y) {
+    var size = this.containers.size()
+    for (var index = size - 1; index >= 0; index--) {
+      var container = this.containers.get(index)
+      if (container.enable && container.dispatchHandler(name, _x, _y)) {
+        break
+      }
+    }
+  }
+
+  ///@private
+  ///@param {String} name
   removeContainers = function(name) {
     var keys = this.containers
       .map(function(container, key, name) {
         var result = container.name == name ? key : null
-        if (Optional.is(result)) {
+        if (result != null) {
           container.free()
+          delete container
         }
         return result
       }, name)
       .filter(function(key) {
-        return Optional.is(key)
+        return key != null
       })
     this.containers.removeMany(keys)
   }
@@ -119,7 +135,6 @@ function UIService(_context, config = {}): Service(config) constructor {
         container.render()
       }
     }
-
     
     this.containers.forEach(renderContainer)
     return this
