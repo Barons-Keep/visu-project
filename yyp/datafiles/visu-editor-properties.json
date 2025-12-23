@@ -1,7 +1,7 @@
 {
   "visu.editor.force-init": false,
   "visu.editor.force-render": false,
-  "visu.editor.renderEditorMode": false,  
+  "visu.editor.renderEditorMode": true,  
   "visu.editor.controlTrack.alwaysEnabled": true,
   "visu.editor.status-bar.render-real-fps": false,
   "visu.editor.edit-theme": false,

@@ -478,6 +478,11 @@ function VisuStateMachine(context, name) {
             if (this.state.get("promises-resolved") != "success") {
               var promises = this.state.get("promises")
               var filtered = promises.filter(fsm.context.loader.utils.filterPromise)
+              var track = Beans.get(BeanVisuController).trackService.track
+              if (track != null && track.getStatus() == TrackStatus.STOPPED) {
+                this.state.set("promises-resolved", "success")
+                return
+              }
               if (filtered.size() != promises.size()) {
                 return
               }

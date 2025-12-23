@@ -13,9 +13,9 @@ global.__Cursor = new _Cursor()
 
 ///@enum
 function _TimingMethod(): Enum() constructor {
-  SLEEP = tm_sleep
   COUNTSYNC = tm_countvsyncs
   COUNTSYNC_WINALT = tm_countvsyncs_winalt
+  SLEEP = tm_sleep
   SYSTEMTIMING = tm_systemtiming
 }
 global.__TimingMethod = new _TimingMethod()
@@ -75,18 +75,11 @@ function DisplayService(_controller, config = {}): Service() constructor {
   previousGuiHeight = this.windowHeight * this.scale
 
   ///@private
-  ///@type {DisplayTimingMethodConstant}
-  timingMethod = TimingMethod.getDefault(Core.getProperty("core.display-service.timing-method"), TimingMethod.COUNTSYNC)
-
-  ///@private
   ///@type {Number}
   sleepMargin = Core.getProperty("core.display-service.sleep-margin", 10)
 
   ///@return {DisplayService}
   init = function() {
-    Logger.info("DisplayService", $"Setup timing method {TimingMethod.getKey(this.timingMethod)}")
-    display_set_timing_method(this.timingMethod)
-
     Logger.info("DisplayService", $"Setup sleep margin {this.sleepMargin}")
     display_set_sleep_margin(this.sleepMargin)
     return this
@@ -171,6 +164,19 @@ function DisplayService(_controller, config = {}): Service() constructor {
     return this
   }
 
+  ///@return {TimingMethod}
+  getTimingMethod = function() {
+    return display_get_timing_method()
+  }
+
+  ///@param {TimingMethod}
+  ///@return {DisplayService} timingMethod
+  setTimingMethod = function(timingMethod) {
+    Logger.info("DisplayService", $"Setup timing method {TimingMethod.getKey(timingMethod)}")
+    display_set_timing_method(timingMethod)
+    return this
+  }
+
   ///@return {DisplayService}
   center = function() {
     if (this.getFullscreen()) {
@@ -219,6 +225,7 @@ function DisplayService(_controller, config = {}): Service() constructor {
         || context.previousGuiHeight != display_get_gui_height()
     }
 
+    /*
     timingMethod = display_get_timing_method()
     if (timingMethod != this.timingMethod) {
       Logger.info("DisplayService", $"Update timing method to {TimingMethod.getKey(this.timingMethod)}")
@@ -232,6 +239,7 @@ function DisplayService(_controller, config = {}): Service() constructor {
         display_set_sleep_margin(this.sleepMargin)
       }
     }
+    */
 
     if (this.state == "idle" || this.state == "resized") {
       this.state = isResizeRequired(this) ? "required" : "idle"

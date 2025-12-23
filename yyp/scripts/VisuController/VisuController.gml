@@ -355,17 +355,20 @@ function VisuController(layerName) constructor {
   ///@private
   ///@return {VisuController}
   init = function() {
-    this.displayService.setCursor(Cursor.DEFAULT)
+    this.displayService
+      .setCursor(Cursor.DEFAULT)
     if (!VISU_DISPLAY_SERVICE_SETUP) {
-      var width = Visu.settings.getValue("visu.window.width", 1440),
-      var height = Visu.settings.getValue("visu.window.height", 900)
-      var fullscreen = Visu.settings.getValue("visu.fullscreen", false)
-      var borderlessWindow = Visu.settings.getValue("visu.borderless-window", false)
+      var width = Visu.settings.getValue("visu.window.width"),
+      var height = Visu.settings.getValue("visu.window.height")
+      var fullscreen = Visu.settings.getValue("visu.fullscreen",)
+      var borderlessWindow = Visu.settings.getValue("visu.borderless-window")
+      var timingMethod = TimingMethod.get(Visu.settings.getValue("visu.graphics.timing-method"))
       this.displayService
         .resize(width, height)
         .setBorderlessWindow(borderlessWindow)
         .setFullscreen(fullscreen)
         .setCaption(game_display_name)
+        .setTimingMethod(timingMethod)
         .center()
       VISU_DISPLAY_SERVICE_SETUP = true
     }

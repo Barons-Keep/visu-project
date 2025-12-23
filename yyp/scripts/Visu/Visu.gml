@@ -1289,6 +1289,8 @@ function _Visu() constructor {
     }
 
     //Logger.info("Visu", "run::loadSettings()")
+    var timingMethodKey = Core.getProperty("core.display-service.timing-method", "COUNTSYNC")
+    timingMethodKey = TimingMethod.containsKey(timingMethodKey) ? timingMethodKey : "COUNTSYNC"
     this.settings.set(new SettingEntry({ name: "visu.editor.autosave", type: SettingTypes.BOOLEAN, defaultValue: false }))
       .set(new SettingEntry({ name: "visu.language", type: SettingTypes.STRING, defaultValue: LanguageType.en_EN }))
       .set(new SettingEntry({ name: "visu.fullscreen", type: SettingTypes.BOOLEAN, defaultValue: false }))
@@ -1319,6 +1321,7 @@ function _Visu() constructor {
       .set(new SettingEntry({ name: "visu.graphics.particle", type: SettingTypes.BOOLEAN, defaultValue: true }))
       .set(new SettingEntry({ name: "visu.graphics.shader-quality", type: SettingTypes.NUMBER, defaultValue: 0.5 }))
       .set(new SettingEntry({ name: "visu.graphics.vsync", type: SettingTypes.BOOLEAN, defaultValue: true }))
+      .set(new SettingEntry({ name: "visu.graphics.timing-method", type: SettingTypes.STRING, defaultValue: timingMethodKey }))
       .set(new SettingEntry({ name: "visu.graphics.aa", type: SettingTypes.NUMBER, defaultValue: 0 }))
       .set(new SettingEntry({ name: "visu.audio.ost-volume", type: SettingTypes.NUMBER, defaultValue: 1.0 }))
       .set(new SettingEntry({ name: "visu.audio.sfx-volume", type: SettingTypes.NUMBER, defaultValue: 0.5 }))
@@ -1396,6 +1399,7 @@ function _Visu() constructor {
     //}
     //display_reset(this.settings.getValue("visu.graphics.aa"), this.settings.getValue("visu.graphics.vsync"))
     display_reset(display_aa, this.settings.getValue("visu.graphics.vsync", true))
+    display_set_timing_method(TimingMethod.get(this.settings.getValue("visu.graphics.timing-method")))
   }
 
   static loadLanguage = function() {

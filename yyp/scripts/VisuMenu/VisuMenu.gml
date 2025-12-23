@@ -1411,6 +1411,71 @@ function VisuMenu(_config = null) constructor {
           }
         },
         {
+          name: "graphics_menu-spin-select-entry_timing",
+          template: VisuComponents.get("menu-spin-select-entry"),
+          layout: VisuLayouts.get("menu-spin-select-entry"),
+          config: { 
+            layout: { type: UILayoutType.VERTICAL },
+            label: { text: "Timing" },
+            previous: { 
+              callback: function() {
+                var map = new Map(String, Number)
+                  .set(TimingMethod.getKey(TimingMethod.COUNTSYNC), 0)
+                  .set(TimingMethod.getKey(TimingMethod.COUNTSYNC_WINALT), 1)
+                  .set(TimingMethod.getKey(TimingMethod.SLEEP), 2)
+                  .set(TimingMethod.getKey(TimingMethod.SYSTEMTIMING), 3)
+                var pointer = map.getDefault(Visu.settings.getValue("visu.graphics.timing-method"), 0)
+                var target = clamp(int64(pointer - 1), -1, 4)
+                target = target == -1 ? 3 : (target == 4 ? 0 : target)
+                var value = map.findKey(Lambda.equal, target)
+
+                if (!Optional.is(value)) {
+                  return
+                }
+
+                Visu.settings.setValue("visu.graphics.timing-method", value).save()
+                var controller = Beans.get(BeanVisuController)
+                var timingMethod = TimingMethod.get(Visu.settings.getValue("visu.graphics.timing-method"))
+                controller.displayService.setTimingMethod(timingMethod)
+                display_reset(display_aa, Visu.settings.getValue("visu.graphics.vsync", true))
+                controller.sfxService.play("menu-use-entry")
+              },
+            },
+            preview: {
+              label: {
+                text: Visu.settings.getValue("visu.graphics.timing-method")
+              },
+              updateCustom: function() { 
+                this.label.text = Visu.settings.getValue("visu.graphics.timing-method")
+              },
+            },
+            next: { 
+              callback: function() {
+                var map = new Map(String, Number)
+                  .set(TimingMethod.getKey(TimingMethod.COUNTSYNC), 0)
+                  .set(TimingMethod.getKey(TimingMethod.COUNTSYNC_WINALT), 1)
+                  .set(TimingMethod.getKey(TimingMethod.SLEEP), 2)
+                  .set(TimingMethod.getKey(TimingMethod.SYSTEMTIMING), 3)
+                var pointer = map.getDefault(Visu.settings.getValue("visu.graphics.timing-method"), 0)
+                var target = clamp(int64(pointer + 1), -1, 4)
+                target = target == -1 ? 3 : (target == 4 ? 0 : target)
+                var value = map.findKey(Lambda.equal, target)
+
+                if (!Optional.is(value)) {
+                  return
+                }
+
+                Visu.settings.setValue("visu.graphics.timing-method", value).save()
+                var controller = Beans.get(BeanVisuController)
+                var timingMethod = TimingMethod.get(Visu.settings.getValue("visu.graphics.timing-method"))
+                controller.displayService.setTimingMethod(timingMethod)
+                display_reset(display_aa, Visu.settings.getValue("visu.graphics.vsync", true))
+                controller.sfxService.play("menu-use-entry")
+              },
+            },
+          },
+        },
+        {
           name: "graphics_menu-button-input-entry_bkt-glitch",
           template: VisuComponents.get("menu-button-input-entry"),
           layout: VisuLayouts.get("menu-button-input-entry"),
