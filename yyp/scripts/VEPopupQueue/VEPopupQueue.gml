@@ -303,16 +303,20 @@ function VEPopupQueue(_editor) constructor {
     return this.dispatcher.send(event)
   }
 
+  ///@param {UI} container
+  ///@param {Number} index
+  ///@param {VEPopupQueue} context
+  updateContainer = function(container, index, context) {
+    var layout = container.layout
+    var preview = context.editor.layout.nodes.preview
+    layout._width = min(preview.width(), context.WIDTH_MAX)
+    layout._x = preview.x() + ((preview.width() - layout._width) / 2.0)
+  }
+
   ///@return {VEBrushToolbar}
   update = function() { 
     this.dispatcher.update()
-
-    this.containers.forEach(function(container, index, context) {
-      var layout = container.layout
-      var preview = context.editor.layout.nodes.preview
-      layout._width = min(preview.width(), context.WIDTH_MAX)
-      layout._x = preview.x() + ((preview.width() - layout._width) / 2.0)
-    }, this)
+    this.containers.forEach(this.updateContainer, this)
     return this
   }
 }

@@ -642,6 +642,11 @@ function VisuEditorController() constructor {
     })
   }
 
+  accUpdate = {
+    enable: false,
+    updateTimer: false,
+  }
+
   ///@private
   ///@return {VisuEditorController}
   updateLayout = function() {
@@ -660,17 +665,49 @@ function VisuEditorController() constructor {
       container.finishUpdateTimer()
     }
 
+    static updateBrushToolbar =function(container, key, acc) {
+      container.enable = acc.enable
+      if (!acc.updateTimer) {
+        return
+      }
+
+      container.finishUpdateTimer()
+    }
+
+    static updateTimelineList = function(container, key, acc) {
+      container.enable = key == "ve-timeline-channel-settings" ? false : acc.enable
+      if (acc.updateTimer) {
+        container.finishUpdateTimer()
+      }
+    }
+
+    static updateTimelineSettings = function(container, key, acc) {
+      container.enable = key == "ve-timeline-channels" || key == "ve-timeline-form" ? false : acc.enable
+      if (acc.updateTimer) {
+        container.finishUpdateTimer()
+      }
+    }
+
+    static updateTrackControl = function(container, key, enable) {
+      container.enable = enable
+    }
+
+    static updateSceneConfigPreview = function(container, key, enable) {
+      container.enable = enable
+    }
+
     this.layout._y = Visu.settings.getValue("visu.debug", false) ? 20 : 0
     var lerpFactor = 0.2
     var renderBrush = this.store.getValue("render-brush")
     var brushNode = Struct.get(this.layout.nodes, "brush-toolbar")
     var brushNodePreviousMaxWidth = brushNode.maxWidth
-    brushNode.minWidth = floor(renderBrush 
-      ? lerp(brushNode.minWidth, 288, lerpFactor)
-      : lerp(brushNode.minWidth, 0, lerpFactor))
-    brushNode.maxWidth = floor(renderBrush
-      ? lerp(brushNode.maxWidth, round(GuiWidth() * 0.37), lerpFactor)
-      : lerp(brushNode.maxWidth, 0, lerpFactor))
+    if (renderBrush) {
+      brushNode.minWidth = floor(lerp(brushNode.minWidth, 288, lerpFactor))  
+      brushNode.maxWidth = floor(lerp(brushNode.maxWidth, round(GuiWidth() * 0.37), lerpFactor))
+    } else {
+      brushNode.minWidth = floor(lerp(brushNode.minWidth, 0, lerpFactor))  
+      brushNode.maxWidth = floor(lerp(brushNode.maxWidth, 0, lerpFactor))
+    }
 
     if (brushNodePreviousMaxWidth != brushNode.maxWidth) {
       this.updateTimerCooldowns.brush = this.updateTimerCooldowns.brush > 0
@@ -678,28 +715,21 @@ function VisuEditorController() constructor {
         : GAME_FPS / 10.0
     }
 
-    this.brushToolbar.containers.forEach(function(container, key, acc) {
-      container.enable = acc.enable
-      if (!acc.updateTimer) {
-        return
-      }
-
-      container.finishUpdateTimer()
-    }, {
-      enable: brushNode.maxWidth > 24,
-      updateTimer: this.updateTimerCooldowns.getBrush(),
-    })
+    this.accUpdate.enable = brushNode.maxWidth > 24
+    this.accUpdate.updateTimer = this.updateTimerCooldowns.getBrush()
+    this.brushToolbar.containers.forEach(updateBrushToolbar, this.accUpdate)
 
     var renderTimeline = this.store.getValue("render-timeline")
     var timelineNode = Struct.get(this.layout.nodes, "timeline")
     var timelineNodePreviousMaxHeight = timelineNode.maxHeight
-    timelineNode.minHeight = floor(renderTimeline
-      ? lerp(timelineNode.minHeight, 96, lerpFactor)
-      : lerp(timelineNode.minHeight, 0, lerpFactor))
-    timelineNode.maxHeight = floor(renderTimeline
-      ? lerp(timelineNode.maxHeight, round((GuiHeight() - this.layout._y) * 0.58), lerpFactor)
-      : lerp(timelineNode.maxHeight, 0, lerpFactor))
-      
+    if (renderTimeline) {
+      timelineNode.minHeight = floor(lerp(timelineNode.minHeight, 96, lerpFactor))
+      timelineNode.maxHeight = floor(lerp(timelineNode.maxHeight, round((GuiHeight() - this.layout._y) * 0.58), lerpFactor))
+    } else {
+      timelineNode.minHeight = floor(lerp(timelineNode.minHeight, 0, lerpFactor))
+      timelineNode.maxHeight = floor(lerp(timelineNode.maxHeight, 0, lerpFactor))
+    }
+    
     if (timelineNodePreviousMaxHeight != timelineNode.maxHeight
         || brushNodePreviousMaxWidth != brushNode.maxWidth) {
       this.updateTimerCooldowns.timeline = this.updateTimerCooldowns.timeline > 0
@@ -707,49 +737,27 @@ function VisuEditorController() constructor {
         : GAME_FPS / 10.0
     }
 
-    var timelineAcc = {
-      enable: timelineNode.maxHeight > 24,
-      updateTimer: this.updateTimerCooldowns.getTimeline(),
-    }
-  
+    this.accUpdate.enable = timelineNode.maxHeight > 24
+    this.accUpdate.updateTimer = this.updateTimerCooldowns.getTimeline()
     switch (this.timeline.channelsMode) {
       case "list":
-        this.timeline.containers.forEach(function(container, key, acc) {
-          container.enable = key == "ve-timeline-channel-settings" 
-            ? false
-            : acc.enable
-
-          if (!acc.updateTimer) {
-            return
-          }
-    
-          container.finishUpdateTimer()
-        }, timelineAcc)
+        this.timeline.containers.forEach(updateTimelineList, this.accUpdate)
         break
       case "settings":
-        this.timeline.containers.forEach(function(container, key, acc) {
-          container.enable = key == "ve-timeline-channels" || key == "ve-timeline-form"
-            ? false
-            : acc.enable
-
-          if (!acc.updateTimer) {
-            return
-          }
-    
-          container.finishUpdateTimer()
-        }, timelineAcc)
+        tthis.timeline.containers.forEach(updateTimelineSettings, this.accUpdate)
         break
     }
 
     var renderEvent = this.store.getValue("render-event")
     var accordionNode = Struct.get(this.layout.nodes, "accordion")
     var accordionNodePreviousMaxWidth = accordionNode.maxWidth
-    accordionNode.minWidth = floor(renderEvent
-      ? lerp(accordionNode.minWidth, 288, lerpFactor)
-      : lerp(accordionNode.minWidth, 0, lerpFactor))
-    accordionNode.maxWidth = floor(renderEvent
-      ? lerp(accordionNode.maxWidth, round(GuiWidth() * 0.37), lerpFactor)
-      : lerp(accordionNode.maxWidth, 0, lerpFactor))
+    if (renderEvent) {
+      accordionNode.minWidth = floor(lerp(accordionNode.minWidth, 288, lerpFactor))
+      accordionNode.maxWidth = floor(lerp(accordionNode.maxWidth, round(GuiWidth() * 0.37), lerpFactor))
+    } else {
+      accordionNode.minWidth = floor(lerp(accordionNode.minWidth, 0, lerpFactor))
+      accordionNode.maxWidth = floor(lerp(accordionNode.maxWidth, 0, lerpFactor))
+    }
     
     if (timelineNodePreviousMaxHeight != timelineNode.maxHeight
         || accordionNodePreviousMaxWidth != accordionNode.maxWidth) {
@@ -758,40 +766,41 @@ function VisuEditorController() constructor {
         : GAME_FPS / 10.0
     }
 
-    var accordionAcc = {
-      enable: accordionNode.maxWidth > 24,
-      updateTimer: this.updateTimerCooldowns.getAccordion(),
-    }
-
-    this.accordion.containers.forEach(updateAccordion, accordionAcc)
-    this.accordion.templateToolbar.containers.forEach(updateAccordion, accordionAcc)
-    this.accordion.eventInspector.containers.forEach(updateAccordion, accordionAcc)
+    this.accUpdate.enable = accordionNode.maxWidth > 24
+    this.accUpdate.updateTimer = this.updateTimerCooldowns.getAccordion()
+    this.accordion.containers.forEach(updateAccordion, accUpdate)
+    this.accordion.templateToolbar.containers.forEach(updateAccordion, accUpdate)
+    this.accordion.eventInspector.containers.forEach(updateAccordion, accUpdate)
 
     var renderTrackControl = this.store.getValue("render-trackControl")
     var trackControlNode = Struct.get(this.layout.nodes, "track-control")
-    trackControlNode.percentageHeight = clamp(renderTrackControl
-      ? lerp(trackControlNode.percentageHeight, 1.0, lerpFactor * 2.0)
-      : lerp(trackControlNode.percentageHeight, 0.0, lerpFactor * 2.0), 0, 1.0)
+    if (renderTrackControl) {
+      trackControlNode.percentageHeight = clamp(lerp(trackControlNode.percentageHeight, 1.0, lerpFactor * 2.0), 0.0, 1.0)
+    } else {
+      trackControlNode.percentageHeight = clamp(lerp(trackControlNode.percentageHeight, 0.0, lerpFactor * 2.0), 0.0, 1.0)
+    }
+    
     if (!renderTrackControl && trackControlNode.percentageHeight < 0.1) {
       trackControlNode.percentageHeight = 0.0
     }
 
-    this.trackControl.containers.forEach(function(container, key, enable) {
-      container.enable = enable
-    }, trackControlNode.percentageHeight > 0)
+    this.trackControl.containers.forEach(updateTrackControl, trackControlNode.percentageHeight > 0)
 
     var renderSceneConfigPreview = this.store.getValue("render-sceneConfigPreview")
-    this.sceneConfigPreview.containers.forEach(function(container, key, enable) {
-      container.enable = enable
-    }, renderSceneConfigPreview)
+    this.sceneConfigPreview.containers.forEach(updateSceneConfigPreview, renderSceneConfigPreview)
     
-    Struct.set(
-      this.layout.nodes, 
-      "preview", 
-      this.renderUI 
-        ? Struct.get(this.layout.nodes, "preview-editor") 
-        : Struct.get(this.layout.nodes, "preview-full")
-    )
+    var previewNode = Struct.get(this.layout.nodes, "preview")
+    if (this.renderUI) {
+      var previewEditor = Struct.get(this.layout.nodes, "preview-editor") 
+      if (previewNode != previewEditor) {
+        Struct.set(this.layout.nodes, "preview", previewEditor)
+      }
+    } else {
+      var previewFull = Struct.get(this.layout.nodes, "preview-full") 
+      if (previewNode != previewFull) {
+        Struct.set(this.layout.nodes, "preview", previewFull)
+      }
+    }
 
     return this
   }

@@ -3659,6 +3659,14 @@ function VETemplateToolbar(_editor) constructor {
   ///@return {?Promise}
   send = method(this, EventPumpUtil.send())
 
+  
+  ///@param {UI} container
+  ///@param {String} key
+  ///@param {Boolean} enable
+  updateContainer = function(container, key, enable) {
+    container.enable = enable
+  }
+  
   ///@return {VEBrushToolbar}
   update = function() {
     try {
@@ -3670,9 +3678,7 @@ function VETemplateToolbar(_editor) constructor {
       Beans.get(BeanVisuController).send(new Event("spawn-popup", { message: message }))
     }
     
-    this.containers.forEach(function (container, key, enable) {
-      container.enable = enable
-    }, this.enable)
+    this.containers.forEach(this.updateContainer, this.enable)
     return this
   }
 }

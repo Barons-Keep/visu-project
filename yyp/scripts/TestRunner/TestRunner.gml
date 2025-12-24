@@ -69,6 +69,7 @@ function TestRunner() constructor {
   ///@return {Struct}
   factoryReport = function() {
     var unixTimestamp = Core.getCurrentUnixTimestamp()
+    var stats = gc_get_stats()
     return {
       results: {
         tool: {
@@ -83,6 +84,24 @@ function TestRunner() constructor {
           "other": 0,
           "start": unixTimestamp,
           "stop": unixTimestamp,
+          "extra": {
+            "gc": {
+              "frameTime": gc_get_target_frame_time(),
+              "stats": {
+                "start": {
+                  touched: stats.objects_touched,
+                  collected: stats.objects_collected,
+                  traversalTime: stats.traversal_time,
+                  colletionTime: stats.collection_time,
+                  gcFrame: stats.gc_frame,
+                  generationCollected: stats.generation_collected,
+                  generations: stats.num_generations,
+                  objectsInGenerations: stats.num_objects_in_generations,
+                },
+                "finish": null,
+              },
+            },
+          }
         },
         tests: [],
         environment: {
@@ -146,6 +165,18 @@ function TestRunner() constructor {
         duration: result.duration,
       })
     }, this)
+
+    var stats = gc_get_stats()
+    this.report.results.summary.gc.stats.finish = {
+      touched: stats.objects_touched,
+      collected: stats.objects_collected,
+      traversalTime: stats.traversal_time,
+      colletionTime: stats.collection_time,
+      gcFrame: stats.gc_frame,
+      generationCollected: stats.generation_collected,
+      generations: stats.num_generations,
+      objectsInGenerations: stats.num_objects_in_generations,
+    }
 
     FileUtil.writeFileSync(new File({
       path: FileUtil.get($"{working_directory}ctrf-report.json"),

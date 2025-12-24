@@ -282,18 +282,22 @@ function UILayout(config, _context = null) constructor {
 
     updateNodeHidden(this, null, hidden)
     this.fetchNodes().forEach(updateNodeHidden, hidden)
-    if (this.propagateHidden && Optional.is(this.context)) {
+    if (this.propagateHidden && this.context != null) {
       this.context.updateHidden(hidden)
     }
 
     return this
   }
 
+  nodeMap = null
+
   ///@return {Map<String, UILayout>}
   fetchNodes = function() {
-    return Optional.is(Struct.get(this, "nodeMap"))
-      ? this.nodeMap 
-      : Struct.get(Struct.set(this, "nodeMap", Struct.toMap(this.nodes, String, UILayout)), "nodeMap")
+    if (this.nodeMap == null) {
+      this.nodeMap = Struct.toMap(this.nodes, String, UILayout)
+    }
+
+    return this.nodeMap
   }
   
   Struct.appendUnique(this, config, true)
