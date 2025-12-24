@@ -261,14 +261,20 @@ function UI(config = {}) constructor {
         }
       }
 
+      var containerHandler = Struct.get(this, $"on{event.name}")
+      if (containerHandler = null) {
+        return !this.propagate
+      }
+      
       var item = this.items.find(isValidItem, event)
-      if (!Core.isType(item, UIItem)) {
+      if (item == null) {
         var containerHandler = Struct.get(this, $"on{event.name}")
-        if (!Core.isType(containerHandler, Callable)) {
+        if (containerHandler != null) {
+          containerHandler()
+          return true
+        } else {
           return !this.propagate
         }
-        Callable.run(containerHandler, event)
-        return true
       }
 
       var dispatcher = item.fetchEventPump(event)
@@ -302,15 +308,20 @@ function UI(config = {}) constructor {
       if (halign == HAlign.LEFT) {
         this.area.setX(this.area.getX() - this.scrollbarY.width)
       }
+    }
 
-      if (!Core.isType(_x, Number) || !Core.isType(_y, Number) || !this.area.collide(_x, _y)) {
+    if (!Core.isType(_x, Number) || !Core.isType(_y, Number) || !this.area.collide(_x, _y)) {
+      if (this.enableScrollbarY) {
+        var halign = this.scrollbarY.align
         this.area.setWidth(this.area.getWidth() - this.scrollbarY.width)
         if (halign == HAlign.LEFT) {
           this.area.setX(this.area.getX() + this.scrollbarY.width)
         }
-        return false
       }
+      return false
+    }
 
+    if (this.enableScrollbarY) {
       this.area.setWidth(this.area.getWidth() - this.scrollbarY.width)
       if (halign == HAlign.LEFT) {
         this.area.setX(this.area.getX() + this.scrollbarY.width)

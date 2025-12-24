@@ -679,6 +679,11 @@ function _Struct() constructor {
 
     return struct
   }
+
+  static updateBegin = function() {
+    this._callback = null
+    this._acc = null
+  }
 }
 global.__Struct = new _Struct()
 #macro Struct global.__Struct

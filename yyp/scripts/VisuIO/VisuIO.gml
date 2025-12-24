@@ -226,6 +226,8 @@ function VisuIO() constructor {
   ///@return {VisuIO}
   updateBegin = function() {
     try {
+      GMArray.updateBegin()
+      Struct.updateBegin()
       this.keyboard.update()
       this.mouse.update()  
       GMTFContext.updateBegin()

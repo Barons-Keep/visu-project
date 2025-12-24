@@ -137,13 +137,15 @@ function Array(_type = any, _container = null) constructor {
   ///@return {Array}
   static forEach = function(callback, acc = null) {
     gml_pragma("forceinline")
-    var _callback = this._callback
-    var _acc = this._acc
+    //var _callback = this._callback
+    //var _acc = this._acc
     this._callback = callback
     this._acc = acc
     array_foreach(this.getContainer(), this._forEachWrapper)
-    this._callback = _callback
-    this._acc = _acc
+    //this._callback = _callback
+    //this._acc = _acc
+    this._callback = null
+    this._acc = null
     return this
   }
 
@@ -781,6 +783,11 @@ function _GMArray() constructor {
     }
     
     return cloned
+  }
+
+  static updateBegin = function() {
+    this._callback = null
+    this._acc = null
   }
 }
 global.__GMArray = new _GMArray()

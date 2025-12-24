@@ -92,7 +92,7 @@ function VETimeline(_editor) constructor {
           var size = this.chunks.size()
           for (var index = 0; index < size; index++) {
             var item = this.chunks.get(keys.get(index)).find(callback, acc)
-            if (Core.isType(item, UIItem)) {
+            if (item != null) {
               return item
             }
           }
