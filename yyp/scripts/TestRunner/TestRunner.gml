@@ -28,6 +28,16 @@ function TestRunner() constructor {
     loggerPrefix: BeanTestRunner,
   })
 
+  ///@params {Struct} exception
+  runtimeException = function(exception) {
+    var hook = this.restoreHooks.get("Logger.error")
+    var log = Core.isType(hook, Callable) ? hook : Logger.error
+    log("TestRunner::update", $"Exception: {exception.message}")
+    Core.printStackTrace().printException(exception)
+    this.saveReport()
+    this.shutdown()
+  }
+
   ///@return {TestRunner}
   installHooks = function() {
     this.restoreHooks.set("Logger.error", method(this, Logger.error))
@@ -52,6 +62,8 @@ function TestRunner() constructor {
       })
     }
     
+    exception_unhandled_handler(this.runtimeException)
+
     return this
   }
 
@@ -59,9 +71,15 @@ function TestRunner() constructor {
   uninstallHooks = function() {
     Logger.info(BeanTestRunner, "uninstall hook 'Logger.error'")
     var hook = this.restoreHooks.get("Logger.error")
+    if (hook != null) {
+      this.restoreHooks.remove("Logger.error")
+    }
+
     if (Core.isType(Logger, Struct) && Core.isType(hook, Callable))  {
       Logger.error = method(Logger, hook)
     }
+
+    exception_unhandled_handler(null)
 
     return this
   }
@@ -96,7 +114,7 @@ function TestRunner() constructor {
                   gcFrame: stats.gc_frame,
                   generationCollected: stats.generation_collected,
                   generations: stats.num_generations,
-                  objectsInGenerations: stats.num_objects_in_generations,
+                  objectsInGeneration: stats.num_objects_in_generation,
                 },
                 "finish": null,
               },
@@ -175,7 +193,7 @@ function TestRunner() constructor {
       gcFrame: stats.gc_frame,
       generationCollected: stats.generation_collected,
       generations: stats.num_generations,
-      objectsInGenerations: stats.num_objects_in_generations,
+      objectsInGeneration: stats.num_objects_in_generation,
     }
 
     FileUtil.writeFileSync(new File({

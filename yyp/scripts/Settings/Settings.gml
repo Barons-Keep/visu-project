@@ -147,6 +147,7 @@ function Settings(_path) constructor {
     if (!FileUtil.fileExists(this.path)) {
       Logger.info("Settings", $"Settings file does not exists. Creating default at '{this.path}'")
       this.save()
+      return this
     }
 
     try {

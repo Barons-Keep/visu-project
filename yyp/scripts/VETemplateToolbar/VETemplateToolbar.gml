@@ -289,9 +289,12 @@ global.__VisuTemplateContainers = new Map(String, Callable, {
                 text: "New shader template",
                 postRender: function() {
                   var _x = this.context.area.getX() + this.area.getX()
-                  var _y = this.context.area.getY() + this.area.getY() - 1
-                  var color = ColorUtil.parse(VETheme.color.accentShadow).toGMColor()
-                  draw_line_color(_x, _y, _x + this.area.getWidth(), _y, color, color)
+                  var _y = this.context.area.getY() + this.area.getY() 
+                  if (Struct.get(this, "lineColor") == null) {
+                    Struct.set(this, "lineColor", ColorUtil.parse(VETheme.color.accentShadow).toGMColor())
+                  }
+                  var lineColor = Struct.get(this, "lineColor")
+                  draw_line_color(_x, _y, _x + this.area.getWidth(), _y, lineColor, lineColor)
                 },
               },
               layout: { type: UILayoutType.VERTICAL },
@@ -319,15 +322,18 @@ global.__VisuTemplateContainers = new Map(String, Callable, {
               label: { text: "Shader" },
               previous: { store: { key: "shader" } },
               preview: Struct.appendRecursive({ 
+                normalColor: ColorUtil.parse(VETheme.color.textFocus).toGMColor(),
+                deprecatedColor: ColorUtil.parse("#ffff00").toGMColor(),
+                _text: "",
                 store: { key: "shader" },
                 preRender: function() { 
-                  Struct.set(this, "_text", this.label.text)
+                  this._text = this.label.text
                   this.label.text = String.toUpperCase(String.replaceAll(String.replace(this.label.text, "shader_", ""), "_", " "))
-                  if (Struct.get(DEPRECATED_SHADERS, this._text) == true) {
-                    this.label.color = ColorUtil.parse("#ffff00").toGMColor()
+                  if (Struct.get(DEPRECATED_SHADERS, this._text)) {
+                    this.label.color = this.deprecatedColor
                     this.label.text = $"{this.label.text}\nDEPRECATED"
                   } else {
-                    this.label.color = ColorUtil.parse(VETheme.color.textFocus).toGMColor()
+                    this.label.color = this.normalColor
                   }
                 },
                 postRender: function() { 
@@ -372,9 +378,12 @@ global.__VisuTemplateContainers = new Map(String, Callable, {
                 text: "New shroom template",
                 postRender: function() {
                   var _x = this.context.area.getX() + this.area.getX()
-                  var _y = this.context.area.getY() + this.area.getY() - 1
-                  var color = ColorUtil.parse(VETheme.color.accentShadow).toGMColor()
-                  draw_line_color(_x, _y, _x + this.area.getWidth(), _y, color, color)
+                  var _y = this.context.area.getY() + this.area.getY() 
+                  if (Struct.get(this, "lineColor") == null) {
+                    Struct.set(this, "lineColor", ColorUtil.parse(VETheme.color.accentShadow).toGMColor())
+                  }
+                  var lineColor = Struct.get(this, "lineColor")
+                  draw_line_color(_x, _y, _x + this.area.getWidth(), _y, lineColor, lineColor)
                 },
               },
               layout: { type: UILayoutType.VERTICAL },
@@ -428,9 +437,12 @@ global.__VisuTemplateContainers = new Map(String, Callable, {
                 text: "New bullet template",
                 postRender: function() {
                   var _x = this.context.area.getX() + this.area.getX()
-                  var _y = this.context.area.getY() + this.area.getY() - 1
-                  var color = ColorUtil.parse(VETheme.color.accentShadow).toGMColor()
-                  draw_line_color(_x, _y, _x + this.area.getWidth(), _y, color, color)
+                  var _y = this.context.area.getY() + this.area.getY() 
+                  if (Struct.get(this, "lineColor") == null) {
+                    Struct.set(this, "lineColor", ColorUtil.parse(VETheme.color.accentShadow).toGMColor())
+                  }
+                  var lineColor = Struct.get(this, "lineColor")
+                  draw_line_color(_x, _y, _x + this.area.getWidth(), _y, lineColor, lineColor)
                 },
               },
               layout: { type: UILayoutType.VERTICAL },
@@ -484,9 +496,12 @@ global.__VisuTemplateContainers = new Map(String, Callable, {
                 text: "New coin template",
                 postRender: function() {
                   var _x = this.context.area.getX() + this.area.getX()
-                  var _y = this.context.area.getY() + this.area.getY() - 1
-                  var color = ColorUtil.parse(VETheme.color.accentShadow).toGMColor()
-                  draw_line_color(_x, _y, _x + this.area.getWidth(), _y, color, color)
+                  var _y = this.context.area.getY() + this.area.getY() 
+                  if (Struct.get(this, "lineColor") == null) {
+                    Struct.set(this, "lineColor", ColorUtil.parse(VETheme.color.accentShadow).toGMColor())
+                  }
+                  var lineColor = Struct.get(this, "lineColor")
+                  draw_line_color(_x, _y, _x + this.area.getWidth(), _y, lineColor, lineColor)
                 },
               },
               layout: { type: UILayoutType.VERTICAL },
@@ -540,9 +555,12 @@ global.__VisuTemplateContainers = new Map(String, Callable, {
                 text: "New subtitle asset",
                 postRender: function() {
                   var _x = this.context.area.getX() + this.area.getX()
-                  var _y = this.context.area.getY() + this.area.getY() - 1
-                  var color = ColorUtil.parse(VETheme.color.accentShadow).toGMColor()
-                  draw_line_color(_x, _y, _x + this.area.getWidth(), _y, color, color)
+                  var _y = this.context.area.getY() + this.area.getY() 
+                  if (Struct.get(this, "lineColor") == null) {
+                    Struct.set(this, "lineColor", ColorUtil.parse(VETheme.color.accentShadow).toGMColor())
+                  }
+                  var lineColor = Struct.get(this, "lineColor")
+                  draw_line_color(_x, _y, _x + this.area.getWidth(), _y, lineColor, lineColor)
                 },
               },
               layout: { type: UILayoutType.VERTICAL },
@@ -597,9 +615,12 @@ global.__VisuTemplateContainers = new Map(String, Callable, {
                 text: "New particle template",
                 postRender: function() {
                   var _x = this.context.area.getX() + this.area.getX()
-                  var _y = this.context.area.getY() + this.area.getY() - 1
-                  var color = ColorUtil.parse(VETheme.color.accentShadow).toGMColor()
-                  draw_line_color(_x, _y, _x + this.area.getWidth(), _y, color, color)
+                  var _y = this.context.area.getY() + this.area.getY() 
+                  if (Struct.get(this, "lineColor") == null) {
+                    Struct.set(this, "lineColor", ColorUtil.parse(VETheme.color.accentShadow).toGMColor())
+                  }
+                  var lineColor = Struct.get(this, "lineColor")
+                  draw_line_color(_x, _y, _x + this.area.getWidth(), _y, lineColor, lineColor)
                 },
               },
               layout: { type: UILayoutType.VERTICAL },
@@ -653,9 +674,12 @@ global.__VisuTemplateContainers = new Map(String, Callable, {
                 text: "New texture asset",
                 postRender: function() {
                   var _x = this.context.area.getX() + this.area.getX()
-                  var _y = this.context.area.getY() + this.area.getY() - 1
-                  var color = ColorUtil.parse(VETheme.color.accentShadow).toGMColor()
-                  draw_line_color(_x, _y, _x + this.area.getWidth(), _y, color, color)
+                  var _y = this.context.area.getY() + this.area.getY() 
+                  if (Struct.get(this, "lineColor") == null) {
+                    Struct.set(this, "lineColor", ColorUtil.parse(VETheme.color.accentShadow).toGMColor())
+                  }
+                  var lineColor = Struct.get(this, "lineColor")
+                  draw_line_color(_x, _y, _x + this.area.getWidth(), _y, lineColor, lineColor)
                 },
               },
               layout: { type: UILayoutType.VERTICAL },
@@ -784,10 +808,6 @@ global.__VisuTemplateContainers = new Map(String, Callable, {
       layout: layout,
       notify: true,
       updateArea: Callable.run(UIUtil.updateAreaTemplates.get("applyLayout")),
-      updateCustom: function() {
-        ///@hack
-        this.layout.context.nodes.add.__height = this.fetchViewHeight()
-      },
       render: Callable.run(UIUtil.renderTemplates.get("renderDefault")),
       onInit: function() {
         var container = this
@@ -808,6 +828,7 @@ global.__VisuTemplateContainers = new Map(String, Callable, {
                 width: function() { return this.area.getWidth() },
               })
             )
+            data.layout.context.nodes.add.__height = data.fetchViewHeight()
           },
           data: container
         })
@@ -3659,7 +3680,6 @@ function VETemplateToolbar(_editor) constructor {
   ///@return {?Promise}
   send = method(this, EventPumpUtil.send())
 
-  
   ///@param {UI} container
   ///@param {String} key
   ///@param {Boolean} enable

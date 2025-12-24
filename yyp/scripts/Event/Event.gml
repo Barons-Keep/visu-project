@@ -1,9 +1,31 @@
 ///@package io.alkapivo.core.event
 
+global.__eventCounter = {
+  value: 0,
+  add: function() {
+    EVENT_COUNTER.value++
+    return EVENT_COUNTER
+  },
+  reset: function() {
+    EVENT_COUNTER.value = 0
+    return EVENT_COUNTER
+  },
+  log: function() {
+    if (EVENT_COUNTER.value > 0) {
+      Logger.debug("EVENT_COUNTER", $"value: {EVENT_COUNTER.value}")
+    }
+    return EVENT_COUNTER
+  },
+}
+#macro EVENT_COUNTER global.__eventCounter
+
+
 ///@param {String} _name
 ///@param {any} [_data]
 ///@param {?Promise} [_promise]
 function Event(_name, _data = null, _promise = null) constructor {
+
+  //EVENT_COUNTER.add()
 
   ///@type {String}
   name = Assert.isType(_name, String, "Event.name must be type of String")

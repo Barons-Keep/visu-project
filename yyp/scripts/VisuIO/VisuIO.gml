@@ -226,6 +226,7 @@ function VisuIO() constructor {
   ///@return {VisuIO}
   updateBegin = function() {
     try {
+      //EVENT_COUNTER.log().reset()
       GMArray.updateBegin()
       Struct.updateBegin()
       this.keyboard.update()
