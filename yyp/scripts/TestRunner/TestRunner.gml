@@ -185,7 +185,7 @@ function TestRunner() constructor {
     }, this)
 
     var stats = gc_get_stats()
-    this.report.results.summary.gc.stats.finish = {
+    this.report.results.summary.extra.gc.stats.finish = {
       touched: stats.objects_touched,
       collected: stats.objects_collected,
       traversalTime: stats.traversal_time,

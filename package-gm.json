@@ -1,6 +1,6 @@
 {
   "name": "visu-project",
-  "version": "25.12.24",
+  "version": "26.01.04",
   "description": "Visu is an experimental bullet hell game that combines classic mechanics inspired by Touhou with mind-blowing visual effects. It's an intense fusion of rhythm, chaos, and visual effects.",
   "main": "yyp",
   "author": "Alkapivo",
@@ -14,7 +14,7 @@
   "dependencies": {
     "core": {
       "remote": "https://github.com/Alkapivo/core-gml.git",
-      "revision": "25.12.24"
+      "revision": "26.01.04"
     },
     "visu": {
       "remote": "https://github.com/Barons-Keep/visu-gml.git",
