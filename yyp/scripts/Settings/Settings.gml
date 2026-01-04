@@ -171,32 +171,32 @@ function Settings(_path) constructor {
 
   ///@return {Settings}
   loadWASM = function() {
-		var settings = this
-		var fs = Beans.get(BeanFileService)
+    var settings = this
+    var fs = Beans.get(BeanFileService)
     fs.send(new Event("open-file")
-	    .setData({ path: $"{this.path}" })
-	    .setPromise(new Promise()
-	      .setState({ settings: settings })
-	      .whenSuccess(function(result) {
-					var	settings = this.state.settings
-					try {
-						var data = JSON.parse(result.data).data
-				    GMArray.forEach(data, function(entry, index, settings) {
-				      /*//@log.level*/ Logger.debug("Settings", $"Load SettingEntry '{entry.name}'")
-				      settings.set(new SettingEntry(entry))
-				    }, settings)	
-					} catch (exception) {
-						Logger.error("Settings", $"Settings file corrutped. Creating default at '{settings.path}'")
-						Core.printStackTrace().printException(exception)
-						settings.save()
-					}
-	      })
-				.whenFailure(function() {
-					var settings = this.state.settings
-					Logger.info("Settings", $"Settings file does not exists. Creating default at '{settings.path}'")
-			    settings.save()
-				})))
-		fs.update()
+      .setData({ path: $"{this.path}" })
+      .setPromise(new Promise()
+        .setState({ settings: settings })
+        .whenSuccess(function(result) {
+          var  settings = this.state.settings
+          try {
+            var data = JSON.parse(result.data).data
+            GMArray.forEach(data, function(entry, index, settings) {
+              /*//@log.level*/ Logger.debug("Settings", $"Load SettingEntry '{entry.name}'")
+              settings.set(new SettingEntry(entry))
+            }, settings)
+          } catch (exception) {
+            Logger.error("Settings", $"Settings file corrutped. Creating default at '{settings.path}'")
+            Core.printStackTrace().printException(exception)
+            settings.save()
+          }
+        })
+        .whenFailure(function() {
+          var settings = this.state.settings
+          Logger.info("Settings", $"Settings file does not exists. Creating default at '{settings.path}'")
+          settings.save()
+        })))
+    fs.update()
     return this
   }
 
