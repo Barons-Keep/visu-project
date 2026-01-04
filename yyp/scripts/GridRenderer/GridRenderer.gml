@@ -2209,7 +2209,6 @@ function GridRenderer() constructor {
     if (editor != null && editor.renderUI) {
       this.editorRenderSubtitlesArea(controller.gridService, controller.shroomService, layout)
     }
-
     return this
   }
 
@@ -2220,6 +2219,7 @@ function GridRenderer() constructor {
     this.gridItemSurface.free()
     this.gameSurface.free()
     this.shaderBufferSurface.free()
+    this.camera.free()
     return this
   }
 

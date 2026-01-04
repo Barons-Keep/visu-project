@@ -54,7 +54,7 @@ function template_shroom(json) {
       },
       "shroom_inherit": {
         type: String,
-        value: JSON.stringify(Struct.getIfType(json, "inherit", GMArray, []), { pretty: true }),
+        value: JSON.stringify(Struct.getIfType(json, "inherit", GMArray, []), true),
         serialize: UIUtil.serialize.getStringGMArray(),
         passthrough: UIUtil.passthrough.getStringGMArray(),
       },
@@ -64,7 +64,7 @@ function template_shroom(json) {
       },
       "shroom_features": {
         type: String,
-        value: JSON.stringify(Struct.getIfType(json, "features", GMArray, []), { pretty: true }),
+        value: JSON.stringify(Struct.getIfType(json, "features", GMArray, []), true),
         serialize: UIUtil.serialize.getStringGMArray(),
         passthrough: UIUtil.passthrough.getStringGMArray(),
       },
@@ -74,19 +74,19 @@ function template_shroom(json) {
       },
       "shroom_queue": {
         type: String,
-        value: JSON.stringify(Struct.getIfType(json, "queue", GMArray, []), { pretty: true }),
+        value: JSON.stringify(Struct.getIfType(json, "queue", GMArray, []), true),
         serialize: UIUtil.serialize.getStringGMArray(),
         passthrough: UIUtil.passthrough.getStringGMArray(),
       },
       "shroom_on_damage": {
         type: String,
-        value: JSON.stringify(Struct.getIfType(json, "onDamage", GMArray, []), { pretty: true }),
+        value: JSON.stringify(Struct.getIfType(json, "onDamage", GMArray, []), true),
         serialize: UIUtil.serialize.getStringGMArray(),
         passthrough: UIUtil.passthrough.getStringGMArray(),
       },
       "shroom_on_death": {
         type: String,
-        value: JSON.stringify(Struct.getIfType(json, "onDeath", GMArray, []), { pretty: true }),
+        value: JSON.stringify(Struct.getIfType(json, "onDeath", GMArray, []), true),
         serialize: UIUtil.serialize.getStringGMArray(),
         passthrough: UIUtil.passthrough.getStringGMArray(),
       },

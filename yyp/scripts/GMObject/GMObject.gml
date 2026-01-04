@@ -107,14 +107,6 @@ function _GMObjectUtil() constructor {
         }
       }
     },
-    gmAlarm0: {
-      gmObject: "__gmAlarm0",
-      factoryWrapper: function() {
-        return function() {
-          this.__context.gmAlarm0()
-        }
-      }
-    },
   }
 
   ///@param {GMObject} gmObject

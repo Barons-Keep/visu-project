@@ -247,12 +247,12 @@ function _JSON() constructor {
   }
 
   ///@param {any} object
-  ///@param {?Struct} [config]
+  ///@param {Boolean} [pretty]
   ///@return {?String}
-  stringify = function(object, config = null) {
+  stringify = function(object, pretty = false) {
     var result = null
     try {
-      result = json_stringify(object, Struct.getDefault(config, "pretty", false))
+      result = json_stringify(object, pretty)
     } catch (exception) {
       Logger.error("JSON::stringify", exception.message)
       Core.printStackTrace().printException(exception)

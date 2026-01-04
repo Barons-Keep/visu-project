@@ -776,7 +776,7 @@ function VETimeline(_editor) constructor {
 
                   config.set(JSON.stringify((Core.isType(Struct.get(channel.settings, "serialize"), Callable)
                     ? channel.settings.serialize()
-                    : channel.settings), { pretty: true } ))
+                    : channel.settings), true ))
                   target.set(this.callbackData)
                   name.set(this.callbackData)
                   this.context.controller.channelsMode = "settings"

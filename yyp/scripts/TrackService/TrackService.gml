@@ -101,9 +101,9 @@ function TrackService(_context, config = {}): Service() constructor {
     if (this.track != null) {
       delete this.track
       this.track = null
+      Logger.debug("TrackService", "Track was closed successfully")
     }
 
-    Logger.debug("TrackService", "Track was closed successfully")
     return this
   }
 

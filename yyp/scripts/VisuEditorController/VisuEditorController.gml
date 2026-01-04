@@ -169,7 +169,7 @@ function VisuEditorController() constructor {
           HARD: true,
           LUNATIC: true,
         },
-      }, { pretty: true }),
+      }, true),
       serialize: function() {
         return JSON.parse(this.get())
       },

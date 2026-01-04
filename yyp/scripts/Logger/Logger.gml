@@ -9,7 +9,7 @@ function _Logger() constructor {
   ///@param {String} type
   ///@param {String} message
   ///@return {Logger}
-  log = function(context, type, message) {
+  _log = function(context, type, message) {
     var date = string(current_year) + "-"
       + string(string_replace(string_format(current_month, 2, 0), " ", "0")) + "-"
       + string(string_replace(string_format(current_day, 2, 0), " ", "0")) + " "
@@ -17,6 +17,27 @@ function _Logger() constructor {
       + string(string_replace(string_format(current_minute, 2, 0), " ", "0")) + ":"
       + string(string_replace(string_format(current_second, 2, 0), " ", "0"));
     
+    Core.print($"{date} {type} [{context}] {message}")
+    return this
+  }
+
+  ///@param {String} context
+  ///@param {String} type
+  ///@param {String} message
+  ///@return {Logger}
+  log = function(context, type, message) {
+    var z = function(v) {
+      return (v < 10 ? "0" : "") + string(v)
+    }
+
+    var date =
+          string(current_year) + "-"
+        + z(current_month) + "-"
+        + z(current_day)   + " "
+        + z(current_hour)  + ":"
+        + z(current_minute)+ ":"
+        + z(current_second)
+
     Core.print($"{date} {type} [{context}] {message}")
     return this
   }

@@ -121,7 +121,7 @@ function brush_entity_shroom(json) {
   GMArray.forEach(GMArray.sort(Struct.keys(emitter.json)), function(key, index, emitter) {
     var value = Struct.get(emitter.json, key)
     var json = Struct.set({}, key, value)
-    var array = String.split(JSON.stringify(json, { pretty: true }), "\n")
+    var array = String.split(JSON.stringify(json, true), "\n")
     emitter.array.add(array.remove(0).remove(array.size() - 1).join("\n"))
   }, emitter)
   var text = emitter.array.join(",\n")
@@ -255,7 +255,7 @@ function brush_entity_shroom(json) {
     },
     "en-shr_inherit": {
       type: String,
-      value: JSON.stringify(Struct.getIfType(json, "en-shr_inherit", GMArray, []), { pretty: true }),
+      value: JSON.stringify(Struct.getIfType(json, "en-shr_inherit", GMArray, []), true),
       serialize: UIUtil.serialize.getStringGMArray(),
       passthrough: UIUtil.passthrough.getStringGMArray(),
     },

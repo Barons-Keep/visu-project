@@ -115,7 +115,9 @@ function VisuSave(json) constructor {
 function _Visu() constructor {
 
   ///@type {Settings}
-  settings = new Settings($"{game_save_id}visu-settings.json")
+  settings = new Settings(Core.getRuntimeType() == RuntimeType.GXGAMES
+    ? "visu-settings.json"
+    : $"{game_save_id}visu-settings.json")
 
   ///@private
   ///@type {?Struct}
@@ -1316,7 +1318,7 @@ function _Visu() constructor {
       .set(new SettingEntry({ name: "visu.graphics.main-shaders", type: SettingTypes.BOOLEAN, defaultValue: true }))
       .set(new SettingEntry({ name: "visu.graphics.bkg-shaders", type: SettingTypes.BOOLEAN, defaultValue: true }))
       .set(new SettingEntry({ name: "visu.graphics.combined-shaders", type: SettingTypes.BOOLEAN, defaultValue: true }))
-      .set(new SettingEntry({ name: "visu.graphics.shaders-limit", type: SettingTypes.NUMBER, defaultValue: 10 }))
+      .set(new SettingEntry({ name: "visu.graphics.shaders-limit", type: SettingTypes.NUMBER, defaultValue: 5 }))
       .set(new SettingEntry({ name: "visu.graphics.bkt-glitch", type: SettingTypes.BOOLEAN, defaultValue: true }))
       .set(new SettingEntry({ name: "visu.graphics.particle", type: SettingTypes.BOOLEAN, defaultValue: true }))
       .set(new SettingEntry({ name: "visu.graphics.shader-quality", type: SettingTypes.NUMBER, defaultValue: 0.5 }))
@@ -1324,7 +1326,7 @@ function _Visu() constructor {
       .set(new SettingEntry({ name: "visu.graphics.timing-method", type: SettingTypes.STRING, defaultValue: timingMethodKey }))
       .set(new SettingEntry({ name: "visu.graphics.aa", type: SettingTypes.NUMBER, defaultValue: 0 }))
       .set(new SettingEntry({ name: "visu.audio.ost-volume", type: SettingTypes.NUMBER, defaultValue: 1.0 }))
-      .set(new SettingEntry({ name: "visu.audio.sfx-volume", type: SettingTypes.NUMBER, defaultValue: 0.5 }))
+      .set(new SettingEntry({ name: "visu.audio.sfx-volume", type: SettingTypes.NUMBER, defaultValue: 1.0 }))
       .set(new SettingEntry({ name: "visu.editor.enable", type: SettingTypes.BOOLEAN, defaultValue: false }))
       .set(new SettingEntry({ name: "visu.editor.bpm", type: SettingTypes.NUMBER, defaultValue: 120 }))
       .set(new SettingEntry({ name: "visu.editor.bpm-count", type: SettingTypes.NUMBER, defaultValue: 0 }))
@@ -1582,8 +1584,8 @@ function _Visu() constructor {
     this.loadProperties()
     this.initFileService(layerId)
     this.loadSettings()
-    this.initDisplay()
     this.loadLanguage()
+    this.initDisplay()
     this.initHTTPService(layerId) 
     this.initDeltaTimeService(layerId)
     this.initTextureService(layerId)

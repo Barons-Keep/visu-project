@@ -68,29 +68,7 @@ function TextureService(config = {}): Service() constructor {
       event.setPromise() // disable promise in EventPump, the promise will be resolved within TaskExecutor
     },
     "free": function(event) {
-      this.templates.forEach(function(template, name, assets) {
-        try {
-          Logger.debug("TextureService", $"Free texture '{name}'")
-          sprite_delete(template.asset)
-          delete template
-          if (assets.contains(name)) {
-            assets.remove(name)
-          }
-        } catch (exception) {
-          Logger.error("TextureService", $"Unable to free texture '{name}'. {exception.message}")
-          Core.printStackTrace().printException(exception)
-        }
-      }, this.assets).clear()
-
-      this.assets.forEach(function(asset, name) {
-        try {
-          Logger.debug("TextureService", $"Free texture asset '{name}'")
-          sprite_delete(asset)
-        } catch (exception) {
-          Logger.error("TextureService", $"Free texture asset'{name}' exception: {exception.message}")
-          Core.printStackTrace().printException(exception)
-        }
-      }).clear()
+      this.free()
     },
   }))
 
@@ -124,7 +102,7 @@ function TextureService(config = {}): Service() constructor {
           assets.remove(name)
         }
       } catch (exception) {
-        Logger.error("TextureService", $"Free texture '{name}' exception: {exception.message}")
+        Logger.error("TextureService", $"Unable to free texture '{name}'. {exception.message}")
         Core.printStackTrace().printException(exception)
       }
     }, this.assets).clear()

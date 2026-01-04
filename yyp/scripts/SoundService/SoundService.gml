@@ -3,16 +3,13 @@
 #macro GMAudioGroupID "GMAudioGroupID"
 
 #macro BeanSoundService "SoundService"
-function SoundService(): Service() constructor {
+function SoundService() constructor {
 
   ///@type {Map<String, GMSound>}
   sounds = new Map(String, GMSound)
 
   ///@type {Map<String, SoundIntent>}
   intents = new Map(String, SoundIntent)
-
-  ///@type {EventPump}
-  dispatcher = new EventPump(this, new Map(String, Callable, { }))
 
   ///@type {Map<String, GMAudioGroupID>}
   audioGroups = new Map(String, GMAudioGroupID)
@@ -94,6 +91,11 @@ function SoundService(): Service() constructor {
       this.intents.remove(name)
     }
     
+    return this
+  }
+
+  ///@return {SoundService}
+  update = function() {
     return this
   }
 

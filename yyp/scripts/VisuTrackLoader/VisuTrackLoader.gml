@@ -200,7 +200,7 @@ function VisuTrackLoader(_controller): Service() constructor {
                   .setPromise(new Promise()
                     .setState({ 
                       callback: function(prototype, json, iterator, acc) {
-                        Logger.debug("VisuTrackLoader", $"Load texture '{json.name}'")
+                        /*//@log.level*/ Logger.debug("VisuTrackLoader", $"Load texture '{json.name}'")
                         acc.promises.forEach(function(promise, key) {
                           if (promise.status == PromiseStatus.REJECTED) {
                             throw new Exception($"Found rejected load-texture promise for key '{key}'")
@@ -235,7 +235,7 @@ function VisuTrackLoader(_controller): Service() constructor {
                   .setPromise(new Promise()
                     .setState({ 
                       callback: function(prototype, json, key, acc) {
-                        Logger.debug("VisuTrackLoader", $"Load sound intent '{key}'")
+                        /*//@log.level*/ Logger.debug("VisuTrackLoader", $"Load sound intent '{key}'")
                         var soundService = acc.soundService
                         var soundIntent = new prototype(json)
                         var visuWASM = Callable.run("VisuWASM")
@@ -273,7 +273,7 @@ function VisuTrackLoader(_controller): Service() constructor {
                   .setPromise(new Promise()
                     .setState({ 
                       callback: function(prototype, json, key, acc) {
-                        Logger.debug("VisuTrackLoader", $"Load shader template '{key}'")
+                        /*//@log.level*/ Logger.debug("VisuTrackLoader", $"Load shader template '{key}'")
                         acc.set(key, new prototype(key, json))
                       },
                       acc: controller.shaderPipeline.templates,
@@ -293,7 +293,7 @@ function VisuTrackLoader(_controller): Service() constructor {
                     .setState({ 
                       callback: function(prototype, json, key, acc) {
                         var name = Struct.get(json, "name")
-                        Logger.debug("VisuTrackLoader", $"Load track '{name}'")
+                        /*//@log.level*/ Logger.debug("VisuTrackLoader", $"Load track '{name}'")
                         acc.trackService.openTrack(new prototype(json, { 
                           handlers: acc.trackService.handlers,
                           parseAsync: Core.getProperty("visu.manifest.parse-track-async", true),
@@ -344,7 +344,7 @@ function VisuTrackLoader(_controller): Service() constructor {
                   .setPromise(new Promise()
                     .setState({ 
                       callback: function(prototype, json, key, acc) {
-                        Logger.debug("VisuTrackLoader", $"Load bullet template '{key}'")
+                        /*//@log.level*/ Logger.debug("VisuTrackLoader", $"Load bullet template '{key}'")
                         acc.set(key, new prototype(key, json))
                       },
                       acc: controller.bulletService.templates,
@@ -363,7 +363,7 @@ function VisuTrackLoader(_controller): Service() constructor {
                   .setPromise(new Promise()
                     .setState({ 
                       callback: function(prototype, json, key, acc) {
-                        Logger.debug("VisuTrackLoader", $"Load coin template '{key}'")
+                        /*//@log.level*/ Logger.debug("VisuTrackLoader", $"Load coin template '{key}'")
                         acc.set(key, new prototype(key, json))
                       },
                       acc: controller.coinService.templates,
@@ -382,7 +382,7 @@ function VisuTrackLoader(_controller): Service() constructor {
                   .setPromise(new Promise()
                     .setState({ 
                       callback: function(prototype, json, key, acc) {
-                        Logger.debug("VisuTrackLoader", $"Load subtitle template '{key}'")
+                        /*//@log.level*/ Logger.debug("VisuTrackLoader", $"Load subtitle template '{key}'")
                         acc.set(key, new prototype(key, json))
                       },
                       acc: controller.subtitleService.templates,
@@ -401,7 +401,7 @@ function VisuTrackLoader(_controller): Service() constructor {
                   .setPromise(new Promise()
                     .setState({ 
                       callback: function(prototype, json, key, acc) {
-                        Logger.debug("VisuTrackLoader", $"Load shroom template '{key}'")
+                        /*//@log.level*/ Logger.debug("VisuTrackLoader", $"Load shroom template '{key}'")
                         acc.set(key, new prototype(key, json))
                       },
                       acc: controller.shroomService.templates,
@@ -420,7 +420,7 @@ function VisuTrackLoader(_controller): Service() constructor {
                   .setPromise(new Promise()
                     .setState({ 
                       callback: function(prototype, json, key, acc) {
-                        Logger.debug("VisuTrackLoader", $"Load particle template '{key}'")
+                        /*//@log.level*/ Logger.debug("VisuTrackLoader", $"Load particle template '{key}'")
                         acc.set(key, new prototype(key, json))
                       },
                       acc: controller.particleService.templates,
@@ -486,7 +486,7 @@ function VisuTrackLoader(_controller): Service() constructor {
                     .setPromise(new Promise()
                       .setState({ 
                         callback: function(prototype, json, index, acc) {
-                          Logger.debug("VisuTrackLoader", $"Load brush '{json.name}'")
+                          /*//@log.level*/ Logger.debug("VisuTrackLoader", $"Load brush '{json.name}'")
                           acc.saveTemplate(new prototype(json))
                         },
                         acc: {

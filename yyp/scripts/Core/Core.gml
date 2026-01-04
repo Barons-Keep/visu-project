@@ -262,7 +262,7 @@ function _Core() constructor {
       var file = FileUtil.readFileSync(path)
       var properties = Assert.isType(JSON.parse(file.getData()), Struct)
       Struct.forEach(properties, function(property, key) {
-        Logger.debug("Core", $"Load property '{key}'")
+        /*//@log.level*/ Logger.debug("Core", $"Load property '{key}'")
         if (Core.isType(property, GMArray)) {
           Core.properties.set(key, new Array(any, property)) 
         } else {

@@ -1112,7 +1112,7 @@ global.__VEComponents = new Map(String, Callable, {
           store: Struct.get(checkbox, "store"),
         },
       })
-      var text = String.concat($"VETitleComponent(\"{name}\", ", JSON.stringify(component, { pretty: true }), "),")
+      var text = String.concat($"VETitleComponent(\"{name}\", ", JSON.stringify(component, true), "),")
       Core.print("\n\n", text, "\n\n")
     }
 

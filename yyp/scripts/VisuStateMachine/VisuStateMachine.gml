@@ -363,7 +363,7 @@ function VisuStateMachine(context, name) {
             
             controller.trackService.dispatcher.execute(new Event("close-track"))
 
-            var json = JSON.stringify(data, { pretty: true })
+            var json = JSON.stringify(data, true)
             Logger.info(fsm.displayName, $"{fsmState.name}:\n{json}")
           },
         },
@@ -564,7 +564,7 @@ function VisuStateMachine(context, name) {
               .set("promises", promises)
 
             var to = Struct.getIfType(data, "timestamp", Number) == null
-              ? JSON.stringify(data, { pretty: false })
+              ? JSON.stringify(data, false)
               : Struct.get(data, "timestamp")
             Logger.info(fsm.displayName, $"{fsmState.name} from {controller.trackService.time} to: {to}")
           },

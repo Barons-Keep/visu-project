@@ -31,9 +31,12 @@ global.__EventPumpUtil = new _EventPumpUtil()
 ///@param {Map<String, Callable>} _dispatchers
 ///@param {Struct} [config]
 function EventPump(_context, _dispatchers, config = {}) constructor {
+  static installDispatcher = function(callable, key, context) {
+    context.dispatchers.set(key, method(context.context, callable))
+  }
 
   ///@type {Struct}
-  context = Assert.isType(_context, Struct, "EventPump context must type of Struct")
+  context = Assert.isType(_context, Struct, "EventPump context must be type of Struct")
 
   ///@private 
   ///@type {Queue<Event>}
@@ -41,9 +44,8 @@ function EventPump(_context, _dispatchers, config = {}) constructor {
 
   ///@private
   ///@type {Map<String, Callable>}
-  dispatchers = Assert.isType(_dispatchers, Map).map(function(callable, key, context) {
-    return method(context, callable)
-  }, this.context)
+  dispatchers = new Map(String, Callable)
+  _dispatchers.forEach(installDispatcher, this)
 
   ///@private
   ///@type {?Timer}
@@ -75,7 +77,7 @@ function EventPump(_context, _dispatchers, config = {}) constructor {
 
   ///@param {Event} event
   ///@return {?Promise}
-  static send = function(event) {
+  send = function(event) {
     if (this.enableLogger) {
       Logger.info(this.loggerPrefix, $"Send event: '{event.name}'")
     }
@@ -87,7 +89,7 @@ function EventPump(_context, _dispatchers, config = {}) constructor {
   ///@param {Event} event
   ///@throws {Exception}
   ///@return {EventPump}
-  static execute = function(event) {
+  execute = function(event) {
     static resolveEvent = function(event, pump) {
       if (pump.enableLogger) {
         Logger.info(pump.loggerPrefix, $"Dispatch event: '{event.name}'")
@@ -136,7 +138,7 @@ function EventPump(_context, _dispatchers, config = {}) constructor {
   }
 
   ///@return {EventPump}
-  static update = function() {
+  update = function() {
     if (this.timer != null && !this.timer.update().finished) {
       return this
     }

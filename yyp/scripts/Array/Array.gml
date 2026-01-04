@@ -137,15 +137,15 @@ function Array(_type = any, _container = null) constructor {
   ///@return {Array}
   static forEach = function(callback, acc = null) {
     gml_pragma("forceinline")
-    //var _callback = this._callback
-    //var _acc = this._acc
-    this._callback = callback
-    this._acc = acc
-    array_foreach(this.getContainer(), this._forEachWrapper)
-    //this._callback = _callback
-    //this._acc = _acc
-    this._callback = null
-    this._acc = null
+    var size = this.size()
+    for (var idx = 0; idx < size; idx++) {
+      callback(this.container[idx], idx, acc)
+    }
+    //this._callback = callback
+    //this._acc = acc
+    //array_foreach(this.getContainer(), this._forEachWrapper)
+    //this._callback = null
+    //this._acc = null
     return this
   }
 
@@ -611,13 +611,17 @@ function _GMArray() constructor {
   ///@return {GMArray}
   static forEach = function(arr, callback, acc = null) {
     gml_pragma("forceinline")
-    var _callback = this._callback
-    var _acc = this._acc
+    var size = this.size(arr)
+    for (var idx = 0; idx < size; idx++) {
+      callback(arr[idx], idx, acc)
+    }
+    /*
     this._callback = callback
     this._acc = acc
     array_foreach(arr, this._forEachWrapper)
-    this._callback = _callback
-    this._acc = _acc
+    this._callback = null
+    this._acc = null
+    */
     return arr
   }
 

@@ -1003,7 +1003,7 @@ global.__VisuTemplateContainers = new Map(String, Callable, {
               var data = JSON.stringify({
                 "model": model,
                 "data": struct,
-              }, { pretty: true })
+              }, true)
 
               Beans.get(BeanFileService).send(new Event("save-file")
                 .setData(new File({

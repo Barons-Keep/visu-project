@@ -150,7 +150,7 @@ function Map(_keyType = any, _valueType = any, _container = null) constructor {
   ///@param {Callable} callback
   ///@param {any} [acc]
   ///@return {Map}
-  static _forEach = function(callback, acc = null) {
+  static forEach = function(callback, acc = null) {
     gml_pragma("forceinline")
     var keys = this.keys()
     var size = keys.size()
@@ -171,15 +171,11 @@ function Map(_keyType = any, _valueType = any, _container = null) constructor {
   ///@param {Callable} callback
   ///@param {any} [acc]
   ///@return {Map}
-  static forEach = function(callback, acc = null) {
+  static _forEach = function(callback, acc = null) {
     gml_pragma("forceinline")
-    //var _callback = this._callback
-    //var _acc = this._acc
     this._callback = callback
     this._acc = acc
     struct_foreach(this.getContainer(), this._forEachWrapper)
-    //this._callback = _callback
-    //this._acc = _acc
     this._callback = null
     this._acc = null
     return this

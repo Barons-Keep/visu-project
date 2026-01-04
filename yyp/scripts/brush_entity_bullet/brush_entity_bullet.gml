@@ -120,7 +120,7 @@ function brush_entity_bullet(json) {
   GMArray.forEach(GMArray.sort(Struct.keys(emitter.json)), function(key, index, emitter) {
     var value = Struct.get(emitter.json, key)
     var json = Struct.set({}, key, value)
-    var array = String.split(JSON.stringify(json, { pretty: true }), "\n")
+    var array = String.split(JSON.stringify(json, true), "\n")
     emitter.array.add(array.remove(0).remove(array.size() - 1).join("\n"))
   }, emitter)
   var text = emitter.array.join(",\n")

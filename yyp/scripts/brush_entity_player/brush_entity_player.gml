@@ -32,7 +32,7 @@ function brush_entity_player(json = null) {
       },
       "en-pl_stats": {
         type: String,
-        value: JSON.stringify(Struct.get(json, "en-pl_stats"), { pretty: true }),
+        value: JSON.stringify(Struct.get(json, "en-pl_stats"), true),
         serialize: UIUtil.serialize.getStringStruct(),
         passthrough: UIUtil.passthrough.getStringStruct(),
       },
@@ -42,7 +42,7 @@ function brush_entity_player(json = null) {
       },
       "en-pl_bullethell": {
         type: String,
-        value: JSON.stringify(Struct.get(json, "en-pl_bullethell"), { pretty: true }),
+        value: JSON.stringify(Struct.get(json, "en-pl_bullethell"), true),
         serialize: UIUtil.serialize.getStringStruct(),
         passthrough: UIUtil.passthrough.getStringStruct(),
       },

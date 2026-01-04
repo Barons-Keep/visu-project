@@ -324,7 +324,7 @@ function Track(json, config = null) constructor {
             })
             .getContainer(),
         }
-      }, { pretty: true })
+      }, true)
     }), Callable))
 }
 

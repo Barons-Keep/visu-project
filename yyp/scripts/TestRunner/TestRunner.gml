@@ -198,7 +198,7 @@ function TestRunner() constructor {
 
     FileUtil.writeFileSync(new File({
       path: FileUtil.get($"{working_directory}ctrf-report.json"),
-      data: JSON.stringify(this.report, { pretty: true })
+      data: JSON.stringify(this.report, true)
     }))
 
     return this

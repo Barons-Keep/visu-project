@@ -212,7 +212,7 @@ function VisuTrack(_path, json) constructor {
     #region Save
     FileUtil.writeFileSync(new File({
         path: manifestPath,
-        data: String.replaceAll(JSON.stringify(manifest, { pretty: true }), "\\", ""),
+        data: String.replaceAll(JSON.stringify(manifest, true), "\\", ""),
     }))
 
     FileUtil.writeFileSync(new File({
@@ -222,37 +222,37 @@ function VisuTrack(_path, json) constructor {
 
     FileUtil.writeFileSync(new File({
         path: $"{path}{this.bullet}",
-        data: JSON.stringify(bullet, { pretty: true }),
+        data: JSON.stringify(bullet, true),
     }))
 
     FileUtil.writeFileSync(new File({
         path: $"{path}{this.coin}",
-        data: JSON.stringify(coin, { pretty: true }),
+        data: JSON.stringify(coin, true),
     }))
 
     FileUtil.writeFileSync(new File({
         path: $"{path}{this.subtitle}",
-        data: JSON.stringify(subtitle, { pretty: true }),
+        data: JSON.stringify(subtitle, true),
     }))
 
     FileUtil.writeFileSync(new File({
         path: $"{path}{this.particle}",
-        data: JSON.stringify(particle, { pretty: true }),
+        data: JSON.stringify(particle, true),
     }))
 
     FileUtil.writeFileSync(new File({
         path: $"{path}{this.shader}",
-        data: JSON.stringify(shader, { pretty: true }),
+        data: JSON.stringify(shader, true),
     }))
 
     FileUtil.writeFileSync(new File({
         path: $"{path}{this.shroom}",
-        data: JSON.stringify(shroom, { pretty: true }),
+        data: JSON.stringify(shroom, true),
     }))
 
     FileUtil.writeFileSync(new File({
         path: $"{path}{this.texture}",
-        data: String.replaceAll(JSON.stringify(textureAcc.texture, { pretty: true }), "\\", ""),
+        data: String.replaceAll(JSON.stringify(textureAcc.texture, true), "\\", ""),
     }))
     textureAcc.files.forEach(function(template, sourcePath, targetDirectory) {
       FileUtil.copyFile(sourcePath, $"{targetDirectory}{template.file}")
@@ -260,7 +260,7 @@ function VisuTrack(_path, json) constructor {
 
     FileUtil.writeFileSync(new File({
         path: $"{path}{this.sound}",
-        data: JSON.stringify(sound, { pretty: true }),
+        data: JSON.stringify(sound, true),
     }))
     Struct.forEach(sound.data, function(intent, name, acc) {
       FileUtil.copyFile($"{acc.source}{intent.file}", $"{acc.target}{intent.file}")
@@ -276,7 +276,7 @@ function VisuTrack(_path, json) constructor {
     Struct.forEach(editor, function(data, filename, acc) {
       FileUtil.writeFileSync(new File({
           path: $"{acc.path}brush/{filename}.json",
-          data: JSON.stringify(data, { pretty: true }),
+          data: JSON.stringify(data, true),
       }))
     }, { path: path, fileService: fileService })
     #endregion

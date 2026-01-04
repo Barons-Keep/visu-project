@@ -144,6 +144,10 @@ function Settings(_path) constructor {
 
   ///@return {Settings}
   load = function() {
+    if (Core.getRuntimeType() == RuntimeType.GXGAMES) {
+      return this.loadWASM()
+    }
+
     if (!FileUtil.fileExists(this.path)) {
       Logger.info("Settings", $"Settings file does not exists. Creating default at '{this.path}'")
       this.save()
@@ -154,7 +158,7 @@ function Settings(_path) constructor {
       var file = FileUtil.readFileSync(this.path)
       var data = JSON.parse(file.getData()).data
       GMArray.forEach(data, function(entry, index, settings) {
-        Logger.info("Settings", $"Load SettingEntry '{entry.name}'")
+        /*//@log.level*/ Logger.debug("Settings", $"Load SettingEntry '{entry.name}'")
         settings.set(new SettingEntry(entry))
       }, this)
     } catch (exception) {
@@ -162,6 +166,37 @@ function Settings(_path) constructor {
       Core.printStackTrace().printException(exception)
     }
     
+    return this
+  }
+
+  ///@return {Settings}
+  loadWASM = function() {
+		var settings = this
+		var fs = Beans.get(BeanFileService)
+    fs.send(new Event("open-file")
+	    .setData({ path: $"{this.path}" })
+	    .setPromise(new Promise()
+	      .setState({ settings: settings })
+	      .whenSuccess(function(result) {
+					var	settings = this.state.settings
+					try {
+						var data = JSON.parse(result.data).data
+				    GMArray.forEach(data, function(entry, index, settings) {
+				      /*//@log.level*/ Logger.debug("Settings", $"Load SettingEntry '{entry.name}'")
+				      settings.set(new SettingEntry(entry))
+				    }, settings)	
+					} catch (exception) {
+						Logger.error("Settings", $"Settings file corrutped. Creating default at '{settings.path}'")
+						Core.printStackTrace().printException(exception)
+						settings.save()
+					}
+	      })
+				.whenFailure(function() {
+					var settings = this.state.settings
+					Logger.info("Settings", $"Settings file does not exists. Creating default at '{settings.path}'")
+			    settings.save()
+				})))
+		fs.update()
     return this
   }
 
@@ -176,7 +211,7 @@ function Settings(_path) constructor {
 
     Beans.get(BeanFileService).send(new Event("save-file").setData(new File({ 
       path: this.path,
-      data: JSON.stringify(json, { pretty: true })
+      data: JSON.stringify(json, true)
     })))
 
     return this

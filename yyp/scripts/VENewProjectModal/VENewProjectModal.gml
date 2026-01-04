@@ -811,7 +811,7 @@ function VisuNewProjectForm(json = null) constructor {
       var filename = Assert.isType(Struct.get(acc.manifest.data, key), String)
       FileUtil.writeFileSync(new File({
         path: $"{acc.path}{filename}" ,
-        data: String.replaceAll(JSON.stringify(template, { pretty: true }), "\\", ""),
+        data: String.replaceAll(JSON.stringify(template, true), "\\", ""),
       }))
     }, {
       manifest: manifest,
@@ -820,7 +820,7 @@ function VisuNewProjectForm(json = null) constructor {
 
     FileUtil.writeFileSync(new File({
       path: $"{path}manifest.visu" ,
-      data: String.replaceAll(JSON.stringify(manifest, { pretty: true }), "\\", ""),
+      data: String.replaceAll(JSON.stringify(manifest, true), "\\", ""),
     }))
 
     Beans.get(BeanVisuController).send(new Event("spawn-popup", 

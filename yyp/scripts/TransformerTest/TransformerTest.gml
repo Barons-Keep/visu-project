@@ -212,7 +212,7 @@ function Test_NumberTransformer_Ease(test) {
           time: this.state.transformer.time,
           duration: this.state.transformer.duration,
           easeType: this.state.transformer.easeType,
-        }, { pretty: true })
+        }, true)
 
         Logger.test("Test_NumberTransformer_Ease", $"Result:\n{report}\n")
         this.state.transformer = null

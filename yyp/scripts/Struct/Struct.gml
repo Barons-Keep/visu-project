@@ -149,15 +149,13 @@ function _Struct() constructor {
   ///@param {Callable} callback
   ///@param {any} [acc]
   ///@return {Map}
-  static forEach = function(struct, callback, acc = null) {
+  static _forEach = function(struct, callback, acc = null) {
     gml_pragma("forceinline")
-    var _callback = this._callback
-    var _acc = this._acc
     this._callback = callback
-    this._acc = acc
+    this._acc = acc 
     struct_foreach(struct, this._forEachWrapper)
-    this._callback = _callback
-    this._acc = _acc
+    this._callback = null
+    this._acc = null
     return this
   }
 
@@ -166,7 +164,7 @@ function _Struct() constructor {
   ///@param {Callable} callback
   ///@param {any} [acc]
   ///@return {Struct}
-  static forEachVanilla = function(struct, callback, acc = null) {
+  static forEach = function(struct, callback, acc = null) {
     gml_pragma("forceinline")
     var keys = Struct.keys(struct)
     var size = GMArray.size(keys)

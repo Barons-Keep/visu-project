@@ -211,6 +211,8 @@ function VisuMenuEntry(json) constructor {
 
   ///@type {String}
   title = Struct.getIfType(json, "title", String, "")
+  this.name = $"{this.title}\n{this.name}"
+  this.title = ""
 
   ///@type {VisuMenuEntryEvent}
   event = new VisuMenuEntryEvent(json.event)
@@ -1291,89 +1293,7 @@ function VisuMenu(_config = null) constructor {
           },
         },
         */
-        {
-          name: "graphics_menu-button-input-entry_fullscreen",
-          template: VisuComponents.get("menu-button-input-entry"),
-          layout: VisuLayouts.get("menu-button-input-entry"),
-          config: {
-            layout: { type: UILayoutType.VERTICAL },
-            label: { 
-              text: "Fullscreen",
-              callback: new BindIntent(function() {
-                var controller = Beans.get(BeanVisuController)
-                var fullscreen = controller.displayService.getFullscreen()
-                controller.displayService.setFullscreen(!fullscreen)
-                Visu.settings.setValue("visu.fullscreen", !fullscreen).save()
-                Beans.get(BeanVisuController).sfxService.play("menu-use-entry")
-
-                if (fullscreen && Visu.settings.getValue("visu.borderless-window")) {
-                  controller.displayService.center()
-                }
-              }),
-              onMouseReleasedLeft: function() {
-                this.callback()
-              },
-            },
-            input: {
-              label: { text: "" },
-              callback: function() {
-                var controller = Beans.get(BeanVisuController)
-                var fullscreen = controller.displayService.getFullscreen()
-                controller.displayService.setFullscreen(!fullscreen)
-                Visu.settings.setValue("visu.fullscreen", !fullscreen).save()
-                Beans.get(BeanVisuController).sfxService.play("menu-use-entry")
-                if (fullscreen && Visu.settings.getValue("visu.borderless-window")) {
-                  controller.displayService.center()
-                }
-              },
-              updateCustom: function() {
-                this.label.text = Beans.get(BeanVisuController).displayService.getFullscreen() ? VISU_MENU_BUTTON_INPUT_ENTRY_TRUE_TEXT : VISU_MENU_BUTTON_INPUT_ENTRY_FALSE_TEXT
-                this.label.alpha = this.label.text == VISU_MENU_BUTTON_INPUT_ENTRY_TRUE_TEXT ? 1.0 : 0.3
-              },
-              onMouseReleasedLeft: function() {
-                this.callback()
-              },
-            }
-          }
-        },
-        {
-          name: "graphics_menu-button-input-entry_borderless_window",
-          template: VisuComponents.get("menu-button-input-entry"),
-          layout: VisuLayouts.get("menu-button-input-entry"),
-          config: {
-            layout: { type: UILayoutType.VERTICAL },
-            label: { 
-              text: "Borderless window",
-              callback: new BindIntent(function() {
-                var controller = Beans.get(BeanVisuController)
-                var borderlessWindow = controller.displayService.getBorderlessWindow()
-                controller.displayService.setBorderlessWindow(!borderlessWindow)
-                Visu.settings.setValue("visu.borderless-window", !borderlessWindow).save()
-                Beans.get(BeanVisuController).sfxService.play("menu-use-entry")
-              }),
-              onMouseReleasedLeft: function() {
-                this.callback()
-              },
-            },
-            input: {
-              label: { text: "" },
-              callback: function() {
-                var controller = Beans.get(BeanVisuController)
-                var borderlessWindow = controller.displayService.getBorderlessWindow()
-                controller.displayService.setBorderlessWindow(!borderlessWindow)
-                Visu.settings.setValue("visu.borderless-window", !borderlessWindow).save()
-                Beans.get(BeanVisuController).sfxService.play("menu-use-entry")
-              },
-              updateCustom: function() {
-                this.label.text = Beans.get(BeanVisuController).displayService.getBorderlessWindow() ? VISU_MENU_BUTTON_INPUT_ENTRY_TRUE_TEXT : VISU_MENU_BUTTON_INPUT_ENTRY_FALSE_TEXT
-                this.label.alpha = this.label.text == VISU_MENU_BUTTON_INPUT_ENTRY_TRUE_TEXT ? 1.0 : 0.3
-              },
-              onMouseReleasedLeft: function() {
-                this.callback()
-              },
-            }
-          }
-        },
+        
         {
           name: "graphics_menu-button-input-entry_vsync",
           template: VisuComponents.get("menu-button-input-entry"),
@@ -1857,6 +1777,93 @@ function VisuMenu(_config = null) constructor {
         }
       ])
     })
+
+    if (Core.getRuntimeType() != RuntimeType.GXGAMES) {
+      event.data.content
+        .add({
+          name: "graphics_menu-button-input-entry_fullscreen",
+          template: VisuComponents.get("menu-button-input-entry"),
+          layout: VisuLayouts.get("menu-button-input-entry"),
+          config: {
+            layout: { type: UILayoutType.VERTICAL },
+            label: { 
+              text: "Fullscreen",
+              callback: new BindIntent(function() {
+                var controller = Beans.get(BeanVisuController)
+                var fullscreen = controller.displayService.getFullscreen()
+                controller.displayService.setFullscreen(!fullscreen)
+                Visu.settings.setValue("visu.fullscreen", !fullscreen).save()
+                Beans.get(BeanVisuController).sfxService.play("menu-use-entry")
+
+                if (fullscreen && Visu.settings.getValue("visu.borderless-window")) {
+                  controller.displayService.center()
+                }
+              }),
+              onMouseReleasedLeft: function() {
+                this.callback()
+              },
+            },
+            input: {
+              label: { text: "" },
+              callback: function() {
+                var controller = Beans.get(BeanVisuController)
+                var fullscreen = controller.displayService.getFullscreen()
+                controller.displayService.setFullscreen(!fullscreen)
+                Visu.settings.setValue("visu.fullscreen", !fullscreen).save()
+                Beans.get(BeanVisuController).sfxService.play("menu-use-entry")
+                if (fullscreen && Visu.settings.getValue("visu.borderless-window")) {
+                  controller.displayService.center()
+                }
+              },
+              updateCustom: function() {
+                this.label.text = Beans.get(BeanVisuController).displayService.getFullscreen() ? VISU_MENU_BUTTON_INPUT_ENTRY_TRUE_TEXT : VISU_MENU_BUTTON_INPUT_ENTRY_FALSE_TEXT
+                this.label.alpha = this.label.text == VISU_MENU_BUTTON_INPUT_ENTRY_TRUE_TEXT ? 1.0 : 0.3
+              },
+              onMouseReleasedLeft: function() {
+                this.callback()
+              },
+            }
+          }
+        }, 0)
+        .add({
+          name: "graphics_menu-button-input-entry_borderless_window",
+          template: VisuComponents.get("menu-button-input-entry"),
+          layout: VisuLayouts.get("menu-button-input-entry"),
+          config: {
+            layout: { type: UILayoutType.VERTICAL },
+            label: { 
+              text: "Borderless window",
+              callback: new BindIntent(function() {
+                var controller = Beans.get(BeanVisuController)
+                var borderlessWindow = controller.displayService.getBorderlessWindow()
+                controller.displayService.setBorderlessWindow(!borderlessWindow)
+                Visu.settings.setValue("visu.borderless-window", !borderlessWindow).save()
+                Beans.get(BeanVisuController).sfxService.play("menu-use-entry")
+              }),
+              onMouseReleasedLeft: function() {
+                this.callback()
+              },
+            },
+            input: {
+              label: { text: "" },
+              callback: function() {
+                var controller = Beans.get(BeanVisuController)
+                var borderlessWindow = controller.displayService.getBorderlessWindow()
+                controller.displayService.setBorderlessWindow(!borderlessWindow)
+                Visu.settings.setValue("visu.borderless-window", !borderlessWindow).save()
+                Beans.get(BeanVisuController).sfxService.play("menu-use-entry")
+              },
+              updateCustom: function() {
+                this.label.text = Beans.get(BeanVisuController).displayService.getBorderlessWindow() ? VISU_MENU_BUTTON_INPUT_ENTRY_TRUE_TEXT : VISU_MENU_BUTTON_INPUT_ENTRY_FALSE_TEXT
+                this.label.alpha = this.label.text == VISU_MENU_BUTTON_INPUT_ENTRY_TRUE_TEXT ? 1.0 : 0.3
+              },
+              onMouseReleasedLeft: function() {
+                this.callback()
+              },
+            }
+          }
+        }, 1)
+    }
 
     return event
   }

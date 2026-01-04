@@ -57,35 +57,12 @@ function ParticleSystem(_layerName) constructor {
 
   ///@return {ParticleSystem}
   update = function() {
-    if (!Core.isType(this.asset, GMParticleSystem)) {
-      this.asset = part_system_create_layer(this.layerName, false)
-      this.emitter = part_emitter_create(this.asset)
-      part_system_automatic_update(this.asset, false)
-      part_system_automatic_draw(this.asset, false)
-    }
-
-    if (typeof(this.emitter) != "ref" || !part_emitter_exists(this.asset, this.emitter)) {
-      this.emitter = part_emitter_create(this.asset)
-    }
-
     this.executor.update()
-
     part_system_update(this.asset)
     return this
   }
 
   render = function() {
-    if (!Core.isType(this.asset, GMParticleSystem)) {
-      this.asset = part_system_create_layer(this.layerName, false)
-      this.emitter = part_emitter_create(this.asset)
-      part_system_automatic_update(this.asset, false)
-      part_system_automatic_draw(this.asset, false)
-    }
-
-    if (typeof(this.emitter) != "ref" || !part_emitter_exists(this.asset, this.emitter)) {
-      this.emitter = part_emitter_create(this.asset)
-    }
-    
     part_system_drawit(this.asset)
   }
    

@@ -601,7 +601,7 @@ global.__VisuBrushContainers = new Map(String, Callable, {
               var data = JSON.stringify({
                 "model": "Collection<io.alkapivo.visu.editor.api.VEBrushTemplate>",
                 "data": templates.getContainer(),
-              }, { pretty: true })
+              }, true)
 
               Beans.get(BeanFileService).send(new Event("save-file")
                 .setData(new File({
