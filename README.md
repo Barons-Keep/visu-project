@@ -2,17 +2,18 @@
 ### Play visu at [itch.io](https://alkapivo.itch.io/visu-project) or watch gameplay on [YouTube](https://www.youtube.com/Alkapivo)
 ![visu-project_thumbnail](visu-editor.jpg)
 
+# 【﻿ＶＩＳＵ】PROJECT
 > "Touhou + cats + LSD = visu-project"
 
-Visu is an experimental **bullet hell game** that combines classic mechanics inspired by Touhou with mind-blowing visual effects. It’s an intense fusion of rhythm, chaos, and visual effects.
+`Visu` is an experimental bullet hell game that combines classic mechanics inspired by Touhou with mind-blowing visual effects. It’s an intense fusion of rhythm, chaos, and visual effects.
 
-Each level is a single track—music drives the action, while the visuals pulse and shift in sync. The game space transforms dynamically, pulling players into an audiovisual experience.
+Each level is a single track. Music drives the action, while the visuals pulse and shift in sync. The game space transforms dynamically, pulling players into an audiovisual experience.
 
-Visu features a **built-in level editor** that allows you to create your own compositions. The system is based on a timeline and inspectors, giving you precise control over game assets, from bullet patterns to special effects.
+Visu features a built-in level editor that allows you to create your own compositions. The system is based on a timeline and inspectors, giving you precise control over game assets, from bullet patterns to special effects.
 
-The current version includes six levels, but **Visu is still a work in progress**. This is not a finished game, but rather a **playable demo** showcasing the core mechanics and visual style. The project is actively evolving, with more content and features planned for the future.
+The current version includes eight levels, but Visu is still a work in progress. This is not a finished game, but rather a playable demo showcasing the core mechanics and visual style. The project is actively evolving, with more content and features planned for the future.
 
-For the full experience, the **Windows version is recommended**, as it includes all features and the most stable performance. However, I’ve also provided an **experimental browser build**, allowing you to try Visu directly in your browser. Keep in mind that this version may have limitations or reduced performance.
+For the full experience, the Windows version is recommended, as it includes all features and the most stable performance. However, I've also provided an experimental browser build, allowing you to try Visu directly in your browser. Keep in mind that this version may have limitations or reduced performance.
 
 **Ready to dive into a glitched-out reality? 🚀**
 
@@ -44,4 +45,5 @@ GMS_TARGET="windows"
 This repository only contains the GameMaker YYP project. The actual development and code are kept in [visu-gml](https://github.com/Barons-Keep/visu-gml) and [visu-track](https://github.com/Barons-Keep/visu-track) and are synced with this repository using [gm-cli](https://github.com/Alkapivo/gm-cli).  
 
 As a result, I don't have to use the GameMaker IDE or GMEdit—I can just use Visual Studio Code. 😎  
+
 
