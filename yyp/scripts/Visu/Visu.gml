@@ -1351,6 +1351,7 @@ function _Visu() constructor {
       .set(new SettingEntry({ name: "visu.keyboard.player.bomb", type: SettingTypes.NUMBER, defaultValue: ord("X") }))
       .set(new SettingEntry({ name: "visu.keyboard.player.focus", type: SettingTypes.NUMBER, defaultValue: KeyboardKeyType.SHIFT }))
       .set(new SettingEntry({ name: "visu.difficulty", type: SettingTypes.STRING, defaultValue: Difficulty.NORMAL }))
+      .set(new SettingEntry({ name: "visu.developer.mouse-shoot", type: SettingTypes.BOOLEAN, defaultValue: false }))
       .set(new SettingEntry({ 
           name: "visu.editor.theme",
           type: SettingTypes.STRUCT,

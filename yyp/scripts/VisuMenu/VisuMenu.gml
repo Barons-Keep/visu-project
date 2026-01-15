@@ -2581,6 +2581,40 @@ function VisuMenu(_config = null) constructor {
             }
           }
         },
+                {
+          name: "developer_menu-button-input-entry_mouse-shoot",
+          template: VisuComponents.get("menu-button-input-entry"),
+          layout: VisuLayouts.get("menu-button-input-entry"),
+          config: {
+            layout: { type: UILayoutType.VERTICAL },
+            label: { 
+              text: "Shoot with mouse",
+              callback: new BindIntent(function() {
+                var value = Visu.settings.getValue("visu.developer.mouse-shoot")
+                Visu.settings.setValue("visu.developer.mouse-shoot", !value).save()
+                Beans.get(BeanVisuController).sfxService.play("menu-use-entry")
+              }),
+              onMouseReleasedLeft: function() {
+                this.callback()
+              },
+            },
+            input: {
+              label: { text: VISU_MENU_BUTTON_INPUT_ENTRY_TRUE_TEXT },
+              callback: function() {
+                var value = Visu.settings.getValue("visu.developer.mouse-shoot")
+                Visu.settings.setValue("visu.developer.mouse-shoot", !value).save()
+                Beans.get(BeanVisuController).sfxService.play("menu-use-entry")
+              },
+              updateCustom: function() {
+                this.label.text = Visu.settings.getValue("visu.developer.mouse-shoot") ? VISU_MENU_BUTTON_INPUT_ENTRY_TRUE_TEXT : VISU_MENU_BUTTON_INPUT_ENTRY_FALSE_TEXT
+                this.label.alpha = this.label.text == VISU_MENU_BUTTON_INPUT_ENTRY_TRUE_TEXT ? 1.0 : 0.3
+              },
+              onMouseReleasedLeft: function() {
+                this.callback()
+              },
+            }
+          }
+        },
         {
           name: "developer_menu-spin-select-entry_difficulty",
           template: VisuComponents.get("menu-spin-select-entry"),

@@ -839,12 +839,20 @@ function PlayerHandler(json) constructor {
         return
       }
 
+      var angle = gun.angle
+      if (acc.isMouseShoot) {
+        var gridRenderer = acc.controller.visuRenderer.gridRenderer
+        var player3DCoords = gridRenderer.player3DCoords
+        var target3DCoords = gridRenderer.target3DCoords
+        angle = gun.angle - 90 + Math.fetchPointsAngle(player3DCoords.x, player3DCoords.y, target3DCoords.x, target3DCoords.y)
+      }
+      
       acc.controller.bulletService.spawnBullet(
         gun.bullet, 
         Player,
         acc.player.x + (gun.offsetX / GRID_SERVICE_PIXEL_WIDTH), 
         acc.player.y + (gun.offsetY / GRID_SERVICE_PIXEL_HEIGHT),
-        gun.angle,
+        angle,
         gun.speed
       )
 
@@ -881,11 +889,13 @@ function PlayerHandler(json) constructor {
       Struct.forEach(keys, updateGMTFContextFocused)
     }
 
-    if (keys.action.on) {
+    var isMouseShoot = Visu.settings.getValue("visu.developer.mouse-shoot", false) && mouse_check_button(mb_left)
+    if (keys.action.on || isMouseShoot) {
       this.guns.forEach(updateKeyActionOnEnabled, {
         controller: controller,
         player: player,
         focus: this.focus,
+        isMouseShoot: isMouseShoot,
       })
     } else {
       this.guns.forEach(updateKeyActionOnDisabled)

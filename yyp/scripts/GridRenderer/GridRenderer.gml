@@ -1693,13 +1693,26 @@ function GridRenderer() constructor {
     var mouseY = MouseUtil.getMouseY() - layout.y()
     var ray = Math.project2DCoordsOn3D(mouseX, mouseY, camera.viewMatrix, camera.projectionMatrix, width, height)
     var coords = Math.rayPlaneZ(ray, depths.playerZ)
-    if (coords != null) {
+    var player = playerService.player
+    if (coords != null
+        && gridService.properties.renderPlayer
+        && player != null
+        && player.sprite.texture.asset != texture_empty
+        && Visu.settings.getValue("visu.developer.mouse-shoot", false)) {
+
       var xx = coords[0]
       var yy = coords[1]
-      //draw_sprite(texture_player, 0, xx, yy)
       this.target3DCoords.x = xx - (GRID_SERVICE_PIXEL_WIDTH * 1.5)
       this.target3DCoords.y = yy - (GRID_SERVICE_PIXEL_HEIGHT * 1.5)
       this.target3DCoords.z = gridService.properties.depths.playerZ
+
+      //draw_sprite(texture_player, 0, xx, yy)
+      var scaleX = 1.0
+      var scaleY = 1.0
+      var angle = Math.fetchPointsAngle(this.player3DCoords.x, this.player3DCoords.y, this.target3DCoords.x, this.target3DCoords.y)
+      var color = c_white
+      var alpha = player.sprite.getAlpha() * ((cos(player.stats.godModeCooldown * 15.0) + 2.0) / 3.0) * player.fadeIn
+      draw_sprite_ext(texture_visu_shroom_spawner, 0.0, xx, yy, scaleX, scaleY, angle, color, alpha)
     }
 
     this.editorRenderSpawners(gridService, shroomService, layout)
