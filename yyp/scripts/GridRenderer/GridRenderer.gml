@@ -1627,12 +1627,52 @@ function GridRenderer() constructor {
     gpu_set_zwriteenable(true)
     gpu_set_alphatestenable(true)
 
+    var shadowZ = min(depths.coinZ, depths.bulletZ, depths.shroomZ, depths.playerZ) - 1
     matrix_set(matrix_world, matrix_build(
-      baseX, baseY, min(depths.coinZ, depths.bulletZ, depths.shroomZ, depths.playerZ) - 1, 
+      baseX, baseY, shadowZ, 
       global.cameraRollSpeed, global.cameraPitchSpeed, global.cameraYawSpeed,
       1, 1, 1
     ))
     _renderPlayerShadow(gridService, playerService)
+
+    matrix_set(matrix_world, matrix_build(
+      0, 0, shadowZ,
+      global.cameraRollSpeed, global.cameraPitchSpeed, global.cameraYawSpeed,
+      1, 1, 1
+    ))
+    var mouseX = MouseUtil.getMouseX() - layout.x()
+    var mouseY = MouseUtil.getMouseY() - layout.y()
+    var ray = Math.project2DCoordsOn3D(mouseX, mouseY, camera.viewMatrix, camera.projectionMatrix, width, height)
+    var coords = Math.rayPlaneZ(ray, depths.playerZ)
+    var player = playerService.player
+    var isMouseShoot = coords != null
+        && gridService.properties.renderPlayer
+        && player != null
+        && player.sprite.texture.asset != texture_empty
+        && Visu.settings.getValue("visu.developer.mouse-shoot", false)
+  
+    if (isMouseShoot) {
+      this.target3DCoords.x = coords[0] - (GRID_SERVICE_PIXEL_WIDTH * 1.5)
+      this.target3DCoords.y = coords[1] - (GRID_SERVICE_PIXEL_HEIGHT * 1.5)
+      this.target3DCoords.z = gridService.properties.depths.playerZ
+      if (gridService.properties.playerShadowEnable) {
+        var supportColor = gridService.properties.supportColor
+        var luminance = (0.2126 * supportColor.red * 255.0) + (0.7152 * supportColor.green * 255.0) + (0.0722 * supportColor.blue * 255.0)
+        var contrastGMColor = luminance > 128 ? c_black : c_white
+    
+        var focusCooldown = Struct.get(player.handler, "focusCooldown")
+        var focusTime = Struct.get(focusCooldown, "time")
+        var focusDuration = Struct.get(focusCooldown, "duration")
+        var focusFactor = focusTime != null && focusDuration != null ? focusTime / focusDuration : 0.0
+        var scaleFactor = clamp(player.stats.godModeCooldown, 1.0, 10.0)
+        var swing = (sin(this.playerZTimer.time * 2.0) + 1.0) / 4.0
+        var scaleX = ((player.sprite.texture.width * player.sprite.scaleX) / sprite_get_width(texture_player_shadow)) * (4.0 + (0.0 * focusFactor)) * (scaleFactor + swing)
+        var scaleY = ((player.sprite.texture.height * player.sprite.scaleY) / sprite_get_height(texture_player_shadow)) * (4.0 + (0.0 * focusFactor)) * (scaleFactor + swing)
+        var alpha = player.sprite.getAlpha() * player.fadeIn
+        draw_sprite_ext(texture_player_shadow, 0, coords[0], coords[1], scaleX * 0.625, scaleY * 0.625, 0.0, contrastGMColor, alpha * 1.0)
+        draw_sprite_ext(texture_player_shadow, 0, coords[0], coords[1], scaleX * 1.25, scaleY * 1.25, 0.0, supportColor.toGMColor(), alpha * 0.85)
+      }
+    }
 
     matrix_set(matrix_world, matrix_build(
       baseX, baseY, depths.coinZ, 
@@ -1684,37 +1724,6 @@ function GridRenderer() constructor {
       }, gridService.view)
     }
 
-    matrix_set(matrix_world, matrix_build(
-      0, 0, depths.playerZ, 
-      global.cameraRollSpeed, global.cameraPitchSpeed, global.cameraYawSpeed,
-      1, 1, 1
-    ))
-    var mouseX = MouseUtil.getMouseX() - layout.x()
-    var mouseY = MouseUtil.getMouseY() - layout.y()
-    var ray = Math.project2DCoordsOn3D(mouseX, mouseY, camera.viewMatrix, camera.projectionMatrix, width, height)
-    var coords = Math.rayPlaneZ(ray, depths.playerZ)
-    var player = playerService.player
-    if (coords != null
-        && gridService.properties.renderPlayer
-        && player != null
-        && player.sprite.texture.asset != texture_empty
-        && Visu.settings.getValue("visu.developer.mouse-shoot", false)) {
-
-      var xx = coords[0]
-      var yy = coords[1]
-      this.target3DCoords.x = xx - (GRID_SERVICE_PIXEL_WIDTH * 1.5)
-      this.target3DCoords.y = yy - (GRID_SERVICE_PIXEL_HEIGHT * 1.5)
-      this.target3DCoords.z = gridService.properties.depths.playerZ
-
-      //draw_sprite(texture_player, 0, xx, yy)
-      var scaleX = 1.0
-      var scaleY = 1.0
-      var angle = Math.fetchPointsAngle(this.player3DCoords.x, this.player3DCoords.y, this.target3DCoords.x, this.target3DCoords.y)
-      var color = c_white
-      var alpha = player.sprite.getAlpha() * ((cos(player.stats.godModeCooldown * 15.0) + 2.0) / 3.0) * player.fadeIn
-      draw_sprite_ext(texture_visu_shroom_spawner, 0.0, xx, yy, scaleX, scaleY, angle, color, alpha)
-    }
-
     this.editorRenderSpawners(gridService, shroomService, layout)
 
     gpu_set_ztestenable(false)
@@ -1736,6 +1745,17 @@ function GridRenderer() constructor {
     //this.gridRenderBorders(gridService)
     _renderPlayer(gridService, playerService, baseX, baseY)
 
+    if (isMouseShoot) {
+      matrix_set(matrix_world, matrix_build(
+        0, 0, depths.playerZ + 1,
+        global.cameraRollSpeed, global.cameraPitchSpeed, global.cameraYawSpeed,
+        1, 1, 1
+      ))
+      var angle = Math.fetchPointsAngle(this.player3DCoords.x, this.player3DCoords.y, this.target3DCoords.x, this.target3DCoords.y)
+      var color = c_white
+      var alpha = player.sprite.getAlpha() * player.fadeIn
+      draw_sprite_ext(texture_visu_shroom_spawner, 0.0, coords[0], coords[1], 0.75, 0.75, angle, color, alpha * 0.75)
+    }
     matrix_set(matrix_world, matrix_build_identity())
 
     return this
@@ -1872,6 +1892,20 @@ function GridRenderer() constructor {
 
     if (properties.renderSupportGrid) {
       this.gridItemSurface.renderStretched(width, height, 0, 0, properties.supportGridAlpha)
+    }
+
+    var player = controller.playerService.player
+    var isMouseShoot = gridService.properties.renderPlayer
+        && player != null
+        && player.sprite.texture.asset != texture_empty
+        && Visu.settings.getValue("visu.developer.mouse-shoot", false)
+    if (isMouseShoot) {
+      var mouseX = MouseUtil.getMouseX() - layout.x()
+      var mouseY = MouseUtil.getMouseY() - layout.y()
+      var angle = Math.fetchPointsAngle(this.player3DCoords.x, this.player3DCoords.y, this.target3DCoords.x, this.target3DCoords.y)
+      var color = c_white
+      var alpha = player.sprite.getAlpha() * player.fadeIn
+      draw_sprite_ext(texture_visu_shroom_spawner, 0.0, mouseX, mouseY, 0.1, 0.1, angle, color, alpha)
     }
 
     return this
