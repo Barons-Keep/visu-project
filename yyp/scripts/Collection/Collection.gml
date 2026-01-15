@@ -44,12 +44,6 @@ function Collection(config = null) constructor {
     ? method(this, Assert.isType(config.getFirst, Callable))
     : function(defaultValue) { return defaultValue }
 
-  ///@param {any} [defaultValue]
-  ///@return {any}
-  getLast = Struct.contains(config, "getLast")
-    ? method(this, Assert.isType(config.getLast, Callable))
-    : function(defaultValue) { return defaultValue }
-
   ///@param {any} key
   ///@return {Collection}
   getLast = Struct.contains(config, "getLast")

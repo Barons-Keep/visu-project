@@ -441,7 +441,7 @@ function _Math() constructor {
   ///@param {Matrix} projection
   ///@param {Number} width
   ///@param {Number} height
-  ///@return {Struct}
+  ///@return {?GMArray<Number>[2]}
   static project3DCoordsOn2D = function(x, y, z, view, projection, width, height) {
     gml_pragma("forceinline")
     var _x = 0
@@ -450,10 +450,7 @@ function _Math() constructor {
       /// perspective projection
       var _width = view[2] * x + view[6] * y + view[10] * z + view[14];
       if (_width == 0) {
-        return { 
-          x: null, 
-          y: null
-        }
+        return null
       }
 
       _x = projection[8] + projection[0] * (view[0] * x + view[4] * y + view[8] * z + view[12]) / _width
@@ -464,10 +461,10 @@ function _Math() constructor {
       _y = projection[13] + projection[5] * (view[1] * x + view[5] * y + view[9]  * z + view[13])
     }
 
-    return { 
-      x: (0.5 + 0.5 * _x) * width,
-      y: (0.5 + 0.5 * _y) * height,
-    }
+    return [
+      (0.5 + 0.5 * _x) * width,
+      (0.5 + 0.5 * _y) * height,
+    ]
   }
 
   ///@param {Number} x
@@ -475,11 +472,12 @@ function _Math() constructor {
   ///@param {Matrix} view
   ///@param {Matrix} projection
   ///@param {Number} width
-  ///@param {Number} width
+  ///@param {Number} height
+  ///@return {GMArray<Number>[6]}
   static project2DCoordsOn3D = function(x, y, view, projection, width, height) {
     gml_pragma("forceinline")
-    var mx = 2 * (x / width - 0.5) / projection[0]
-    var my = 2 * (y / height - 0.5) / projection[5]
+    var mx = 2 * ((x / width) - 0.5) / projection[0]
+    var my = 2 * ((y / height) - 0.5) / projection[5]
     var camX = -1 * (view[12] * view[0] + view[13] * view[1] + view[14] * view[2])
     var camY = -1 * (view[12] * view[4] + view[13] * view[5] + view[14] * view[6])
     var camZ = -1 * (view[12] * view[8] + view[13] * view[9] + view[14] * view[10])
@@ -504,6 +502,32 @@ function _Math() constructor {
         camZ + mx * view[8] + my * view[9]
       ]
     }
+  }
+
+  ///@param {GMArray<Number>[6]} ray
+  ///@param {Number} plane_z
+  ///@return {?GMArray<Number>[3]}
+  static rayPlaneZ = function(ray, plane_z) {
+    var dx = ray[0]
+    var dy = ray[1]
+    var dz = ray[2]
+    var ox = ray[3]
+    var oy = ray[4]
+    var oz = ray[5]
+
+    if (abs(dz) < 0.00001) {
+      return null
+    }
+
+    var t = (plane_z - oz) / dz
+    if (t < 0) {
+      return null
+    }
+
+    var hit_x = ox + dx * t
+    var hit_y = oy + dy * t
+    var hit_z = oz + dz * t
+    return [ hit_x, hit_y, hit_z ]
   }
 
   ///@param {Number} base

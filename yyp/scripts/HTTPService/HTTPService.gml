@@ -28,7 +28,7 @@ function HTTPService(config = null) constructor {
     loggerPrefix: Struct.getIfType(Struct.get(config, "eventPump"), "loggerPrefix", String, BeanHTTPService),
     catchException: Struct.getIfType(Struct.get(config, "eventPump"), "catchException", Boolean, false),
     exceptionCallback: Struct.getIfType(Struct.get(config, "eventPump"), "exceptionCallback", Callable),
-    freeStrategy: Struct.getIfEnum(Struct.get(config, "eventPump"), "freeStrategy", EventPumpFreeStrategyType.NONE),
+    freeStrategy: Struct.getIfEnum(Struct.get(config, "eventPump"), "freeStrategy", EventPumpFreeStrategyType, EventPumpFreeStrategyType.NONE),
   })
 
   ///@type {TaskExecutor}
@@ -37,7 +37,7 @@ function HTTPService(config = null) constructor {
     loggerPrefix: Struct.getIfType(Struct.get(config, "executor"), "loggerPrefix", String, BeanHTTPService),
     catchException: Struct.getIfType(Struct.get(config, "executor"), "catchException", Boolean, false),
     exceptionCallback: Struct.getIfType(Struct.get(config, "executor"), "exceptionCallback", Callable),
-    freeStrategy: Struct.getIfEnum(Struct.get(config, "executor"), "freeStrategy", TaskExecutorFreeStrategyType.NONE),
+    freeStrategy: Struct.getIfEnum(Struct.get(config, "executor"), "freeStrategy", TaskExecutorFreeStrategyType, TaskExecutorFreeStrategyType.NONE),
   })
 
   ///@param {?Struct} [config]

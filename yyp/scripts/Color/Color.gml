@@ -50,18 +50,18 @@ function Color(_red = 0.0, _green = 0.0, _blue = 0.0, _alpha = 1.0) constructor 
       var hexLength = String.size(hex)
       var hasAlpha = hexLength == 9
       var size = hasAlpha ? 8 : 6
-      var color = GMArray.create(Number, size, ASCII_DIGIT_OFFSET)
-        .map(function(value, index, hex) {
-          var result = ord(String.toUpperCase(String.getChar(hex, index + 2)))
-          return result >= ASCII_CHAR_OFFSET 
-            ? result - ASCII_CHAR_OFFSET + 10 
-            : result - ASCII_DIGIT_OFFSET
-        }, hex)
+      var color = array_create(size, ASCII_DIGIT_OFFSET)
+      for (var idx = 0; idx < size; idx++) {
+        var result = ord(String.toUpperCase(String.getChar(hex, idx + 2)))
+        color[idx] = result >= ASCII_CHAR_OFFSET 
+          ? result - ASCII_CHAR_OFFSET + 10 
+          : result - ASCII_DIGIT_OFFSET
+      }
     
-      this.red = clamp(((color.get(0) * 16) + color.get(1)) / 255, 0.0, 1.0)
-      this.green = clamp(((color.get(2) * 16) + color.get(3)) / 255, 0.0, 1.0)
-      this.blue = clamp(((color.get(4) * 16) + color.get(5)) / 255, 0.0, 1.0)
-      this.alpha = clamp(hasAlpha ? ((color.get(6) * 16) + color.get(7)) / 255 : 1.0, 0.0, 1.0)
+      this.red = ((color[0] * 16) + color[1]) / 255
+      this.green = ((color[2] * 16) + color[3]) / 255
+      this.blue = ((color[4] * 16) + color[5]) / 255
+      this.alpha = hasAlpha ? ((color[6] * 16) + color[7]) / 255 : 1.0
     } catch (exception) {
       Logger.warn("Color", $"Cannot parse color from hash: {hex}\n{exception.message}")
       this.red = _red
@@ -119,18 +119,18 @@ function _ColorUtil() constructor {
       var hexLength = String.size(hex)
       var hasAlpha = hexLength == 9
       var size = hasAlpha ? 8 : 6
-      var color = GMArray.create(Number, size, ASCII_DIGIT_OFFSET)
-        .map(function(value, index, hex) {
-          var result = ord(String.toUpperCase(String.getChar(hex, index + 2)))
-          return result >= ASCII_CHAR_OFFSET 
-            ? result - ASCII_CHAR_OFFSET + 10 
-            : result - ASCII_DIGIT_OFFSET
-        }, hex)
+      var color = array_create(size, ASCII_DIGIT_OFFSET)
+      for (var idx = 0; idx < size; idx++) {
+        var result = ord(String.toUpperCase(String.getChar(hex, idx + 2)))
+        color[idx] = result >= ASCII_CHAR_OFFSET 
+          ? result - ASCII_CHAR_OFFSET + 10 
+          : result - ASCII_DIGIT_OFFSET
+      }
     
-      var red = ((color.get(0) * 16) + color.get(1)) / 255
-      var green = ((color.get(2) * 16) + color.get(3)) / 255
-      var blue = ((color.get(4) * 16) + color.get(5)) / 255
-      var alpha = hasAlpha ? ((color.get(6) * 16) + color.get(7)) / 255 : 1.0
+      var red = ((color[0] * 16) + color[1]) / 255
+      var green = ((color[2] * 16) + color[3]) / 255
+      var blue = ((color[4] * 16) + color[5]) / 255
+      var alpha = hasAlpha ? ((color[6] * 16) + color[7]) / 255 : 1.0
       return new Color(red, green, blue, alpha)
     } catch (exception) {
       Logger.warn("ColorUtil", $"Cannot parse color from hash: {hex}\n{exception.message}\nTrying to parse using default value {defaultValue}")
@@ -151,26 +151,12 @@ function _ColorUtil() constructor {
       var hexLength = String.size(hex)
       var hasAlpha = hexLength == 9
       var size = hasAlpha ? 8 : 6
-      var color = GMArray.create(Number, size, ASCII_DIGIT_OFFSET)
-        .map(function(value, index, hex) {
-          var result = ord(String.toUpperCase(String.getChar(hex, index + 2)))
-          return result >= ASCII_CHAR_OFFSET 
-            ? result - ASCII_CHAR_OFFSET + 10 
-            : result - ASCII_DIGIT_OFFSET
-        }, hex)
-    
-      var red = ((color.get(0) * 16) + color.get(1)) / 255
-      var green = ((color.get(2) * 16) + color.get(3)) / 255
-      var blue = ((color.get(4) * 16) + color.get(5)) / 255
-      var alpha = hasAlpha ? ((color.get(6) * 16) + color.get(7)) / 255 : 1.0
-      return new Color(red, green, blue, alpha)
-      /*
       var color = array_create(size, ASCII_DIGIT_OFFSET)
-      for (var index = 0; index < size; index++) {
-        color[index] = ord(String.toUpperCase(String.getChar(hex, index + 2)))
-        color[index] = color[index] >= ASCII_CHAR_OFFSET 
-          ? color[index] - ASCII_CHAR_OFFSET + 10 
-          : color[index] - ASCII_DIGIT_OFFSET
+      for (var idx = 0; idx < size; idx++) {
+        var result = ord(String.toUpperCase(String.getChar(hex, idx + 2)))
+        color[idx] = result >= ASCII_CHAR_OFFSET 
+          ? result - ASCII_CHAR_OFFSET + 10 
+          : result - ASCII_DIGIT_OFFSET
       }
     
       var red = ((color[0] * 16) + color[1]) / 255
@@ -178,7 +164,6 @@ function _ColorUtil() constructor {
       var blue = ((color[4] * 16) + color[5]) / 255
       var alpha = hasAlpha ? ((color[6] * 16) + color[7]) / 255 : 1.0
       return new Color(red, green, blue, alpha)
-      */
     } catch (exception) {
       if (!Core.isType(defaultValue, Color)) {
         throw new ParseException($"Cannot parse color from hash: {hex}\n{exception.message}")

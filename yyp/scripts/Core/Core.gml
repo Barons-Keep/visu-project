@@ -83,7 +83,7 @@ function _Core() constructor {
   ///@return {Boolean}
   static isType = function(object, type) {
     gml_pragma("forceinline")
-    try {
+    //try {
       var result = typeof(object)
       switch (type) {
         case any: return true
@@ -134,10 +134,10 @@ function _Core() constructor {
           }
           return is_instanceof(object, type)
       }
-    } catch (exception) {
-      Logger.error("Core.isType", $"'{type}' Fatal error: {exception.message}")
-      Core.printStackTrace().printException(exception)
-    }
+    //} catch (exception) {
+    //  Logger.error("Core.isType", $"'{type}' Fatal error: {exception.message}")
+    //  Core.printStackTrace().printException(exception)
+    //}
     return false
   }
 
@@ -147,9 +147,9 @@ function _Core() constructor {
   ///@return {Boolean}
   static isEnum = function(object, enumerable) {
     gml_pragma("forceinline")
-    try {
+    //try {
       return enumerable.contains(object)
-    } catch (exception) { }
+    //} catch (exception) { }
     return false
   }
 
@@ -159,9 +159,9 @@ function _Core() constructor {
   ///@return {Boolean}
   static isEnumKey = function(object, enumerable) {
     gml_pragma("forceinline")
-    try {
+    //try {
       return enumerable.containsKey(object)
-    } catch (exception) { }
+    //} catch (exception) { }
     return false  
   }
 
@@ -170,11 +170,11 @@ function _Core() constructor {
   static getTypeName = function(object) {
     gml_pragma("forceinline")
     var type = null
-    try {
+    //try {
       type = Core.hasConstructor(object) 
         ? instanceof(object) 
         : Struct.getDefault(this.typeofMap, typeof(object))
-    } catch (exception) { }
+    //} catch (exception) { }
     return type
   }
 

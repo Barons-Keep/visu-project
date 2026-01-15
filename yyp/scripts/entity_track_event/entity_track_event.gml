@@ -839,7 +839,7 @@ global.__entity_track_event = {
         "en-pl_hide-texture": Struct.parse.boolean(data, "en-pl_hide-texture", TRACK_EVENT_DEFAULT_HIDDEN_VALUE),
         "en-pl_hide-mask": Struct.parse.boolean(data, "en-pl_hide-mask", TRACK_EVENT_DEFAULT_HIDDEN_VALUE),
         "en-pl_hide-stats": Struct.parse.boolean(data, "en-pl_hide-stats", TRACK_EVENT_DEFAULT_HIDDEN_VALUE),
-        "en-pl_hide-cfg": Struct.parse.boolean(data, "en-pl_hide-cfg"), TRACK_EVENT_DEFAULT_HIDDEN_VALUE,
+        "en-pl_hide-cfg": Struct.parse.boolean(data, "en-pl_hide-cfg", TRACK_EVENT_DEFAULT_HIDDEN_VALUE),
         "en-pl_texture": Struct.parse.sprite(data, "en-pl_texture", { name: "texture_player" }),
         "_en-pl_texture": Struct.getDefault(data, "en-pl_texture", { name: "texture_player" }),
         "en-pl_use-mask": Struct.parse.boolean(data, "en-pl_use-mask"),

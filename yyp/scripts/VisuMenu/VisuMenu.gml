@@ -1504,7 +1504,7 @@ function VisuMenu(_config = null) constructor {
           config: {
             layout: { type: UILayoutType.VERTICAL },
             label: { 
-              text: "Background textures",
+              text: "Foreground textures",
               callback: new BindIntent(function() {
                 var value = Visu.settings.getValue("visu.graphics.frg-tx")
                 Visu.settings.setValue("visu.graphics.frg-tx", !value).save()

@@ -225,16 +225,17 @@ function VisuIO() constructor {
 
   ///@return {VisuIO}
   updateBegin = function() {
+    var controller = Beans.get(BeanVisuController)
+    var isController = controller != null
     try {
       //EVENT_COUNTER.log().reset()
       GMArray.updateBegin()
       Struct.updateBegin()
       this.keyboard.update()
-      this.mouse.update()  
+      this.mouse.update()
       GMTFContext.updateBegin()
       
-      var controller = Beans.get(BeanVisuController)
-      if (!Core.isType(controller, VisuController)) {
+      if (!isController) {
         return this
       }
 
@@ -242,12 +243,10 @@ function VisuIO() constructor {
       this.functionKeyboardEvent(controller)
       this.mouseEvent(controller)
     } catch (exception) {
-      var message = $"'VisuIO::update' fatal error: {exception.message}"
+      var message = $"'{BeanVisuIO}::update()' fatal error: {exception.message}"
       Logger.error(BeanVisuIO, message)
       Core.printStackTrace().printException(exception)
-
-      var controller = Beans.get(BeanVisuController)
-      if (Core.isType(controller, VisuController)) {
+      if (isController) {
         controller.send(new Event("spawn-popup", { message: message }))
       }
     }

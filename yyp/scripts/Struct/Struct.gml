@@ -160,13 +160,17 @@ function _Struct() constructor {
   }
 
   ///@override
-  ///@param {Struct} struct
+  ///@param {?Struct} struct
   ///@param {Callable} callback
   ///@param {any} [acc]
-  ///@return {Struct}
+  ///@return {?Struct}
   static forEach = function(struct, callback, acc = null) {
     gml_pragma("forceinline")
     var keys = Struct.keys(struct)
+    if (keys == null) {
+      return null
+    }
+
     var size = GMArray.size(keys)
     for (var index = 0; index < size; index++) {
       var key = keys[index]
@@ -177,7 +181,7 @@ function _Struct() constructor {
   }
 
   ///@override
-  ///@param {Struct} struct
+  ///@param {?Struct} struct
   ///@param {Callable} callback
   ///@param {any} [acc]
   ///@return {Struct}
@@ -185,6 +189,9 @@ function _Struct() constructor {
     gml_pragma("forceinline")
     var filtered = {}
     var keys = Struct.keys(struct)
+    if (keys == null) {
+      return filtered
+    }
     var size = GMArray.size(keys)
     for (var index = 0; index < size; index++) {
       var key = keys[index]
@@ -197,7 +204,7 @@ function _Struct() constructor {
   }
 
   ///@override
-  ///@param {Struct} struct
+  ///@param {?Struct} struct
   ///@param {Callable} callback
   ///@param {any} [acc]
   ///@return {Struct}
@@ -205,6 +212,9 @@ function _Struct() constructor {
     gml_pragma("forceinline")
     var mapped = {}
     var keys = Struct.keys(struct)
+    if (keys == null) {
+      return mapped
+    }
     var size = GMArray.size(keys)
     for (var index = 0; index < size; index++) {
       var key = keys[index]
@@ -222,6 +232,10 @@ function _Struct() constructor {
   static find = function(struct, callback, acc = null) {
     gml_pragma("forceinline")
     var keys = Struct.keys(struct)
+    if (keys == null) {
+      return null
+    }
+
     var size = GMArray.size(keys)
     for (var index = 0; index < size; index++) {
       var key = keys[index]
@@ -240,6 +254,10 @@ function _Struct() constructor {
   static findKey = function(callback, acc = null) {
     gml_pragma("forceinline")
     var keys = Struct.keys(struct)
+    if (keys == null) {
+      return null
+    }
+
     var size = GMArray.size(keys)
     for (var index = 0; index < size; index++) {
       var key = keys[index]
@@ -260,6 +278,10 @@ function _Struct() constructor {
     gml_pragma("forceinline")
     var map = new Map(keyType, valueType)
     var keys = Struct.keys(struct)
+    if (keys == null) {
+      return map
+    }
+
     var size = GMArray.size(keys)
     if (!Core.isType(callback, Callable)) {
       for (var index = 0; index < size; index++) {
@@ -285,6 +307,10 @@ function _Struct() constructor {
     gml_pragma("forceinline")
     var keys = Struct.keys(struct)
     var size = GMArray.size(keys)
+    if (keys == null) {
+      return new Array(any)
+    }
+
     var arr = GMArray.create(any, size)
     for (var index = 0; index < size; index++) {
       var key = keys[index]

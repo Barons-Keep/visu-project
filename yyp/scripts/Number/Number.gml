@@ -25,13 +25,8 @@ function _NumberUtil() constructor {
   ///@param {Number} [defaultValue]
   ///@return {Number}
   parse = function(text, defaultValue = 0.0) {
-    /*
-    var value = defaultValue
-    try { value = NumberUtil.fromString(text) } catch (e) {}
-    return value
-    */
     try {
-      return NumberUtil.fromString(text)
+      return real(text)
     } catch (exception) {
       return defaultValue
     }

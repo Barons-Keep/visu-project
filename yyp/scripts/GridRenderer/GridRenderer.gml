@@ -64,7 +64,15 @@ function GridRenderer() constructor {
 
   ///@private
   ///@type {Struct}
-  player2DCoords = { x: 0, y: 0 }
+  player2DCoords = { x: null, y: null }
+
+  ///@private
+  ///@type {Struct}
+  player3DCoords = { x: 0, y: 0, z: 0 }
+
+  ///@private
+  ///@type {Struct}
+  target3DCoords = { x: 0, y: 0, z: 0 }
 
   ///@private
   ///@type {Sprite}
@@ -241,7 +249,13 @@ function GridRenderer() constructor {
         .render(_x, _y)
         .setAlpha(alpha)
         .setAngle(angle)
-      this.player2DCoords = Math.project3DCoordsOn2D(_x + baseX, _y + baseY, gridService.properties.depths.playerZ, this.camera.viewMatrix, this.camera.projectionMatrix, this.gridSurface.width, this.gridSurface.height)
+      var player2DCoords = Math.project3DCoordsOn2D(_x + baseX, _y + baseY, gridService.properties.depths.playerZ, this.camera.viewMatrix, this.camera.projectionMatrix, this.gridSurface.width, this.gridSurface.height)
+      this.player2DCoords.x = player2DCoords != null ? player2DCoords[0] : null
+      this.player2DCoords.y = player2DCoords != null ? player2DCoords[1] : null
+      
+      this.player3DCoords.x = _x
+      this.player3DCoords.y = _y
+      this.player3DCoords.z = gridService.properties.depths.playerZ
 
       _x = ((player.x - gridService.view.x) * GRID_SERVICE_PIXEL_WIDTH) - ((player.sprite.getWidth() * player.sprite.scaleX) / 2.0) + (player.mask.x * player.sprite.scaleX)
       _y = ((player.y - gridService.view.y) * GRID_SERVICE_PIXEL_HEIGHT) - ((player.sprite.getHeight() * player.sprite.scaleY) / 2.0) + (player.mask.y * player.sprite.scaleY)
@@ -1221,6 +1235,9 @@ function GridRenderer() constructor {
         .setAngle(angle)
         .setScaleX(scaleX)
         .setScaleY(scaleY)
+      this.player3DCoords.x = _x
+      this.player3DCoords.y = _y
+      this.player3DCoords.z = gridService.properties.depths.playerZ
       shader_reset()
     } else {
       var _x = (player.x - ((player.sprite.texture.width * player.sprite.scaleX) / (2.0 * GRID_SERVICE_PIXEL_WIDTH)) + ((player.sprite.texture.offsetX * player.sprite.scaleX) / GRID_SERVICE_PIXEL_WIDTH) - gridService.view.x) * GRID_SERVICE_PIXEL_WIDTH,
@@ -1235,7 +1252,12 @@ function GridRenderer() constructor {
         .setAngle(angle)
         .setScaleX(scaleX)
         .setScaleY(scaleY)
-      this.player2DCoords = Math.project3DCoordsOn2D(_x + baseX, _y + baseY, gridService.properties.depths.playerZ, this.camera.viewMatrix, this.camera.projectionMatrix, this.gridSurface.width, this.gridSurface.height)
+      var player2DCoords = Math.project3DCoordsOn2D(_x + baseX, _y + baseY, gridService.properties.depths.playerZ, this.camera.viewMatrix, this.camera.projectionMatrix, this.gridSurface.width, this.gridSurface.height)
+      this.player2DCoords.x = player2DCoords != null ? player2DCoords[0] : null
+      this.player2DCoords.y = player2DCoords != null ? player2DCoords[1] : null
+      this.player3DCoords.x = _x
+      this.player3DCoords.y = _y
+      this.player3DCoords.z = gridService.properties.depths.playerZ
     }
     
     return this
@@ -1628,9 +1650,9 @@ function GridRenderer() constructor {
 
     if (renderDebugChunks) {
       shroomService.chunkService.chunks.forEach(function(chunk, key, view) {
-        var arr = String.split(key, "_")
-        var xx = ((real(arr.get(0)) * GRID_ITEM_CHUNK_SERVICE_SIZE) - view.x) * GRID_SERVICE_PIXEL_WIDTH
-        var yy = ((real(arr.get(1)) * GRID_ITEM_CHUNK_SERVICE_SIZE) - view.y) * GRID_SERVICE_PIXEL_HEIGHT
+        var coords = String.split(key, "_")
+        var xx = ((real(coords.get(0)) * GRID_ITEM_CHUNK_SERVICE_SIZE) - view.x) * GRID_SERVICE_PIXEL_WIDTH
+        var yy = ((real(coords.get(1)) * GRID_ITEM_CHUNK_SERVICE_SIZE) - view.y) * GRID_SERVICE_PIXEL_HEIGHT
         draw_sprite_ext(
           texture_white, 
           0.0, 
@@ -1645,9 +1667,9 @@ function GridRenderer() constructor {
       }, gridService.view)
 
       bulletService.chunkService.chunks.forEach(function(chunk, key, view) {
-        var arr = String.split(key, "_")
-        var xx = ((real(arr.get(0)) * GRID_ITEM_CHUNK_SERVICE_SIZE) - view.x) * GRID_SERVICE_PIXEL_WIDTH
-        var yy = ((real(arr.get(1)) * GRID_ITEM_CHUNK_SERVICE_SIZE) - view.y) * GRID_SERVICE_PIXEL_HEIGHT
+        var coords = String.split(key, "_")
+        var xx = ((real(coords.get(0)) * GRID_ITEM_CHUNK_SERVICE_SIZE) - view.x) * GRID_SERVICE_PIXEL_WIDTH
+        var yy = ((real(coords.get(1)) * GRID_ITEM_CHUNK_SERVICE_SIZE) - view.y) * GRID_SERVICE_PIXEL_HEIGHT
         draw_sprite_ext(
           texture_white, 
           0.0, 
@@ -1661,7 +1683,25 @@ function GridRenderer() constructor {
         )
       }, gridService.view)
     }
-    
+
+    matrix_set(matrix_world, matrix_build(
+      0, 0, depths.playerZ, 
+      global.cameraRollSpeed, global.cameraPitchSpeed, global.cameraYawSpeed,
+      1, 1, 1
+    ))
+    var mouseX = MouseUtil.getMouseX() - layout.x()
+    var mouseY = MouseUtil.getMouseY() - layout.y()
+    var ray = Math.project2DCoordsOn3D(mouseX, mouseY, camera.viewMatrix, camera.projectionMatrix, width, height)
+    var coords = Math.rayPlaneZ(ray, depths.playerZ)
+    if (coords != null) {
+      var xx = coords[0]
+      var yy = coords[1]
+      //draw_sprite(texture_player, 0, xx, yy)
+      this.target3DCoords.x = xx - (GRID_SERVICE_PIXEL_WIDTH * 1.5)
+      this.target3DCoords.y = yy - (GRID_SERVICE_PIXEL_HEIGHT * 1.5)
+      this.target3DCoords.z = gridService.properties.depths.playerZ
+    }
+
     this.editorRenderSpawners(gridService, shroomService, layout)
 
     gpu_set_ztestenable(false)
@@ -2091,6 +2131,19 @@ function GridRenderer() constructor {
     var _x = layout.x()
     var _y = layout.y()
     this.gameSurface.renderStretched(_width, _height, _x, _y)
+
+    /*
+    var coords = $"coords:\n"
+      + $"  player.xyz: [ {this.player3DCoords.x}, {this.player3DCoords.y}, {this.player3DCoords.z} ]\n"
+      + $"  target.xyz: [ {this.target3DCoords.x}, {this.target3DCoords.y}, {this.target3DCoords.z} ]\n"
+      + $"  angle: {Math.fetchPointsAngle(this.player3DCoords.x, this.player3DCoords.y, this.target3DCoords.x, this.target3DCoords.y)}\n"
+    draw_set_font(font_basic)
+    draw_set_alpha(1.0)
+    draw_set_colour(c_white)
+    draw_set_halign(fa_left)
+    draw_set_valign(fa_top)
+    draw_text(_x + 200, _y + 100, coords)
+    */
     return this
   }
 

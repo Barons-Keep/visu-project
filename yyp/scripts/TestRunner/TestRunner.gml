@@ -1,7 +1,8 @@
 ///@package io.alkapivo.core.test
 
 #macro BeanTestRunner "TestRunner"
-function TestRunner() constructor {
+///@param {?Struct} [config]
+function TestRunner(config = null) constructor {
 
   ///@type {?TestSuite}
   testSuite = null
@@ -205,12 +206,12 @@ function TestRunner() constructor {
   }
 
   ///@private
-  ///@return {TestRunner}
-  shutdown = function() {
-    Logger.info(BeanTestRunner, "Shutdown")
-    game_end()
-    return this
-  }
+  shutdown = Core.isType(Struct.get(config, "shutdown"), Callable)
+    ? method(this, config.shutdown)
+    : function() {
+        Logger.info(BeanTestRunner, "Shutdown")
+        game_end()
+      }
 
   ///@return {TestRunner}
   update = function() {
