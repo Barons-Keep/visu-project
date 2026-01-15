@@ -889,7 +889,7 @@ function PlayerHandler(json) constructor {
       Struct.forEach(keys, updateGMTFContextFocused)
     }
 
-    var isMouseShoot = Visu.settings.getValue("visu.developer.mouse-shoot", false) && mouse_check_button(mb_left)
+    var isMouseShoot = Visu.settings.getValue("visu.developer.mouse-shoot", false) && (keys.action.on || mouse_check_button(mb_left))
     if (keys.action.on || isMouseShoot) {
       this.guns.forEach(updateKeyActionOnEnabled, {
         controller: controller,
