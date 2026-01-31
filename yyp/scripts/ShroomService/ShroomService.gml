@@ -56,6 +56,55 @@ function ShroomService(config = null): Service(config) constructor {
   ///@param {Boolean}
   optimalizationSortEntitiesByTxGroup = false
 
+  ///@type {Struct}
+  statistics = {
+    spawned: 0,
+    shooted: 0,
+    nuked: 0,
+    expired: 0,
+    report: function() {
+      return {
+        spawned: this.spawned,
+        shooted: this.shooted,
+        nuked: this.nuked,
+        expired: this.expired,
+      }
+    },
+    reset: function() {
+      this.spawned = 0
+      this.shooted = 0
+      this.nuked = 0
+      this.expired = 0
+      return this
+    },
+    factoryShroom: function(shroom) {
+      this.spawned += 1
+      return this
+    },
+    freeShroom: function(shroom, reason) {
+      switch (reason) {
+        case "shooted":
+          this.shooted += 1
+          break
+        case "nuked":
+          this.nuked += 1
+          break
+        case "expired":
+          this.expired += 1
+          break
+        default:
+          Logger.warn("ShroomService", $"freeShroom reason: {reason}")
+          this.expired += 1
+          break
+      }
+      return this
+    },
+    validate: function() {
+      Assert.areEqual(spawned - shooted - nuked - expired, 0.0, "Invalid ShroomStatistics")
+      Logger.debug("ShroomService", "ShroomStatistics are OK")
+    },
+  }
+
   ///@type {EventPump}
   dispatcher = new EventPump(this, new Map(String, Callable, {
     "spawn-shroom": function(event) {
@@ -124,7 +173,7 @@ function ShroomService(config = null): Service(config) constructor {
 
 
       var shroom = new Shroom(template)
-
+      this.statistics.factoryShroom(shroom)
       this.shrooms.add(shroom)
       this.chunkService.add(shroom)
 
@@ -136,11 +185,21 @@ function ShroomService(config = null): Service(config) constructor {
 
     },
     "clear-shrooms": function(event) {
-      this.shrooms.clear()
+      static freeShroom = function(shroom, idx, shroomService) {
+        if (!shroom.signals.kill) {
+          shroom.signals.freeReason = "expired"
+          shroom.signal("kill")
+        }
+
+        shroomService.statistics.freeShroom(shroom, shroom.signals.freeReason)
+      }
+
+      this.shrooms.forEach(freeShroom, this).clear()
       this.executor.tasks.forEach(TaskUtil.fullfill).clear()
       this.chunkService.clear()
     },
     "reset-templates": function(event) {
+      this.statistics.reset()
       this.templates.clear()
       this.dispatcher.container.clear()
     },
@@ -212,6 +271,7 @@ function ShroomService(config = null): Service(config) constructor {
 
     var shroom = new Shroom(template)
 
+    this.statistics.factoryShroom(shroom)
     this.shrooms.add(shroom)
     this.chunkService.add(shroom)
 
@@ -270,6 +330,7 @@ function ShroomService(config = null): Service(config) constructor {
     if (shroom.signals.kill) {
       shroomService.shrooms.addToGC(index)
       shroomService.chunkService.remove(shroom)
+      shroomService.statistics.freeShroom(shroom, shroom.signals.freeReason)
     }
   }
 

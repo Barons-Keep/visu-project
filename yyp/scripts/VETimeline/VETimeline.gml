@@ -1,6 +1,6 @@
 ///@package io.alkapivo.visu.editor.ui.controller
 
-#macro VETIMELINE_EVENT_SIZE 48
+#macro VETIMELINE_EVENT_SIZE 32
 ///@enum
 function _ToolType(): Enum() constructor {
   SELECT = "tool_select"
@@ -1708,7 +1708,7 @@ function VETimeline(_editor) constructor {
 
           var trackEventConfig = trackEvent.serialize()
           var timestamp = trackEventConfig.timestamp
-          trackEventConfig.timestamp = this.getTimestampFromMouseX(event.data.x)
+          trackEventConfig.timestamp = this.getTimestampFromMouseX(event.data.x - this.state.get("mouseDragOffsetX"))
           if (store.getValue("snap")
               || Beans.get(BeanVisuEditorIO).keyboard.keys.controlLeft.on) {
             var bpmSub = store.getValue("bpm-sub")
@@ -1854,7 +1854,6 @@ function VETimeline(_editor) constructor {
         }),
         onMouseDropLeft: function(event) {
           this.finishUpdateTimer()
-
           var mouse = Beans.get(BeanVisuEditorIO).mouse
           var dropEvent = mouse.getClipboard()
           mouse.clearClipboard()

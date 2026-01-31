@@ -44,21 +44,32 @@ function BulletService(config = null): Service(config) constructor {
       }
       
       var bullet = new Bullet(template)
+
+      this.statistics.factoryBullet(bullet)
+      this.bullets.add(bullet)
       if (event.data.producer == Player) {
         this.chunkService.add(bullet)
       }
-
-      this.bullets.add(bullet)
 
       if (this.optimalizationSortEntitiesByTxGroup) {
         controller.gridService.textureGroups.sortItems(this.bullets)
       }
     },
     "clear-bullets": function(event) {
-      this.bullets.clear()
+      static freeBullet = function(bullet, idx, bulletService) {
+        if (!bullet.signals.kill) {
+          bullet.signals.freeReason = "expired"
+          bullet.signal("kill")
+        }
+
+        bulletService.statistics.freeBullet(bullet, bullet.signals.freeReason)
+      }
+
+      this.bullets.forEach(freeBullet, this).clear()
       this.chunkService.clear()
     },
     "reset-templates": function(event) {
+      this.statistics.reset()
       this.templates.clear()
       this.dispatcher.container.clear()
     },
@@ -79,6 +90,62 @@ function BulletService(config = null): Service(config) constructor {
       Beans.get(BeanVisuController).exceptionDebugHandler(message, exception)
     },
   })
+
+  statistics = {
+    spawnedByPlayer: 0,
+    spawnedByShrooms: 0,
+    hitShroom: 0,
+    hitPlayer: 0,
+    expired: 0,
+    report: function() {
+      return {
+        spawnedByPlayer: this.spawnedByPlayer,
+        spawnedByShrooms: this.spawnedByShrooms,
+        hitShroom: this.hitShroom,
+        hitPlayer: this.hitPlayer,
+        expired: this.expired,
+      }
+    },
+    reset: function() {
+      this.spawnedByPlayer = 0
+      this.spawnedByShrooms = 0
+      this.hitShroom = 0
+      this.hitPlayer = 0
+      this.expired = 0
+      return this
+    },
+    factoryBullet: function(bullet) {
+      if (bullet.producer == Player) {
+        this.spawnedByPlayer += 1
+      } else {
+        this.spawnedByShrooms += 1
+      }
+
+      return this
+    },
+    freeBullet: function(shroom, reason) {
+      switch (reason) {
+        case "hitShroom":
+          this.hitShroom += 1
+          break
+        case "hitPlayer":
+          this.hitPlayer += 1
+          break
+        case "expired":
+          this.expired += 1
+          break
+        default:
+          Logger.warn("BulletService", $"freeBullet reason: {reason}")
+          this.expired += 1
+          break
+      }
+      return this
+    },
+    validate: function() {
+      Assert.areEqual(this.spawnedByPlayer + this.spawnedByShrooms - this.hitShroom - this.hitPlayer - this.expired, 0.0, "Invalid BulletStatistics")
+      Logger.debug("BulletService", "BulletStatistics are OK")
+    },
+  }
 
   ///@param {String} name
   ///@param {Shroom|Player} producer
@@ -125,6 +192,7 @@ function BulletService(config = null): Service(config) constructor {
     }
 
     this.bullets.add(bullet)
+    this.statistics.factoryBullet(bullet)
 
     if (this.optimalizationSortEntitiesByTxGroup) {
       controller.gridService.textureGroups.sortItems(this.bullets)
@@ -195,6 +263,7 @@ function BulletService(config = null): Service(config) constructor {
     }
 
     var bulletService = controller.bulletService
+    bulletService.statistics.freeBullet(bullet, bullet.signals.freeReason)
     bulletService.bullets.addToGC(index)
     if (bullet.producer == Player) {
       bulletService.chunkService.remove(bullet)

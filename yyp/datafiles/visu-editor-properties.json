@@ -2,7 +2,7 @@
   "visu.editor.force-init": false,
   "visu.editor.force-render": false,
   "visu.editor.renderEditorMode": true,  
-  "visu.editor.controlTrack.alwaysEnabled": true,
+  "visu.editor.controlTrack.alwaysEnabled": false,
   "visu.editor.status-bar.render-real-fps": false,
   "visu.editor.edit-theme": false,
   "visu.editor.ui.components.numeric-button": true,
@@ -29,7 +29,7 @@
   "visu.editor.ui.brush-toolbar.accordion.updateTimer.cooldown": 4.0,
   "visu.editor.ui.brush-toolbar.inspector-bar.updateTimer.cooldown": 4.0,
   "visu.editor.ui.brush-toolbar.inspector-view.init-ui-contanier.cooldown": 4.0,
-  "visu.editor.ui.template-toolbar.inspector-view.init-ui-contanier.cooldown": 4.0,
+  "visu.editor.ui.template-toolbar.inspector-view.init-ui-contanier.cooldown": 6.0,
   "visu.editor.ui.event-inspector.inspector-view.init-ui-contanier.cooldown": 8.0,
   "visu.editor.io.mouse-moved.cooldown": 3.0,
   "end-property": null

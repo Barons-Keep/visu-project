@@ -619,9 +619,23 @@ function VisuController(config = null): Service(config) constructor {
           && 1 > abs(this.trackService.time - this.trackService.duration)
           && this.fsm.getStateName() == "play") {
         
-        Logger.info("VisuController", $"Track finished at {this.trackService.time}")
+        Logger.info(BeanVisuController, $"Track finished at {this.trackService.time}")
         this.watchdogPromise = this.send(new Event("pause").setPromise(new Promise()))
+        this.shroomService.dispatcher.execute(new Event("clear-shrooms"))
+        Logger.debug(BeanVisuController, $"ShroomService statistics:\n{JSON.stringify(this.shroomService.statistics.report(), true)}")
+        this.bulletService.dispatcher.execute(new Event("clear-bullets"))
+        Logger.debug(BeanVisuController, $"BulletService statistics:\n{JSON.stringify(this.bulletService.statistics.report(), true)}")
+        this.coinService.dispatcher.execute(new Event("clear-coins"))
+        Logger.debug(BeanVisuController, $"CoinService statistics:\n{JSON.stringify(this.coinService.statistics.report(), true)}")
+        if (this.playerService.player != null) {
+          this.playerService.statistics.freePlayer(this.playerService.player)
+        }
+        Logger.debug(BeanVisuController, $"PlayerService statistics:\n{JSON.stringify(this.playerService.statistics.report(), true)}")
         this.menu.send(this.menu.factoryOpenMainMenuEvent({ disableResume: true }))
+        this.shroomService.statistics.validate()
+        this.bulletService.statistics.validate()
+        this.coinService.statistics.validate()
+        this.playerService.statistics.validate()
       }
 
       if (this.fsm.getStateName() != "idle" && Optional.is(this.ostSound)) {

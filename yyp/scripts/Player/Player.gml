@@ -204,6 +204,7 @@ function PlayerStats(_player, json) constructor {
       } else if (previous > value) {
         //Core.print("Force decremented from", previous, "to", value)
       }
+      controller.playerService.statistics.freePlayer(this.stats.player, "force")
       return this
     },
     onMinValueExceed: function() { 
@@ -377,8 +378,8 @@ function PlayerStats(_player, json) constructor {
             }))
 
             controller.shroomService.shrooms.forEach(function(shroom, index, player) {
-              var length = Math.fetchLength(shroom.x, shroom.y, player.x, player.y)
-              if (length <= 1.41) {
+              if (!shroom.signals.kill && Math.fetchLength(shroom.x, shroom.y, player.x, player.y) <= 1.41) {
+                shroom.signals.freeReason = "nuked"
                 shroom.signal("kill")
               }
             }, player)
@@ -477,6 +478,8 @@ function PlayerStats(_player, json) constructor {
           fadeOut: 0.5,
         }))
         controller.sfxService.play("player-use-bomb")
+
+        controller.playerService.statistics.freePlayer(this.stats.player, "bomb")
       }
       return this
     },
@@ -595,6 +598,8 @@ function PlayerStats(_player, json) constructor {
           0.0,
           2
         )
+
+        controller.playerService.statistics.freePlayer(this.stats.player, "life")
 
         /*
         controller.particleService.send(controller.particleService
@@ -1012,6 +1017,9 @@ function Player(template): GridItem(template) constructor {
 
     this.x = clamp(this.x, 0.0, view.worldWidth)
     this.y = clamp(this.y, 0.0, view.worldHeight)
+
+    controller.playerService.statistics.freePlayer(this)
+
     return this
   }
 }

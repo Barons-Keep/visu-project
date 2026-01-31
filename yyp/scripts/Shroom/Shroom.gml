@@ -280,7 +280,8 @@ function Shroom(template): GridItem(template) constructor {
   ///@return {Shroom}
   static update = function(controller) {
     gml_pragma("forceinline")
-    if (this.healthPoints == 0) {
+    if (this.healthPoints == 0.0 && !this.signals.kill) {
+      this.signals.freeReason = "shooted"
       this.signal("kill")
     }
 
@@ -301,7 +302,8 @@ function Shroom(template): GridItem(template) constructor {
     #region @Implement component Lifespan
     this.lifespan += DELTA_TIME * FRAME_MS
     //this.lifespan += DeltaTime.apply(FRAME_MS)
-    if (this.lifespan >= this.lifespanMax) {
+    if (!this.signals.kill && this.lifespan >= this.lifespanMax) {
+      this.signals.freeReason = "expired"
       this.signal("kill")
     }
     #endregion
@@ -315,10 +317,6 @@ function Shroom(template): GridItem(template) constructor {
       this.fadeIn = clamp((this.lifespanMax - this.lifespan) / SHROOM_FADE_OUT_TIME, 0.0, 1.0)
     }
     #endregion
-
-    if (this.lifespan >= this.lifespanMax) {
-      this.signal("kill")
-    }
 
     return this
   }

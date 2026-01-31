@@ -150,6 +150,9 @@ function Coin(config) constructor {
   ///@type {Number}
   magnetSpeed = 0.0
 
+  ///@type {?String}
+  freeReason = "expired"
+
   ///@param {Player} target
   ///@return {Boolean}
   static collide = function(target) {

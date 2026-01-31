@@ -6,6 +6,84 @@ function PlayerService(config = null): Service(config) constructor {
   ///@type {?Player}
   player = null
 
+  statistics = {
+    lives: 0,
+    usedLives: 0,
+    bombs: 0,
+    usedBombs: 0,
+    force: 0,
+    maxForce: 0,
+    points: 0,
+    normalTime: 0,
+    focusedTime: 0,
+    aliveTime: 0,
+    maxAliveTime: 0,
+    report: function() {
+      return {
+        lives: this.lives,
+        usedLives: this.usedLives,
+        bombs: this.bombs,
+        usedBombs: this.usedBombs,
+        force: this.force,
+        maxForce: this.maxForce,
+        points: this.points,
+        normalTime: this.normalTime,
+        focusedTime: this.focusedTime,
+        maxAliveTime: this.maxAliveTime
+      }
+    },
+    reset: function() {
+      this.lives = 0
+      this.usedLives = 0
+      this.bombs = 0
+      this.usedBombs = 0
+      this.force = 0
+      this.maxForce = 0
+      this.points = 0
+      this.normalTime = 0
+      this.focusedTime = 0
+      this.aliveTime = 0
+      this.maxAliveTime = 0
+      return this
+    },
+    factoryPlayer: function(player) {
+      this.reset()
+      return this
+    },
+    freePlayer: function(player, reason) {
+      switch (reason) {
+        case "life":
+          this.usedLives += 1
+          this.aliveTime = 0.0
+          break
+        case "bomb":
+          this.usedBombs += 1
+          break
+        case "force":
+          this.maxForce = max(this.maxForce, player.stats.force.value)
+          break
+        default:
+          this.lives = player.stats.life.value
+          this.bombs = player.stats.bomb.value
+          this.force = player.stats.force.value
+          this.points = player.stats.point.value
+          this.aliveTime += FRAME_MS * DELTA_TIME
+          this.maxAliveTime = max(this.aliveTime, this.maxAliveTime)
+          if (player.handler.focus) {
+            this.focusedTime += FRAME_MS * DELTA_TIME
+          } else {
+            this.normalTime += FRAME_MS * DELTA_TIME
+          }
+          break
+      }
+      return this
+    },
+    validate: function() {
+      Logger.debug("PlayerService", "PlayerStatistics are OK")
+      return this
+    },
+  }
+
   ///@type {EventPump}
   dispatcher = new EventPump(this, new Map(String, Callable, {
     "spawn-player": function(event) {

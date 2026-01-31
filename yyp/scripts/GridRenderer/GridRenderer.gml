@@ -1745,7 +1745,7 @@ function GridRenderer() constructor {
     //this.gridRenderBorders(gridService)
     _renderPlayer(gridService, playerService, baseX, baseY)
 
-    if (isMouseShoot) {
+    if (isMouseShoot && !controller.menu.enabled) {
       matrix_set(matrix_world, matrix_build(
         0, 0, depths.playerZ + 1,
         global.cameraRollSpeed, global.cameraPitchSpeed, global.cameraYawSpeed,
@@ -1899,7 +1899,7 @@ function GridRenderer() constructor {
         && player != null
         && player.sprite.texture.asset != texture_empty
         && Visu.settings.getValue("visu.developer.mouse-shoot", false)
-    if (isMouseShoot) {
+    if (isMouseShoot && !controller.menu.enabled) {
       var mouseX = MouseUtil.getMouseX() - layout.x()
       var mouseY = MouseUtil.getMouseY() - layout.y()
       var angle = Math.fetchPointsAngle(this.player3DCoords.x, this.player3DCoords.y, this.target3DCoords.x, this.target3DCoords.y)

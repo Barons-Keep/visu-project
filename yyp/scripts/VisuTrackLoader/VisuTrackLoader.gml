@@ -1,8 +1,8 @@
 ///@package io.alkapivo.visu
 
 function printFPS(message) {
-  //var log = $"{message}, fps: {round(fps)}, fps_real: {round(fps_real)}"
-  //Logger.debug("printFPS", log)
+  var log = $"{message}, fps: {round(fps)}, fps_real: {round(fps_real)}"
+  Logger.debug("//printFPS", log)
 }
 
 
@@ -70,7 +70,11 @@ function VisuTrackLoader(config = null): Service(config) constructor {
               function() { Beans.get(BeanVisuController).gridService.executor.tasks.forEach(TaskUtil.fullfill).clear() },
               function() { Beans.get(BeanVisuController).gridService.dispatcher.execute(new Event("clear-grid")) },
               function() { Beans.get(BeanVisuController).gridService.loadingScreen() },
-              function() { Beans.get(BeanVisuController).playerService.dispatcher.execute(new Event("clear-player")) },
+              function() {
+                var playerService = Beans.get(BeanVisuController).playerService
+                playerService.dispatcher.execute(new Event("clear-player"))
+                playerService.statistics.reset()
+              },
               function() { Beans.get(BeanVisuController).shroomService.dispatcher.execute(new Event("clear-shrooms")).execute(new Event("reset-templates")) },
               function() { Beans.get(BeanVisuController).bulletService.dispatcher.execute(new Event("clear-bullets")).execute(new Event("reset-templates")) },
               function() { Beans.get(BeanVisuController).coinService.dispatcher.execute(new Event("clear-coins")).execute(new Event("reset-templates")) },
@@ -88,13 +92,13 @@ function VisuTrackLoader(config = null): Service(config) constructor {
                 }
               },
             ]))
-            printFPS($"clear-state::onStart")
+            //printFPS($"clear-state::onStart")
           }
         },
         update: function(fsm) {
           try {
             var clearQueue = this.state.get("clearQueue")
-            printFPS($"clear-state::update, clearQueue.size(): {clearQueue.size()}")
+            //printFPS($"clear-state::update, clearQueue.size(): {clearQueue.size()}")
             if (clearQueue.size() == 0) {
               fsm.transition("parse-manifest", this.state.get("path"))
             } else {
@@ -154,12 +158,12 @@ function VisuTrackLoader(config = null): Service(config) constructor {
                   })
                 )
             ))
-            printFPS($"parse-manifest::onStart")
+            //printFPS($"parse-manifest::onStart")
           },
         },
         update: function(fsm) {
           try {
-            printFPS($"parse-manifest::update")
+            //printFPS($"parse-manifest::update")
             var promise = this.state.get("promise")
             if (!promise.isReady()) {
               return
@@ -509,11 +513,11 @@ function VisuTrackLoader(config = null): Service(config) constructor {
               })
             }
 
-            printFPS($"create-parser-tasks::onStart")
+            //printFPS($"create-parser-tasks::onStart")
           },
         },
         update: function(fsm) {
-          printFPS($"create-parser-tasks::update")
+          //printFPS($"create-parser-tasks::update")
           try {
             var promises = this.state.get("promises")
             var events = this.state.get("events")
@@ -578,11 +582,11 @@ function VisuTrackLoader(config = null): Service(config) constructor {
                 "sound": addTask(tasks.get("sound"), executor),
                 "shader": addTask(tasks.get("shader"), executor),
               }))
-            printFPS($"parse-primary-assets::onStart")
+            //printFPS($"parse-primary-assets::onStart")
           },
         },
         update: function(fsm) {
-          printFPS($"parse-primary-assets::update")
+          //printFPS($"parse-primary-assets::update")
           try {
             var promises = this.state.get("promises")
             var filtered = promises.filter(fsm.context.utils.filterPromise)
@@ -632,11 +636,11 @@ function VisuTrackLoader(config = null): Service(config) constructor {
                 .get("promises")
                 .set("video", Beans.get(BeanVisuController).videoService.send(acc.video))
             }
-            printFPS($"parse-video::onStart")
+            //printFPS($"parse-video::onStart")
           },
         },
         update: function(fsm) {
-          printFPS($"parse-video::update")
+          //printFPS($"parse-video::update")
           try {
             var promises = this.state.get("promises")
             var filtered = promises.filter(fsm.context.utils.filterPromise)
@@ -679,11 +683,11 @@ function VisuTrackLoader(config = null): Service(config) constructor {
             }, { addTask: addTask, executor: executor, promises: promises })
             
             fsmState.state.set("tasks", tasks).set("promises", promises)
-            printFPS($"parse-secondary-assets::onStart")
+            //printFPS($"parse-secondary-assets::onStart")
           },
         },
         update: function(fsm) {
-          printFPS($"parse-secondary-assets::update")
+          //printFPS($"parse-secondary-assets::update")
           try {
             var promises = this.state.get("promises")
             var filtered = promises.filter(fsm.context.utils.filterPromise)
@@ -1011,6 +1015,5 @@ function VisuTrackLoader(config = null): Service(config) constructor {
   ///@return {TaskExecutor}
   free = function() {
     this.executor.free()
-    this.fsm.free()
   }
 }

@@ -304,9 +304,12 @@ function Bullet(template): GridItem(template) constructor {
     #region @Implement component Lifespan
     this.lifespan += DELTA_TIME * FRAME_MS
     //this.lifespan += DeltaTime.apply(FRAME_MS)
-    if (this.lifespan >= this.lifespanMax
+    if (!this.signals.kill && (this.lifespan >= this.lifespanMax
         || this.signals.shroomCollision != null
-        || this.signals.playerCollision != null) {
+        || this.signals.playerCollision != null)) {
+      this.signals.freeReason = (this.producer == Player
+        ? (this.signals.shroomCollision != null ? "hitShroom" : "expired")
+        : (this.signals.playerCollision != null ? "hitPlayer" : "expired"))
       this.signal("kill")
     }
     #endregion

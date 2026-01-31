@@ -24,6 +24,9 @@ function GridItemSignals() constructor {
   ///@type {?GridItem}
   playerCollision = null
 
+  ///@type {?String}
+  freeReason = null
+
   ///@param {String} key
   ///@param {any} value
   ///@return {GridItemSignals}

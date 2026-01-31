@@ -763,7 +763,8 @@ function GridService(_config = null): Service(_config) constructor {
       view.y + (view.height / 2.0)
     )
 
-    if (length > GRID_ITEM_FRUSTUM_RANGE) {
+    if (!bullet.signals.kill && length > GRID_ITEM_FRUSTUM_RANGE) {
+      bullet.signals.freeReason = "expired"
       bullet.signal("kill")
     }
   }
@@ -776,13 +777,9 @@ function GridService(_config = null): Service(_config) constructor {
     acc.chunkService.update(shroom)
     
     var view = acc.view
-    var length = Math.fetchLength(
-      shroom.x, shroom.y,
-      view.x + (view.width / 2.0), 
-      view.y + (view.height / 2.0)
-    )
-
-    if (length > GRID_ITEM_FRUSTUM_RANGE) {
+    if (!shroom.signals.kill
+          && Math.fetchLength(shroom.x, shroom.y, view.x + (view.width / 2.0), view.y + (view.height / 2.0)) > GRID_ITEM_FRUSTUM_RANGE) {
+      shroom.signals.freeReason = "expired"
       shroom.signal("kill")
     }
   }
@@ -874,7 +871,10 @@ function GridService(_config = null): Service(_config) constructor {
   shroomCollisionGodMode = function(shroom, index, player) {
     if (shroom.collide(player)) {
       shroom.signal("playerCollision", player)
-      shroom.signal("kill")
+      if (!shroom.signals.kill) {
+        shroom.signals.freeReason = "shooted"
+        shroom.signal("kill")
+      }
     }
   }
 
