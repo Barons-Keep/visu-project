@@ -1,11 +1,7 @@
 ///@package io.alkapivo.visu.service.player
 
-///@param {VisuController} _controller
-///@param {Struct} [config]
-function PlayerService(_controller, config = {}): Service() constructor {
-
-  ///@type {VisuController}
-  controller = Assert.isType(_controller, VisuController)
+///@param {?Struct} [config]
+function PlayerService(config = null): Service(config) constructor {
 
   ///@type {?Player}
   player = null
@@ -22,10 +18,12 @@ function PlayerService(_controller, config = {}): Service() constructor {
         mask: Struct.get(event.data, "mask"),
         stats: Struct.get(event.data, "stats"),
         keyboard: Beans.get(BeanVisuIO).keyboards.get("player"),
+        mouse: Beans.get(BeanVisuIO).mouses.get("player"),
         handler: JSON.clone(Struct.getIfType(event.data, "handler", Struct, {})),
       })
 
-      var gridService = this.controller.gridService
+      var controller = Beans.get(BeanVisuController)
+      var gridService = controller.gridService
       var view = gridService.view
       var _x = view.x + (view.width / 2.0)
       var _y = gridService.height - (view.height * 0.25)
@@ -43,7 +41,7 @@ function PlayerService(_controller, config = {}): Service() constructor {
 
       Struct.set(template, "x", _x)
       Struct.set(template, "y", _y)
-      Struct.set(template, "uid", this.controller.gridService.generateUID())
+      Struct.set(template, "uid", controller.gridService.generateUID())
 
       this.set(new Player(template))
     },
@@ -84,7 +82,7 @@ function PlayerService(_controller, config = {}): Service() constructor {
   update = function() {
     this.dispatcher.update()
     if (this.player != null) {
-      this.player.update(this.controller)
+      this.player.update(Beans.get(BeanVisuController))
     }
 
     return this

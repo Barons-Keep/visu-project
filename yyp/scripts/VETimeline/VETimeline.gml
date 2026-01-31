@@ -1,5 +1,6 @@
 ///@package io.alkapivo.visu.editor.ui.controller
 
+#macro VETIMELINE_EVENT_SIZE 48
 ///@enum
 function _ToolType(): Enum() constructor {
   SELECT = "tool_select"
@@ -308,10 +309,10 @@ function VETimeline(_editor) constructor {
             clipboard: {
               name: "resize_timeline",
               drag: function() {
-                Beans.get(BeanVisuController).displayService.setCursor(Cursor.RESIZE_VERTICAL)
+                Beans.get(BeanDisplayService).setCursor(Cursor.RESIZE_VERTICAL)
               },
               drop: function() {
-                Beans.get(BeanVisuController).displayService.setCursor(Cursor.DEFAULT)
+                Beans.get(BeanDisplayService).setCursor(Cursor.DEFAULT)
               }
             },
             updateArea: Callable.run(UIUtil.updateAreaTemplates.get("applyLayout")),
@@ -341,7 +342,7 @@ function VETimeline(_editor) constructor {
 
                 if (!mouse_check_button(mb_left)) {
                   Beans.get(BeanVisuEditorIO).mouse.clearClipboard()
-                  Beans.get(BeanVisuController).displayService.setCursor(Cursor.DEFAULT)
+                  Beans.get(BeanDisplayService).setCursor(Cursor.DEFAULT)
                 }
               }
             },
@@ -378,10 +379,10 @@ function VETimeline(_editor) constructor {
             clipboard: {
               name: "resize_horizontal",
               drag: function() {
-                Beans.get(BeanVisuController).displayService.setCursor(Cursor.RESIZE_HORIZONTAL)
+                Beans.get(BeanDisplayService).setCursor(Cursor.RESIZE_HORIZONTAL)
               },
               drop: function() {
-                Beans.get(BeanVisuController).displayService.setCursor(Cursor.DEFAULT)
+                Beans.get(BeanDisplayService).setCursor(Cursor.DEFAULT)
               }
             },
             updateArea: Callable.run(UIUtil.updateAreaTemplates.get("applyLayout")),
@@ -411,7 +412,7 @@ function VETimeline(_editor) constructor {
 
                 if (!mouse_check_button(mb_left)) {
                   Beans.get(BeanVisuEditorIO).mouse.clearClipboard()
-                  Beans.get(BeanVisuController).displayService.setCursor(Cursor.DEFAULT)
+                  Beans.get(BeanDisplayService).setCursor(Cursor.DEFAULT)
                 }
               }
             },
@@ -540,7 +541,7 @@ function VETimeline(_editor) constructor {
         _render: new BindIntent(Callable.run(UIUtil.renderTemplates.get("renderDefaultScrollable"))),
         updateVerticalSelectedIndex: new BindIntent(Callable.run(UIUtil.templates.get("updateVerticalSelectedIndex"))),
         render: function() {
-          this.updateVerticalSelectedIndex(32)
+          this.updateVerticalSelectedIndex(VETIMELINE_EVENT_SIZE)
           this._render()
 
           ///@todo replace with Promise in clipboard
@@ -566,7 +567,7 @@ function VETimeline(_editor) constructor {
           return this
         },
         fetchViewHeight: function() {
-          return (32 * this.collection.size())
+          return (VETIMELINE_EVENT_SIZE * this.collection.size())
         },
         scrollbarY: { align: HAlign.LEFT },
         _onMousePressedLeft: new BindIntent(Callable.run(UIUtil.mouseEventTemplates.get("onMouseScrollbarY"))),
@@ -1100,6 +1101,7 @@ function VETimeline(_editor) constructor {
           "bkg-color": ColorUtil.parse(VETheme.color.sideLight).toGMColor(),//ColorUtil.fromHex(VETheme.color.primaryShadow).toGMColor(),
           "initialized": false,
           "initializeChannels": false,
+          "mouseDragOffsetX": 0.0,
         }),
         updateTimer: new Timer(FRAME_MS * Core.getProperty("visu.editor.ui.timeline.timeline-events.updateTimer", 60), { loop: Infinity }),
         controller: controller,
@@ -1110,7 +1112,7 @@ function VETimeline(_editor) constructor {
           speed: 80,
         }),
         fetchViewHeight: function() {
-          return (32 * this.state.get("amount"))
+          return (VETIMELINE_EVENT_SIZE * this.state.get("amount"))
         },
         updateArea: Callable.run(UIUtil.updateAreaTemplates.get("scrollableY")),
         updateCustom: function() {
@@ -1279,8 +1281,8 @@ function VETimeline(_editor) constructor {
           var timestamp = this.getTimestampFromMouseX(MouseUtil.getMouseX())
           var previousX = this.getXFromTimestamp(selectEvent.data.timestampFrom) + this.offset.x
           var nextX = this.getXFromTimestamp(timestamp) + this.offset.x
-          var previousY = (selectEvent.data.channelIndexFrom * 32) + this.offset.y + 16
-          var nextY = (index * 32) + this.offset.y + 16
+          var previousY = (selectEvent.data.channelIndexFrom * VETIMELINE_EVENT_SIZE) + this.offset.y + (VETIMELINE_EVENT_SIZE / 2.0)
+          var nextY = (index * VETIMELINE_EVENT_SIZE) + this.offset.y + (VETIMELINE_EVENT_SIZE / 2.0)
           nextY = MouseUtil.getMouseY() - this.area.getY()
 
           //rectangle: function(beginX, beginY, endX, endY, outline = false, color1 = null, color2 = null, color3 = null, color4 = null, alpha = null) {
@@ -1301,11 +1303,11 @@ function VETimeline(_editor) constructor {
 
           if (!mouse_check_button(mb_left) && !mouse_check_button_released(mb_left)) {
             Beans.get(BeanVisuEditorIO).mouse.clearClipboard()
-            Beans.get(BeanVisuController).displayService.setCursor(Cursor.DEFAULT)
+            Beans.get(BeanDisplayService).setCursor(Cursor.DEFAULT)
             return
           }
 
-          var timestamp = this.getTimestampFromMouseX(MouseUtil.getMouseX())
+          var timestamp = this.getTimestampFromMouseX(MouseUtil.getMouseX() - this.state.get("mouseDragOffsetX"))
           var store = Beans.get(BeanVisuEditorController).store
           if (store.getValue("snap")) {
             var bpmSub = store.getValue("bpm-sub")
@@ -1315,7 +1317,7 @@ function VETimeline(_editor) constructor {
 
           var previousX = this.getXFromTimestamp(trackEvent.timestamp)
           var nextX = this.getXFromTimestamp(timestamp)
-          var eventY = index * 32
+          var eventY = index * VETIMELINE_EVENT_SIZE
           var line = new TexturedLine({ 
             thickness: 2.0,
             alpha: 0.5,
@@ -1335,7 +1337,7 @@ function VETimeline(_editor) constructor {
           //render previous
           SpriteUtil.parse(icon)
             .setAlpha(0.3)
-            .scaleToFillStretched(32, 32)
+            .scaleToFillStretched(VETIMELINE_EVENT_SIZE, VETIMELINE_EVENT_SIZE)
             .render(
               this.offset.x + previousX,
               this.offset.y + eventY
@@ -1343,16 +1345,16 @@ function VETimeline(_editor) constructor {
 
           //render line
           line.render(
-            this.offset.x + previousX + 16,
-            this.offset.y + eventY + 16,
-            this.offset.x + nextX + 16,
-            this.offset.y + eventY + 16 
+            this.offset.x + previousX + (VETIMELINE_EVENT_SIZE / 2.0),
+            this.offset.y + eventY + (VETIMELINE_EVENT_SIZE / 2.0),
+            this.offset.x + nextX + (VETIMELINE_EVENT_SIZE / 2.0),
+            this.offset.y + eventY + (VETIMELINE_EVENT_SIZE / 2.0) 
           )
 
           //render next
           SpriteUtil.parse(icon)
             .setAlpha(0.8)
-            .scaleToFillStretched(32, 32)
+            .scaleToFillStretched(VETIMELINE_EVENT_SIZE, VETIMELINE_EVENT_SIZE)
             .render(
               this.offset.x + nextX,
               this.offset.y + eventY
@@ -1360,8 +1362,8 @@ function VETimeline(_editor) constructor {
 
           //render timestamp
           label.render(
-            16 + this.offset.x + min(previousX, nextX) + (abs(previousX - nextX) / 2),
-            16 + this.offset.y + eventY,
+            (VETIMELINE_EVENT_SIZE / 2.0) + this.offset.x + min(previousX, nextX) + (abs(previousX - nextX) / 2),
+            (VETIMELINE_EVENT_SIZE / 2.0) + this.offset.y + eventY,
           )
         }),
         renderSurface: function() {
@@ -1393,12 +1395,12 @@ function VETimeline(_editor) constructor {
           var startIndex = bpmShift > 0 ? -1.0 * bpmCount : 0.0
 
           // background
-          var bkgStartIndex = ((offsetY div 32) mod 2 != 0) ? 1 : 0
+          var bkgStartIndex = ((offsetY div VETIMELINE_EVENT_SIZE) mod 2 != 0) ? 1 : 0
           var bkgSize = this.state.get("amount")
           if (areaWidth > 0) {
             for (var bkgIndex = bkgStartIndex; bkgIndex < bkgSize; bkgIndex += 2) {
-              var bkgY = (offsetY mod 32) + (bkgIndex * 32)
-              draw_sprite_ext(texture_white, 0.0, 0, bkgY, areaWidth / 64, 0.5, 0.0, bkgColor, 1.0)
+              var bkgY = (offsetY mod VETIMELINE_EVENT_SIZE) + (bkgIndex * VETIMELINE_EVENT_SIZE)
+              draw_sprite_ext(texture_white, 0.0, 0, bkgY, areaWidth / 64, VETIMELINE_EVENT_SIZE / 64, 0.0, bkgColor, 1.0)
             }
           }
 
@@ -1416,9 +1418,9 @@ function VETimeline(_editor) constructor {
               channelIndex = MouseUtil.getMouseY() < this.area.getY() ? 0 : this.lastIndex
             }
 
-            brushSprite.setAlpha(0.5).scaleToFit(32, 32).render(
+            brushSprite.setAlpha(0.5).scaleToFit(VETIMELINE_EVENT_SIZE, VETIMELINE_EVENT_SIZE).render(
               this.getXFromTimestamp(brushTimestamp) + this.offset.x,
-              (32 * channelIndex) + this.offset.y
+              (VETIMELINE_EVENT_SIZE * channelIndex) + this.offset.y
             )
           }
 
@@ -1443,7 +1445,7 @@ function VETimeline(_editor) constructor {
           var _alpha = draw_get_alpha()
           draw_set_alpha(alpha)
           for (var linesIndex = 0; linesIndex < linesSize; linesIndex++) {
-            var linesY = (offsetY mod 32) + (linesIndex * 32)
+            var linesY = (offsetY mod VETIMELINE_EVENT_SIZE) + (linesIndex * VETIMELINE_EVENT_SIZE)
             draw_line_color(0, linesY, areaWidth, linesY, color, color)
             //GPU.render.texturedLine(0, linesY, areaWidth, linesY, thickness, alpha, color)
           }
@@ -1451,7 +1453,7 @@ function VETimeline(_editor) constructor {
 
           /// bpm
           var bpmX = 0
-          var bpmY = round(clamp((linesSize - 1) * 32, 0, areaHeight))
+          var bpmY = round(clamp((linesSize - 1) * VETIMELINE_EVENT_SIZE, 0, areaHeight))
           var _thickness = thickness
           var bpmCountIndex = floor(abs(this.offset.x) / bpmWidth) + startIndex
           _alpha = draw_get_alpha()
@@ -1516,12 +1518,18 @@ function VETimeline(_editor) constructor {
               var index = acc.index
               var xx = context.getXFromTimestamp(selectedEvent.data.timestamp) + context.offset.x
               var yy = context.getYFromChannelName(selectedEvent.channel) + context.offset.y
+              var scaleX = context.selectedSprite.getScaleX()
+              var scaleY = context.selectedSprite.getScaleY()
               context.selectedSprite
                 .setBlend(key == acc.name ? acc.color : c_white)
                 .setAnimate(index == 0)
+                .setScaleX(VETIMELINE_EVENT_SIZE / (context.selectedSprite.getWidth() - (context.selectedSprite.texture.offsetX * 2.0)))
+                .setScaleY(VETIMELINE_EVENT_SIZE / (context.selectedSprite.getHeight() - (context.selectedSprite.texture.offsetY * 2.0)))
                 .render(xx, yy)
                 .setBlend(c_white)
                 .setAnimate(true)
+                .setScaleX(scaleX)
+                .setScaleY(scaleY)
               acc.index = index + 1
             }, { 
               context: context, 
@@ -1536,7 +1544,7 @@ function VETimeline(_editor) constructor {
         renderItem: Callable.run(UIUtil.renderTemplates.get("renderItemDefaultScrollable")),
         renderDefaultScrollable: new BindIntent(Callable.run(UIUtil.renderTemplates.get("renderDefaultScrollable"))),
         render: function() {
-          var displayService = Beans.get(BeanVisuController).displayService
+          var displayService = Beans.get(BeanDisplayService)
           var collide = this.area.collide(MouseUtil.getMouseX(), MouseUtil.getMouseY())
           var cursor = displayService.getCursor()
           if (collide) {
@@ -1637,7 +1645,7 @@ function VETimeline(_editor) constructor {
 
           this.deselect()
 
-          var width = (this.state.get("viewSize") * 32) / this.area.getWidth()
+          var width = (this.state.get("viewSize") * VETIMELINE_EVENT_SIZE) / this.area.getWidth()
           this.items.forEach(function(item, key, acc) {
             var timestamp = item.state.get("timestamp")
             if ((timestamp < acc.from 
@@ -2206,7 +2214,7 @@ function VETimeline(_editor) constructor {
         getYFromChannelName: new BindIntent(function(channel) {
           return this.controller.containers
             .get("ve-timeline-channels").collection
-            .get(channel).index * 32 
+            .get(channel).index * VETIMELINE_EVENT_SIZE 
         }),
 
         ///@param {Number} mouseX
@@ -2221,7 +2229,7 @@ function VETimeline(_editor) constructor {
         getChannelNameFromMouseY: new BindIntent(function(mouseY) {
           var channelName = this.controller.containers
             .get("ve-timeline-channels").collection
-            .findKeyByIndex(floor((mouseY - this.area.getY() - this.offset.y) / 32))
+            .findKeyByIndex(floor((mouseY - this.area.getY() - this.offset.y) / VETIMELINE_EVENT_SIZE))
           return Optional.is(channelName) ? channelName : null
         }),
 
@@ -2230,7 +2238,7 @@ function VETimeline(_editor) constructor {
         getChannelIndexFromMouseY: new BindIntent(function(mouseY) {
           var channel = this.controller.containers
             .get("ve-timeline-channels").collection
-            .findByIndex(floor((mouseY - this.area.getY() - this.offset.y) / 32))
+            .findByIndex(floor((mouseY - this.area.getY() - this.offset.y) / VETIMELINE_EVENT_SIZE))
           return Optional.is(channel) ? channel.index : null
         }),
 
@@ -2288,7 +2296,7 @@ function VETimeline(_editor) constructor {
           return UIButton(
             name,
             {
-              area: { x: _x, width: 32, height: 32 },
+              area: { x: _x, width: VETIMELINE_EVENT_SIZE, height: VETIMELINE_EVENT_SIZE },
               state: new Map(String, any, {
                 "timestamp": event.timestamp,
                 "event": event,
@@ -2333,7 +2341,7 @@ function VETimeline(_editor) constructor {
                 var editorIO = Beans.get(BeanVisuEditorIO)
                 var isControl = editorIO.keyboard.keys.controlLeft.on
                 editorIO.mouse.setClipboard(trackEvent)
-
+                this.context.state.set("mouseDragOffsetX", event.data.x - this.context.area.getX() - this.context.offset.x - this.area.x)
                 var selectedEvent = store.getValue("selected-event")
                 if (this.name != Struct.get(selectedEvent, "name")) {
                   this.context.select({
@@ -2744,10 +2752,8 @@ function VETimeline(_editor) constructor {
             this.state.set("mouseX", null)
             this.state.set("time", timestamp)
             Beans.get(BeanVisuEditorIO).mouse.clearClipboard()
-            Beans.get(BeanVisuController).displayService.setCursor(Cursor.DEFAULT)
-            return controller.send(new Event("rewind", { 
-              timestamp: timestamp,
-            }))
+            Beans.get(BeanDisplayService).setCursor(Cursor.DEFAULT)
+            controller.dispatcher.execute(new Event("rewind", { timestamp: timestamp }))
           }
 
           if (Optional.is(this.state.get("mouseXTime")) && !mouse_check_button(mb_left)) {
@@ -2927,9 +2933,7 @@ function VETimeline(_editor) constructor {
           this.state.set("mouseX", null)
           this.state.set("mouseXTime", null)
           this.state.set("time", timestamp)
-          return Beans.get(BeanVisuController).send(new Event("rewind", { 
-            timestamp: timestamp,
-          }))
+          Beans.get(BeanVisuController).dispatcher.execute(new Event("rewind", { timestamp: timestamp }))
         }),
       },
     })

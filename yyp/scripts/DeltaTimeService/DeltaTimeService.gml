@@ -1,7 +1,10 @@
 ///@package io.alkapivo.core.service.deltatime
 
+///@type {String}
 #macro BeanDeltaTimeService "DeltaTimeService"
-function DeltaTimeService() constructor {
+
+///@param {?Struct} [config]
+function DeltaTimeService(config = null): Service(config) constructor {
 
   ///@return {Number}
   static get = function() { 

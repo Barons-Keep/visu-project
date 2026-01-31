@@ -7,7 +7,7 @@
 #macro BeanHTTPService "HTTPService"
 
 ///@param {?Struct} [config]
-function HTTPService(config = null) constructor {
+function HTTPService(config = null): Service(config) constructor {
 
   ///@type {EventPump}
   eventPump = new EventPump(this, new Map(String, Callable, {

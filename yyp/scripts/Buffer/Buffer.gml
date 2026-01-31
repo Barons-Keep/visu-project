@@ -109,3 +109,40 @@ function _BufferUtil() constructor {
 }
 global.__BufferUtil = new _BufferUtil()
 #macro BufferUtil global.__BufferUtil
+
+
+function BufferTest() constructor {
+  bufferStep = (4096 * 8)
+  bufferAsset = buffer_create(this.bufferStep, buffer_grow, 1)
+  currentSize = buffer_get_size(bufferAsset)
+  targetSize = (8 * 1024 * 1024)
+  growing = true
+  timer = 0.0
+  update = function() {
+    static writeIrandomU8Data = function(iterator, index, context) {
+      buffer_poke(context.bufferAsset, context.currentSize + index, buffer_u8, irandom(255))
+    }
+
+    if (!this.growing) {
+      return this
+    }
+
+    timer += DELTA_TIME * FRAME_MS
+    var this.newSize = this.currentSize + this.bufferStep
+    if (this.newSize >= this.targetSize) {
+      buffer_resize(this.bufferAsset, this.targetSize)
+      this.currentSize = this.targetSize
+
+      buffer_delete(this.bufferAsset)
+      this.bufferAsset = -1
+      this.growing = false
+      Logger.debug("BufferTest", $"Buffer reached target size and was deleted. {this.timer}")
+    } else {
+      buffer_resize(this.bufferAsset, this.newSize)
+      IntStream.forEach(0, this.newSize - this.currentSize, writeIrandomU8Data, this)
+      this.currentSize = this.newSize
+    }
+
+    return this
+  }
+}

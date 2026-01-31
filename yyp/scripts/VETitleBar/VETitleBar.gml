@@ -824,9 +824,9 @@ function VETitleBar(_editor) constructor {
                       shortcut: { text: "F11" },
                       callback: function() {
                         var controller = Beans.get(BeanVisuController)
-                        var fullscreen = controller.displayService.getFullscreen()
+                        var fullscreen = Beans.get(BeanDisplayService).getFullscreen()
                         Logger.debug("VisuIO", String.join("Set fullscreen to", fullscreen ? "'false'" : "'true'", "."))
-                        controller.displayService.setFullscreen(!fullscreen)
+                        Beans.get(BeanDisplayService).setFullscreen(!fullscreen)
                         Visu.settings.setValue("visu.fullscreen", !fullscreen).save()
                       }
                     },
@@ -1172,7 +1172,7 @@ function VETitleBar(_editor) constructor {
             spriteOn: { name: "texture_ve_title_bar_icons", frame: 3 },
             spriteOff: { name: "texture_ve_title_bar_icons", frame: 3 },
             callback: function(event) {
-              var displayService = Beans.get(BeanVisuController).displayService
+              var displayService = Beans.get(BeanDisplayService)
               var fullscreen = displayService.getFullscreen()
               displayService.setFullscreen(!fullscreen)
             },

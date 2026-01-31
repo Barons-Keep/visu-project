@@ -1113,7 +1113,6 @@ global.__VEComponents = new Map(String, Callable, {
         },
       })
       var text = String.concat($"VETitleComponent(\"{name}\", ", JSON.stringify(component, true), "),")
-      Core.print("\n\n", text, "\n\n")
     }
 
     return items

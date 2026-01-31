@@ -1,11 +1,7 @@
 ///@package io.alkapivo.core.service.ui
 
-///@param {Struct} _context
-///@param {Struct} [config]
-function UIService(_context, config = {}): Service(config) constructor {
-
-  ///@type {Struct}
-  context = Assert.isType(_context, Struct)
+///@param {?Struct} [config]
+function UIService(config = null): Service(config) constructor {
 
   ///@type {Array<UI>}
   containers = new Array(UI)

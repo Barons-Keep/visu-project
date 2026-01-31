@@ -1,11 +1,7 @@
 ///@package io.alkapivo.core.service.TrackService
 
-///@param {?Struct} _context
-///@param {Struct} [config]
-function TrackService(_context, config = {}): Service() constructor {
-
-  ///@type {Struct}
-  context = Assert.isType(_context, Optional.of(Struct))
+///@param {?Struct} [config]
+function TrackService(config = null): Service(config) constructor {
 
   ///@type {?Track}
   track = null

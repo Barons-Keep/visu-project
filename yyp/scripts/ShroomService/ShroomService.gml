@@ -1,11 +1,7 @@
 ///@package io.alkapivo.visu.service.shroom
 
-///@param {VisuController} _controller
-///@param {Struct} [config]
-function ShroomService(_controller, config = {}): Service() constructor {
-
-  ///@type {VisuController}
-  controller = Assert.isType(_controller, VisuController)
+///@param {?Struct} [config]
+function ShroomService(config = null): Service(config) constructor {
 
   ///@type {Array<Shroom>} 
   shrooms = new Array(Shroom).enableGC()
@@ -63,8 +59,9 @@ function ShroomService(_controller, config = {}): Service() constructor {
   ///@type {EventPump}
   dispatcher = new EventPump(this, new Map(String, Callable, {
     "spawn-shroom": function(event) {
-      var view = this.controller.gridService.view
-      var locked = this.controller.gridService.targetLocked
+      var controller = Beans.get(BeanVisuController)
+      var view = controller.gridService.view
+      var locked = controller.gridService.targetLocked
       var template = new ShroomTemplate(event.data.template, this
         .getTemplate(event.data.template)
         .serialize())
@@ -96,7 +93,7 @@ function ShroomService(_controller, config = {}): Service() constructor {
       Struct.set(template, "y", viewY + spawnY)
       Struct.set(template, "speed", spd / GRID_ITEM_SPEED_SCALE)
       Struct.set(template, "angle", angle)
-      Struct.set(template, "uid", this.controller.gridService.generateUID())
+      Struct.set(template, "uid", controller.gridService.generateUID())
       if (Optional.is(Struct.get(event.data, "lifespan"))) {
         Struct.set(template, "lifespanMax", event.data.lifespan)
       }
@@ -132,7 +129,7 @@ function ShroomService(_controller, config = {}): Service() constructor {
       this.chunkService.add(shroom)
 
       if (this.optimalizationSortEntitiesByTxGroup) {
-        this.controller.gridService.textureGroups.sortItems(this.shrooms)
+        controller.gridService.textureGroups.sortItems(this.shrooms)
       }
     },
     "spawn-shroom-emitter": function(event) {
@@ -187,11 +184,12 @@ function ShroomService(_controller, config = {}): Service() constructor {
   }
 
   static spawnShroom = function(name, spawnX, spawnY, angle, spd, snapH, snapV, lifespan, hp, inherit) {
-    var view = this.controller.gridService.view
-    var locked = this.controller.gridService.targetLocked
+    var controller = Beans.get(BeanVisuController)
+    var view = controller.gridService.view
+    var locked = controller.gridService.targetLocked
     var viewX = snapH ? locked.snapH : view.x
     var viewY = snapV ? locked.snapV : view.y
-    var template = this.getTemplate(name).serializeSpawn(viewX + spawnX, viewY + spawnY, spd / GRID_ITEM_SPEED_SCALE, angle, this.controller.gridService.generateUID(), lifespan, hp)
+    var template = this.getTemplate(name).serializeSpawn(viewX + spawnX, viewY + spawnY, spd / GRID_ITEM_SPEED_SCALE, angle, controller.gridService.generateUID(), lifespan, hp)
 
     var inheritSize = inherit != null ? GMArray.size(inherit) : 0
     var templateInheritSize = template.inherit != null ? GMArray.size(template.inherit) : 0
@@ -218,7 +216,7 @@ function ShroomService(_controller, config = {}): Service() constructor {
     this.chunkService.add(shroom)
 
     if (this.optimalizationSortEntitiesByTxGroup) {
-      this.controller.gridService.textureGroups.sortItems(this.shrooms)
+      controller.gridService.textureGroups.sortItems(this.shrooms)
     }
   }
 
@@ -265,12 +263,13 @@ function ShroomService(_controller, config = {}): Service() constructor {
     return this.dispatcher.send(event)
   }
 
-  static updateShroom = function(shroom, index, context) {
+  static updateShroom = function(shroom, index, controller) {
     gml_pragma("forceinline")
-    shroom.update(context.controller)
+    var shroomService = controller.shroomService
+    shroom.update(controller)
     if (shroom.signals.kill) {
-      context.shrooms.addToGC(index)
-      context.chunkService.remove(shroom)
+      shroomService.shrooms.addToGC(index)
+      shroomService.chunkService.remove(shroom)
     }
   }
 
@@ -279,7 +278,7 @@ function ShroomService(_controller, config = {}): Service() constructor {
     //this.optimalizationSortEntitiesByTxGroup = Visu.settings.getValue("visu.optimalization.sort-entities-by-txgroup")
     this.dispatcher.update()
     this.executor.update()
-    this.shrooms.forEach(this.updateShroom, this).runGC(true)
+    this.shrooms.forEach(this.updateShroom, Beans.get(BeanVisuController)).runGC(true)
     return this
   }
 

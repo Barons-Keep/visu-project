@@ -95,6 +95,20 @@ function Mouse(json) constructor {
     return new MouseButton(type)
   })
 
+  ///@param {String} name
+  ///@return {?MouseButton}
+  getButton = function(name) {
+    return Struct.getIfType(this.buttons, name, MouseButton)
+  }
+
+  ///@param {String} name
+  ///@param {MouseButtonType} type
+  ///@return {Mouse}
+  setButton = function(name, type) {
+    Struct.set(this.buttons, name, new MouseButton(type))
+    return this
+  }
+
   ///@return {Number}
   getMouseX = function() {
     return device_mouse_x_to_gui(0)//window_mouse_get_x()
@@ -141,6 +155,13 @@ function Mouse(json) constructor {
           button.drag = false
           button.dragging = false
         }
+      } else if (button.type == MouseButtonType.NONE) {
+        button.on = false
+        button.pressed = false
+        button.released = false
+        button.drag = false
+        button.dragging = false
+        button.drop = false
       } else {
         button.on = mouse_check_button(button.type)
         button.pressed = mouse_check_button_pressed(button.type)

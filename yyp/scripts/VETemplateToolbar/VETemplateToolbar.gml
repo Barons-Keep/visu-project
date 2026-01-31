@@ -2749,10 +2749,10 @@ global.__VisuTemplateContainers = new Map(String, Callable, {
             clipboard: {
               name: "resize_template_inspector",
               drag: function() {
-                Beans.get(BeanVisuController).displayService.setCursor(Cursor.RESIZE_VERTICAL)
+                Beans.get(BeanDisplayService).setCursor(Cursor.RESIZE_VERTICAL)
               },
               drop: function() {
-                Beans.get(BeanVisuController).displayService.setCursor(Cursor.DEFAULT)
+                Beans.get(BeanDisplayService).setCursor(Cursor.DEFAULT)
               }
             },
             margin: { top: 1 },
@@ -2773,7 +2773,7 @@ global.__VisuTemplateContainers = new Map(String, Callable, {
 
                 if (!mouse_check_button(mb_left)) {
                   Beans.get(BeanVisuEditorIO).mouse.clearClipboard()
-                  Beans.get(BeanVisuController).displayService.setCursor(Cursor.DEFAULT)
+                  Beans.get(BeanDisplayService).setCursor(Cursor.DEFAULT)
                 }
               } else {
                 var editor = Beans.get(BeanVisuEditorController)

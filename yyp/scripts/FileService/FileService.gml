@@ -1,8 +1,8 @@
 ///@package io.alkapivo.core.service.file
 
 #macro BeanFileService "FileService"
-///@param {Struct} config
-function FileService(config = {}): Service() constructor {
+///@param {?Struct} [config]
+function FileService(config = null): Service(config) constructor {
 
   ///@private
   ///@type {Boolean}

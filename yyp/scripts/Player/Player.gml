@@ -15,6 +15,9 @@ function PlayerTemplate(json) constructor {
   ///@type {Keyboard}
   keyboard = Assert.isType(json.keyboard, Keyboard)
 
+  ///@type {Keyboard}
+  mouse = Assert.isType(json.mouse, Mouse)
+
   ///@type {?Struct}
   stats = Core.isType(Struct.get(json, "stats"), Struct) ? json.stats : null
 
@@ -27,6 +30,7 @@ function PlayerTemplate(json) constructor {
       sprite: this.sprite,
       handler: this.handler,
       keyboard: this.keyboard,
+      mouse: this.mouse,
     }
 
     if (Core.isType(this.mask, Struct)) {
@@ -611,7 +615,7 @@ function PlayerStats(_player, json) constructor {
 
       var editor = Beans.get(Visu.modules().editor.controller)
       if (Visu.settings.getValue("visu.god-mode")
-          || (Optional.is(editor) && editor.renderUI)) {
+          || (editor != null && editor.renderUI)) {
         this.value = 3
         Beans.get(BeanVisuController)
           .send(new Event("spawn-popup", { 
@@ -830,42 +834,33 @@ function PlayerHandler(json) constructor {
       return spd
     }
 
-    static updateKeyActionOnEnabled = function(gun, index, acc) {
-      var forceLevel = acc.player.stats.forceLevel.get()
+    static updateKeyActionOnEnabled = function(gun, player, controller, focus, isMouseShoot) {
+      var forceLevel = player.stats.forceLevel.get()
       if (!gun.cooldown.update().finished
-        || (forceLevel < gun.minForce)
-        || (gun.maxForce != null && forceLevel > gun.maxForce)
-        || (gun.focus != null && gun.focus != acc.focus)) {
+          || (forceLevel < gun.minForce)
+          || (gun.maxForce != null && forceLevel > gun.maxForce)
+          || (gun.focus != null && gun.focus != focus)) {
         return
       }
 
       var angle = gun.angle
-      if (acc.isMouseShoot) {
-        var gridRenderer = acc.controller.visuRenderer.gridRenderer
+      if (isMouseShoot) {
+        var gridRenderer = controller.visuRenderer.gridRenderer
         var player3DCoords = gridRenderer.player3DCoords
         var target3DCoords = gridRenderer.target3DCoords
         angle = gun.angle - 90 + Math.fetchPointsAngle(player3DCoords.x, player3DCoords.y, target3DCoords.x, target3DCoords.y)
       }
       
-      acc.controller.bulletService.spawnBullet(
+      controller.bulletService.spawnBullet(
         gun.bullet, 
         Player,
-        acc.player.x + (gun.offsetX / GRID_SERVICE_PIXEL_WIDTH), 
-        acc.player.y + (gun.offsetY / GRID_SERVICE_PIXEL_HEIGHT),
+        player.x + (gun.offsetX / GRID_SERVICE_PIXEL_WIDTH), 
+        player.y + (gun.offsetY / GRID_SERVICE_PIXEL_HEIGHT),
         angle,
         gun.speed
       )
 
-      //acc.controller.bulletService.send(new Event("spawn-bullet", {
-      //  template: gun.bullet,
-      //  producer: Player,
-      //  x: acc.player.x + (gun.offsetX / GRID_SERVICE_PIXEL_WIDTH),
-      //  y: acc.player.y + (gun.offsetY / GRID_SERVICE_PIXEL_HEIGHT),
-      //  angle: gun.angle,
-      //  speed: gun.speed,
-      //}))
-
-      acc.controller.sfxService.play("player-shoot")
+      controller.sfxService.play("player-shoot")
     }
 
     static updateKeyActionOnDisabled = function(gun) {
@@ -879,9 +874,16 @@ function PlayerHandler(json) constructor {
       key.pressed = false
       key.released = false
     }
+
+    static disableMouseButton = function(button) {
+      button.on = false
+      button.pressed = false
+      button.released = false
+    }
     
     var keys = player.keyboard.keys
-    this.focus = keys.focus.on
+    var mouseButtons = player.mouse.buttons
+    this.focus = keys.focus.on || mouseButtons.focus.on
       ? this.focusCooldown.increment().finished
       : this.focusCooldown.decrement().finished
 
@@ -889,37 +891,41 @@ function PlayerHandler(json) constructor {
       Struct.forEach(keys, updateGMTFContextFocused)
     }
 
-    var isMouseShoot = Visu.settings.getValue("visu.developer.mouse-shoot", false) && (keys.action.on || mouse_check_button(mb_left))
-    if (keys.action.on || isMouseShoot) {
-      this.guns.forEach(updateKeyActionOnEnabled, {
-        controller: controller,
-        player: player,
-        focus: this.focus,
-        isMouseShoot: isMouseShoot,
-      })
+    var editor = Beans.get(Visu.modules().editor.controller)
+    var layout = editor == null ? controller.visuRenderer.layout : editor.layout.nodes.preview
+    var mouseX = MouseUtil.getMouseX() - layout.x()
+    var mouseY = MouseUtil.getMouseY() - layout.y()
+    var mouseShoot = (mouseX >= 0 && mouseX <= layout.width() && mouseY >= 0 && mouseY <= layout.height())
+      ? (keys.action.on || mouseButtons.action.on) && Visu.settings.getValue("visu.developer.mouse-shoot", false)
+      : (Struct.forEach(mouseButtons, disableMouseButton) != null && false)
+
+    if (keys.action.on || mouseShoot) {
+      var gunsSize = this.guns.size()
+      for (var gunIdx = 0; gunIdx < gunsSize; gunIdx++) {
+        updateKeyActionOnEnabled(this.guns.get(gunIdx), player, controller, this.focus, mouseShoot)
+      }
     } else {
       this.guns.forEach(updateKeyActionOnDisabled)
     }
 
-    if (keys.bomb.pressed) {
+    if (keys.bomb.pressed || mouseButtons.bomb.pressed) {
       player.stats.dispatchBomb()
     }
 
-    if (Optional.is(player.signals.shroomCollision) 
-      || Optional.is(player.signals.bulletCollision)) {
+    if (player.signals.shroomCollision != null || player.signals.bulletCollision != null) {
       this.x.speed = 0.0
       this.y.speed = 0.0
       player.stats.dispatchDeath()
     }
 
     player.x = clamp(
-      player.x + calcSpeed(this.x, player, keys.left.on, keys.right.on, keys.focus.on),
+      player.x + calcSpeed(this.x, player, keys.left.on || mouseButtons.left.on, keys.right.on || mouseButtons.right.on, keys.focus.on || mouseButtons.focus.on),
       0.0,
       controller.gridService.width
     )
 
     player.y = clamp(
-      player.y + calcSpeed(this.y, player, keys.up.on, keys.down.on, keys.focus.on), 
+      player.y + calcSpeed(this.y, player, keys.up.on || mouseButtons.up.on, keys.down.on || mouseButtons.down.on, keys.focus.on || mouseButtons.focus.on), 
       0.0, 
       controller.gridService.height
     )
@@ -939,6 +945,9 @@ function Player(template): GridItem(template) constructor {
 
   ///@type {Keyboard}
   keyboard = Assert.isType(template.keyboard, Keyboard)
+
+  ///@type {Keyboard}
+  mouse = Assert.isType(template.mouse, Mouse)
 
   ///@type {PlayerStats}
   stats = new PlayerStats(this, Struct.get(template, "stats"))
@@ -965,6 +974,7 @@ function Player(template): GridItem(template) constructor {
   ///@return {GridItem}
   static update = function(controller) {
     this.keyboard.update()
+    this.mouse.update()
     this.handler.update(this, controller)
     this.stats.update()
 
@@ -974,7 +984,7 @@ function Player(template): GridItem(template) constructor {
 
     var view = controller.gridService.view
     var targetLocked = controller.gridService.targetLocked
-    if (targetLocked.isLockedX && Optional.is(targetLocked.lockX)) { 
+    if (targetLocked.isLockedX && targetLocked.lockX != null) { 
       var horizontal = controller.gridService.properties.borderHorizontalLength / 2.0
       var width = (this.sprite.getWidth() / 2.0) / GRID_SERVICE_PIXEL_WIDTH
       var xMin = targetLocked.lockX + (view.width / 2.0) - horizontal + width
@@ -987,7 +997,7 @@ function Player(template): GridItem(template) constructor {
       this.x = clamp(this.x, xMin, xMax)
     }
 
-    if (targetLocked.isLockedY && Optional.is(targetLocked.lockY)) { 
+    if (targetLocked.isLockedY && targetLocked.lockY != null) { 
       var vertical = controller.gridService.properties.borderVerticalLength / 2.0
       var height = (this.sprite.getHeight() / 2.0) / GRID_SERVICE_PIXEL_HEIGHT
       var yMin = targetLocked.lockY + (view.height / 2.0) - vertical + height

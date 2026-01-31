@@ -1,8 +1,10 @@
 ///@package io.alkapivo.core.service.texture
 
+///@type {String}
 #macro BeanTextureService "TextureService"
-///@param {Struct} [config]
-function TextureService(config = {}): Service() constructor {
+
+///@param {?Struct} [config]
+function TextureService(config = null): Service(config) constructor {
 
   ///@type {Map<String, any}
   assets = new Map(String, any)

@@ -350,7 +350,7 @@ function Sprite(_texture, config = {}) constructor {
 ///@static
 function _SpriteUtil() constructor {
 
-  ///@param {Struct} _json
+  ///@param {Struct} json
   ///@param {?Struct} [defaultJson]
   ///@return {?Sprite}
   static parse = function(json, defaultJson = null) {

@@ -392,6 +392,13 @@ function VETrackControl(_editor) constructor {
               return
             }
 
+            if (this.mousePressed) {
+              if (mouse_check_button(mb_left)) {
+                return
+              }
+              this.mousePressed = false
+            }
+
             this.value = clamp(
               trackService.time / trackService.duration, 
               this.minValue, 
@@ -416,14 +423,19 @@ function VETrackControl(_editor) constructor {
               events.finishUpdateTimer()
             }
           },
+          mousePressed: false,
           onMousePressedLeft: function(event) {
+            this.mousePressed = true
             this.updatePosition(event.data.x - this.context.area.getX(), event.data.y - this.context.area.getY())
+            this.sendEvent()
           },
           onMouseReleasedLeft: function(event) {
+            this.mousePressed = false
             this.updatePosition(event.data.x - this.context.area.getX(), event.data.y - this.context.area.getY())
             this.sendEvent()
           },
           onMouseDragLeft: function(event) {
+            this.mousePressed = false
             var context = this
             var mouse = Beans.get(BeanVisuEditorIO).mouse
             var name = Struct.get(mouse.getClipboard(), "name")
@@ -451,10 +463,8 @@ function VETrackControl(_editor) constructor {
           sendEvent: new BindIntent(function() {
             var controller = Beans.get(BeanVisuController)
             var timestamp = this.value * (controller.trackService.duration - (FRAME_MS * 4))
-            var promise = controller
-              .send(new Event("rewind")
-              .setData({ timestamp: timestamp })
-              .setPromise(new Promise()))
+            var event = new Event("rewind", { timestamp: timestamp }).setPromise(new Promise())
+            var promise = controller.dispatcher.execute(event)
             this.state.set("promise", promise)
             return promise
           }),
@@ -587,10 +597,10 @@ function VETrackControl(_editor) constructor {
             callback: function() {
               Logger.debug("VETrackControl", $"Button pressed: {this.name}")
               var controller = Beans.get(BeanVisuController)
-              controller.send(new Event("rewind").setData({
+              controller.dispatcher.execute(new Event("rewind", {
                 timestamp: clamp(
                   controller.trackService.time - 5.0, 
-                  0, 
+                  0.0, 
                   controller.trackService.duration),
               }))
             },
@@ -672,10 +682,10 @@ function VETrackControl(_editor) constructor {
             callback: function() {
               Logger.debug("VETrackControl", $"Button pressed: {this.name}")
               var controller = Beans.get(BeanVisuController)
-              controller.send(new Event("rewind").setData({
+              controller.dispatcher.execute(new Event("rewind", {
                 timestamp: clamp(
                   controller.trackService.time + 5.0, 
-                  0, 
+                  0.0, 
                   controller.trackService.duration),
               }))
             },

@@ -75,19 +75,14 @@ function FSM(_context, config) constructor {
   ///@type {EventPump}
   dispatcher = new EventPump(this, new Map(String, Callable, {
     "transition": function(event) {
-      var name = Struct.get(event.data, "name") 
-      var data = Struct.get(event.data, "data")
-      this.transition(name, data)
+      this.transition(event.data.name, Struct.get(event.data, "data"))
     },
   }))
 
   ///@return {FSM}
   update = function() {
-    if (!Core.isType(this.currentState, FSMState)) {
-      this.dispatcher.send(new Event("transition", {
-        name: this.initialState.name,
-        data: Struct.get(this.initialState, "data"),
-      }))
+    if (this.currentState == null) {
+      this.transition(this.initialState.name, Struct.get(this.initialState, "data"))
     } else {
       this.currentState.update(this)
     }

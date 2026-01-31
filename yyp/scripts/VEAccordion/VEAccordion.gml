@@ -165,10 +165,10 @@ function VEAccordion(_editor, config = null) constructor {
             clipboard: {
               name: "resize_accordion",
               drag: function() {
-                Beans.get(BeanVisuController).displayService.setCursor(Cursor.RESIZE_HORIZONTAL)
+                Beans.get(BeanDisplayService).setCursor(Cursor.RESIZE_HORIZONTAL)
               },
               drop: function() {
-                Beans.get(BeanVisuController).displayService.setCursor(Cursor.DEFAULT)
+                Beans.get(BeanDisplayService).setCursor(Cursor.DEFAULT)
               }
             },
             updateArea: Callable.run(UIUtil.updateAreaTemplates.get("applyLayout")),
@@ -190,7 +190,7 @@ function VEAccordion(_editor, config = null) constructor {
   
                 if (!mouse_check_button(mb_left)) {
                   Beans.get(BeanVisuEditorIO).mouse.clearClipboard()
-                  Beans.get(BeanVisuController).displayService.setCursor(Cursor.DEFAULT)
+                  Beans.get(BeanDisplayService).setCursor(Cursor.DEFAULT)
                 }
               }
             },

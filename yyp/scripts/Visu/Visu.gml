@@ -1002,7 +1002,7 @@ function _Visu() constructor {
 
               var fsm = Beans.get(BeanVisuController).fsm
               if (fsm.getStateName() != "idle") {
-                fsm.dispatcher.send(new Event("transition", { name: "idle" }))
+                fsm.transition("idle")
               }
             },
           }),
@@ -1034,7 +1034,7 @@ function _Visu() constructor {
 
               var fsm = Beans.get(BeanVisuController).fsm
               if (fsm.getStateName() != "idle") {
-                fsm.dispatcher.send(new Event("transition", { name: "idle" }))
+                fsm.transition("idle")
               }
             },
           }),
@@ -1350,6 +1350,13 @@ function _Visu() constructor {
       .set(new SettingEntry({ name: "visu.keyboard.player.action", type: SettingTypes.NUMBER, defaultValue: ord("Z") }))
       .set(new SettingEntry({ name: "visu.keyboard.player.bomb", type: SettingTypes.NUMBER, defaultValue: ord("X") }))
       .set(new SettingEntry({ name: "visu.keyboard.player.focus", type: SettingTypes.NUMBER, defaultValue: KeyboardKeyType.SHIFT }))
+      .set(new SettingEntry({ name: "visu.mouse.player.up", type: SettingTypes.NUMBER, defaultValue: MouseButtonType.NONE }))
+      .set(new SettingEntry({ name: "visu.mouse.player.down", type: SettingTypes.NUMBER, defaultValue: MouseButtonType.NONE }))
+      .set(new SettingEntry({ name: "visu.mouse.player.left", type: SettingTypes.NUMBER, defaultValue: MouseButtonType.NONE }))
+      .set(new SettingEntry({ name: "visu.mouse.player.right", type: SettingTypes.NUMBER, defaultValue: MouseButtonType.NONE }))
+      .set(new SettingEntry({ name: "visu.mouse.player.action", type: SettingTypes.NUMBER, defaultValue: MouseButtonType.LEFT }))
+      .set(new SettingEntry({ name: "visu.mouse.player.bomb", type: SettingTypes.NUMBER, defaultValue: MouseButtonType.RIGHT }))
+      .set(new SettingEntry({ name: "visu.mouse.player.focus", type: SettingTypes.NUMBER, defaultValue: MouseButtonType.NONE }))
       .set(new SettingEntry({ name: "visu.difficulty", type: SettingTypes.STRING, defaultValue: Difficulty.NORMAL }))
       .set(new SettingEntry({ name: "visu.developer.mouse-shoot", type: SettingTypes.BOOLEAN, defaultValue: false }))
       .set(new SettingEntry({ 
@@ -1395,16 +1402,6 @@ function _Visu() constructor {
     VISU_LOAD_SETTINGS = true
   }
 
-  static initDisplay = function() {
-    //Logger.info("Visu", "run::initDisplay()")
-    //if (!Optional.is(Core.fetchAARange().find(Lambda.equal, this.settings.getValue("visu.graphics.aa")))) {
-    //  this.settings.setValue("visu.graphics.aa", 0).save()
-    //}
-    //display_reset(this.settings.getValue("visu.graphics.aa"), this.settings.getValue("visu.graphics.vsync"))
-    display_reset(display_aa, this.settings.getValue("visu.graphics.vsync", true))
-    display_set_timing_method(TimingMethod.get(this.settings.getValue("visu.graphics.timing-method")))
-  }
-
   static loadLanguage = function() {
     //Logger.info("Visu", "run::loadLanguage()")
     Language.load(this.settings.getValue("visu.language", LanguageType.en_EN))
@@ -1440,7 +1437,20 @@ function _Visu() constructor {
 
     if (!Beans.exists(BeanVisuController)) {
       Beans.add(Beans.factory(BeanVisuController, GMControllerInstance, layerId,
-        new VisuController(layerName)))
+        new VisuController({
+          layerName: layerName,
+          enable: function(isEnabled) {
+            this.enabled = isEnabled
+            if (this.ostSound != null) {
+              if (this.enabled) {
+                this.ostSound.resume()
+              } else {
+                this.ostSound.pause()
+              }
+            }
+            return this
+          }
+        })))
     }
   }
 
@@ -1520,6 +1530,28 @@ function _Visu() constructor {
     }
   }
 
+  static initDisplayService = function(layerId) {
+    //Logger.info("Visu", "run::initDisplayService()")
+    if (!Beans.exists(BeanDisplayService)) {
+      Beans.add(Beans.factory(BeanDisplayService, GMServiceInstance, layerId,
+        new DisplayService()))
+    }
+
+    var displayService = Beans.get(BeanDisplayService)
+    displayService.minWidth = 800
+    displayService.minHeight = 480
+    displayService.windowWidth = Visu.settings.getValue("visu.window.width", 1440)
+    displayService.windowHeight = Visu.settings.getValue("visu.window.height", 900)
+    displayService.scale = Visu.settings.getValue("visu.interface.scale")
+
+    //if (!Optional.is(Core.fetchAARange().find(Lambda.equal, Visu.settings.getValue("visu.graphics.aa")))) {
+    //  Visu.settings.setValue("visu.graphics.aa", 0).save()
+    //}
+    //display_reset(Visu.settings.getValue("visu.graphics.aa"), Visu.settings.getValue("visu.graphics.vsync"))
+    display_reset(display_aa, Visu.settings.getValue("visu.graphics.vsync", true))
+    display_set_timing_method(TimingMethod.get(Visu.settings.getValue("visu.graphics.timing-method")))
+  }
+
   static initSoundService = function(layerId) {
     //Logger.info("Visu", "run::initSoundService()")
     if (!Beans.exists(BeanSoundService)) {
@@ -1586,7 +1618,7 @@ function _Visu() constructor {
     this.initFileService(layerId)
     this.loadSettings()
     this.loadLanguage()
-    this.initDisplay()
+    this.initDisplayService(layerId)
     this.initHTTPService(layerId) 
     this.initDeltaTimeService(layerId)
     this.initTextureService(layerId)

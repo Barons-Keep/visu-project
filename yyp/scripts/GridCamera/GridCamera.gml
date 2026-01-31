@@ -105,7 +105,7 @@ function GridCamera(config = null) constructor {
     var enableEditor = Optional.is(editor) && editor.renderUI
     var enableDebugOverlay = is_debug_overlay_open()
     if ((enableEditor || enableDebugOverlay) && this.enableMouseLook && keyboard_check(vk_alt)) {
-      var scale = Beans.get(BeanVisuController).displayService.scale
+      var scale = Beans.get(BeanDisplayService).scale
       var _x = layout.x()
       var _y = layout.y()
       var width = layout.width()

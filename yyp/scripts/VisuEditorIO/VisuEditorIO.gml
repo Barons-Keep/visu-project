@@ -1,7 +1,8 @@
 ///@package io.alkapivo.visu.editor
 
 #macro BeanVisuEditorIO "VisuEditorIO"
-function VisuEditorIO() constructor {
+///@param {?Struct} [config]
+function VisuEditorIO(config = null): Service(config) constructor {
 
   ///@type {Keyboard}
   keyboard = new Keyboard({ 
@@ -107,19 +108,19 @@ function VisuEditorIO() constructor {
 
     if (this.keyboard.keys.controlLeft.on) {
       if (this.keyboard.keys.controlTrackBackward.pressed) {
-        controller.send(new Event("rewind").setData({
+        controller.dispatcher.execute(new Event("rewind", {
           timestamp: clamp(
             controller.trackService.time - 5.0, 
-            0, 
+            0.0, 
             controller.trackService.duration),
         }))
       }
 
       if (this.keyboard.keys.controlTrackForward.pressed) {
-        controller.send(new Event("rewind").setData({
+        controller.dispatcher.execute(new Event("rewind", {
           timestamp: clamp(
             controller.trackService.time + 5.0, 
-            0, 
+            0.0, 
             controller.trackService.duration),
         }))
       }
@@ -708,7 +709,7 @@ function VisuEditorIO() constructor {
 
     if (this.mouse.buttons.left.released) {
       editor.uiService.send(generateMouseEvent("MouseReleasedLeft"))
-      controller.displayService.setCursor(Cursor.DEFAULT)
+      Beans.get(BeanDisplayService).setCursor(Cursor.DEFAULT)
     }
 
     if (this.mouse.buttons.left.drag) {

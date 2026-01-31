@@ -9,3 +9,7 @@
   ///@type {?String}
   __bean = null
 
+  ///@return {Boolean}
+  enabled = function() {
+    return Struct.getDefault(this.__context, "enabled", true) != false
+  }

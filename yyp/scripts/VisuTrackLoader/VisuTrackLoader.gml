@@ -1,10 +1,13 @@
 ///@package io.alkapivo.visu
 
-///@param {VisuController} _controller
-function VisuTrackLoader(_controller): Service() constructor {
+function printFPS(message) {
+  //var log = $"{message}, fps: {round(fps)}, fps_real: {round(fps_real)}"
+  //Logger.debug("printFPS", log)
+}
 
-  ///@type {VisuController}
-  controller = Assert.isType(_controller, VisuController)
+
+///@param {?Struct} [config]
+function VisuTrackLoader(config = null): Service(config) constructor {
   
   ///@todo extract to generic 
   ///@type {Struct}
@@ -58,7 +61,7 @@ function VisuTrackLoader(_controller): Service() constructor {
             Beans.get(BeanVisuController).visuRenderer.gridRenderer.pathTrack = null
             fsmState.state.set("path", path)
             fsmState.state.set("clearQueue", new Queue(Callable, [
-              function() { Beans.get(BeanVisuController).displayService.setCaption(game_display_name) },
+              function() { Beans.get(BeanDisplayService).setCaption(game_display_name) },
               function() { Beans.get(BeanVisuController).brushService.clearTemplates() },
               function() { Beans.get(BeanVisuController).visuRenderer.executor.tasks.forEach(TaskUtil.fullfill).clear() },
               function() { Beans.get(BeanVisuController).visuRenderer.gridRenderer.clear() },
@@ -85,24 +88,24 @@ function VisuTrackLoader(_controller): Service() constructor {
                 }
               },
             ]))
+            printFPS($"clear-state::onStart")
           }
         },
         update: function(fsm) {
           try {
             var clearQueue = this.state.get("clearQueue")
-            if (clearQueue.size() == 0.0) {
-              fsm.dispatcher.send(new Event("transition", {
-                name: "parse-manifest",
-                data: this.state.get("path"),
-              }))  
+            printFPS($"clear-state::update, clearQueue.size(): {clearQueue.size()}")
+            if (clearQueue.size() == 0) {
+              fsm.transition("parse-manifest", this.state.get("path"))
             } else {
+              //Callable.run(clearQueue.pop())
               clearQueue.forEach(Callable.run)
             }
           } catch (exception) {
             var message = $"'clear-state' fatal error: {exception.message}"
             Logger.error("VisuTrackLoader", message)
             Core.printStackTrace().printException(exception)
-            fsm.dispatcher.send(new Event("transition", { name: "idle" }))
+            fsm.transition("idle")
             Beans.get(BeanVisuController).send(new Event("spawn-popup", { message: message }))
           }
         },
@@ -151,27 +154,26 @@ function VisuTrackLoader(_controller): Service() constructor {
                   })
                 )
             ))
+            printFPS($"parse-manifest::onStart")
           },
         },
         update: function(fsm) {
           try {
+            printFPS($"parse-manifest::update")
             var promise = this.state.get("promise")
             if (!promise.isReady()) {
               return
             }
             
-            fsm.dispatcher.send(new Event("transition", {
-              name: "create-parser-tasks",
-              data: {
-                path: Assert.isType(promise.response.path, String),
-                manifest: Assert.isType(promise.response.manifest, VisuTrack),
-              },
-            }))
+            fsm.transition("create-parser-tasks", {
+              path: Assert.isType(promise.response.path, String),
+              manifest: Assert.isType(promise.response.manifest, VisuTrack),
+            })
           } catch (exception) {
             var message = $"'parse-manifest' fatal error: {exception.message}"
             Logger.error("VisuTrackLoader", message)
             Core.printStackTrace().printException(exception)
-            fsm.dispatcher.send(new Event("transition", { name: "idle" }))
+            fsm.transition("idle")
             Beans.get(BeanVisuController).send(new Event("spawn-popup", { message: message }))
           }
         },
@@ -183,7 +185,7 @@ function VisuTrackLoader(_controller): Service() constructor {
       "create-parser-tasks": {
         actions: {
           onStart: function(fsm, fsmState, data) {
-            var controller = fsm.context.controller
+            var controller = Beans.get(BeanVisuController)
             controller.track = data.manifest
 
             var promises = new Map(String, Promise)
@@ -506,9 +508,12 @@ function VisuTrackLoader(_controller): Service() constructor {
                 events: events,
               })
             }
+
+            printFPS($"create-parser-tasks::onStart")
           },
         },
         update: function(fsm) {
+          printFPS($"create-parser-tasks::update")
           try {
             var promises = this.state.get("promises")
             var events = this.state.get("events")
@@ -540,18 +545,15 @@ function VisuTrackLoader(_controller): Service() constructor {
                 "audioGroupPromise value must be equal to PromiseStatus.FULLFILLED")
             }
 
-            fsm.dispatcher.send(new Event("transition", {
-              name: "parse-primary-assets",
-              data: {
-                video: this.state.get("video"),
-                tasks: filtered.map(fsm.context.utils.mapPromiseToTask, null, String, Task),
-              }
-            }))
+            fsm.transition("parse-primary-assets", {
+              video: this.state.get("video"),
+              tasks: filtered.map(fsm.context.utils.mapPromiseToTask, null, String, Task),
+            })
           } catch (exception) {
             var message = $"'create-parser-tasks' fatal error: {exception.message}"
             Logger.error("VisuTrackLoader", message)
             Core.printStackTrace().printException(exception)
-            fsm.dispatcher.send(new Event("transition", { name: "idle" }))
+            fsm.transition("idle")
             Beans.get(BeanVisuController).send(new Event("spawn-popup", { message: message }))
           }
         },
@@ -576,9 +578,11 @@ function VisuTrackLoader(_controller): Service() constructor {
                 "sound": addTask(tasks.get("sound"), executor),
                 "shader": addTask(tasks.get("shader"), executor),
               }))
+            printFPS($"parse-primary-assets::onStart")
           },
         },
         update: function(fsm) {
+          printFPS($"parse-primary-assets::update")
           try {
             var promises = this.state.get("promises")
             var filtered = promises.filter(fsm.context.utils.filterPromise)
@@ -596,18 +600,15 @@ function VisuTrackLoader(_controller): Service() constructor {
               return
             }
 
-            fsm.dispatcher.send(new Event("transition", {
-              name: "parse-video",
-              data: {
-                video: this.state.get("video"),
-                tasks: Assert.isType(this.state.get("tasks"), Map),
-              }
-            }))
+            fsm.transition("parse-video", {
+              video: this.state.get("video"),
+              tasks: Assert.isType(this.state.get("tasks"), Map),
+            })
           } catch (exception) {
             var message = $"'parse-primary-assets' fatal error: {exception.message}"
             Logger.error("VisuTrackLoader", message)
             Core.printStackTrace().printException(exception)
-            fsm.dispatcher.send(new Event("transition", { name: "idle" }))
+            fsm.transition("idle")
             Beans.get(BeanVisuController).send(new Event("spawn-popup", { message: message }))
           }
         },
@@ -631,9 +632,11 @@ function VisuTrackLoader(_controller): Service() constructor {
                 .get("promises")
                 .set("video", Beans.get(BeanVisuController).videoService.send(acc.video))
             }
+            printFPS($"parse-video::onStart")
           },
         },
         update: function(fsm) {
+          printFPS($"parse-video::update")
           try {
             var promises = this.state.get("promises")
             var filtered = promises.filter(fsm.context.utils.filterPromise)
@@ -641,15 +644,12 @@ function VisuTrackLoader(_controller): Service() constructor {
               return
             }
 
-            fsm.dispatcher.send(new Event("transition", { 
-              name: "parse-secondary-assets",
-              data: Assert.isType(this.state.get("tasks"), Map)
-            }))
+            fsm.transition("parse-secondary-assets", this.state.get("tasks"))
           } catch (exception) {
             var message = $"'parse-video' fatal error: {exception.message}"
             Logger.error("VisuTrackLoader", message)
             Core.printStackTrace().printException(exception)
-            fsm.dispatcher.send(new Event("transition", { name: "idle" }))
+            fsm.transition("idle")
             Beans.get(BeanVisuController).send(new Event("spawn-popup", { message: message }))
           }
         },
@@ -679,9 +679,11 @@ function VisuTrackLoader(_controller): Service() constructor {
             }, { addTask: addTask, executor: executor, promises: promises })
             
             fsmState.state.set("tasks", tasks).set("promises", promises)
+            printFPS($"parse-secondary-assets::onStart")
           },
         },
         update: function(fsm) {
+          printFPS($"parse-secondary-assets::update")
           try {
             var promises = this.state.get("promises")
             var filtered = promises.filter(fsm.context.utils.filterPromise)
@@ -689,13 +691,14 @@ function VisuTrackLoader(_controller): Service() constructor {
               return
             }
 
-            if (fsm.context.controller.trackService.track == null) {
-              Assert.isTrue(fsm.context.controller.trackService.executor.tasks.size() > 0,
+            var controller = Beans.get(BeanVisuController)
+            if (controller.trackService.track == null) {
+              Assert.isTrue(controller.trackService.executor.tasks.size() > 0,
                 "parse-secondary-assets TrackService.executor.tasks.size() must be > 0")
               return
             }
 
-            var audio = Assert.isType(fsm.context.controller.trackService.track.audio, Sound)
+            var audio = Assert.isType(controller.trackService.track.audio, Sound)
             var attempts = this.state.inject("attempts", GAME_FPS * 5) - DELTA_TIME
             //var attempts = this.state.inject("attempts", GAME_FPS * 5) - DeltaTime.apply(1)
             Assert.isTrue(attempts >= 0.0, "parse-secondary-assets attempts must be >= 0.0")
@@ -706,12 +709,12 @@ function VisuTrackLoader(_controller): Service() constructor {
             }
 
             audio.pause()
-            fsm.dispatcher.send(new Event("transition", { name: "cooldown" }))
+            fsm.transition("cooldown")
           } catch (exception) {
             var message = $"'parse-secondary-assets' fatal error: {exception.message}"
             Logger.error("VisuTrackLoader", message)
             Core.printStackTrace().printException(exception)
-            fsm.dispatcher.send(new Event("transition", { name: "idle" }))
+            fsm.transition("idle")
             Beans.get(BeanVisuController).send(new Event("spawn-popup", { message: message }))
           }
         },
@@ -903,9 +906,9 @@ function VisuTrackLoader(_controller): Service() constructor {
             var timer = this.state.get("cooldown-timer")
             var editorIO = Beans.get(Visu.modules().editor.io)
             if (timer.update().finished) {
-              fsm.dispatcher.send(new Event("transition", { name: "loaded" }))
+              fsm.transition("loaded")
             } else if (editorIO != null && editorIO.keyboard.keys.renderUI.pressed) {
-              fsm.dispatcher.send(new Event("transition", { name: "loaded" }))
+              fsm.transition("loaded")
 
               var controller = Beans.get(BeanVisuController)
               var editor = Beans.get(Visu.modules().editor.controller)
@@ -921,7 +924,7 @@ function VisuTrackLoader(_controller): Service() constructor {
             var message = $"'cooldown' fatal error: {exception.message}"
             Logger.error("VisuTrackLoader", message)
             Core.printStackTrace().printException(exception)
-            fsm.dispatcher.send(new Event("transition", { name: "idle" }))
+            fsm.transition("idle")
             Beans.get(BeanVisuController).send(new Event("spawn-popup", { message: message }))
           }
         },
@@ -934,7 +937,7 @@ function VisuTrackLoader(_controller): Service() constructor {
         actions: {
           onStart: function(fsm, fsmState, tasks) { 
             var controller = Beans.get(BeanVisuController)
-            controller.displayService.setCaption($"{game_display_name} | {fsm.context.controller.trackService.track.name} | {fsm.context.controller.track.path}")
+            Beans.get(BeanDisplayService).setCaption($"{game_display_name} | {controller.trackService.track.name} | {controller.track.path}")
             controller.gridService.avgTime.reset()
 
             var editor = Beans.get(Visu.modules().editor.controller)
@@ -988,7 +991,7 @@ function VisuTrackLoader(_controller): Service() constructor {
       Logger.error("VisuTrackLoader", message)
       Core.printStackTrace().printException(exception)
       this.executor.tasks.clear()
-      this.fsm.dispatcher.send(new Event("transition", { name: "idle" }))
+      this.fsm.transition("idle")
       Beans.get(BeanVisuController).send(new Event("spawn-popup", { message: message }))
     }
 
@@ -1003,5 +1006,11 @@ function VisuTrackLoader(_controller): Service() constructor {
     this.updateExecutor()
     DELTA_TIME = deltaTime
     return this
+  }
+
+  ///@return {TaskExecutor}
+  free = function() {
+    this.executor.free()
+    this.fsm.free()
   }
 }

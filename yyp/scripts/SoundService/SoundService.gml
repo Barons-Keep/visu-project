@@ -1,9 +1,13 @@
 ///@package io.alkapivo.core.service.sound
 
+///@type {String}
 #macro GMAudioGroupID "GMAudioGroupID"
 
+///@type {String}
 #macro BeanSoundService "SoundService"
-function SoundService() constructor {
+
+///@param {?Struct} [config]
+function SoundService(config = null): Service(config) constructor {
 
   ///@type {Map<String, GMSound>}
   sounds = new Map(String, GMSound)

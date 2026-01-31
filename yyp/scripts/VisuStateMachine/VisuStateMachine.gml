@@ -55,7 +55,7 @@ function VisuStateMachine(context, name) {
                 "bkg must be type of Sprite"),
               render: function(task, layout) {
                 var controller = Beans.get(BeanVisuController)
-                var displayService = controller.displayService
+                var displayService = Beans.get(BeanDisplayService)
                 var width = layout.width()
                 var height = layout.height()
                 task.state.bkgFactor += DELTA_TIME * (FRAME_MS / 48.0)
@@ -157,13 +157,13 @@ function VisuStateMachine(context, name) {
             var task = controller.visuRenderer.executor.tasks
               .find(TaskUtil.filterByName, "splashscreen")
             if (!Optional.is(task)) {
-              fsm.dispatcher.send(new Event("transition", { name: "idle" }))
+              fsm.transition("idle")
             }
           } catch (exception) {
             var message = $"'fsm::update' (state: 'splashscreen') fatal error: {exception.message}"
             Logger.error(BeanVisuController, message)
             Core.printStackTrace().printException(exception)
-            fsm.dispatcher.send(new Event("transition", { name: "idle" }))
+            fsm.transition("idle")
             Beans.get(BeanVisuController).send(new Event("spawn-popup", { message: message }))
           }
         },
@@ -343,10 +343,7 @@ function VisuStateMachine(context, name) {
           onStart: function(fsm, fsmState, data) {
             var controller = Beans.get(BeanVisuController)
             controller.menu.send(new Event("close"))
-            controller.loader.fsm.dispatcher.send(new Event("transition", {
-              name: "clear-state",
-              data: data.manifest,
-            }))
+            controller.loader.fsm.transition("clear-state", data.manifest)
             fsmState.state.set("autoplay", Struct.getDefault(data, "autoplay", false))
             
             if (Optional.is(controller.ostSound)) {
@@ -372,17 +369,15 @@ function VisuStateMachine(context, name) {
             var loaderState = fsm.context.loader.fsm.getStateName()
             Assert.areEqual(loaderState != null && loaderState != "idle", true, $"Invalid loader state: {loaderState}")
             if (loaderState == "loaded") {
-              fsm.dispatcher.send(new Event("transition", {
-                name: this.state.get("autoplay") ? "play" : "pause",
-              }))
+              fsm.transition(this.state.get("autoplay") ? "play" : "pause")
             }
           } catch (exception) {
             var message = $"'fsm::update' (state: 'load') fatal error: {exception.message}"
             Logger.error(BeanVisuController, message)
             Core.printStackTrace().printException(exception)
             Beans.get(BeanVisuController).send(new Event("spawn-popup", { message: message }))
-            fsm.dispatcher.send(new Event("transition", { name: "idle" }))
-            fsm.context.loader.fsm.dispatcher.send(new Event("transition", { name: "idle" }))
+            fsm.transition("idle")
+            Beans.get(BeanVisuController).loader.fsm.transition("idle")
           }
         },
         transitions: { 
@@ -441,7 +436,7 @@ function VisuStateMachine(context, name) {
             Logger.error(BeanVisuController, message)
             Core.printStackTrace().printException(exception)
             Beans.get(BeanVisuController).send(new Event("spawn-popup", { message: message }))
-            fsm.dispatcher.send(new Event("transition", { name: "idle" }))
+            fsm.transition("idle")
           }
         },
         transitions: { 
@@ -489,10 +484,7 @@ function VisuStateMachine(context, name) {
               this.state.set("promises-resolved", "success")
             }
 
-            fsm.dispatcher.send(new Event("transition", { 
-              name: "paused", 
-              data: this.state.get("menuEvent"),
-            }))
+            fsm.transition("paused", this.state.get("menuEvent"))
             //Assert.areEqual(fsm.context.videoService.getVideo().getStatus(), VideoStatus.PAUSED)
             //Assert.areEqual(fsm.context.trackService.track.getStatus(), TrackStatus.PAUSED)
           } catch (exception) {
@@ -500,7 +492,7 @@ function VisuStateMachine(context, name) {
             Logger.error(BeanVisuController, message)
             Core.printStackTrace().printException(exception)
             Beans.get(BeanVisuController).send(new Event("spawn-popup", { message: message }))
-            fsm.dispatcher.send(new Event("transition", { name: "idle" }))
+            fsm.transition("idle")
           }
         },
         transitions: { 
@@ -620,9 +612,7 @@ function VisuStateMachine(context, name) {
             Logger.error(BeanVisuController, message)
             Core.printStackTrace().printException(exception)
             Beans.get(BeanVisuController).send(new Event("spawn-popup", { message: message }))
-            fsm.dispatcher.send(new Event("transition", {
-              name: this.state.get("resume") ? "play" : "pause",
-            }))
+            fsm.transition(this.state.get("resume") ? "play" : "pause")
           }
         },
         transitions: {

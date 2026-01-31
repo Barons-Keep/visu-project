@@ -195,7 +195,7 @@ function GridItemChunkService(_size) constructor {
 
 
 ///@param {?Struct} [config]
-function GridService(_config = null) constructor {
+function GridService(_config = null): Service(_config) constructor {
 
   ///@type {?Struct}
   config = Core.isType(_config, Struct) ? JSON.clone(_config) : null

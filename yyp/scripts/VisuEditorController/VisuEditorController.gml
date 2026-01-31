@@ -10,7 +10,8 @@ function VisuEditorModule() {
 
 
 #macro BeanVisuEditorController "VisuEditorController"
-function VisuEditorController() constructor {
+///@param {?Struct} [config]
+function VisuEditorController(config = null): Service(config) constructor {
 
   ///@type {UIService}
   uiService = new UIService(this)
@@ -744,7 +745,7 @@ function VisuEditorController() constructor {
         this.timeline.containers.forEach(updateTimelineList, this.accUpdate)
         break
       case "settings":
-        tthis.timeline.containers.forEach(updateTimelineSettings, this.accUpdate)
+        this.timeline.containers.forEach(updateTimelineSettings, this.accUpdate)
         break
     }
 
@@ -869,7 +870,7 @@ function VisuEditorController() constructor {
 
     try {
       ///@description reset UI timers after resize to avoid ghost effect
-      if (Beans.get(BeanVisuController).displayService.state == "resized") {
+      if (Beans.get(BeanDisplayService).state == "resized") {
         this.uiService.containers.forEach(this.resetUITimer)
       }
       this.uiService.update()

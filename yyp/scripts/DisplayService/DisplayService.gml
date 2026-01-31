@@ -21,13 +21,11 @@ function _TimingMethod(): Enum() constructor {
 global.__TimingMethod = new _TimingMethod()
 #macro TimingMethod global.__TimingMethod
 
+///@type {String}
+#macro BeanDisplayService "DisplayService"
 
-///@param {Controller} _controller
-///@param {Struct} [config]
-function DisplayService(_controller, config = {}): Service() constructor {
-
-  ///@type {Controller}
-  controller = Assert.isType(_controller, Struct)
+///@param {?Struct} [config]
+function DisplayService(config = null): Service(config) constructor {
 
 	///@type {Number}
 	windowWidth = Struct.getIfType(config, "windowWidth", Number, 960)

@@ -15,3 +15,22 @@ GMObjectUtil.factoryStructInstance(
 	  }
 	}
 )
+
+/*
+GMObjectUtil.factoryStructInstance(
+	GMServiceInstance, 
+	Scene.fetchLayer("instance_main", 100),
+	{
+    buffer: new BufferTest(),
+	  update: function() {
+      if (!this.buffer.growing) {
+        Scene.open("scene_visu")
+      }
+
+			this.buffer.update()
+
+      return this
+	  },
+	}
+)
+*/

@@ -1,11 +1,7 @@
 ///@package io.alkapivo.visu.service.bullet.BulletService
 
-///@param {VisuController} _controller
-function BulletService(_controller): Service() constructor {
-
-  ///@type {VisuController}
-  controller = Assert.isType(_controller, VisuController,
-    "BulletService::controller must be type of VisuController")
+///@param {?Struct} [config]
+function BulletService(config = null): Service(config) constructor {
 
   ///@type {Array<Bullet>}
   bullets = new Array(Bullet).enableGC()
@@ -34,13 +30,14 @@ function BulletService(_controller): Service() constructor {
       var template = new BulletTemplate(event.data.template, this
         .getTemplate(event.data.template)
         .serialize())
-        
+      
+      var controller = Beans.get(BeanVisuController)
       Struct.set(template, "x", event.data.x)
       Struct.set(template, "y", event.data.y)
       Struct.set(template, "angle", event.data.angle)
       Struct.set(template, "speed", event.data.speed / 1000)
       Struct.set(template, "producer", event.data.producer)
-      Struct.set(template, "uid", this.controller.gridService.generateUID())
+      Struct.set(template, "uid", controller.gridService.generateUID())
 
       if (event.data.producer == Shroom) {
         controller.sfxService.play("shroom-shoot")
@@ -54,7 +51,7 @@ function BulletService(_controller): Service() constructor {
       this.bullets.add(bullet)
 
       if (this.optimalizationSortEntitiesByTxGroup) {
-        this.controller.gridService.textureGroups.sortItems(this.bullets)
+        controller.gridService.textureGroups.sortItems(this.bullets)
       }
     },
     "clear-bullets": function(event) {
@@ -101,8 +98,9 @@ function BulletService(_controller): Service() constructor {
       angleOffsetRng = null, sumAngleOffset = null, speedOffset = null, 
       sumSpeedOffset = null, lifespan = null, damage = null, onDeath = false) {
 
+    var controller = Beans.get(BeanVisuController)
     var template = this.getTemplate(name).serializeSpawn(
-      this.controller.gridService.generateUID(),
+      controller.gridService.generateUID(),
       producer,
       x,
       y,
@@ -129,7 +127,7 @@ function BulletService(_controller): Service() constructor {
     this.bullets.add(bullet)
 
     if (this.optimalizationSortEntitiesByTxGroup) {
-      this.controller.gridService.textureGroups.sortItems(this.bullets)
+      controller.gridService.textureGroups.sortItems(this.bullets)
     }
 
     if (onDeath) {
@@ -189,16 +187,17 @@ function BulletService(_controller): Service() constructor {
     return this
   }
 
-  static updateBullet = function(bullet, index, context) {
+  static updateBullet = function(bullet, index, controller) {
     gml_pragma("forceinline")
-    bullet.update(context.controller)
+    bullet.update(controller)
     if (!bullet.signals.kill) {
       return
     }
 
-    context.bullets.addToGC(index)
+    var bulletService = controller.bulletService
+    bulletService.bullets.addToGC(index)
     if (bullet.producer == Player) {
-      context.chunkService.remove(bullet)
+      bulletService.chunkService.remove(bullet)
     }
 
     if (!Optional.is(bullet.onDeath)) {
@@ -223,7 +222,7 @@ function BulletService(_controller): Service() constructor {
       var lifespan = null
       var damage = null
       var onDeath = true
-      context.spawnBullet(
+      bulletService.spawnBullet(
         bullet.onDeath, 
         bullet.producer,
         bullet.x, 
@@ -254,7 +253,7 @@ function BulletService(_controller): Service() constructor {
     //this.optimalizationSortEntitiesByTxGroup = Visu.settings.getValue("visu.optimalization.sort-entities-by-txgroup")
     this.dispatcher.update()
     this.executor.update()
-    this.bullets.forEach(this.updateBullet, this).runGC(true)
+    this.bullets.forEach(this.updateBullet, Beans.get(BeanVisuController)).runGC(true)
     return this
   }
 }

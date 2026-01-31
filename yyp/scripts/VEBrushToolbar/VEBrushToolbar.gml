@@ -87,10 +87,10 @@ global.__VisuBrushContainers = new Map(String, Callable, {
           clipboard: {
             name: "resize_brush_toolbar",
             drag: function() {
-              Beans.get(BeanVisuController).displayService.setCursor(Cursor.RESIZE_HORIZONTAL)
+              Beans.get(BeanDisplayService).setCursor(Cursor.RESIZE_HORIZONTAL)
             },
             drop: function() {
-              Beans.get(BeanVisuController).displayService.setCursor(Cursor.DEFAULT)
+              Beans.get(BeanDisplayService).setCursor(Cursor.DEFAULT)
             }
           },
           updateArea: Callable.run(UIUtil.updateAreaTemplates.get("applyLayout")),
@@ -107,7 +107,7 @@ global.__VisuBrushContainers = new Map(String, Callable, {
 
               if (!mouse_check_button(mb_left)) {
                 Beans.get(BeanVisuEditorIO).mouse.clearClipboard()
-                Beans.get(BeanVisuController).displayService.setCursor(Cursor.DEFAULT)
+                Beans.get(BeanDisplayService).setCursor(Cursor.DEFAULT)
               }
             }
           },
@@ -1022,12 +1022,12 @@ global.__VisuBrushContainers = new Map(String, Callable, {
               drag: function() {
                 this.mouseY = MouseUtil.getMouseY()
                 this.percentageHeight = null
-                Beans.get(BeanVisuController).displayService.setCursor(Cursor.RESIZE_VERTICAL)
+                Beans.get(BeanDisplayService).setCursor(Cursor.RESIZE_VERTICAL)
               },
               drop: function() {
                 this.mouseY = null
                 this.percentageHeight = null
-                Beans.get(BeanVisuController).displayService.setCursor(Cursor.DEFAULT)
+                Beans.get(BeanDisplayService).setCursor(Cursor.DEFAULT)
               }
             },
             __height: null,
@@ -1050,7 +1050,7 @@ global.__VisuBrushContainers = new Map(String, Callable, {
                  
                 if (!mouse_check_button(mb_left)) {
                   mouse.clearClipboard()
-                  Beans.get(BeanVisuController).displayService.setCursor(Cursor.DEFAULT)
+                  Beans.get(BeanDisplayService).setCursor(Cursor.DEFAULT)
                 }
               } else {
                 var editor = Beans.get(BeanVisuEditorController)

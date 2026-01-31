@@ -200,6 +200,15 @@ function _Beans() constructor {
     return this
   }
 
+  ///@param {any} item
+  ///@param {Type} type
+  ///@param {Callable} factory
+  ///@param {any} [params]
+  ///@return {any}
+  static autowire = function(item, type, factory, params = null) {
+    return Core.isType(item, type) ? item : factory(params)
+  }
+
   ///@return {Beans}
   static update = function() {
     gml_pragma("forceinline")

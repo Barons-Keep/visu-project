@@ -1,8 +1,10 @@
 ///@package io.alkapivo.core.service.dialogue-designer
 
+///@type {String}
 #macro BeanDialogueDesignerService "DialogueDesignerService"
-///@param {Struct} [config]
-function DialogueDesignerService(config = {}) constructor {
+
+///@param {?Struct} [config]
+function DialogueDesignerService(config = null): Service(config) constructor {
 
   ///@type {Map<String, String>}
   templates = new Map(String, String)

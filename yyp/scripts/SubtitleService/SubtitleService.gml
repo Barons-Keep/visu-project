@@ -1,7 +1,7 @@
 ///@package io.alkapivo.visu.service.subtitle
 
 ///@param {?Struct} [config]
-function SubtitleService(config = null) constructor {
+function SubtitleService(config = null): Service(config) constructor {
 
   ///@type {Map<String, SubtitleTemplate>}
   templates = new Map(String, SubtitleTemplate)

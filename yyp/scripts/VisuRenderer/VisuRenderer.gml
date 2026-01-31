@@ -83,6 +83,9 @@ function VisuRenderer() constructor {
 
   ///@type {Number}
   spinnerFactor = 0
+
+  ///@type {Number}
+  spinnerTime = 0
   
   ///@type {Timer}
   initTimer = new Timer(0.5)
@@ -141,8 +144,10 @@ function VisuRenderer() constructor {
     var controller = Beans.get(BeanVisuController)
     var loaderState = controller.loader.fsm.getStateName()
     if (loaderState != "idle" && loaderState != "cooldown" && loaderState != "loaded") {
-      this.spinnerFactor = lerp(this.spinnerFactor, 100.0, 0.08)
-
+      //this.spinnerFactor = lerp(this.spinnerFactor, 100.0, 0.08)
+      var ease = Ease.get(EaseType.IN_OUT_SINE)
+      this.spinnerTime = clamp(this.spinnerTime + 0.016, 0.0, 1.0)
+      this.spinnerFactor = ease(this.spinnerTime) * 100.0
       var color = c_black
       var alpha = clamp((this.spinnerFactor / 100) * 0.85, 0.0, 1.0)
       if (alpha > 0) {
@@ -154,8 +159,11 @@ function VisuRenderer() constructor {
         .setAngle(30.0 * (this.spinnerFactor / 100))
         .setAlpha(alpha)
         .render(GuiWidth() / 2.0, (GuiHeight() * 0.75) - this.spinnerFactor)
-    } else if (this.spinnerFactor > 0) {
-      this.spinnerFactor = lerp(this.spinnerFactor, 0.0, 0.08)
+    } else if (this.spinnerFactor > 0.0) {
+      //this.spinnerFactor = lerp(this.spinnerFactor, 0.0, 0.08)
+      var ease = Ease.get(EaseType.IN_OUT_SINE)
+      this.spinnerTime = clamp(this.spinnerTime - 0.016, 0.0, 1.0)
+      this.spinnerFactor = ease(this.spinnerTime) * 100.0
 
       var color = c_black
       var alpha = clamp((this.spinnerFactor / 100) * 0.85, 0.0, 1.0)

@@ -1,7 +1,8 @@
 ///@package io.alkapivo.visu
 
 #macro BeanVisuIO "VisuIO"
-function VisuIO() constructor {
+///@param {?Struct} [config]
+function VisuIO(config = null): Service(config) constructor {
 
   ///@type {Map}
   keyboards = new Map(String, Keyboard, {
@@ -13,6 +14,18 @@ function VisuIO() constructor {
       action: Visu.settings.getValue("visu.keyboard.player.action", ord("Z")),
       bomb: Visu.settings.getValue("visu.keyboard.player.bomb", ord("X")),
       focus: Visu.settings.getValue("visu.keyboard.player.focus", KeyboardKeyType.SHIFT),
+    })
+  })
+
+  mouses = new Map(String, Mouse, {
+    "player": new Mouse({
+      up: Visu.settings.getValue("visu.mouse.player.up", MouseButtonType.NONE),
+      down: Visu.settings.getValue("visu.mouse.player.down", MouseButtonType.NONE),
+      left: Visu.settings.getValue("visu.mouse.player.left", MouseButtonType.NONE),
+      right: Visu.settings.getValue("visu.mouse.player.right", MouseButtonType.NONE),
+      action: Visu.settings.getValue("visu.mouse.player.action", MouseButtonType.NONE),
+      bomb: Visu.settings.getValue("visu.mouse.player.bomb", MouseButtonType.NONE),
+      focus: Visu.settings.getValue("visu.mouse.player.focus", MouseButtonType.NONE),
     })
   })
 
@@ -45,12 +58,12 @@ function VisuIO() constructor {
     }
 
     if (this.keyboard.keys.fullscreen.pressed) {
-      var fullscreen = controller.displayService.getFullscreen()
+      var fullscreen = Beans.get(BeanDisplayService).getFullscreen()
       Logger.debug(BeanVisuIO, String.template("DisplayService::setFullscreen({0})", fullscreen ? "false" : "true"))
       
-      controller.displayService.setFullscreen(!fullscreen)
+      Beans.get(BeanDisplayService).setFullscreen(!fullscreen)
       if (fullscreen && Visu.settings.getValue("visu.borderless-window")) {
-        controller.displayService.center()
+        Beans.get(BeanDisplayService).center()
       }
 
       Visu.settings.setValue("visu.fullscreen", !fullscreen).save()
@@ -94,7 +107,7 @@ function VisuIO() constructor {
             break
           }
 
-          controller.send(new Event("pause", { data: menu.factoryOpenMainMenuEvent() }))
+          controller.send(new Event("pause", menu.factoryOpenMainMenuEvent()))
           break
         case "paused":
           if (menu.enabled) {
@@ -131,7 +144,7 @@ function VisuIO() constructor {
 
     if (this.mouse.buttons.left.released) {
       controller.uiService.send(generateMouseEvent("MouseReleasedLeft"))
-      controller.displayService.setCursor(Cursor.DEFAULT)
+      Beans.get(BeanDisplayService).setCursor(Cursor.DEFAULT)
     }
 
     if (this.mouse.buttons.left.drag) {
@@ -186,7 +199,7 @@ function VisuIO() constructor {
 
     if (this.mouse.buttons.left.released) {
       controller.uiService.send(generateMouseEvent("MouseReleasedLeft"))
-      controller.displayService.setCursor(Cursor.DEFAULT)
+      Beans.get(BeanDisplayService).setCursor(Cursor.DEFAULT)
     }
 
     if (this.mouse.buttons.left.drag) {

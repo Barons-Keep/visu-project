@@ -108,79 +108,160 @@ function factoryPlayerKeyboardKeyEntryConfig(name, text) {
     label: { 
       key: name,
       text: text,
-      cooldown: new Timer(FRAME_MS * 10),
       updateCustom: function() {
-        if (!this.cooldown.finished) {
-          this.cooldown.update()
-        }
 
         var lastKey = keyboard_lastkey
-        if (lastKey == vk_nokey || this.context.state.get("remapKey") != this.key) {          
+        var lastMouseButton = mouse_wheel_up()
+          ? MouseButtonType.WHEEL_UP
+          : (mouse_wheel_down()
+            ? MouseButtonType.WHEEL_DOWN
+            : mouse_button)
+        Logger.debug("VisuMenu", $"lastMouseButton, {lastMouseButton}")
+        var lastEventType = (lastKey != vk_nokey ? "keyboard" : (lastMouseButton != mb_none ? "mouse" : null))
+
+        if (lastEventType == null) {
           return
         }
 
-        this.context.state.set("remapKey", null)
-        keyboard_lastkey = vk_nokey
-        this.cooldown.reset()
-        Beans.get(BeanVisuController).sfxService.play("menu-use-entry")
-        if (lastKey == KeyboardKeyType.ESC || lastKey == KeyboardKeyType.ENTER) {
-          return
+        var controller = Beans.get(BeanVisuController)
+        var visuIO = Beans.get(BeanVisuIO)
+        switch (lastEventType) {
+          case "keyboard":
+            if (this.context.state.get("remapKey") != this.key 
+                || lastKey == KeyboardKeyType.ESC 
+                || lastKey == KeyboardKeyType.ENTER) {
+              return
+            }
+
+            var keyboard = visuIO.keyboards.get("player")
+            keyboard.setKey(this.key, lastKey)
+            keyboard_lastkey = vk_nokey
+            Logger.debug("VisuMenu", $"Remap key {this.key} to {lastKey}")
+            Visu.settings.setValue("visu.keyboard.player.up", Struct.get(keyboard.keys, "up").gmKey)
+            Visu.settings.setValue("visu.keyboard.player.down", Struct.get(keyboard.keys, "down").gmKey)
+            Visu.settings.setValue("visu.keyboard.player.left", Struct.get(keyboard.keys, "left").gmKey)
+            Visu.settings.setValue("visu.keyboard.player.right", Struct.get(keyboard.keys, "right").gmKey)
+            Visu.settings.setValue("visu.keyboard.player.action", Struct.get(keyboard.keys, "action").gmKey)
+            Visu.settings.setValue("visu.keyboard.player.bomb", Struct.get(keyboard.keys, "bomb").gmKey)
+            Visu.settings.setValue("visu.keyboard.player.focus", Struct.get(keyboard.keys, "focus").gmKey)
+            Visu.settings.save()
+            this.context.state.set("remapKey", null)
+            break
+          case "mouse":
+            if (this.context.state.get("remapKey") != this.key
+                || (lastMouseButton == MouseButtonType.WHEEL_UP || lastMouseButton == MouseButtonType.WHEEL_DOWN
+                    ? !lastMouseButton()
+                    : !mouse_check_button_pressed(lastMouseButton))) {
+              return
+            }
+
+            var mouse = visuIO.mouses.get("player")
+            mouse.setButton(this.key, mouse.getButton(this.key).type == lastMouseButton ? MouseButtonType.NONE : lastMouseButton)
+            Logger.debug("VisuMenu", $"Remap mouseButton {this.key} to {lastMouseButton}")
+            Visu.settings.setValue("visu.mouse.player.up", Struct.get(mouse.buttons, "up").type)
+            Visu.settings.setValue("visu.mouse.player.down", Struct.get(mouse.buttons, "down").type)
+            Visu.settings.setValue("visu.mouse.player.left", Struct.get(mouse.buttons, "left").type)
+            Visu.settings.setValue("visu.mouse.player.right", Struct.get(mouse.buttons, "right").type)
+            Visu.settings.setValue("visu.mouse.player.action", Struct.get(mouse.buttons, "action").type)
+            Visu.settings.setValue("visu.mouse.player.bomb", Struct.get(mouse.buttons, "bomb").type)
+            Visu.settings.setValue("visu.mouse.player.focus", Struct.get(mouse.buttons, "focus").type)
+            Visu.settings.save()
+            this.context.state.set("remapKey", null)
+
+            if (lastMouseButton == MouseButtonType.LEFT) {
+              this.context.state.set("remapMouseButton", this.key)
+            }
+            break
         }
-
-        var keyboard = Beans.get(BeanVisuIO).keyboards.get("player")
-        keyboard.setKey(this.key, lastKey)
-        Logger.debug("VisuMenu", $"Remap key {this.key} to {lastKey}")
-
-        Visu.settings.setValue("visu.keyboard.player.up", Struct.get(keyboard.keys, "up").gmKey)
-        Visu.settings.setValue("visu.keyboard.player.down", Struct.get(keyboard.keys, "down").gmKey)
-        Visu.settings.setValue("visu.keyboard.player.left", Struct.get(keyboard.keys, "left").gmKey)
-        Visu.settings.setValue("visu.keyboard.player.right", Struct.get(keyboard.keys, "right").gmKey)
-        Visu.settings.setValue("visu.keyboard.player.action", Struct.get(keyboard.keys, "action").gmKey)
-        Visu.settings.setValue("visu.keyboard.player.bomb", Struct.get(keyboard.keys, "bomb").gmKey)
-        Visu.settings.setValue("visu.keyboard.player.focus", Struct.get(keyboard.keys, "focus").gmKey)
-        Visu.settings.save()
       },
       callback: new BindIntent(function() {
-        if (!this.cooldown.finished || this.context.state.get("remapKey") == this.key) {
+        if (this.context.state.get("remapKey") == this.key) {
           return
         }
 
-        this.context.state.set("remapKey", this.key)
         keyboard_lastkey = vk_nokey
+        this.context.state.set("remapKey", this.key)
       }),
       onMouseReleasedLeft: function() {
-        this.callback()
+        if (this.context.state.get("remapKey") == this.key) {
+          return
+        }
+
+        if (this.context.state.get("remapMouseButton") == this.key) {
+          this.context.state.set("remapMouseButton", null)
+          return
+        }
+
+        keyboard_lastkey = vk_nokey
+        this.context.state.set("remapKey", this.key)
       },
     },
     preview: {
       key: name,
       text: "",
       updateCustom: function() {
-        var keyCode = Struct.get(Beans.get(BeanVisuIO).keyboards.get("player").keys, this.key).gmKey
+        var visuIO = Beans.get(BeanVisuIO)
+        var remapKeyEvent = this.context.state.get("remapKey") == this.key
+        var keyCode = Struct.get(visuIO.keyboards.get("player").keys, this.key).gmKey
+        var keyboardText = ""
         if (KeyboardKeyType.contains(keyCode)) {
-          this.label.text = KeyboardKeyType.findKey(keyCode)
+          keyboardText = KeyboardKeyType.findKey(keyCode)
         } else if (KeyboardSpecialKeys.contains(keyCode)) {
-          this.label.text = KeyboardSpecialKeys.get(keyCode)
+          keyboardText = KeyboardSpecialKeys.get(keyCode)
         } else {
-          this.label.text = chr(keyCode)
+          keyboardText = chr(keyCode)
         }
-        
-        if (this.context.state.get("remapKey") == this.key) {
-          this.label.alpha = (random(100) / 100) * 0.6
+
+        var mouseCode = Struct.get(visuIO.mouses.get("player").buttons, this.key).type
+        var mouseText = $"{MouseButtonType.findKey(mouseCode)}"
+
+        if (remapKeyEvent) {
+          keyboardText = $"Key: [ {keyboardText} ]"
+          mouseText = $" | Mouse: [ {mouseText} ]"
         } else {
-          this.label.alpha = 1.0
+          keyboardText = $"Key: {keyboardText}"
+          mouseText = mouseCode == MouseButtonType.NONE ? "" : $" | Mouse: {mouseText}"
         }
+        this.label.text = $"{keyboardText}{mouseText}"
+      },
+      remapKeyTimer: new Timer(TAU, { loop: Infinity }),
+      preRender: function() {
+        Struct.set(this, "previousBackgroundAlpha", this.backgroundAlpha)
+        if (this.context.state.get("remapKey") != this.key) {
+          this.remapKeyTimer.reset()
+          return
+        }
+
+        var frequency = 16.0
+        var boost = 1.4
+        var time = this.remapKeyTimer.update().time
+        this.backgroundAlpha = Struct.get(this, "previousBackgroundAlpha")
+          * ((cos(frequency * time) + boost) / (boost + 1.0))
+      },
+      postRender: function() {
+        this.backgroundAlpha = Struct.getIfType(this, "previousBackgroundAlpha", 
+          Number, this.backgroundAlpha)
       },
       callback: new BindIntent(function() {
         if (this.context.state.get("remapKey") == this.key) {
           return
         }
 
-        this.context.state.set("remapKey", this.key)
         keyboard_lastkey = vk_nokey
+        this.context.state.set("remapKey", this.key)
       }),
       onMouseReleasedLeft: function() {
-        this.callback()
+        if (this.context.state.get("remapKey") == this.key) {
+          return
+        }
+
+        if (this.context.state.get("remapMouseButton") == this.key) {
+          this.context.state.set("remapMouseButton", null)
+          return
+        }
+
+        keyboard_lastkey = vk_nokey
+        this.context.state.set("remapKey", this.key)
       },
     },
   }
@@ -638,8 +719,9 @@ function VisuMenu(_config = null) constructor {
               label: { 
                 text: "Resume",
                 callback: new BindIntent(function() {
-                  Beans.get(BeanVisuController).fsm.dispatcher.send(new Event("transition", { name: "play" }))
-                  Beans.get(BeanVisuController).sfxService.play("menu-select-entry")
+                  var controller = Beans.get(BeanVisuController)
+                  controller.fsm.transition("play")
+                  controller.sfxService.play("menu-select-entry")
                 }),
                 callbackData: config,
                 onMouseReleasedLeft: function() {
@@ -747,8 +829,9 @@ function VisuMenu(_config = null) constructor {
               label: { 
                 text: "Resume (EDITOR)",
                 callback: new BindIntent(function() {
-                  Beans.get(BeanVisuController).fsm.dispatcher.send(new Event("transition", { name: "play" }))
-                  Beans.get(BeanVisuController).sfxService.play("menu-select-entry")
+                  var controller = Beans.get(BeanVisuController)
+                  controller.fsm.transition("play")
+                  controller.sfxService.play("menu-select-entry")
                 }),
                 callbackData: config,
                 onMouseReleasedLeft: function() {
@@ -1356,7 +1439,7 @@ function VisuMenu(_config = null) constructor {
                 Visu.settings.setValue("visu.graphics.timing-method", value).save()
                 var controller = Beans.get(BeanVisuController)
                 var timingMethod = TimingMethod.get(Visu.settings.getValue("visu.graphics.timing-method"))
-                controller.displayService.setTimingMethod(timingMethod)
+                Beans.get(BeanDisplayService).setTimingMethod(timingMethod)
                 display_reset(display_aa, Visu.settings.getValue("visu.graphics.vsync", true))
                 controller.sfxService.play("menu-use-entry")
               },
@@ -1388,7 +1471,7 @@ function VisuMenu(_config = null) constructor {
                 Visu.settings.setValue("visu.graphics.timing-method", value).save()
                 var controller = Beans.get(BeanVisuController)
                 var timingMethod = TimingMethod.get(Visu.settings.getValue("visu.graphics.timing-method"))
-                controller.displayService.setTimingMethod(timingMethod)
+                Beans.get(BeanDisplayService).setTimingMethod(timingMethod)
                 display_reset(display_aa, Visu.settings.getValue("visu.graphics.vsync", true))
                 controller.sfxService.play("menu-use-entry")
               },
@@ -1790,13 +1873,13 @@ function VisuMenu(_config = null) constructor {
               text: "Fullscreen",
               callback: new BindIntent(function() {
                 var controller = Beans.get(BeanVisuController)
-                var fullscreen = controller.displayService.getFullscreen()
-                controller.displayService.setFullscreen(!fullscreen)
+                var fullscreen = Beans.get(BeanDisplayService).getFullscreen()
+                Beans.get(BeanDisplayService).setFullscreen(!fullscreen)
                 Visu.settings.setValue("visu.fullscreen", !fullscreen).save()
                 Beans.get(BeanVisuController).sfxService.play("menu-use-entry")
 
                 if (fullscreen && Visu.settings.getValue("visu.borderless-window")) {
-                  controller.displayService.center()
+                  Beans.get(BeanDisplayService).center()
                 }
               }),
               onMouseReleasedLeft: function() {
@@ -1807,16 +1890,16 @@ function VisuMenu(_config = null) constructor {
               label: { text: "" },
               callback: function() {
                 var controller = Beans.get(BeanVisuController)
-                var fullscreen = controller.displayService.getFullscreen()
-                controller.displayService.setFullscreen(!fullscreen)
+                var fullscreen = Beans.get(BeanDisplayService).getFullscreen()
+                Beans.get(BeanDisplayService).setFullscreen(!fullscreen)
                 Visu.settings.setValue("visu.fullscreen", !fullscreen).save()
                 Beans.get(BeanVisuController).sfxService.play("menu-use-entry")
                 if (fullscreen && Visu.settings.getValue("visu.borderless-window")) {
-                  controller.displayService.center()
+                  Beans.get(BeanDisplayService).center()
                 }
               },
               updateCustom: function() {
-                this.label.text = Beans.get(BeanVisuController).displayService.getFullscreen() ? VISU_MENU_BUTTON_INPUT_ENTRY_TRUE_TEXT : VISU_MENU_BUTTON_INPUT_ENTRY_FALSE_TEXT
+                this.label.text = Beans.get(BeanDisplayService).getFullscreen() ? VISU_MENU_BUTTON_INPUT_ENTRY_TRUE_TEXT : VISU_MENU_BUTTON_INPUT_ENTRY_FALSE_TEXT
                 this.label.alpha = this.label.text == VISU_MENU_BUTTON_INPUT_ENTRY_TRUE_TEXT ? 1.0 : 0.3
               },
               onMouseReleasedLeft: function() {
@@ -1835,8 +1918,8 @@ function VisuMenu(_config = null) constructor {
               text: "Borderless window",
               callback: new BindIntent(function() {
                 var controller = Beans.get(BeanVisuController)
-                var borderlessWindow = controller.displayService.getBorderlessWindow()
-                controller.displayService.setBorderlessWindow(!borderlessWindow)
+                var borderlessWindow = Beans.get(BeanDisplayService).getBorderlessWindow()
+                Beans.get(BeanDisplayService).setBorderlessWindow(!borderlessWindow)
                 Visu.settings.setValue("visu.borderless-window", !borderlessWindow).save()
                 Beans.get(BeanVisuController).sfxService.play("menu-use-entry")
               }),
@@ -1848,13 +1931,13 @@ function VisuMenu(_config = null) constructor {
               label: { text: "" },
               callback: function() {
                 var controller = Beans.get(BeanVisuController)
-                var borderlessWindow = controller.displayService.getBorderlessWindow()
-                controller.displayService.setBorderlessWindow(!borderlessWindow)
+                var borderlessWindow = Beans.get(BeanDisplayService).getBorderlessWindow()
+                Beans.get(BeanDisplayService).setBorderlessWindow(!borderlessWindow)
                 Visu.settings.setValue("visu.borderless-window", !borderlessWindow).save()
                 Beans.get(BeanVisuController).sfxService.play("menu-use-entry")
               },
               updateCustom: function() {
-                this.label.text = Beans.get(BeanVisuController).displayService.getBorderlessWindow() ? VISU_MENU_BUTTON_INPUT_ENTRY_TRUE_TEXT : VISU_MENU_BUTTON_INPUT_ENTRY_FALSE_TEXT
+                this.label.text = Beans.get(BeanDisplayService).getBorderlessWindow() ? VISU_MENU_BUTTON_INPUT_ENTRY_TRUE_TEXT : VISU_MENU_BUTTON_INPUT_ENTRY_FALSE_TEXT
                 this.label.alpha = this.label.text == VISU_MENU_BUTTON_INPUT_ENTRY_TRUE_TEXT ? 1.0 : 0.3
               },
               onMouseReleasedLeft: function() {
@@ -2194,9 +2277,9 @@ function VisuMenu(_config = null) constructor {
 
                 var scaleIntent = Struct.getIfType(this.context, "scaleIntent", Number, Visu.settings.getValue("visu.interface.scale"))
                 Visu.settings.setValue("visu.interface.scale", scaleIntent).save()
-                Beans.get(BeanVisuController).displayService.scale = scaleIntent
-                Beans.get(BeanVisuController).displayService.state = "required"
-                Beans.get(BeanVisuController).displayService.timer.reset().finish()
+                Beans.get(BeanDisplayService).scale = scaleIntent
+                Beans.get(BeanDisplayService).state = "required"
+                Beans.get(BeanDisplayService).timer.reset().finish()
 
                 Beans.get(BeanVisuController).visuRenderer.fadeTimer.reset().time = -0.33
               }),
@@ -2206,7 +2289,7 @@ function VisuMenu(_config = null) constructor {
               },
               preRender: function() {
                 var scale = Struct.getIfType(this.context, "scaleIntent", Number, Visu.settings.getValue("visu.interface.scale"))
-                var displayService = Beans.get(BeanVisuController).displayService
+                var displayService = Beans.get(BeanDisplayService)
                 var width = Math.getEvenCeil(displayService.getWidth() / scale)
                 var height = Math.getEvenCeil(displayService.getHeight() / scale)
                 this.label.text = $"Apply GUI Scale\n[ {width} x {height} ]"
@@ -2588,7 +2671,7 @@ function VisuMenu(_config = null) constructor {
           config: {
             layout: { type: UILayoutType.VERTICAL },
             label: { 
-              text: "Shoot with mouse",
+              text: "Enable mouse aim",
               callback: new BindIntent(function() {
                 var value = Visu.settings.getValue("visu.developer.mouse-shoot")
                 Visu.settings.setValue("visu.developer.mouse-shoot", !value).save()

@@ -1,8 +1,11 @@
 ///@package io.alkapivo.visu
 
 #macro BeanVisuController "VisuController"
-///@param {String} layerName
-function VisuController(layerName) constructor {
+///@param {?Struct} [config]
+function VisuController(config = null): Service(config) constructor {
+
+  ///@type {String}
+  layerName = Struct.getIfType(config, "layerName", String, "instance_main")
 
   ///@type {GMLayer}
   layerId = Assert.isType(Scene.getLayer(layerName), GMLayer,
@@ -21,7 +24,7 @@ function VisuController(layerName) constructor {
   fsm = VisuStateMachine(this, BeanVisuController)
 
   ///@type {VisuTrackLoader}
-  loader = new VisuTrackLoader(this)
+  loader = new VisuTrackLoader()
 
   ///@type {Server}
   server = new Server({
@@ -66,27 +69,18 @@ function VisuController(layerName) constructor {
   })
 
   ///@type {UIService}
-  uiService = new UIService(this)
-
-  ///@type {DisplayService}
-  displayService = new DisplayService(this, { 
-    minWidth: 800, 
-    minHeight: 480,
-    windowWidth: Visu.settings.getValue("visu.window.width", 1440),
-    windowHeight: Visu.settings.getValue("visu.window.height", 900),
-    scale: Visu.settings.getValue("visu.interface.scale"),
-  })
+  uiService = new UIService()
 
   ///@type {ParticleService}
   particleService = new ParticleService({ 
-    layerName: layerName,
+    layerName: this.layerName,
     getStaticTemplates: function() {
       return Visu.assets().particleTemplates
     },
   })
 
   ///@type {TrackService}
-  trackService = new TrackService(this, {
+  trackService = new TrackService({
     handlers: new Map(String, Struct)
       .merge(
         DEFAULT_TRACK_EVENT_HANDLERS,
@@ -101,7 +95,7 @@ function VisuController(layerName) constructor {
         Struct.set(handler, "run", Struct.getIfType(handler, "run", Callable, Lambda.dummy))
       }),
     isTrackLoaded: function() {
-      var stateName = this.context.fsm.getStateName()
+      var stateName = Beans.get(BeanVisuController).fsm.getStateName()
       return Core.isType(this.track, Track) 
           && (stateName == "play" 
           || stateName == "pause" 
@@ -112,19 +106,19 @@ function VisuController(layerName) constructor {
   })
 
   ///@type {PlayerService}
-  playerService = new PlayerService(this)
+  playerService = new PlayerService()
 
 	///@type {ShroomService}
-  shroomService = new ShroomService(this)
+  shroomService = new ShroomService()
 
 	///@type {BulletService}
-  bulletService = new BulletService(this)
+  bulletService = new BulletService()
 
   ///@type {CoinService}
   coinService = new CoinService()
 
   ///@type {GridService}
-  gridService = new GridService(this)
+  gridService = new GridService()
 
   ///@type {VideoService}
   videoService = new VideoService()
@@ -133,13 +127,13 @@ function VisuController(layerName) constructor {
   sfxService = new SFXService()
 
   ///@type {SubtitleService}
-  subtitleService = new SubtitleService(this)
+  subtitleService = new SubtitleService()
 
   ///@type {VEBrushService}
   brushService = new VEBrushService()
 
   ///@type {VisuRenderer}
-  visuRenderer = new VisuRenderer(this)
+  visuRenderer = new VisuRenderer()
 
   ///@type {VisuMenu}
   menu = new VisuMenu()
@@ -147,34 +141,26 @@ function VisuController(layerName) constructor {
   ///@type {EventPump}
   dispatcher = new EventPump(this, new Map(String, Callable, {
     "game-over": function(event) {
-      this.fsm.dispatcher.send(new Event("transition", { name: "game-over" }))
+      this.fsm.transition("game-over")
     },
     "load": function(event) {
-      this.fsm.dispatcher.send(new Event("transition", { 
-        name: "load", 
-        data: event.data
-      }))
+      this.fsm.transition("load", event.data)
     },
     "play": function(event) {
-      if (Core.isType(this.fsm.currentState, FSMState)
-          && this.fsm.currentState == "play") {
+      if (this.fsm.currentState != null && this.fsm.currentState == "play") {
         return
       }
-
-      this.fsm.dispatcher.send(new Event("transition", { name: "play" }))
+      this.fsm.transition("play")
     },
     "pause": function(event) {
-      if (Core.isType(this.fsm.currentState, FSMState)
-          && this.fsm.currentState == "pause") {
+      if (this.fsm.currentState != null && this.fsm.currentState == "pause") {
         return
       }
 
-      this.fsm.dispatcher.send(new Event("transition", Struct
-        .appendUnique({ name: "pause" }, event.data)))
+      this.fsm.transition("pause", event.data)
     },
     "rewind": function(event) {
-      if (Core.isType(this.fsm.currentState, FSMState)
-          && this.fsm.currentState == "rewind") {
+      if (this.fsm.currentState != null && this.fsm.currentState == "rewind") {
         return
       }
 
@@ -199,11 +185,11 @@ function VisuController(layerName) constructor {
       this.fsm.dispatcher.execute(fsmEvent)
     },
     "quit": function(event) {
-      this.fsm.dispatcher.send(new Event("transition", { name: "quit" }))
+      this.fsm.transition("quit")
     },
     "spawn-popup": function(event) {
       var _editor = Beans.get(Visu.modules().editor.controller)
-      if (Optional.is(_editor)) {
+      if (_editor != null) {
         _editor.popupQueue.send(new Event("push", event.data))
       }
     },
@@ -242,14 +228,6 @@ function VisuController(layerName) constructor {
   renderGUITimer = new DebugTimer("renderGUITimer")
 
   ///@private
-  ///@type {Boolean}
-  renderEnabled = true
-
-  ///@private
-  ///@type {Boolean}
-  renderGUIEnabled = true
-
-  ///@private
   ///@type {?Promise}
   watchdogPromise = null
 
@@ -262,7 +240,6 @@ function VisuController(layerName) constructor {
   services = new Array(Struct, GMArray.map([
     "fsm",
     "loader",
-    "displayService",
     "dispatcher",
     "executor",
     "videoService",
@@ -295,20 +272,6 @@ function VisuController(layerName) constructor {
       struct: Assert.isType(Struct.get(controller, name), Struct),
     }
   }, this))
-
-  ///@param {Boolean} value
-  ///@return {VisuController}
-  setRenderEnabled = function(value) {
-    this.renderEnabled = value
-    return this
-  }
-
-  ///@param {Boolean} value
-  ///@return {VisuController}
-  setRenderGUIEnabled = function(value) {
-    this.renderEnabled = value
-    return this
-  }
 
   ///@param {String} name
   ///@return {Boolean}
@@ -355,15 +318,15 @@ function VisuController(layerName) constructor {
   ///@private
   ///@return {VisuController}
   init = function() {
-    this.displayService
-      .setCursor(Cursor.DEFAULT)
+    var displayService = Beans.get(BeanDisplayService)
+    displayService.setCursor(Cursor.DEFAULT)
     if (!VISU_DISPLAY_SERVICE_SETUP) {
       var width = Visu.settings.getValue("visu.window.width"),
       var height = Visu.settings.getValue("visu.window.height")
       var fullscreen = Visu.settings.getValue("visu.fullscreen",)
       var borderlessWindow = Visu.settings.getValue("visu.borderless-window")
       var timingMethod = TimingMethod.get(Visu.settings.getValue("visu.graphics.timing-method"))
-      this.displayService
+      displayService
         .resize(width, height)
         .setBorderlessWindow(borderlessWindow)
         .setFullscreen(fullscreen)
@@ -427,15 +390,16 @@ function VisuController(layerName) constructor {
   ///@private
   ///@return {VisuController}
   updateCursor = function() {
-    var cursor = this.displayService.getCursor()
+    var displayService = Beans.get(BeanDisplayService)
+    var cursor = displayService.getCursor()
     var editor = Beans.get(Visu.modules().editor.controller)
     if (editor != null) {
       if (editor.renderUI && cursor == Cursor.NONE && cursor_sprite == -1) {
-        this.displayService.setCursor(Cursor.DEFAULT)
+        displayService.setCursor(Cursor.DEFAULT)
       } else if (!editor.renderUI && !this.menu.enabled && cursor != Cursor.NONE) {
-        this.displayService.setCursor(Cursor.NONE)
+        displayService.setCursor(Cursor.NONE)
       } else if (!editor.renderUI && this.menu.enabled && cursor == Cursor.NONE) {
-        this.displayService.setCursor(Cursor.DEFAULT)
+        displayService.setCursor(Cursor.DEFAULT)
       }
 
       if (!editor.renderUI && cursor_sprite != -1) {
@@ -447,17 +411,17 @@ function VisuController(layerName) constructor {
       }
       
       if (!this.menu.enabled && cursor != Cursor.NONE) {
-        this.displayService.setCursor(Cursor.NONE)
+        displayService.setCursor(Cursor.NONE)
       } else if (this.menu.enabled && cursor == Cursor.NONE) {
-        this.displayService.setCursor(Cursor.DEFAULT)
+        displayService.setCursor(Cursor.DEFAULT)
       }
     }
 
-    if (cursor_sprite == -1 && is_debug_overlay_open() && this.displayService.getCursor() == Cursor.NONE) {
-      this.displayService.setCursor(Cursor.DEFAULT)
+    if (cursor_sprite == -1 && is_debug_overlay_open() && displayService.getCursor() == Cursor.NONE) {
+      displayService.setCursor(Cursor.DEFAULT)
     }
 
-    if (cursor_sprite != -1 && this.displayService.getCursor() != Cursor.NONE) {
+    if (cursor_sprite != -1 && displayService.getCursor() != Cursor.NONE) {
       cursor_sprite = -1
     }
 
@@ -528,15 +492,16 @@ function VisuController(layerName) constructor {
   ///@return {VisuController}
   updateUIService = function() {
     try {
-      if (this.displayService.state == "resized") { 
+      var displayService = Beans.get(BeanDisplayService)
+      if (displayService.state == "resized") { 
         ///@description reset UI timers after resize to avoid ghost effect
         this.uiService.containers.forEach(this.resetUITimer)
 
-        Visu.settings.setValue("visu.fullscreen", this.displayService.getFullscreen()).save()
-        if (!this.displayService.getFullscreen()) {
+        Visu.settings.setValue("visu.fullscreen", displayService.getFullscreen()).save()
+        if (!displayService.getFullscreen()) {
           Visu.settings
-            .setValue("visu.window.width", this.displayService.getWidth())
-            .setValue("visu.window.height", this.displayService.getHeight())
+            .setValue("visu.window.width", displayService.getWidth())
+            .setValue("visu.window.height", displayService.getHeight())
             .save()
         }
       }
@@ -680,8 +645,7 @@ function VisuController(layerName) constructor {
     Core.printStackTrace().printException(exception)
     this.send(new Event("spawn-popup", { message: message }))
 
-    var stateName = this.trackService.isTrackLoaded() ? "pause" : "idle"
-    this.fsm.dispatcher.send(new Event("transition", { name: stateName }))
+    this.fsm.transition(this.trackService.isTrackLoaded() ? "pause" : "idle")
 
     var editorIOConstructor = Core.getConstructor(Visu.modules().editor.io)
     if (Optional.is(editorIOConstructor)) {
@@ -739,7 +703,7 @@ function VisuController(layerName) constructor {
     return this.dispatcher.send(event)
   }
 
-  ///@return {VisuController}
+  //@return {VisuController}
   update = function() {
     this.updateDebugTimer.start()
     this.updateDeltaTimeMode()
@@ -758,7 +722,7 @@ function VisuController(layerName) constructor {
   render = function() {
     this.renderTimer.start()
     GPU.set.colorWrite(true, true, true, true)
-    if (!this.renderEnabled) {
+    if (!this.enabled) {
       this.renderTimer.finish()
       return this
     }
@@ -791,7 +755,7 @@ function VisuController(layerName) constructor {
   ///@return {VisuController}
   renderGUI = function() {
     this.renderGUITimer.start()
-    if (!this.renderGUIEnabled) {
+    if (!this.enabled) {
       this.renderGUITimer.finish()
       return this
     }
@@ -950,7 +914,11 @@ function VisuController(layerName) constructor {
   }
 
   this.init()
+
+
 }
+
+
 
 /* 
 Example game save
