@@ -182,7 +182,7 @@ function Track(json, config = null) constructor {
   parseTrackChannel = Core.isType(Struct.get(config, "parseTrackChannel"), Callable)
     ? method(this, config.parseTrackChannel)
     : function(channel, index, config) {
-        //Logger.debug("Track", $"Parse channel '{channel.name}' at index {index}")
+        /**///@log.level Logger.debug("Track", $"Parse channel '{channel.name}' at index {index}")
         return new TrackChannel({ 
           name: Assert.isType(Struct.get(channel, "name"), String),
           events: Assert.isType(Struct.get(channel, "events"), GMArray),
@@ -489,7 +489,7 @@ function TrackChannel(json, config = null) constructor {
       var lastExecutedEvent = this.pointer != null ? this.events.get(this.pointer) : null
       var trackEvent = this.events.get(index)
       this.events.remove(index)
-      //Logger.debug("TrackChannel", $"TrackEvent removed: channel: '{this.name}', timestamp: {trackEvent.timestamp}, callable: '{trackEvent.callableName}'")
+      /**///@log.level Logger.debug("TrackChannel", $"TrackEvent removed: channel: '{this.name}', timestamp: {trackEvent.timestamp}, callable: '{trackEvent.callableName}'")
       if (this.pointer == null) {
         return this
       }
@@ -566,7 +566,7 @@ function TrackChannel(json, config = null) constructor {
           continue
         }
 
-        //Logger.debug("Track", $"(channel: '{this.name}', timestamp: {timestamp}) dispatch event: '{event.callableName}'")
+        /**///@log.level Logger.debug("Track", $"(channel: '{this.name}', timestamp: {timestamp}) dispatch event: '{event.callableName}'")
         this.executeEventCallable(event, this)
       }
 

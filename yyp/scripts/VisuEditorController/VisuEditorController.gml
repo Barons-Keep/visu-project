@@ -301,7 +301,7 @@ function VisuEditorController(config = null): Service(config) constructor {
     "projectModal",
     "autosave"
   ], function(name, index, editor) {
-    Logger.debug(BeanVisuEditorController, $"Load service '{name}'")
+    /**///@log.level Logger.debug(BeanVisuEditorController, $"Load service '{name}'")
     return {
       name: name,
       struct: Assert.isType(Struct.get(editor, name), Struct),

@@ -68,7 +68,7 @@ function SoundService(config = null): Service(config) constructor {
   ///@param {?SoundIntent} [intent]
   ///@return {SoundService}
   loadOGG = function(name, path, intent = null) {
-    Logger.debug(BeanSoundService, $"Load OGG sound '{name}'\n{path}")
+    /**///@log.level Logger.debug(BeanSoundService, $"Load OGG sound '{name}'\n{path}")
     var stream = audio_create_stream(path)
     this.sounds.add(stream, name)
 

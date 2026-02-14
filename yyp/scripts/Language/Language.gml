@@ -20,7 +20,7 @@ function LanguagePack(json) constructor {
   labels = new Map(String, String)
   if (Core.isType(Struct.get(json, "labels"), Struct)) {
     Struct.forEach(json.labels, function(value, key, labels) {
-      Logger.debug("LanguagePack", $"Load label {key}")
+      /**///@log.level Logger.debug("LanguagePack", $"Load label {key}")
       labels.set(key, value)
     }, this.labels)
   }

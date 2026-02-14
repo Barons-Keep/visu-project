@@ -225,6 +225,9 @@ function PlayerStats(_player, json) constructor {
       return this.stats.force.get()
     },
     onLevelUp: function() {
+      var to = this.stats.force.get()
+      var from = to - 1
+      /*//@log.level*/ Logger.debug("Player", $"Player force advanced from level {from} to level {to}")
       Beans.get(BeanVisuController).sfxService.play("player-force-level-up")
       return this
     }
@@ -264,6 +267,9 @@ function PlayerStats(_player, json) constructor {
       return this.stats.point.get()
     },
     onLevelUp: function() {
+      var to = this.stats.point.get()
+      var from = to - 1
+      /*//@log.level*/ Logger.debug("Player", $"Player point advanced from level {from} to level {to}")
       this.stats.life.apply(1)
       return this
     }
@@ -278,10 +284,12 @@ function PlayerStats(_player, json) constructor {
       var controller = Beans.get(BeanVisuController)
       var value = this.get()
       if (previous < value) {
+        /*//@log.level*/ Logger.debug("Player", $"Bombs increased from {previous} to {value}")
         controller.visuRenderer.hudRenderer.sendGlitchEvent()
         controller.sfxService.play("player-collect-bomb")
         //Core.print("Bomb added from", previous, "to", value)
       } else if (previous > value) {
+        /*//@log.level*/ Logger.debug("Player", $"Bomb decreased from {previous} to {value}")
         this.stats.setBombCooldown(5.0)
         this.stats.setGodModeCooldown(5.0)
 
@@ -502,10 +510,11 @@ function PlayerStats(_player, json) constructor {
       var controller = Beans.get(BeanVisuController)
       var value = this.get()
       if (previous < value) {
+        /*//@log.level*/ Logger.debug("Player", $"Life increased from {previous} to {value}")
         controller.visuRenderer.hudRenderer.sendGlitchEvent()
         controller.sfxService.play("player-collect-life")
-        //Core.print("Life added from", previous, "to", value) 
       } else if (previous > value) {
+        /*//@log.level*/ Logger.debug("Player", $"Life decreased from {previous} to {value}")
         var view = controller.gridService.view
         this.stats.setGodModeCooldown(5.0)
 
@@ -621,12 +630,14 @@ function PlayerStats(_player, json) constructor {
       var editor = Beans.get(Visu.modules().editor.controller)
       if (Visu.settings.getValue("visu.god-mode")
           || (editor != null && editor.renderUI)) {
+        /*//@log.level*/ Logger.debug("Player", $"GOD MODE: respawn is possible")
         this.value = 3
         Beans.get(BeanVisuController)
           .send(new Event("spawn-popup", { 
             message: "GOD-MODE: respawning player"
           }))
       } else {
+        /*//@log.level*/ Logger.debug("Player", $"GAME OVER: respawn is impossible")
         var controller = Beans.get(BeanVisuController)
         controller.send(new Event("game-over"))
       }

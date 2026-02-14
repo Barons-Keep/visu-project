@@ -158,7 +158,7 @@ function Settings(_path) constructor {
       var file = FileUtil.readFileSync(this.path)
       var data = JSON.parse(file.getData()).data
       GMArray.forEach(data, function(entry, index, settings) {
-        /*//@log.level*/ Logger.debug("Settings", $"Load SettingEntry '{entry.name}'")
+        /**///@log.level Logger.debug("Settings", $"Load SettingEntry '{entry.name}'")
         settings.set(new SettingEntry(entry))
       }, this)
     } catch (exception) {
@@ -182,7 +182,7 @@ function Settings(_path) constructor {
           try {
             var data = JSON.parse(result.data).data
             GMArray.forEach(data, function(entry, index, settings) {
-              /*//@log.level*/ Logger.debug("Settings", $"Load SettingEntry '{entry.name}'")
+              /**///@log.level Logger.debug("Settings", $"Load SettingEntry '{entry.name}'")
               settings.set(new SettingEntry(entry))
             }, settings)
           } catch (exception) {

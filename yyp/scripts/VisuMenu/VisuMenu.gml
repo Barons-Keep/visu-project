@@ -116,9 +116,8 @@ function factoryPlayerKeyboardKeyEntryConfig(name, text) {
           : (mouse_wheel_down()
             ? MouseButtonType.WHEEL_DOWN
             : mouse_button)
-        Logger.debug("VisuMenu", $"lastMouseButton, {lastMouseButton}")
-        var lastEventType = (lastKey != vk_nokey ? "keyboard" : (lastMouseButton != mb_none ? "mouse" : null))
 
+        var lastEventType = (lastKey != vk_nokey ? "keyboard" : (lastMouseButton != mb_none ? "mouse" : null))
         if (lastEventType == null) {
           return
         }

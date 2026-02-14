@@ -46,7 +46,7 @@ function FileService(config = null): Service(config) constructor {
               var path = task.state.path
               var data = task.state.buffer.get()
               if (status) {
-                Logger.info(BeanFileService, $"open-file-buffer: success\n{path}")
+                /*//@log.level*/ Logger.info(BeanFileService, $"open-file-buffer: success\n{path}")
                 task.fullfill(new File({ path: path, data: data }))
               } else {
                 Logger.warn(BeanFileService, $"open-file-buffer: failure, status: {status}\n{path}")
@@ -61,7 +61,7 @@ function FileService(config = null): Service(config) constructor {
         })
         .whenFinish(function() {
           var path = this.state.path
-          Logger.info(BeanFileService, $"open-file-buffer: free\n{path}")
+          /*//@log.level*/ Logger.info(BeanFileService, $"open-file-buffer: free\n{path}")
           this.state.buffer.free()
         })
 
@@ -143,7 +143,7 @@ function FileService(config = null): Service(config) constructor {
 
               var path = task.state.path
               if (status) {
-                Logger.info(BeanFileService, $"save-file-buffer: success\n{path}")
+                /*//@log.level*/ Logger.info(BeanFileService, $"save-file-buffer: success\n{path}")
                 task.fullfill()
               } else {
                 Logger.warn(BeanFileService, $"save-file-buffer: failure\n{path}")

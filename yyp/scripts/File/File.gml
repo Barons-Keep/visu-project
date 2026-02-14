@@ -235,7 +235,7 @@ function _FileUtil() constructor {
 
     file_text_write_string(_file, file.getData())
     file_text_close(_file)
-    Logger.info("File", $"save-file-sync successfully: {path}")
+    /**///@log.level Logger.info("File", $"save-file-sync successfully: {path}")
   }
 
   ///@param {String} _path

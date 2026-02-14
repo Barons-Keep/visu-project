@@ -69,7 +69,7 @@ function VEBrushService(): Service() constructor {
     }, template.name)
 
     if (index != null) {
-      Logger.info("VEBrushService", $"removeTemplate(): Template of type '{template.type}' removed: '{template.name}'")
+      /**///@log.level Logger.info("VEBrushService", $"removeTemplate(): Template of type '{template.type}' removed: '{template.name}'")
       templates.remove(index)
     } else {
       Logger.warn("VEBrushService", $"removeTemplate(): Template of type '{template.type}' wasn't found: '{template.name}'")

@@ -157,7 +157,7 @@ function ParticleService(config = null): Service() constructor {
     var template = this.getTemplate(name)
     if (template != null) {
       if (template.particle == null) {
-        Logger.debug("ParticleService", $"Add new Particle Type, name: {name}")
+        /**///@log.level Logger.debug("ParticleService", $"Add new Particle Type, name: {name}")
         template.particle = new Particle(template)
       }
 

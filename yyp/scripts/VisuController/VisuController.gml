@@ -250,7 +250,7 @@ function VisuController(config = null): Service(config) constructor {
     "menu",
     "visuRenderer"
   ], function(name, index, controller) {
-    Logger.debug(BeanVisuController, $"Load service '{name}'")
+    /**///@log.level Logger.debug(BeanVisuController, $"Load service '{name}'")
     return {
       name: name,
       struct: Assert.isType(Struct.get(controller, name), Struct),
@@ -269,7 +269,7 @@ function VisuController(config = null): Service(config) constructor {
     "subtitleService",
     "coinService",
   ], function(name, index, controller) {
-    Logger.debug(BeanVisuController, $"Load gameplay service '{name}'")
+    /**///@log.level Logger.debug(BeanVisuController, $"Load gameplay service '{name}'")
     return {
       name: name,
       struct: Assert.isType(Struct.get(controller, name), Struct),

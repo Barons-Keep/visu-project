@@ -25,7 +25,7 @@ function SFXService(): Service() constructor {
   ///@param {SFX} sfx
   ///@return {SFXService}
   set = function(name, sfx) {
-    Logger.debug("SFXService", $"Set SFX \"{name}\".")
+    /**///@log.level Logger.debug("SFXService", $"Set SFX \"{name}\".")
     this.sfxs.set(name, sfx)
     return this
   }
@@ -45,7 +45,7 @@ function SFXService(): Service() constructor {
   ///@param {String} name
   ///@return {SFXService}
   remove = function(name) {
-    Logger.debug("SFXService", $"Remove SFX \"{name}\".")
+    /**///@log.level Logger.debug("SFXService", $"Remove SFX \"{name}\".")
     var sfx = this.get(name)
     if (Optional.is(sfx)) {
       sfx.play()

@@ -1213,7 +1213,7 @@ global.__VisuTemplateContainers = new Map(String, Callable, {
                   event.promise
                     .setState({
                       callback: function(prototype, json, key, acc) {
-                        //Logger.debug("VisuTrackLoader", $"Load shader '{key}'")
+                        /**///@log.level Logger.debug("VisuTrackLoader", $"Load shader '{key}'")
                         acc.set(key, new prototype(key, json))
                       },
                       acc: controller.shaderPipeline.templates,
@@ -1245,7 +1245,7 @@ global.__VisuTemplateContainers = new Map(String, Callable, {
                   event.promise
                     .setState({
                       callback: function(prototype, json, key, acc) {
-                        //Logger.debug("VisuTrackLoader", $"Load shroom template '{key}'")
+                        /**///@log.level Logger.debug("VisuTrackLoader", $"Load shroom template '{key}'")
                         acc.set(key, new prototype(key, json))
                       },
                       acc: controller.shroomService.templates,
@@ -1341,7 +1341,7 @@ global.__VisuTemplateContainers = new Map(String, Callable, {
                   event.promise
                     .setState({
                       callback: function(prototype, json, key, acc) {
-                        //Logger.debug("VisuTrackLoader", $"Load subtitle template '{key}'")
+                        /**///@log.level Logger.debug("VisuTrackLoader", $"Load subtitle template '{key}'")
                         acc.set(key, new prototype(key, json))
                       },
                       acc: controller.subtitleService.templates,
@@ -1373,7 +1373,7 @@ global.__VisuTemplateContainers = new Map(String, Callable, {
                   event.promise
                     .setState({
                       callback: function(prototype, json, key, acc) {
-                        //Logger.debug("VisuTrackLoader", $"Load particle template '{key}'")
+                        /**///@log.level Logger.debug("VisuTrackLoader", $"Load particle template '{key}'")
                         acc.set(key, new prototype(key, json))
                       },
                       acc: controller.particleService.templates,
