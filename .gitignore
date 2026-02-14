@@ -18,6 +18,12 @@ yyp/shaders/**/*.vsh
 # Tracks should be commited to https://github.com/Barons-Keep/visu-track
 yyp/datafiles/track/*
 
+# Exclude devtools
+yyp/datafiles/README.md
+yyp/datafiles/log.sh
+yyp/datafiles/package-gm.json
+yyp/datafiles/setup.sh
+
 # If all of your sprite sources are in this repo you can stick a "!" in front of this to track this file. Otherwise this file is machine-specific and should be ignored.
 sprites.import.json
 
