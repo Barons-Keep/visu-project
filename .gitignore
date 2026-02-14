@@ -5,6 +5,8 @@ yyp/tmp/*
 
 # gml sources should be synced with gm-cli tool
 yyp/scripts/**/*.gml
+yyp/objects/**/*.gml
+yyp/rooms/**/*.gml
 
 # Tracks should be commited to https://github.com/Barons-Keep/visu-track
 yyp/datafiles/track/*
