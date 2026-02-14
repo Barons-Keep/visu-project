@@ -3,6 +3,7 @@
 # arguments
 CLEAN_GM_MODULES=false
 EDITOR_ENABLED=false
+DEV_TOOLS=false
 
 # parse arguments
 while [[ $# -gt 0 ]]; do
@@ -13,6 +14,10 @@ while [[ $# -gt 0 ]]; do
     ;;
   -e|--editor)
     EDITOR_ENABLED=true
+    shift
+    ;;
+  -d|--devtools)
+    DEV_TOOLS=true
     shift
     ;;
   *)
@@ -45,3 +50,11 @@ gm-cli sync
 rm -rf ./yyp/datafiles/track
 cp -rv ./gm_modules/track/resource/datafiles/track/ ./yyp/datafiles/track/
 
+# install dev tools
+if [[ "$DEV_TOOLS" == true ]]; then
+  echo "Install dev tools"
+  cp -rv ./gm_modules/visu/resource/datafiles/README.md ./yyp/datafiles
+  cp -rv ./gm_modules/visu/resource/datafiles/package-gm.json ./yyp/datafiles
+  cp -rv ./gm_modules/visu/resource/datafiles/setup.sh ./yyp/datafiles
+  cp -rv ./gm_modules/visu/resource/datafiles/log.sh ./yyp/datafiles
+fi
