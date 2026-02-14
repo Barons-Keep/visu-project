@@ -1,12 +1,19 @@
-bin/*
+# Exclude package manager cache
 gm_modules/*
+
+# Exclude build artifacts from the repository
+bin/*
 yyp/out/*
 yyp/tmp/*
 
-# gml sources should be synced with gm-cli tool
+# GML source files should be synced using the gm-cli tool
 yyp/scripts/**/*.gml
 yyp/objects/**/*.gml
 yyp/rooms/**/*.gml
+
+# Shader source files should be synced using the gm-cli tool
+yyp/shaders/**/*.fsh
+yyp/shaders/**/*.vsh
 
 # Tracks should be commited to https://github.com/Barons-Keep/visu-track
 yyp/datafiles/track/*
