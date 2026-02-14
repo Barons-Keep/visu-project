@@ -740,7 +740,8 @@ function VETimeline(_editor) constructor {
                     "NORMAL": Struct.getDefault(difficulty, "NORMAL", true),
                     "HARD": Struct.getDefault(difficulty, "HARD", true),
                     "LUNATIC": Struct.getDefault(difficulty, "LUNATIC", true),
-                  }
+                  },
+                  "isMouseAim": Struct.getDefault(json, "isMouseAim", null),
                 }
               },
             }).channels.get(name), TrackChannel)

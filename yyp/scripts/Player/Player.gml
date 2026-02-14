@@ -923,14 +923,26 @@ function PlayerHandler(json) constructor {
       player.stats.dispatchDeath()
     }
 
+    var up = keyboard_check(vk_up)
+    var down = keyboard_check(vk_down)
+    var left = keyboard_check(vk_left)
+    var right = keyboard_check(vk_right)
     player.x = clamp(
-      player.x + calcSpeed(this.x, player, keys.left.on || mouseButtons.left.on, keys.right.on || mouseButtons.right.on, keys.focus.on || mouseButtons.focus.on),
+      player.x + calcSpeed(this.x, player, 
+        left || keys.left.on || mouseButtons.left.on,
+        right || keys.right.on || mouseButtons.right.on,
+        keys.focus.on || mouseButtons.focus.on
+      ),
       0.0,
       controller.gridService.width
     )
 
     player.y = clamp(
-      player.y + calcSpeed(this.y, player, keys.up.on || mouseButtons.up.on, keys.down.on || mouseButtons.down.on, keys.focus.on || mouseButtons.focus.on), 
+      player.y + calcSpeed(this.y, player,
+        up || keys.up.on || mouseButtons.up.on,
+        down || keys.down.on || mouseButtons.down.on,
+        keys.focus.on || mouseButtons.focus.on
+      ), 
       0.0, 
       controller.gridService.height
     )

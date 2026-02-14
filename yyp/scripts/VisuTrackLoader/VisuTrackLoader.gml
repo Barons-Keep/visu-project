@@ -312,7 +312,8 @@ function VisuTrackLoader(config = null): Service(config) constructor {
                                 "NORMAL": Struct.getDefault(difficulty, "NORMAL", true),
                                 "HARD": Struct.getDefault(difficulty, "HARD", true),
                                 "LUNATIC": Struct.getDefault(difficulty, "LUNATIC", true),
-                              }
+                              },
+                              "isMouseAim": Struct.getDefault(json, "isMouseAim", null),
                             }
                           },
                           parseEvent: (PRELOAD_TRACK_EVENT

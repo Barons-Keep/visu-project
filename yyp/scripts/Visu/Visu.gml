@@ -1343,12 +1343,13 @@ function _Visu() constructor {
       .set(new SettingEntry({ name: "visu.editor.timeline-zoom", type: SettingTypes.NUMBER, defaultValue: 10 }))
       .set(new SettingEntry({ name: "visu.editor.timeline-follow", type: SettingTypes.BOOLEAN, defaultValue: false }))
       .set(new SettingEntry({ name: "visu.editor.update-services", type: SettingTypes.BOOLEAN, defaultValue: false }))
-      .set(new SettingEntry({ name: "visu.keyboard.player.up", type: SettingTypes.NUMBER, defaultValue: KeyboardKeyType.ARROW_UP }))
-      .set(new SettingEntry({ name: "visu.keyboard.player.down", type: SettingTypes.NUMBER, defaultValue: KeyboardKeyType.ARROW_DOWN }))
-      .set(new SettingEntry({ name: "visu.keyboard.player.left", type: SettingTypes.NUMBER, defaultValue: KeyboardKeyType.ARROW_LEFT }))
-      .set(new SettingEntry({ name: "visu.keyboard.player.right", type: SettingTypes.NUMBER, defaultValue: KeyboardKeyType.ARROW_RIGHT }))
+      .set(new SettingEntry({ name: "visu.keyboard.player.up", type: SettingTypes.NUMBER, defaultValue: ord("W") }))
+      .set(new SettingEntry({ name: "visu.keyboard.player.down", type: SettingTypes.NUMBER, defaultValue: ord("S") }))
+      .set(new SettingEntry({ name: "visu.keyboard.player.left", type: SettingTypes.NUMBER, defaultValue: ord("A") }))
+      .set(new SettingEntry({ name: "visu.keyboard.player.right", type: SettingTypes.NUMBER, defaultValue: ord("D") }))
       .set(new SettingEntry({ name: "visu.keyboard.player.action", type: SettingTypes.NUMBER, defaultValue: ord("Z") }))
       .set(new SettingEntry({ name: "visu.keyboard.player.bomb", type: SettingTypes.NUMBER, defaultValue: ord("X") }))
+      .set(new SettingEntry({ name: "visu.260214.keyboard.wasd", type: SettingTypes.BOOLEAN, defaultValue: false }))
       .set(new SettingEntry({ name: "visu.keyboard.player.focus", type: SettingTypes.NUMBER, defaultValue: KeyboardKeyType.SHIFT }))
       .set(new SettingEntry({ name: "visu.mouse.player.up", type: SettingTypes.NUMBER, defaultValue: MouseButtonType.NONE }))
       .set(new SettingEntry({ name: "visu.mouse.player.down", type: SettingTypes.NUMBER, defaultValue: MouseButtonType.NONE }))
@@ -1433,6 +1434,23 @@ function _Visu() constructor {
     if (!Beans.exists(BeanVisuIO)) {
       Beans.add(Beans.factory(BeanVisuIO, GMServiceInstance, layerId,
         new VisuIO()))
+    }
+
+    if (!this.settings.getValue("visu.260214.keyboard.wasd", false)) {
+      Logger.debug("Visu", "Apply settings patch: visu.260214.keyboard.wasd")
+      this.settings
+        .setValue("visu.260214.keyboard.wasd", true)
+        .setValue("visu.keyboard.player.up", ord("W"))
+        .setValue("visu.keyboard.player.down", ord("S"))
+        .setValue("visu.keyboard.player.left", ord("A"))
+        .setValue("visu.keyboard.player.right", ord("D"))
+        .save()
+
+      var keyboard = Beans.get(BeanVisuIO).keyboards.get("player")
+      keyboard.setKey("up", this.settings.getValue("visu.keyboard.player.up", ord("W")))
+      keyboard.setKey("left", this.settings.getValue("visu.keyboard.player.left", ord("A")))
+      keyboard.setKey("down", this.settings.getValue("visu.keyboard.player.down", ord("S")))
+      keyboard.setKey("right", this.settings.getValue("visu.keyboard.player.right", ord("D")))
     }
 
     if (!Beans.exists(BeanVisuController)) {

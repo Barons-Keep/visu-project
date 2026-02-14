@@ -77,7 +77,7 @@ global.__view_track_event = {
     },
     run: function(data, channel) {
       var controller = Beans.get(BeanVisuController)
-      if (!controller.isChannelDifficultyValid(channel)) {
+      if (!controller.validateTrackChannelSettings(channel)) {
         return
       }
 
@@ -321,7 +321,7 @@ global.__view_track_event = {
           : c_white))
 
       var controller = Beans.get(BeanVisuController)
-      if (!controller.isChannelDifficultyValid(channel)) {
+      if (!controller.validateTrackChannelSettings(channel)) {
         return
       }
 
@@ -536,7 +536,7 @@ global.__view_track_event = {
     },
     run: function(data, channel) {
       var controller = Beans.get(BeanVisuController)
-      if (!controller.isChannelDifficultyValid(channel)) {
+      if (!controller.validateTrackChannelSettings(channel)) {
         return
       }
 
@@ -662,7 +662,7 @@ global.__view_track_event = {
     },
     run: function(data, channel) {
       var controller = Beans.get(BeanVisuController)
-      if (!controller.isChannelDifficultyValid(channel)) {
+      if (!controller.validateTrackChannelSettings(channel)) {
         return
       }
 

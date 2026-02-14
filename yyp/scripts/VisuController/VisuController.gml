@@ -14,6 +14,9 @@ function VisuController(config = null): Service(config) constructor {
   ///@type {Difficulty}
   difficulty = Difficulty.NORMAL
 
+  ///@type {Boolean}
+  isMouseAim = false
+
   ///@type {?VisuTrack}
   track = null
   
@@ -583,6 +586,8 @@ function VisuController(config = null): Service(config) constructor {
         Visu.settings.setValue("visu.difficulty", this.difficulty).save()
       }
 
+      this.isMouseAim = Visu.settings.getValue("visu.developer.mouse-shoot")
+
       if (this.trackService.isTrackLoaded()) {
         var ost = this.trackService.track.audio
         var ostVolume = Visu.settings.getValue("visu.audio.ost-volume")
@@ -685,11 +690,23 @@ function VisuController(config = null): Service(config) constructor {
     }
   }
 
-  ///@param {TrackChannel}
+  validateTrackChannelSettings = function(channel) {
+    var settings = Struct.get(channel, "settings")
+    return isChannelDifficultyValid(settings) && isMouseAimValid(settings)
+  }
+
+  ///@param {?Struct} settings
   ///@return {Boolean}
-  isChannelDifficultyValid = function(channel) {
-    var difficulties = Struct.get(Struct.get(channel, "settings"), "difficulty")
-    return !Optional.is(difficulties) || Struct.get(difficulties, this.difficulty) != false
+  isChannelDifficultyValid = function(settings) {
+    var difficulty = Struct.get(settings, "difficulty")
+    return difficulty == null || Struct.get(difficulty, this.difficulty) != false
+  }
+
+  ///@param {?Struct} settings
+  ///@return {Boolean}
+  isMouseAimValid = function(settings) {
+    var isMouseAim = Struct.get(settings, "isMouseAim")
+    return isMouseAim == null || isMouseAim == this.isMouseAim 
   }
   
   ///@return {Boolean}

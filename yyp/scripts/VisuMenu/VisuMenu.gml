@@ -222,6 +222,8 @@ function factoryPlayerKeyboardKeyEntryConfig(name, text) {
           keyboardText = $"Key: {keyboardText}"
           mouseText = mouseCode == MouseButtonType.NONE ? "" : $" | Mouse: {mouseText}"
         }
+
+        mouseText = Visu.settings.getValue("visu.developer.mouse-shoot") ? mouseText : ""
         this.label.text = $"{keyboardText}{mouseText}"
       },
       remapKeyTimer: new Timer(TAU, { loop: Infinity }),
@@ -573,6 +575,40 @@ function VisuMenu(_config = null) constructor {
               }
             },
           },
+        },
+        {
+          name: "open-track-setup_menu-button-input-entry_mouse-shoot",
+          template: VisuComponents.get("menu-button-input-entry"),
+          layout: VisuLayouts.get("menu-button-input-entry"),
+          config: {
+            layout: { type: UILayoutType.VERTICAL },
+            label: { 
+              text: "Enable mouse aim",
+              callback: new BindIntent(function() {
+                var value = Visu.settings.getValue("visu.developer.mouse-shoot")
+                Visu.settings.setValue("visu.developer.mouse-shoot", !value).save()
+                Beans.get(BeanVisuController).sfxService.play("menu-use-entry")
+              }),
+              onMouseReleasedLeft: function() {
+                this.callback()
+              },
+            },
+            input: {
+              label: { text: VISU_MENU_BUTTON_INPUT_ENTRY_TRUE_TEXT },
+              callback: function() {
+                var value = Visu.settings.getValue("visu.developer.mouse-shoot")
+                Visu.settings.setValue("visu.developer.mouse-shoot", !value).save()
+                Beans.get(BeanVisuController).sfxService.play("menu-use-entry")
+              },
+              updateCustom: function() {
+                this.label.text = Visu.settings.getValue("visu.developer.mouse-shoot") ? VISU_MENU_BUTTON_INPUT_ENTRY_TRUE_TEXT : VISU_MENU_BUTTON_INPUT_ENTRY_FALSE_TEXT
+                this.label.alpha = this.label.text == VISU_MENU_BUTTON_INPUT_ENTRY_TRUE_TEXT ? 1.0 : 0.3
+              },
+              onMouseReleasedLeft: function() {
+                this.callback()
+              },
+            }
+          }
         },
         {
           name: "open-track-setup_menu-button-entry_play",
@@ -1208,14 +1244,17 @@ function VisuMenu(_config = null) constructor {
       },
       content: new Array(Struct, [
         factoryCreditsTitle("ijwgRtbT", "Game design"),
-        factoryCreditsEntry("TywGRhb1", "Alkapivo"),
-        factoryCreditsEntry("h26GR3bc", "Baron"),
+        factoryCreditsEntry("TywGRhb1", "Alkapivo", "https://github.com/Alkapivo"),
+        factoryCreditsEntry("jkFuiRE3", "GOETIA", "https://github.com/ArsAzoetia"),
+        factoryCreditsEntry("jKf5Gkq4", "kattybratt", "https://github.com/kattybratt"),
+        factoryCreditsEntry("kOkllf43", "Nekomantikku", "https://github.com/Nekomantikku"),
         factoryCreditsTitle("nrmgjhgj", "Level design"),
-        factoryCreditsEntry("gKgVhDsT", "Alkapivo"),
-        factoryCreditsEntry("nT3VF4vl", "Baron"),
+        factoryCreditsEntry("gKgVhDsT", "Alkapivo", "https://github.com/Alkapivo"),
+        factoryCreditsEntry("kI5Gunb3", "kattybratt", "https://github.com/kattybratt"),
         factoryCreditsTitle("YU9WJfKr", "Music"),
         factoryCreditsEntry("GHR54bnv", "GOETIA - Death of the Muse - 01 Create and Yet Fate's Faw Avoid"),
         factoryCreditsEntry("G10ccQRd", "GOETIA - Cerecloth"),
+        factoryCreditsEntry("hIcGb6n4", "kattybratt - pulsar"),
         factoryCreditsEntry("I94zzBo7", "kedy_selma - Just To Create Something"),
         factoryCreditsEntry("Y6yNV8JN", "kedy_selma - Passion"),
         factoryCreditsEntry("anMlmEyW", "pikaro & PAXNKOXD - the memories fade but the feeling remains"),
@@ -2664,7 +2703,7 @@ function VisuMenu(_config = null) constructor {
             }
           }
         },
-                {
+        {
           name: "developer_menu-button-input-entry_mouse-shoot",
           template: VisuComponents.get("menu-button-input-entry"),
           layout: VisuLayouts.get("menu-button-input-entry"),

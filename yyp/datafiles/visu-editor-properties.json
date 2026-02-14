@@ -31,6 +31,6 @@
   "visu.editor.ui.brush-toolbar.inspector-view.init-ui-contanier.cooldown": 4.0,
   "visu.editor.ui.template-toolbar.inspector-view.init-ui-contanier.cooldown": 6.0,
   "visu.editor.ui.event-inspector.inspector-view.init-ui-contanier.cooldown": 8.0,
-  "visu.editor.io.mouse-moved.cooldown": 3.0,
+  "visu.editor.io.mouse-moved.cooldown":2.0,
   "end-property": null
 }
