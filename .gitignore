@@ -6,6 +6,9 @@ bin/*
 yyp/out/*
 yyp/tmp/*
 
+# Exclude backup files created by gm-cli generate
+yyp/visu-project.yyp.old
+
 # GML source files should be synced using the gm-cli tool
 yyp/scripts/**/*.gml
 yyp/objects/**/*.gml
