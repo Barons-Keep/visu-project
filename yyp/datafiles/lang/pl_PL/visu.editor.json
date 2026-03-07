@@ -1,0 +1,12 @@
+{
+  "version": "1",
+  "model": "io.alkapivo.core.lang.LanguagePack",
+  "data": {
+    "code": "pl_PL",
+    "labels": {
+      "visu.editor.hud.show-editor": "SHOW EDITOR [F5]",
+      
+      "visu.editor.json": "visu.editor.json"
+    }
+  }
+}

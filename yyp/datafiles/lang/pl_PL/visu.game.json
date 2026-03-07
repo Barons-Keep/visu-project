@@ -1,0 +1,13 @@
+{
+  "version": "1",
+  "model": "io.alkapivo.core.lang.LanguagePack",
+  "data": {
+    "code": "pl_PL",
+    "labels": {
+      "visu.gameplay.bomb": "BOMB {0} / {1}",
+      "visu.gameplay.bomb.start": "BOMB ACTIVATED",
+
+      "visu.game.json": "visu.game.json"
+    }
+  }
+}

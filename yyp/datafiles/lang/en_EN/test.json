@@ -1,10 +1,10 @@
 {
   "version": "1",
   "model": "io.alkapivo.core.lang.LanguagePack",
-  "data":{
+  "data": {
     "code": "en_EN",
     "labels": {
-      "test.language": "Test language with params: {0}, {1}"
+      "test.language": "Test language with params: {0}, {1}",
     }
   }
 }
