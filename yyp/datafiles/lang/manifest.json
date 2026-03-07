@@ -3,13 +3,13 @@
   "model": "io.alkapivo.core.lang.LanguageManifest",
   "data": {
     "en_EN": [
-      "en_EN/test.json",
+      "en_EN/core.json",
       "en_EN/visu.editor.json",
       "en_EN/visu.game.json",
       "en_EN/visu.menu.json"
     ],
     "pl_PL": [
-      "pl_PL/test.json",
+      "pl_PL/core.json",
       "pl_PL/visu.editor.json",
       "pl_PL/visu.game.json",
       "pl_PL/visu.menu.json"
