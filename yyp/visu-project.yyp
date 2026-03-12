@@ -187,6 +187,7 @@
     {"$GMIncludedFile":"","%Name":"player-service.test.json","CopyToMask":-1,"filePath":"datafiles/test","name":"player-service.test.json","resourceType":"GMIncludedFile","resourceVersion":"2.0",},
     {"$GMIncludedFile":"","%Name":"transformer.test.json","CopyToMask":-1,"filePath":"datafiles/test","name":"transformer.test.json","resourceType":"GMIncludedFile","resourceVersion":"2.0",},
     {"$GMIncludedFile":"","%Name":"utils.test.json","CopyToMask":-1,"filePath":"datafiles/test","name":"utils.test.json","resourceType":"GMIncludedFile","resourceVersion":"2.0",},
+    {"$GMIncludedFile":"","%Name":"demo-visual.json","CopyToMask":-1,"filePath":"datafiles/track","name":"demo-visual.json","resourceType":"GMIncludedFile","resourceVersion":"2.0",},
     {"$GMIncludedFile":"","%Name":"demo.json","CopyToMask":-1,"filePath":"datafiles/track","name":"demo.json","resourceType":"GMIncludedFile","resourceVersion":"2.0",},
     {"$GMIncludedFile":"","%Name":"brush_effect_config.json","CopyToMask":-1,"filePath":"datafiles/track/GOETIA/Death-of-the-Muse/Create-and-Yet-Fates-Faw-Avoid/brush","name":"brush_effect_config.json","resourceType":"GMIncludedFile","resourceVersion":"2.0",},
     {"$GMIncludedFile":"","%Name":"brush_effect_glitch.json","CopyToMask":-1,"filePath":"datafiles/track/GOETIA/Death-of-the-Muse/Create-and-Yet-Fates-Faw-Avoid/brush","name":"brush_effect_glitch.json","resourceType":"GMIncludedFile","resourceVersion":"2.0",},
