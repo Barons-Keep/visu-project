@@ -19,7 +19,7 @@
   "core.dialogue-designer.font.color-header": "#ffffff",
   "core.dialogue-designer.font.color-header-outline": "#000000",
   "core.dialogue-designer.font.color-hover": "#ffff00",
-  "core.dialogue-designer.font.color-hover-outline": "#ffff00",
+  "core.dialogue-designer.font.color-hover-outline": "#000000",
   "core.dialogue-designer.font": "font_consolas_18_regular",
   "core.dialogue-designer.font-header": "font_consolas_28_regular",
   "end-property": null
