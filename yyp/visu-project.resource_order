@@ -202,6 +202,7 @@
     {"name":"entity_track_event","order":5,"path":"scripts/entity_track_event/entity_track_event.yy",},
     {"name":"Enum","order":10,"path":"scripts/Enum/Enum.yy",},
     {"name":"Exception","order":2,"path":"scripts/Exception/Exception.yy",},
+    {"name":"FactFeature","order":14,"path":"scripts/FactFeature/FactFeature.yy",},
     {"name":"File","order":1,"path":"scripts/File/File.yy",},
     {"name":"FollowPlayerFeature","order":3,"path":"scripts/FollowPlayerFeature/FollowPlayerFeature.yy",},
     {"name":"FontService","order":1,"path":"scripts/FontService/FontService.yy",},
