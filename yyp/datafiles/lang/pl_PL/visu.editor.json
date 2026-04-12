@@ -4,7 +4,7 @@
   "data": {
     "code": "pl_PL",
     "labels": {
-      "visu.editor.hud.show-editor": "SHOW EDITOR [F5]",
+      "visu.editor.hud.show-editor": "POKAŻ EDYTOR [F5]",
       
       "visu.editor.json": "visu.editor.json"
     }

@@ -4,8 +4,8 @@
   "data": {
     "code": "pl_PL",
     "labels": {
-      "visu.gameplay.bomb": "BOMB {0} / {1}",
-      "visu.gameplay.bomb.start": "BOMB ACTIVATED",
+      "visu.gameplay.bomb": "BOMBA {0} / {1}",
+      "visu.gameplay.bomb.start": "BOMBA AKTYWOWANA",
 
       "visu.game.json": "visu.game.json"
     }

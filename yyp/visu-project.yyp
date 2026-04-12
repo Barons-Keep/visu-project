@@ -2,7 +2,7 @@
   "$GMProject":"v1",
   "%Name":"visu-project",
   "AudioGroups":[
-    {"$GMAudioGroup":"v1","%Name":"audiogroup_default","exportDir":"","name":"audiogroup_default","resourceType":"GMAudioGroup","resourceVersion":"2.0","targets":-1,},
+    {"$GMAudioGroup":"","%Name":"audiogroup_default","name":"audiogroup_default","resourceType":"GMAudioGroup","resourceVersion":"2.0","targets":-1,},
   ],
   "configs":{
     "children":[],
@@ -179,9 +179,9 @@
     {"$GMIncludedFile":"","%Name":"visu.menu.json","CopyToMask":-1,"filePath":"datafiles/lang/en_EN","name":"visu.menu.json","resourceType":"GMIncludedFile","resourceVersion":"2.0",},
     {"$GMIncludedFile":"","%Name":"manifest.json","CopyToMask":-1,"filePath":"datafiles/lang","name":"manifest.json","resourceType":"GMIncludedFile","resourceVersion":"2.0",},
     {"$GMIncludedFile":"","%Name":"core.json","CopyToMask":-1,"filePath":"datafiles/lang/pl_PL","name":"core.json","resourceType":"GMIncludedFile","resourceVersion":"2.0",},
-    {"$GMIncludedFile":"","%Name":"visu-menu.json","CopyToMask":-1,"filePath":"datafiles/lang/pl_PL","name":"visu-menu.json","resourceType":"GMIncludedFile","resourceVersion":"2.0",},
     {"$GMIncludedFile":"","%Name":"visu.editor.json","CopyToMask":-1,"filePath":"datafiles/lang/pl_PL","name":"visu.editor.json","resourceType":"GMIncludedFile","resourceVersion":"2.0",},
     {"$GMIncludedFile":"","%Name":"visu.game.json","CopyToMask":-1,"filePath":"datafiles/lang/pl_PL","name":"visu.game.json","resourceType":"GMIncludedFile","resourceVersion":"2.0",},
+    {"$GMIncludedFile":"","%Name":"visu.menu.json","CopyToMask":-1,"filePath":"datafiles/lang/pl_PL","name":"visu.menu.json","resourceType":"GMIncludedFile","resourceVersion":"2.0",},
     {"$GMIncludedFile":"","%Name":"log.sh","CopyToMask":-1,"filePath":"datafiles","name":"log.sh","resourceType":"GMIncludedFile","resourceVersion":"2.0",},
     {"$GMIncludedFile":"","%Name":"package-gm.json","CopyToMask":-1,"filePath":"datafiles","name":"package-gm.json","resourceType":"GMIncludedFile","resourceVersion":"2.0",},
     {"$GMIncludedFile":"","%Name":"README.md","CopyToMask":-1,"filePath":"datafiles","name":"README.md","resourceType":"GMIncludedFile","resourceVersion":"2.0",},

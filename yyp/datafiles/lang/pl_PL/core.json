@@ -5,6 +5,10 @@
     "code": "pl_PL",
     "labels": {
       "test.language": "Test language with params: {0}, {1}",
+      "en_EN": "Angielski",
+      "pl_PL": "Polski",
+
+      "core.json": "core.json"
     }
   }
 }
