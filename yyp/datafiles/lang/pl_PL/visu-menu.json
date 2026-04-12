@@ -4,7 +4,7 @@
   "data": {
     "code": "pl_PL",
     "labels": {
-           "visu.menu.aa": "Anti aliasing",
+      "visu.menu.aa": "Anti aliasing",
       "visu.menu.audio": "Audio",
       "visu.menu.auto-resize": "Auto-resize",
       "visu.menu.back": "Back",
@@ -21,6 +21,7 @@
       "visu.menu.controls.keyboard": "keyboard",
       "visu.menu.controls.mouse": "mouse",
       "visu.menu.controls": "Controls",
+      "visu.menu.controls.keyboard-and-mouse": "Keyboard & Mouse",
       "visu.menu.credits": "Credits",
       "visu.menu.debug.quit.hidden": "Render QUIT button",
       "visu.menu.debug.mode": "Debug mode",
@@ -40,6 +41,9 @@
       "visu.menu.frg.tx": "Render foreground textures",
       "visu.menu.fullscreen": "Fullscreen",
       "visu.menu.gameplay": "Game",
+      "visu.menu.gamepad": "Use gamepad",
+      "visu.menu.gamepad.title.connected": "Gamepad [ ONLINE ]",
+      "visu.menu.gamepad.title.disconnected": "Gamepad [ OFFLINE ]",
       "visu.menu.glitch-effects": "Glitch effects",
       "visu.menu.god-mode": "God mode",
       "visu.menu.graphics": "Display",

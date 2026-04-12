@@ -45,6 +45,6 @@
   "visu.const.BRUSH_ENTRY_STEP": 2,
   "visu.const.BRUSH_TOOLBAR_ENTRY_STEP": 2,
   "visu.const.FLIP_VALUE": 0,
-  "_visu.story.dialog": "track/neon-baron/dialogue/neon-baron.json",
+  "visu.story.dialog": "track/neon-baron/dialogue/neon-baron.json",
   "end-property": null
 }

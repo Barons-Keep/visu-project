@@ -1,0 +1,13 @@
+{
+  "$GMScript":"v1",
+  "%Name":"InputCandy",
+  "isCompatibility":false,
+  "isDnD":false,
+  "name":"InputCandy",
+  "parent":{
+    "name":"src",
+    "path":"folders/com.la-game-studio.input-candy/src.yy",
+  },
+  "resourceType":"GMScript",
+  "resourceVersion":"2.0",
+}

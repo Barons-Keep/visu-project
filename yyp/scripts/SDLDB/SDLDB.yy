@@ -1,0 +1,13 @@
+{
+  "$GMScript":"v1",
+  "%Name":"SDLDB",
+  "isCompatibility":false,
+  "isDnD":false,
+  "name":"SDLDB",
+  "parent":{
+    "name":"src",
+    "path":"folders/com.la-game-studio.input-candy/src.yy",
+  },
+  "resourceType":"GMScript",
+  "resourceVersion":"2.0",
+}
