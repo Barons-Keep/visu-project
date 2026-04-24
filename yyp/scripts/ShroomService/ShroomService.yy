@@ -6,7 +6,7 @@
   "name":"ShroomService",
   "parent":{
     "name":"shroom",
-    "path":"folders/io.alkapivo.visu/src/service/shroom.yy",
+    "path":"folders/fun.barons-keep.visu/src/service/shroom.yy",
   },
   "resourceType":"GMScript",
   "resourceVersion":"2.0",

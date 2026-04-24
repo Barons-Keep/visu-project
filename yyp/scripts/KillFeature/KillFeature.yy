@@ -6,7 +6,7 @@
   "name":"KillFeature",
   "parent":{
     "name":"feature",
-    "path":"folders/io.alkapivo.visu/src/service/grid/feature.yy",
+    "path":"folders/fun.barons-keep.visu/src/service/grid/feature.yy",
   },
   "resourceType":"GMScript",
   "resourceVersion":"2.0",

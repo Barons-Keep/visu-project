@@ -6,7 +6,7 @@
   "name":"PlayerService",
   "parent":{
     "name":"player",
-    "path":"folders/io.alkapivo.visu/src/service/player.yy",
+    "path":"folders/fun.barons-keep.visu/src/service/player.yy",
   },
   "resourceType":"GMScript",
   "resourceVersion":"2.0",

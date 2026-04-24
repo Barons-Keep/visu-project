@@ -5,8 +5,8 @@
   "isDnD":false,
   "name":"VisuMenu",
   "parent":{
-    "name":"controller",
-    "path":"folders/io.alkapivo.visu/src/ui/controller.yy",
+    "name":"menu",
+    "path":"folders/fun.barons-keep.visu/src/ui/controller/menu.yy",
   },
   "resourceType":"GMScript",
   "resourceVersion":"2.0",

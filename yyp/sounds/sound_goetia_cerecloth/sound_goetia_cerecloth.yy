@@ -15,7 +15,7 @@
   "name":"sound_goetia_cerecloth",
   "parent":{
     "name":"goetia",
-    "path":"folders/io.alkapivo.visu/resource/sound/ost/goetia.yy",
+    "path":"folders/fun.barons-keep.visu/resource/sound/ost/goetia.yy",
   },
   "preload":false,
   "resourceType":"GMSound",

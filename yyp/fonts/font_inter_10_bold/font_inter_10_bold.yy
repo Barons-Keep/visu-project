@@ -230,7 +230,7 @@
   "name":"font_inter_10_bold",
   "parent":{
     "name":"bold",
-    "path":"folders/io.alkapivo.visu/resource/font/font_inter/bold.yy",
+    "path":"folders/fun.barons-keep.visu/resource/font/font_inter/bold.yy",
   },
   "pointRounding":0,
   "ranges":[

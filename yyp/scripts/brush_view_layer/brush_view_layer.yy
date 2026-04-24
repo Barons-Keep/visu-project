@@ -6,7 +6,7 @@
   "name":"brush_view_layer",
   "parent":{
     "name":"view",
-    "path":"folders/io.alkapivo.visu/src/editor/service/brush/view.yy",
+    "path":"folders/fun.barons-keep.visu/src/editor/service/brush/view.yy",
   },
   "resourceType":"GMScript",
   "resourceVersion":"2.0",

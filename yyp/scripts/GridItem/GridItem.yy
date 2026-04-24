@@ -6,7 +6,7 @@
   "name":"GridItem",
   "parent":{
     "name":"grid",
-    "path":"folders/io.alkapivo.visu/src/service/grid.yy",
+    "path":"folders/fun.barons-keep.visu/src/service/grid.yy",
   },
   "resourceType":"GMScript",
   "resourceVersion":"2.0",

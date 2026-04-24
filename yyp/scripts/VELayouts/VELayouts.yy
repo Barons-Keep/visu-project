@@ -6,7 +6,7 @@
   "name":"VELayouts",
   "parent":{
     "name":"ui",
-    "path":"folders/io.alkapivo.visu/src/editor/ui.yy",
+    "path":"folders/fun.barons-keep.visu/src/editor/ui.yy",
   },
   "resourceType":"GMScript",
   "resourceVersion":"2.0",

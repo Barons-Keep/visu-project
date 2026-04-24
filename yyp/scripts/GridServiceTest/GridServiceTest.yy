@@ -6,7 +6,7 @@
   "name":"GridServiceTest",
   "parent":{
     "name":"grid",
-    "path":"folders/io.alkapivo.visu/test/grid.yy",
+    "path":"folders/fun.barons-keep.visu/test/grid.yy",
   },
   "resourceType":"GMScript",
   "resourceVersion":"2.0",

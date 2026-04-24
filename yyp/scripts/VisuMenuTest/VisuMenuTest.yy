@@ -6,7 +6,7 @@
   "name":"VisuMenuTest",
   "parent":{
     "name":"controller",
-    "path":"folders/io.alkapivo.visu/test/ui/controller.yy",
+    "path":"folders/fun.barons-keep.visu/test/ui/controller.yy",
   },
   "resourceType":"GMScript",
   "resourceVersion":"2.0",

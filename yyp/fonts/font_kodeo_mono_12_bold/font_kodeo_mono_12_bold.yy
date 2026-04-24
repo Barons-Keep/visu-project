@@ -230,7 +230,7 @@
   "name":"font_kodeo_mono_12_bold",
   "parent":{
     "name":"bold",
-    "path":"folders/io.alkapivo.visu/resource/font/font_kodeo/bold.yy",
+    "path":"folders/fun.barons-keep.visu/resource/font/font_kodeo/bold.yy",
   },
   "pointRounding":0,
   "ranges":[

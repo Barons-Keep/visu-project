@@ -15,7 +15,7 @@
   "name":"sound_sfx_player_collect_point_or_force",
   "parent":{
     "name":"sfx",
-    "path":"folders/io.alkapivo.visu/resource/sound/sfx.yy",
+    "path":"folders/fun.barons-keep.visu/resource/sound/sfx.yy",
   },
   "preload":false,
   "resourceType":"GMSound",

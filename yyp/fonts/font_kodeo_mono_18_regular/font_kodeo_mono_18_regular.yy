@@ -230,7 +230,7 @@
   "name":"font_kodeo_mono_18_regular",
   "parent":{
     "name":"regular",
-    "path":"folders/io.alkapivo.visu/resource/font/font_kodeo/regular.yy",
+    "path":"folders/fun.barons-keep.visu/resource/font/font_kodeo/regular.yy",
   },
   "pointRounding":0,
   "ranges":[

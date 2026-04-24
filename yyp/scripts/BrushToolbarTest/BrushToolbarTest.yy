@@ -6,7 +6,7 @@
   "name":"BrushToolbarTest",
   "parent":{
     "name":"test",
-    "path":"folders/io.alkapivo.visu/test.yy",
+    "path":"folders/fun.barons-keep.visu/test.yy",
   },
   "resourceType":"GMScript",
   "resourceVersion":"2.0",

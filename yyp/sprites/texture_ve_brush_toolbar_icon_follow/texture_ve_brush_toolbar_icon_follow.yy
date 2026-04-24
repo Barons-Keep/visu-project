@@ -26,7 +26,7 @@
   "origin":0,
   "parent":{
     "name":"VEBrushToolbar",
-    "path":"folders/io.alkapivo.visu/resource/texture/editor/containers/VEBrushToolbar.yy",
+    "path":"folders/fun.barons-keep.visu/resource/texture/editor/containers/VEBrushToolbar.yy",
   },
   "preMultiplyAlpha":false,
   "resourceType":"GMSprite",
@@ -68,7 +68,9 @@
     "timeUnits":1,
     "tracks":[
       {"$GMSpriteFramesTrack":"","builtinName":0,"events":[],"inheritsTrackColour":true,"interpolation":1,"isCreationTrack":false,"keyframes":{"$KeyframeStore<SpriteFrameKeyframe>":"","Keyframes":[
-            {"$Keyframe<SpriteFrameKeyframe>":"","Channels":{"0":{"$SpriteFrameKeyframe":"","Id":{"name":"78c6827e-97e0-469b-894f-994960e3186b","path":"sprites/texture_ve_brush_toolbar_icon_follow/texture_ve_brush_toolbar_icon_follow.yy",},"resourceType":"SpriteFrameKeyframe","resourceVersion":"2.0",},},"Disabled":false,"id":"85661bcb-a28a-4afc-a228-25b03b9ed29d","IsCreationKey":false,"Key":0.0,"Length":1.0,"resourceType":"Keyframe<SpriteFrameKeyframe>","resourceVersion":"2.0","Stretch":false,},
+            {"$Keyframe<SpriteFrameKeyframe>":"","Channels":{
+                "0":{"$SpriteFrameKeyframe":"","Id":{"name":"78c6827e-97e0-469b-894f-994960e3186b","path":"sprites/texture_ve_brush_toolbar_icon_follow/texture_ve_brush_toolbar_icon_follow.yy",},"resourceType":"SpriteFrameKeyframe","resourceVersion":"2.0",},
+              },"Disabled":false,"id":"85661bcb-a28a-4afc-a228-25b03b9ed29d","IsCreationKey":false,"Key":0.0,"Length":1.0,"resourceType":"Keyframe<SpriteFrameKeyframe>","resourceVersion":"2.0","Stretch":false,},
           ],"resourceType":"KeyframeStore<SpriteFrameKeyframe>","resourceVersion":"2.0",},"modifiers":[],"name":"frames","resourceType":"GMSpriteFramesTrack","resourceVersion":"2.0","spriteId":null,"trackColour":0,"tracks":[],"traits":0,},
     ],
     "visibleRange":null,

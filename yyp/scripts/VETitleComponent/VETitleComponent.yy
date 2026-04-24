@@ -6,7 +6,7 @@
   "name":"VETitleComponent",
   "parent":{
     "name":"component",
-    "path":"folders/io.alkapivo.visu/src/editor/ui/component.yy",
+    "path":"folders/fun.barons-keep.visu/src/editor/ui/component.yy",
   },
   "resourceType":"GMScript",
   "resourceVersion":"2.0",

@@ -6,7 +6,7 @@
   "name":"LayerRenderer",
   "parent":{
     "name":"renderer",
-    "path":"folders/io.alkapivo.visu/src/renderer.yy",
+    "path":"folders/fun.barons-keep.visu/src/renderer.yy",
   },
   "resourceType":"GMScript",
   "resourceVersion":"2.0",

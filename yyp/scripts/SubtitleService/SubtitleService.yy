@@ -6,7 +6,7 @@
   "name":"SubtitleService",
   "parent":{
     "name":"subtitle",
-    "path":"folders/io.alkapivo.visu/src/service/subtitle.yy",
+    "path":"folders/fun.barons-keep.visu/src/service/subtitle.yy",
   },
   "resourceType":"GMScript",
   "resourceVersion":"2.0",

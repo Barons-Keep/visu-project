@@ -6,7 +6,7 @@
   "name":"template_subtitle",
   "parent":{
     "name":"template",
-    "path":"folders/io.alkapivo.visu/src/editor/service/template.yy",
+    "path":"folders/fun.barons-keep.visu/src/editor/service/template.yy",
   },
   "resourceType":"GMScript",
   "resourceVersion":"2.0",

@@ -1,0 +1,13 @@
+{
+  "$GMScript":"v1",
+  "%Name":"VisuMenuCredits",
+  "isCompatibility":false,
+  "isDnD":false,
+  "name":"VisuMenuCredits",
+  "parent":{
+    "name":"factory",
+    "path":"folders/fun.barons-keep.visu/src/ui/controller/menu/factory.yy",
+  },
+  "resourceType":"GMScript",
+  "resourceVersion":"2.0",
+}

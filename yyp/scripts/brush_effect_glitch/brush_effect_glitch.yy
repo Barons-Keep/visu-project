@@ -6,7 +6,7 @@
   "name":"brush_effect_glitch",
   "parent":{
     "name":"effect",
-    "path":"folders/io.alkapivo.visu/src/editor/service/brush/effect.yy",
+    "path":"folders/fun.barons-keep.visu/src/editor/service/brush/effect.yy",
   },
   "resourceType":"GMScript",
   "resourceVersion":"2.0",

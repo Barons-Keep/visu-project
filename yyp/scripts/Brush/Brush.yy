@@ -6,7 +6,7 @@
   "name":"Brush",
   "parent":{
     "name":"brush",
-    "path":"folders/io.alkapivo.visu/src/service/brush.yy",
+    "path":"folders/fun.barons-keep.visu/src/service/brush.yy",
   },
   "resourceType":"GMScript",
   "resourceVersion":"2.0",

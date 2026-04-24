@@ -6,7 +6,7 @@
   "name":"VEBrush",
   "parent":{
     "name":"brush",
-    "path":"folders/io.alkapivo.visu/src/editor/service/brush.yy",
+    "path":"folders/fun.barons-keep.visu/src/editor/service/brush.yy",
   },
   "resourceType":"GMScript",
   "resourceVersion":"2.0",

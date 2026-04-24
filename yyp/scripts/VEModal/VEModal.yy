@@ -1,12 +1,12 @@
 {
   "$GMScript":"v1",
-  "%Name":"VisuModal",
+  "%Name":"VEModal",
   "isCompatibility":false,
   "isDnD":false,
-  "name":"VisuModal",
+  "name":"VEModal",
   "parent":{
     "name":"controller",
-    "path":"folders/io.alkapivo.visu/src/ui/controller.yy",
+    "path":"folders/fun.barons-keep.visu/src/editor/ui/controller.yy",
   },
   "resourceType":"GMScript",
   "resourceVersion":"2.0",

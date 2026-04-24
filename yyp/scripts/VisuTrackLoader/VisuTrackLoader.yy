@@ -6,7 +6,7 @@
   "name":"VisuTrackLoader",
   "parent":{
     "name":"track-loader",
-    "path":"folders/io.alkapivo.visu/src/service/track-loader.yy",
+    "path":"folders/fun.barons-keep.visu/src/service/track-loader.yy",
   },
   "resourceType":"GMScript",
   "resourceVersion":"2.0",

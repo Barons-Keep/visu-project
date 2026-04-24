@@ -13,7 +13,7 @@
   "name":"scene_visu",
   "parent":{
     "name":"scene",
-    "path":"folders/io.alkapivo.visu/resource/scene.yy",
+    "path":"folders/fun.barons-keep.visu/resource/scene.yy",
   },
   "parentRoom":null,
   "physicsSettings":{

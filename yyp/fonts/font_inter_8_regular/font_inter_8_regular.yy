@@ -230,7 +230,7 @@
   "name":"font_inter_8_regular",
   "parent":{
     "name":"regular",
-    "path":"folders/io.alkapivo.visu/resource/font/font_inter/regular.yy",
+    "path":"folders/fun.barons-keep.visu/resource/font/font_inter/regular.yy",
   },
   "pointRounding":0,
   "ranges":[

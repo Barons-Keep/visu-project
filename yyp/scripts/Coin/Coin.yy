@@ -6,7 +6,7 @@
   "name":"Coin",
   "parent":{
     "name":"coin",
-    "path":"folders/io.alkapivo.visu/src/service/coin.yy",
+    "path":"folders/fun.barons-keep.visu/src/service/coin.yy",
   },
   "resourceType":"GMScript",
   "resourceVersion":"2.0",

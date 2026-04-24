@@ -6,7 +6,7 @@
   "name":"VisuLayouts",
   "parent":{
     "name":"ui",
-    "path":"folders/io.alkapivo.visu/src/ui.yy",
+    "path":"folders/fun.barons-keep.visu/src/ui.yy",
   },
   "resourceType":"GMScript",
   "resourceVersion":"2.0",

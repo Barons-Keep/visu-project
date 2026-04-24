@@ -6,7 +6,7 @@
   "name":"VisuEditorRenderer",
   "parent":{
     "name":"renderer",
-    "path":"folders/io.alkapivo.visu/src/editor/renderer.yy",
+    "path":"folders/fun.barons-keep.visu/src/editor/renderer.yy",
   },
   "resourceType":"GMScript",
   "resourceVersion":"2.0",

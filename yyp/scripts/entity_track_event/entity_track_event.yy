@@ -6,7 +6,7 @@
   "name":"entity_track_event",
   "parent":{
     "name":"track",
-    "path":"folders/io.alkapivo.visu/src/service/track.yy",
+    "path":"folders/fun.barons-keep.visu/src/service/track.yy",
   },
   "resourceType":"GMScript",
   "resourceVersion":"2.0",
