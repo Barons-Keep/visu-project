@@ -2,7 +2,7 @@
   "$GMProject":"v1",
   "%Name":"visu-project",
   "AudioGroups":[
-    {"$GMAudioGroup":"v1","%Name":"audiogroup_default","exportDir":"","name":"audiogroup_default","resourceType":"GMAudioGroup","resourceVersion":"2.0","targets":-1,},
+    {"$GMAudioGroup":"","%Name":"audiogroup_default","name":"audiogroup_default","resourceType":"GMAudioGroup","resourceVersion":"2.0","targets":-1,},
   ],
   "configs":{
     "children":[],
@@ -730,7 +730,7 @@
     {"$GMIncludedFile":"","%Name":"subtitle.json","CopyToMask":-1,"filePath":"datafiles/track/neon-baron/6B/template","name":"subtitle.json","resourceType":"GMIncludedFile","resourceVersion":"2.0",},
     {"$GMIncludedFile":"","%Name":"texture.json","CopyToMask":-1,"filePath":"datafiles/track/neon-baron/6B/texture","name":"texture.json","resourceType":"GMIncludedFile","resourceVersion":"2.0",},
     {"$GMIncludedFile":"","%Name":"track.json","CopyToMask":-1,"filePath":"datafiles/track/neon-baron/6B","name":"track.json","resourceType":"GMIncludedFile","resourceVersion":"2.0",},
-    {"$GMIncludedFile":"","%Name":"neon-baron.json","CopyToMask":-1,"filePath":"datafiles/track/neon-baron/dialogue","name":"neon-baron.json","resourceType":"GMIncludedFile","resourceVersion":"2.0",},
+    {"$GMIncludedFile":"","%Name":"neon-baron.json","CopyToMask":-1,"filePath":"datafiles/track/neon-baron","name":"neon-baron.json","resourceType":"GMIncludedFile","resourceVersion":"2.0",},
     {"$GMIncludedFile":"","%Name":"brush_effect_config.json","CopyToMask":-1,"filePath":"datafiles/track/pikaro/Singles/the-memories-fade-but-the-feeling-remains/brush","name":"brush_effect_config.json","resourceType":"GMIncludedFile","resourceVersion":"2.0",},
     {"$GMIncludedFile":"","%Name":"brush_effect_glitch.json","CopyToMask":-1,"filePath":"datafiles/track/pikaro/Singles/the-memories-fade-but-the-feeling-remains/brush","name":"brush_effect_glitch.json","resourceType":"GMIncludedFile","resourceVersion":"2.0",},
     {"$GMIncludedFile":"","%Name":"brush_effect_particle.json","CopyToMask":-1,"filePath":"datafiles/track/pikaro/Singles/the-memories-fade-but-the-feeling-remains/brush","name":"brush_effect_particle.json","resourceType":"GMIncludedFile","resourceVersion":"2.0",},
@@ -867,6 +867,7 @@
     {"$GMIncludedFile":"","%Name":"texture.json","CopyToMask":-1,"filePath":"datafiles/track/Sewerslvt/The-World-is-Fvcked/Psychosis/texture","name":"texture.json","resourceType":"GMIncludedFile","resourceVersion":"2.0",},
     {"$GMIncludedFile":"","%Name":"the_world_is_fvcked.jpg","CopyToMask":-1,"filePath":"datafiles/track/Sewerslvt/The-World-is-Fvcked/Psychosis/texture","name":"the_world_is_fvcked.jpg","resourceType":"GMIncludedFile","resourceVersion":"2.0",},
     {"$GMIncludedFile":"","%Name":"track.json","CopyToMask":-1,"filePath":"datafiles/track/Sewerslvt/The-World-is-Fvcked/Psychosis","name":"track.json","resourceType":"GMIncludedFile","resourceVersion":"2.0",},
+    {"$GMIncludedFile":"","%Name":"visu-story.json","CopyToMask":-1,"filePath":"datafiles/track","name":"visu-story.json","resourceType":"GMIncludedFile","resourceVersion":"2.0",},
     {"$GMIncludedFile":"","%Name":"brush_effect_config.json","CopyToMask":-1,"filePath":"datafiles/track/Zoogies/Singles/digitalshadow/brush","name":"brush_effect_config.json","resourceType":"GMIncludedFile","resourceVersion":"2.0",},
     {"$GMIncludedFile":"","%Name":"brush_effect_glitch.json","CopyToMask":-1,"filePath":"datafiles/track/Zoogies/Singles/digitalshadow/brush","name":"brush_effect_glitch.json","resourceType":"GMIncludedFile","resourceVersion":"2.0",},
     {"$GMIncludedFile":"","%Name":"brush_effect_particle.json","CopyToMask":-1,"filePath":"datafiles/track/Zoogies/Singles/digitalshadow/brush","name":"brush_effect_particle.json","resourceType":"GMIncludedFile","resourceVersion":"2.0",},
