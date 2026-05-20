@@ -6,6 +6,7 @@
     "labels": {
       "visu.gameplay.bomb": "BOMB {0} / {1}",
       "visu.gameplay.bomb.start": "BOMB ACTIVATED",
+      "visu.gameplay.absolute-protection": "ABSOLUTE PROTECTION",
 
       "visu.game.json": "visu.game.json"
     }

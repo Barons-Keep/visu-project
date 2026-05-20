@@ -7,6 +7,7 @@
       "test.language": "Test language with params: {0}, {1}",
       "en_EN": "Angielski",
       "pl_PL": "Polski",
+      "core.dialogue-designer.message.continue": "Naciśnij dowolny klawisz",
 
       "core.json": "core.json"
     }
