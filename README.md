@@ -30,15 +30,10 @@ This operation must be performed **after every update** to make sure new tracks 
 ```bash
 gm-cli make -r YYC -l
 ```  
-Please remember that for `gm-cli make` to work, some environment variables must be set up. They can be added manually or by creating a `gm-cli.env` file in this repository. Example:  
+Please remember that for `gm-cli make` to work, some environment variables must be set up. They can be added manually or by creating a `.gm-cli.env` file in this repository. Example:  
 ```bash
-GMS_IGOR_PATH="{PATH_TO_IGOR_EXE}"
-GMS_PROJECT_NAME="visu-project"
-GMS_PROJECT_PATH="{PATH_TO_VISU_PROJECT_REPOSITORY}/yyp"
-GMS_USER_PATH="{PATH_TO_ROAMING_GAMEMAKERSTUDIO2_USER_FOLDER}"
-GMS_RUNTIME_PATH="{PATH_TO_RUNTIME_2024.14.2.256}"
-GMS_RUNTIME="VM"
-GMS_TARGET="windows"
+GM_CLI_RUNTIME_PATH="{PATH_TO_RUNTIME}"
+GM_CLI_USER_PATH="{PATH_TO_ROAMING_GAMEMAKERSTUDIO2_USER_FOLDER}"
 ```
 ---
 
