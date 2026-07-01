@@ -5,6 +5,7 @@ gm_modules/*
 bin/*
 yyp/out/*
 yyp/tmp/*
+yyp/Build/*
 
 # Exclude backup files created by gm-cli generate
 yyp/visu-project.yyp.old
