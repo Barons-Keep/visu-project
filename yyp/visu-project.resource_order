@@ -327,7 +327,7 @@
     {"name":"VisuMenuGameplay","order":9,"path":"scripts/VisuMenuGameplay/VisuMenuGameplay.yy",},
     {"name":"VisuMenuGraphics","order":10,"path":"scripts/VisuMenuGraphics/VisuMenuGraphics.yy",},
     {"name":"VisuMenuMain","order":1,"path":"scripts/VisuMenuMain/VisuMenuMain.yy",},
-    {"name":"VisuMenuNod","order":11,"path":"scripts/VisuMenuNod/VisuMenuNod.yy",},
+    {"name":"VisuMenuNode","order":11,"path":"scripts/VisuMenuNode/VisuMenuNode.yy",},
     {"name":"VisuMenuPlay","order":2,"path":"scripts/VisuMenuPlay/VisuMenuPlay.yy",},
     {"name":"VisuMenuSettings","order":3,"path":"scripts/VisuMenuSettings/VisuMenuSettings.yy",},
     {"name":"VisuMenuStory","order":4,"path":"scripts/VisuMenuStory/VisuMenuStory.yy",},
