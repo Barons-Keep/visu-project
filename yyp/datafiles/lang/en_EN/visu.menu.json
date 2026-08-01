@@ -95,6 +95,7 @@
       "visu.menu.max-sim-shd": "Max simultaneous shaders",
       "visu.menu.mouse-aim": "Mouse aim",
       "visu.menu.off-screen-player-hints": "Off-screen player hints",
+      "visu.menu.render-focus-grid": "Render focus grid",
       "visu.menu.options": "Settings",
       "visu.menu.ost.volume": "Music volume",
       "visu.menu.particles": "Render particles",
