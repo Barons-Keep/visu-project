@@ -2,7 +2,7 @@
   "$GMProject":"v1",
   "%Name":"visu-project",
   "AudioGroups":[
-    {"$GMAudioGroup":"","%Name":"audiogroup_default","name":"audiogroup_default","resourceType":"GMAudioGroup","resourceVersion":"2.0","targets":-1,},
+    {"$GMAudioGroup":"v1","%Name":"audiogroup_default","exportDir":"","name":"audiogroup_default","resourceType":"GMAudioGroup","resourceVersion":"2.0","targets":-1,},
   ],
   "configs":{
     "children":[],
@@ -171,6 +171,8 @@
     {"$GMFolder":"","%Name":"store","folderPath":"folders/io.alkapivo.core/test/util/store.yy","name":"store","resourceType":"GMFolder","resourceVersion":"2.0",},
     {"$GMFolder":"","%Name":"io.mk-cz.gmtf","folderPath":"folders/io.mk-cz.gmtf.yy","name":"io.mk-cz.gmtf","resourceType":"GMFolder","resourceVersion":"2.0",},
     {"$GMFolder":"","%Name":"src","folderPath":"folders/io.mk-cz.gmtf/src.yy","name":"src","resourceType":"GMFolder","resourceVersion":"2.0",},
+    {"$GMFolder":"","%Name":"test_folder","folderPath":"folders/test_folder.yy","name":"test_folder","resourceType":"GMFolder","resourceVersion":"2.0",},
+    {"$GMFolder":"","%Name":"src","folderPath":"folders/test_folder/src.yy","name":"src","resourceType":"GMFolder","resourceVersion":"2.0",},
   ],
   "ForcedPrefabProjectReferences":[],
   "IncludedFiles":[

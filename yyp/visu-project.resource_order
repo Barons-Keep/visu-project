@@ -130,6 +130,8 @@
     {"name":"test","order":2,"path":"folders/io.alkapivo.core/test.yy",},
     {"name":"store","order":2,"path":"folders/io.alkapivo.core/test/util/store.yy",},
     {"name":"io.mk-cz.gmtf","order":1,"path":"folders/io.mk-cz.gmtf.yy",},
+    {"name":"test_folder","order":7,"path":"folders/test_folder.yy",},
+    {"name":"src","order":1,"path":"folders/test_folder/src.yy",},
   ],
   "ResourceOrderSettings":[
     {"name":"font_consolas_10_regular","order":4,"path":"fonts/font_consolas_10_regular/font_consolas_10_regular.yy",},

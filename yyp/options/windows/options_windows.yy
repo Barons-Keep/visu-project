@@ -32,7 +32,7 @@
   "option_windows_use_raw_mouse":false,
   "option_windows_use_splash":true,
   "option_windows_version":"0.26.03.07",
-  "option_windows_vsync":true,
+  "option_windows_vsync":false,
   "resourceType":"GMWindowsOptions",
   "resourceVersion":"2.0",
 }
