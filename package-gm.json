@@ -30,7 +30,7 @@
     },
     "track": {
       "remote": "https://gitea.barons-keep.fun/Alkapivo/visu-track.git",
-      "revision": "26.05.20"
+      "revision": "26.08.01"
     },
     "input-candy": {
       "remote": "https://gitea.barons-keep.fun/Alkapivo/com.la-game-studio.input-candy-gml.git",
