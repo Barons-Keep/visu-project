@@ -28,6 +28,7 @@
       "visu.menu.debug.render.chunks": "Renderuj kolizje debug",
       "visu.menu.debug.render.masks": "Renderuj maski debug",
       "visu.menu.debug.render.surfaces": "Renderuj warstwy debug",
+      "visu.menu.debug.render.fps": "Renderuj FPS",
       "visu.menu.delta-time": "Czas delta",
       "visu.menu.demo": "Tryb demo",
       "visu.menu.developer": "Deweloper",

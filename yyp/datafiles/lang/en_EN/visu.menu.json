@@ -28,6 +28,7 @@
       "visu.menu.debug.render.chunks": "Render debug chunks",
       "visu.menu.debug.render.masks": "Render debug masks",
       "visu.menu.debug.render.surfaces": "Render debug surfaces",
+      "visu.menu.debug.render.fps": "Render fps",
       "visu.menu.delta-time": "Delta time",
       "visu.menu.demo": "Demo mode",
       "visu.menu.developer": "Developer",
