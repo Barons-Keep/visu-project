@@ -74,6 +74,8 @@
       "visu.menu.gamepad.title.connected": "Gamepad [ ONLINE ]",
       "visu.menu.gamepad.title.disconnected": "Gamepad [ OFFLINE ]",
       "visu.menu.glitch-effects": "Glitch effects",
+      "visu.menu.ext-glitch-effects": "Advanced glitch effects",
+      "visu.menu.grid-item-surface": "Advanced grid item rendering",
       "visu.menu.god-mode": "God mode",
       "visu.menu.graphics": "Display",
       "visu.menu.settings.display": "Display settings",

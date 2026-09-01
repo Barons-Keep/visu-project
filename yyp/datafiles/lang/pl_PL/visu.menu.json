@@ -74,6 +74,8 @@
       "visu.menu.gamepad.title.connected": "Kontroler [ POŁĄCZONY ]",
       "visu.menu.gamepad.title.disconnected": "Kontroler [ ROZŁĄCZONY ]",
       "visu.menu.glitch-effects": "Efekty glitch",
+      "visu.menu.ext-glitch-effects": "Zaawansowane efekty glitch",
+      "visu.menu.grid-item-surface": "Zaawansowane renderowanie siatki",
       "visu.menu.god-mode": "Tryb boga",
       "visu.menu.graphics": "Grafika",
       "visu.menu.settings.display": "Ustawienia wyświetlania",

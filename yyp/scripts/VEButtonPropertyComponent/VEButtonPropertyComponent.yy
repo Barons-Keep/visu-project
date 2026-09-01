@@ -1,0 +1,13 @@
+{
+  "$GMScript":"v1",
+  "%Name":"VEButtonPropertyComponent",
+  "isCompatibility":false,
+  "isDnD":false,
+  "name":"VEButtonPropertyComponent",
+  "parent":{
+    "name":"component",
+    "path":"folders/visu/src/editor/ui/component.yy",
+  },
+  "resourceType":"GMScript",
+  "resourceVersion":"2.0",
+}
