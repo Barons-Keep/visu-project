@@ -6,7 +6,7 @@
   "name":"GPU",
   "parent":{
     "name":"renderer",
-    "path":"folders/io.alkapivo.core/src/renderer.yy",
+    "path":"folders/module/core/src/renderer.yy",
   },
   "resourceType":"GMScript",
   "resourceVersion":"2.0",

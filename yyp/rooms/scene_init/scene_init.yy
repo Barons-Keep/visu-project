@@ -13,7 +13,7 @@
   "name":"scene_init",
   "parent":{
     "name":"scene",
-    "path":"folders/fun.barons-keep.visu/resource/scene.yy",
+    "path":"folders/resource/scene.yy",
   },
   "parentRoom":null,
   "physicsSettings":{

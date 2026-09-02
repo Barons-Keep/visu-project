@@ -6,7 +6,7 @@
   "name":"LanguageTest",
   "parent":{
     "name":"test",
-    "path":"folders/io.alkapivo.core/test.yy",
+    "path":"folders/module/core/test.yy",
   },
   "resourceType":"GMScript",
   "resourceVersion":"2.0",

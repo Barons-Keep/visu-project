@@ -27,7 +27,7 @@
   "origin":4,
   "parent":{
     "name":"schnoopy",
-    "path":"folders/fun.barons-keep.visu/resource/texture/shroom/schnoopy.yy",
+    "path":"folders/resource/texture/shroom/schnoopy.yy",
   },
   "preMultiplyAlpha":false,
   "resourceType":"GMSprite",

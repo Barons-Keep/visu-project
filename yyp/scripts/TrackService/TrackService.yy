@@ -6,7 +6,7 @@
   "name":"TrackService",
   "parent":{
     "name":"track",
-    "path":"folders/io.alkapivo.core/src/service/track.yy",
+    "path":"folders/module/core/src/service/track.yy",
   },
   "resourceType":"GMScript",
   "resourceVersion":"2.0",

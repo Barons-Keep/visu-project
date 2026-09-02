@@ -26,7 +26,7 @@
   "origin":3,
   "parent":{
     "name":"line",
-    "path":"folders/fun.barons-keep.visu/resource/texture/line.yy",
+    "path":"folders/resource/texture/line.yy",
   },
   "preMultiplyAlpha":false,
   "resourceType":"GMSprite",

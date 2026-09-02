@@ -6,7 +6,7 @@
   "name":"ShaderArcRunner",
   "parent":{
     "name":"shader_arc_runner",
-    "path":"folders/io.alkapivo.core/resource/shader/screen/shader_arc_runner.yy",
+    "path":"folders/module/core/resource/shader/screen/shader_arc_runner.yy",
   },
   "resourceType":"GMScript",
   "resourceVersion":"2.0",

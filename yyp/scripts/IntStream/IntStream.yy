@@ -6,7 +6,7 @@
   "name":"IntStream",
   "parent":{
     "name":"collection",
-    "path":"folders/io.alkapivo.core/src/collection.yy",
+    "path":"folders/module/core/src/collection.yy",
   },
   "resourceType":"GMScript",
   "resourceVersion":"2.0",

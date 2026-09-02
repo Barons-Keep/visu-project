@@ -6,7 +6,7 @@
   "name":"InputCandyLoader",
   "parent":{
     "name":"src",
-    "path":"folders/com.la-game-studio.input-candy/src.yy",
+    "path":"folders/module/inputcandy/src.yy",
   },
   "resourceType":"GMScript",
   "resourceVersion":"2.0",

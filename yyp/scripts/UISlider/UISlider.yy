@@ -6,7 +6,7 @@
   "name":"UISlider",
   "parent":{
     "name":"item",
-    "path":"folders/io.alkapivo.core/src/service/ui/item.yy",
+    "path":"folders/module/core/src/service/ui/item.yy",
   },
   "resourceType":"GMScript",
   "resourceVersion":"2.0",

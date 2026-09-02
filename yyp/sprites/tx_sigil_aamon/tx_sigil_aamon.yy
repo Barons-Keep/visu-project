@@ -26,7 +26,7 @@
   "origin":9,
   "parent":{
     "name":"sigil",
-    "path":"folders/fun.barons-keep.visu/resource/texture/shroom/sigil.yy",
+    "path":"folders/resource/texture/shroom/sigil.yy",
   },
   "preMultiplyAlpha":false,
   "resourceType":"GMSprite",

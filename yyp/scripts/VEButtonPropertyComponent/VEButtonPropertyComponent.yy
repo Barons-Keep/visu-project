@@ -6,7 +6,7 @@
   "name":"VEButtonPropertyComponent",
   "parent":{
     "name":"component",
-    "path":"folders/visu/src/editor/ui/component.yy",
+    "path":"folders/src/editor/ui/component.yy",
   },
   "resourceType":"GMScript",
   "resourceVersion":"2.0",

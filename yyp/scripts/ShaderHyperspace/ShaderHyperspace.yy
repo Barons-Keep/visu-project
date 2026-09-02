@@ -6,7 +6,7 @@
   "name":"ShaderHyperspace",
   "parent":{
     "name":"shader_hyperspace",
-    "path":"folders/io.alkapivo.core/resource/shader/screen/shader_hyperspace.yy",
+    "path":"folders/module/core/resource/shader/screen/shader_hyperspace.yy",
   },
   "resourceType":"GMScript",
   "resourceVersion":"2.0",

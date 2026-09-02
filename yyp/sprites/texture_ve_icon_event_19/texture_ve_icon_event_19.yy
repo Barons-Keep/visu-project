@@ -26,7 +26,7 @@
   "origin":0,
   "parent":{
     "name":"timeline",
-    "path":"folders/fun.barons-keep.visu/resource/texture/editor/icon/timeline.yy",
+    "path":"folders/resource/texture/editor/icon/timeline.yy",
   },
   "preMultiplyAlpha":false,
   "resourceType":"GMSprite",

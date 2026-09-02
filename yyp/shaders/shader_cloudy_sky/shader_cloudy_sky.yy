@@ -4,7 +4,7 @@
   "name":"shader_cloudy_sky",
   "parent":{
     "name":"shader_cloudy_sky",
-    "path":"folders/io.alkapivo.core/resource/shader/screen/shader_cloudy_sky.yy",
+    "path":"folders/module/core/resource/shader/screen/shader_cloudy_sky.yy",
   },
   "resourceType":"GMShader",
   "resourceVersion":"2.0",

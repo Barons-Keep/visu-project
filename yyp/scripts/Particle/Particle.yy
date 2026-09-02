@@ -6,7 +6,7 @@
   "name":"Particle",
   "parent":{
     "name":"particle",
-    "path":"folders/io.alkapivo.core/src/service/particle.yy",
+    "path":"folders/module/core/src/service/particle.yy",
   },
   "resourceType":"GMScript",
   "resourceVersion":"2.0",

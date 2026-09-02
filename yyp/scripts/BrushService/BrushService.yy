@@ -6,7 +6,7 @@
   "name":"BrushService",
   "parent":{
     "name":"brush",
-    "path":"folders/fun.barons-keep.visu/src/service/brush.yy",
+    "path":"folders/src/service/brush.yy",
   },
   "resourceType":"GMScript",
   "resourceVersion":"2.0",

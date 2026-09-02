@@ -26,7 +26,7 @@
   "origin":4,
   "parent":{
     "name":"checkbox",
-    "path":"folders/fun.barons-keep.visu/resource/texture/editor/checkbox.yy",
+    "path":"folders/resource/texture/editor/checkbox.yy",
   },
   "preMultiplyAlpha":false,
   "resourceType":"GMSprite",

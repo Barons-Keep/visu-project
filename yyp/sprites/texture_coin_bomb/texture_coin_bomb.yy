@@ -26,7 +26,7 @@
   "origin":4,
   "parent":{
     "name":"coin",
-    "path":"folders/fun.barons-keep.visu/resource/texture/coin.yy",
+    "path":"folders/resource/texture/coin.yy",
   },
   "preMultiplyAlpha":false,
   "resourceType":"GMSprite",

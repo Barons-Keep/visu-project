@@ -4,7 +4,7 @@
   "name":"shader_fancy_blending",
   "parent":{
     "name":"DragoniteSpam",
-    "path":"folders/io.alkapivo.core/resource/shader/ext/DragoniteSpam.yy",
+    "path":"folders/module/core/resource/shader/ext/DragoniteSpam.yy",
   },
   "resourceType":"GMShader",
   "resourceVersion":"2.0",

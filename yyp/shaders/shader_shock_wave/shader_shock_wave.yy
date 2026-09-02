@@ -4,7 +4,7 @@
   "name":"shader_shock_wave",
   "parent":{
     "name":"xygthop3",
-    "path":"folders/io.alkapivo.core/resource/shader/ext/xygthop3.yy",
+    "path":"folders/module/core/resource/shader/ext/xygthop3.yy",
   },
   "resourceType":"GMShader",
   "resourceVersion":"2.0",

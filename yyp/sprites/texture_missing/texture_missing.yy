@@ -26,7 +26,7 @@
   "origin":0,
   "parent":{
     "name":"system",
-    "path":"folders/io.alkapivo.core/resource/texture/system.yy",
+    "path":"folders/module/core/resource/texture/system.yy",
   },
   "preMultiplyAlpha":false,
   "resourceType":"GMSprite",

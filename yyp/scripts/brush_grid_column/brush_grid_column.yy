@@ -6,7 +6,7 @@
   "name":"brush_grid_column",
   "parent":{
     "name":"grid",
-    "path":"folders/fun.barons-keep.visu/src/editor/service/brush/grid.yy",
+    "path":"folders/src/editor/service/brush/grid.yy",
   },
   "resourceType":"GMScript",
   "resourceVersion":"2.0",

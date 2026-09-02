@@ -6,7 +6,7 @@
   "name":"CoinService",
   "parent":{
     "name":"coin",
-    "path":"folders/fun.barons-keep.visu/src/service/coin.yy",
+    "path":"folders/src/service/coin.yy",
   },
   "resourceType":"GMScript",
   "resourceVersion":"2.0",

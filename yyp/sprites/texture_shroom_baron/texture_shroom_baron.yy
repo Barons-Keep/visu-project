@@ -27,7 +27,7 @@
   "origin":4,
   "parent":{
     "name":"baron",
-    "path":"folders/fun.barons-keep.visu/resource/texture/shroom/baron.yy",
+    "path":"folders/resource/texture/shroom/baron.yy",
   },
   "preMultiplyAlpha":false,
   "resourceType":"GMSprite",

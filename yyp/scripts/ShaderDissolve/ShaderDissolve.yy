@@ -6,7 +6,7 @@
   "name":"ShaderDissolve",
   "parent":{
     "name":"shader_dissolve",
-    "path":"folders/io.alkapivo.core/resource/shader/screen/shader_dissolve.yy",
+    "path":"folders/module/core/resource/shader/screen/shader_dissolve.yy",
   },
   "resourceType":"GMScript",
   "resourceVersion":"2.0",

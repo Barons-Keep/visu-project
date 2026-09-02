@@ -6,7 +6,7 @@
   "name":"ShaderBKTGlitch",
   "parent":{
     "name":"bkt_glitch",
-    "path":"folders/com.janvorisek.bktglitch/resource/shader/bkt_glitch.yy",
+    "path":"folders/module/bktglitch/resource/shader/bkt_glitch.yy",
   },
   "resourceType":"GMScript",
   "resourceVersion":"2.0",

@@ -6,7 +6,7 @@
   "name":"BrushToolbarTest",
   "parent":{
     "name":"test",
-    "path":"folders/fun.barons-keep.visu/test.yy",
+    "path":"folders/test.yy",
   },
   "resourceType":"GMScript",
   "resourceVersion":"2.0",

@@ -6,7 +6,7 @@
   "name":"VisuTrack",
   "parent":{
     "name":"track-loader",
-    "path":"folders/fun.barons-keep.visu/src/service/track-loader.yy",
+    "path":"folders/src/service/track-loader.yy",
   },
   "resourceType":"GMScript",
   "resourceVersion":"2.0",

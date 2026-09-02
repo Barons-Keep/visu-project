@@ -6,7 +6,7 @@
   "name":"LDTK",
   "parent":{
     "name":"ldtk",
-    "path":"folders/io.alkapivo.core/src/service/ldtk.yy",
+    "path":"folders/module/core/src/service/ldtk.yy",
   },
   "resourceType":"GMScript",
   "resourceVersion":"2.0",

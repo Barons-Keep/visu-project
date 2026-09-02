@@ -6,7 +6,7 @@
   "name":"SubtitleServiceTest",
   "parent":{
     "name":"subtitle",
-    "path":"folders/fun.barons-keep.visu/test/subtitle.yy",
+    "path":"folders/test/subtitle.yy",
   },
   "resourceType":"GMScript",
   "resourceVersion":"2.0",

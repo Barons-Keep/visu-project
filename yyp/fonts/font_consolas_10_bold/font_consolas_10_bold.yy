@@ -230,7 +230,7 @@
   "name":"font_consolas_10_bold",
   "parent":{
     "name":"bold",
-    "path":"folders/io.alkapivo.core/resource/font/font_consolas/bold.yy",
+    "path":"folders/module/core/resource/font/font_consolas/bold.yy",
   },
   "pointRounding":0,
   "ranges":[

@@ -26,7 +26,7 @@
   "origin":4,
   "parent":{
     "name":"menu",
-    "path":"folders/fun.barons-keep.visu/resource/texture/ui/menu.yy",
+    "path":"folders/resource/texture/ui/menu.yy",
   },
   "preMultiplyAlpha":false,
   "resourceType":"GMSprite",

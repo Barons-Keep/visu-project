@@ -4,7 +4,7 @@
   "name":"shader_deep_space",
   "parent":{
     "name":"shader_deep_space",
-    "path":"folders/io.alkapivo.core/resource/shader/screen/shader_deep_space.yy",
+    "path":"folders/module/core/resource/shader/screen/shader_deep_space.yy",
   },
   "resourceType":"GMShader",
   "resourceVersion":"2.0",

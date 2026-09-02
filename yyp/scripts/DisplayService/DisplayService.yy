@@ -6,7 +6,7 @@
   "name":"DisplayService",
   "parent":{
     "name":"display",
-    "path":"folders/io.alkapivo.core/src/service/display.yy",
+    "path":"folders/module/core/src/service/display.yy",
   },
   "resourceType":"GMScript",
   "resourceVersion":"2.0",

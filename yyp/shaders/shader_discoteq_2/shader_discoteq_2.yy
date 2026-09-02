@@ -4,7 +4,7 @@
   "name":"shader_discoteq_2",
   "parent":{
     "name":"shadertoy",
-    "path":"folders/io.alkapivo.core/resource/shader/ext/shadertoy.yy",
+    "path":"folders/module/core/resource/shader/ext/shadertoy.yy",
   },
   "resourceType":"GMShader",
   "resourceVersion":"2.0",

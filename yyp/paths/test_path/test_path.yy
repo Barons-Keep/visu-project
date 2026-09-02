@@ -6,7 +6,7 @@
   "name":"test_path",
   "parent":{
     "name":"resource",
-    "path":"folders/fun.barons-keep.visu/resource.yy",
+    "path":"folders/resource.yy",
   },
   "points":[
     {"speed":0.0,"x":-8.0,"y":-1.0,},

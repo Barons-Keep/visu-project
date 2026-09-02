@@ -6,7 +6,7 @@
   "name":"Number",
   "parent":{
     "name":"type",
-    "path":"folders/io.alkapivo.core/src/lang/type.yy",
+    "path":"folders/module/core/src/lang/type.yy",
   },
   "resourceType":"GMScript",
   "resourceVersion":"2.0",

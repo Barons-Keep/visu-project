@@ -26,7 +26,7 @@
   "origin":0,
   "parent":{
     "name":"ease",
-    "path":"folders/fun.barons-keep.visu/resource/texture/editor/icon/ease.yy",
+    "path":"folders/resource/texture/editor/icon/ease.yy",
   },
   "preMultiplyAlpha":false,
   "resourceType":"GMSprite",

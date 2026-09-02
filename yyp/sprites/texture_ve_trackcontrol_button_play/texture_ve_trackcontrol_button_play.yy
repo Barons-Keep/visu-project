@@ -26,7 +26,7 @@
   "origin":0,
   "parent":{
     "name":"VETrackControl",
-    "path":"folders/fun.barons-keep.visu/resource/texture/editor/containers/VETrackControl.yy",
+    "path":"folders/resource/texture/editor/containers/VETrackControl.yy",
   },
   "preMultiplyAlpha":false,
   "resourceType":"GMSprite",

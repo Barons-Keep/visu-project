@@ -4,7 +4,7 @@
   "name":"shader_bkt_glitch",
   "parent":{
     "name":"bkt_glitch",
-    "path":"folders/com.janvorisek.bktglitch/resource/shader/bkt_glitch.yy",
+    "path":"folders/module/bktglitch/resource/shader/bkt_glitch.yy",
   },
   "resourceType":"GMShader",
   "resourceVersion":"2.0",

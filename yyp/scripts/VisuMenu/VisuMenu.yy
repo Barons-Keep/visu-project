@@ -6,7 +6,7 @@
   "name":"VisuMenu",
   "parent":{
     "name":"menu",
-    "path":"folders/fun.barons-keep.visu/src/ui/controller/menu.yy",
+    "path":"folders/src/ui/controller/menu.yy",
   },
   "resourceType":"GMScript",
   "resourceVersion":"2.0",

@@ -6,7 +6,7 @@
   "name":"ShaderWarpPulse",
   "parent":{
     "name":"shader_warp_pulse",
-    "path":"folders/io.alkapivo.core/resource/shader/screen/shader_warp_pulse.yy",
+    "path":"folders/module/core/resource/shader/screen/shader_warp_pulse.yy",
   },
   "resourceType":"GMScript",
   "resourceVersion":"2.0",

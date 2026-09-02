@@ -6,7 +6,7 @@
   "name":"DialogueDesignerTest",
   "parent":{
     "name":"service",
-    "path":"folders/io.alkapivo.core/test/service.yy",
+    "path":"folders/module/core/test/service.yy",
   },
   "resourceType":"GMScript",
   "resourceVersion":"2.0",

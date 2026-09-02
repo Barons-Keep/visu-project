@@ -6,7 +6,7 @@
   "name":"VEEvent",
   "parent":{
     "name":"event",
-    "path":"folders/fun.barons-keep.visu/src/editor/service/event.yy",
+    "path":"folders/src/editor/service/event.yy",
   },
   "resourceType":"GMScript",
   "resourceVersion":"2.0",

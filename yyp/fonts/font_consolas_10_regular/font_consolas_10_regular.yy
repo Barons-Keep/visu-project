@@ -238,7 +238,7 @@
   "name":"font_consolas_10_regular",
   "parent":{
     "name":"regular",
-    "path":"folders/io.alkapivo.core/resource/font/font_consolas/regular.yy",
+    "path":"folders/module/core/resource/font/font_consolas/regular.yy",
   },
   "pointRounding":0,
   "ranges":[

@@ -6,7 +6,7 @@
   "name":"ShroomServiceTest",
   "parent":{
     "name":"shroom",
-    "path":"folders/fun.barons-keep.visu/test/shroom.yy",
+    "path":"folders/test/shroom.yy",
   },
   "resourceType":"GMScript",
   "resourceVersion":"2.0",

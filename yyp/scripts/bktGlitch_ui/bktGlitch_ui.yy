@@ -5,8 +5,8 @@
   "isDnD":false,
   "name":"bktGlitch_ui",
   "parent":{
-    "name":"src",
-    "path":"folders/io.mk-cz.gmtf/src.yy",
+    "name":"lib",
+    "path":"folders/module/bktglitch/src/lib.yy",
   },
   "resourceType":"GMScript",
   "resourceVersion":"2.0",

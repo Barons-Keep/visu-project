@@ -4,7 +4,7 @@
   "name":"shader_color_passthrough",
   "parent":{
     "name":"shader",
-    "path":"folders/io.alkapivo.core/resource/shader.yy",
+    "path":"folders/module/core/resource/shader.yy",
   },
   "resourceType":"GMShader",
   "resourceVersion":"2.0",

@@ -29,7 +29,7 @@
   "origin":4,
   "parent":{
     "name":"player",
-    "path":"folders/fun.barons-keep.visu/resource/texture/player.yy",
+    "path":"folders/resource/texture/player.yy",
   },
   "preMultiplyAlpha":false,
   "resourceType":"GMSprite",

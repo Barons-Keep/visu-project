@@ -230,7 +230,7 @@
   "name":"font_basic",
   "parent":{
     "name":"font",
-    "path":"folders/io.alkapivo.core/resource/font.yy",
+    "path":"folders/module/core/resource/font.yy",
   },
   "pointRounding":0,
   "ranges":[

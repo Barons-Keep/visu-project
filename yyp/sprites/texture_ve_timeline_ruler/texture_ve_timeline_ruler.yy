@@ -26,7 +26,7 @@
   "origin":0,
   "parent":{
     "name":"VETimeline",
-    "path":"folders/fun.barons-keep.visu/resource/texture/editor/containers/VETimeline.yy",
+    "path":"folders/resource/texture/editor/containers/VETimeline.yy",
   },
   "preMultiplyAlpha":false,
   "resourceType":"GMSprite",

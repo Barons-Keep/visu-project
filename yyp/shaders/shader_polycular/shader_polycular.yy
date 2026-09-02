@@ -4,7 +4,7 @@
   "name":"shader_polycular",
   "parent":{
     "name":"shader_polycular",
-    "path":"folders/io.alkapivo.core/resource/shader/screen/shader_polycular.yy",
+    "path":"folders/module/core/resource/shader/screen/shader_polycular.yy",
   },
   "resourceType":"GMShader",
   "resourceVersion":"2.0",

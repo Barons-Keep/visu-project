@@ -31,7 +31,7 @@
   "origin":0,
   "parent":{
     "name":"VETitleBar",
-    "path":"folders/fun.barons-keep.visu/resource/texture/editor/containers/VETitleBar.yy",
+    "path":"folders/resource/texture/editor/containers/VETitleBar.yy",
   },
   "preMultiplyAlpha":false,
   "resourceType":"GMSprite",

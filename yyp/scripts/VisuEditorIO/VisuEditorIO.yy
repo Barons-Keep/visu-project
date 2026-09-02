@@ -6,7 +6,7 @@
   "name":"VisuEditorIO",
   "parent":{
     "name":"editor",
-    "path":"folders/fun.barons-keep.visu/src/editor.yy",
+    "path":"folders/src/editor.yy",
   },
   "resourceType":"GMScript",
   "resourceVersion":"2.0",

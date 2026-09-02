@@ -6,7 +6,7 @@
   "name":"ShaderFractalBloom",
   "parent":{
     "name":"shader_fractal_bloom",
-    "path":"folders/io.alkapivo.core/resource/shader/screen/shader_fractal_bloom.yy",
+    "path":"folders/module/core/resource/shader/screen/shader_fractal_bloom.yy",
   },
   "resourceType":"GMScript",
   "resourceVersion":"2.0",

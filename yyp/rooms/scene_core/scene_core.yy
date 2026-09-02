@@ -13,7 +13,7 @@
   "name":"scene_core",
   "parent":{
     "name":"scene",
-    "path":"folders/io.alkapivo.core/resource/scene.yy",
+    "path":"folders/module/core/resource/scene.yy",
   },
   "parentRoom":null,
   "physicsSettings":{

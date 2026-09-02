@@ -6,7 +6,7 @@
   "name":"brush_entity_player",
   "parent":{
     "name":"entity",
-    "path":"folders/fun.barons-keep.visu/src/editor/service/brush/entity.yy",
+    "path":"folders/src/editor/service/brush/entity.yy",
   },
   "resourceType":"GMScript",
   "resourceVersion":"2.0",

@@ -27,7 +27,7 @@
   "origin":4,
   "parent":{
     "name":"bazyl",
-    "path":"folders/fun.barons-keep.visu/resource/texture/shroom/bazyl.yy",
+    "path":"folders/resource/texture/shroom/bazyl.yy",
   },
   "preMultiplyAlpha":false,
   "resourceType":"GMSprite",

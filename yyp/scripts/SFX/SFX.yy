@@ -6,7 +6,7 @@
   "name":"SFX",
   "parent":{
     "name":"sfx",
-    "path":"folders/io.alkapivo.core/src/service/sound/sfx.yy",
+    "path":"folders/module/core/src/service/sound/sfx.yy",
   },
   "resourceType":"GMScript",
   "resourceVersion":"2.0",

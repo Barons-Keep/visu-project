@@ -37,7 +37,7 @@
   "origin":4,
   "parent":{
     "name":"icon",
-    "path":"folders/fun.barons-keep.visu/resource/texture/editor/icon.yy",
+    "path":"folders/resource/texture/editor/icon.yy",
   },
   "preMultiplyAlpha":false,
   "resourceType":"GMSprite",

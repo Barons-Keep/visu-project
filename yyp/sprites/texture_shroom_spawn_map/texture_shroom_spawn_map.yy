@@ -26,7 +26,7 @@
   "origin":0,
   "parent":{
     "name":"editor",
-    "path":"folders/fun.barons-keep.visu/resource/texture/editor.yy",
+    "path":"folders/resource/texture/editor.yy",
   },
   "preMultiplyAlpha":false,
   "resourceType":"GMSprite",

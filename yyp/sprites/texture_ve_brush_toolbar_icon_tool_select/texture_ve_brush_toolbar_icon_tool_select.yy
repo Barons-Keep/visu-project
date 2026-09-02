@@ -26,7 +26,7 @@
   "origin":0,
   "parent":{
     "name":"VEBrushToolbar",
-    "path":"folders/fun.barons-keep.visu/resource/texture/editor/containers/VEBrushToolbar.yy",
+    "path":"folders/resource/texture/editor/containers/VEBrushToolbar.yy",
   },
   "preMultiplyAlpha":false,
   "resourceType":"GMSprite",

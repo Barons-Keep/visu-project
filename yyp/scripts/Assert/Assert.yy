@@ -6,7 +6,7 @@
   "name":"Assert",
   "parent":{
     "name":"lang",
-    "path":"folders/io.alkapivo.core/src/lang.yy",
+    "path":"folders/module/core/src/lang.yy",
   },
   "resourceType":"GMScript",
   "resourceVersion":"2.0",

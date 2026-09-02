@@ -6,7 +6,7 @@
   "name":"TransformerTest",
   "parent":{
     "name":"util",
-    "path":"folders/io.alkapivo.core/test/util.yy",
+    "path":"folders/module/core/test/util.yy",
   },
   "resourceType":"GMScript",
   "resourceVersion":"2.0",

@@ -6,7 +6,7 @@
   "name":"Socket",
   "parent":{
     "name":"network",
-    "path":"folders/io.alkapivo.core/src/service/network.yy",
+    "path":"folders/module/core/src/service/network.yy",
   },
   "resourceType":"GMScript",
   "resourceVersion":"2.0",

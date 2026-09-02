@@ -26,7 +26,7 @@
   "origin":4,
   "parent":{
     "name":"particle",
-    "path":"folders/fun.barons-keep.visu/resource/texture/particle.yy",
+    "path":"folders/resource/texture/particle.yy",
   },
   "preMultiplyAlpha":false,
   "resourceType":"GMSprite",

@@ -6,7 +6,7 @@
   "name":"ShaderAstralFlow",
   "parent":{
     "name":"shader_astral_flow",
-    "path":"folders/io.alkapivo.core/resource/shader/screen/shader_astral_flow.yy",
+    "path":"folders/module/core/resource/shader/screen/shader_astral_flow.yy",
   },
   "resourceType":"GMScript",
   "resourceVersion":"2.0",

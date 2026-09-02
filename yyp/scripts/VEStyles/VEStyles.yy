@@ -6,7 +6,7 @@
   "name":"VEStyles",
   "parent":{
     "name":"ui",
-    "path":"folders/fun.barons-keep.visu/src/editor/ui.yy",
+    "path":"folders/src/editor/ui.yy",
   },
   "resourceType":"GMScript",
   "resourceVersion":"2.0",

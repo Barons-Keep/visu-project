@@ -6,7 +6,7 @@
   "name":"VisuStateMachine",
   "parent":{
     "name":"src",
-    "path":"folders/fun.barons-keep.visu/src.yy",
+    "path":"folders/src.yy",
   },
   "resourceType":"GMScript",
   "resourceVersion":"2.0",

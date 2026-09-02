@@ -26,7 +26,7 @@
   "origin":0,
   "parent":{
     "name":"bkg",
-    "path":"folders/fun.barons-keep.visu/resource/texture/bkg.yy",
+    "path":"folders/resource/texture/bkg.yy",
   },
   "preMultiplyAlpha":false,
   "resourceType":"GMSprite",

@@ -26,7 +26,7 @@
   "origin":4,
   "parent":{
     "name":"ui",
-    "path":"folders/fun.barons-keep.visu/resource/texture/ui.yy",
+    "path":"folders/resource/texture/ui.yy",
   },
   "preMultiplyAlpha":false,
   "resourceType":"GMSprite",

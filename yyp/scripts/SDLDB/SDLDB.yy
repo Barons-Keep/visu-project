@@ -5,8 +5,8 @@
   "isDnD":false,
   "name":"SDLDB",
   "parent":{
-    "name":"src",
-    "path":"folders/com.la-game-studio.input-candy/src.yy",
+    "name":"lib",
+    "path":"folders/module/inputcandy/src/lib.yy",
   },
   "resourceType":"GMScript",
   "resourceVersion":"2.0",

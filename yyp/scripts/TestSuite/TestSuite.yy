@@ -5,8 +5,8 @@
   "isDnD":false,
   "name":"TestSuite",
   "parent":{
-    "name":"io.alkapivo.core",
-    "path":"folders/io.alkapivo.core.yy",
+    "name":"test",
+    "path":"folders/module/core/test.yy",
   },
   "resourceType":"GMScript",
   "resourceVersion":"2.0",

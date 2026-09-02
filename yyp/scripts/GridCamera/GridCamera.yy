@@ -6,7 +6,7 @@
   "name":"GridCamera",
   "parent":{
     "name":"renderer",
-    "path":"folders/fun.barons-keep.visu/src/renderer.yy",
+    "path":"folders/src/renderer.yy",
   },
   "resourceType":"GMScript",
   "resourceVersion":"2.0",

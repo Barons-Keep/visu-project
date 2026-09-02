@@ -6,7 +6,7 @@
   "name":"BKTGlitchService",
   "parent":{
     "name":"src",
-    "path":"folders/com.janvorisek.bktglitch/src.yy",
+    "path":"folders/module/bktglitch/src.yy",
   },
   "resourceType":"GMScript",
   "resourceVersion":"2.0",

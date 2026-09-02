@@ -30,7 +30,7 @@
   "origin":4,
   "parent":{
     "name":"bullet",
-    "path":"folders/fun.barons-keep.visu/resource/texture/bullet.yy",
+    "path":"folders/resource/texture/bullet.yy",
   },
   "preMultiplyAlpha":false,
   "resourceType":"GMSprite",

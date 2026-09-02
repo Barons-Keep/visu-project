@@ -230,7 +230,7 @@
   "name":"font_inter_28_regular",
   "parent":{
     "name":"regular",
-    "path":"folders/fun.barons-keep.visu/resource/font/font_inter/regular.yy",
+    "path":"folders/resource/font/font_inter/regular.yy",
   },
   "pointRounding":0,
   "ranges":[
@@ -245,7 +245,7 @@
     {"lower":377,"upper":380,},
     {"lower":9647,"upper":9647,},
   ],
-  "regenerateBitmap":true,
+  "regenerateBitmap":false,
   "resourceType":"GMFont",
   "resourceVersion":"2.0",
   "sampleText":"abcdef ABCDEF\n0123456789 .,<>\"'&!?\nthe quick brown fox jumps over the lazy dog\nTHE QUICK BROWN FOX JUMPS OVER THE LAZY DOG\nDefault character: ▯ (9647)",

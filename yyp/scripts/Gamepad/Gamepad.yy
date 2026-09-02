@@ -6,7 +6,7 @@
   "name":"Gamepad",
   "parent":{
     "name":"input",
-    "path":"folders/io.alkapivo.core/src/service/input.yy",
+    "path":"folders/module/core/src/service/input.yy",
   },
   "resourceType":"GMScript",
   "resourceVersion":"2.0",

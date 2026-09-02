@@ -15,7 +15,7 @@
   "name":"sound_sfx_player_die",
   "parent":{
     "name":"sfx",
-    "path":"folders/fun.barons-keep.visu/resource/sound/sfx.yy",
+    "path":"folders/resource/sound/sfx.yy",
   },
   "preload":false,
   "resourceType":"GMSound",

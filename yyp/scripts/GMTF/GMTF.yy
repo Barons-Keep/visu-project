@@ -6,7 +6,7 @@
   "name":"GMTF",
   "parent":{
     "name":"src",
-    "path":"folders/io.mk-cz.gmtf/src.yy",
+    "path":"folders/module/gmtf/src.yy",
   },
   "resourceType":"GMScript",
   "resourceVersion":"2.0",
