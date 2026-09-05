@@ -6,10 +6,7 @@
   "license": "ISC",
   "main": "yyp/visu-project.yyp",
   "scripts": {
-    "setup": "./setup.sh",
-    "setup-editor": "./setup.sh --editor",
-    "setup-devtools": "./setup.sh --devtools",
-    "setup-all": "./setup.sh --editor --devtools"
+    "setup": "./setup.sh"
   },
   "dependencies": {
     "core": {
