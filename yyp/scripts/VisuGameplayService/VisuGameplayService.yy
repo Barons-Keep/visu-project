@@ -1,0 +1,13 @@
+{
+  "$GMScript":"v1",
+  "%Name":"VisuGameplayService",
+  "isCompatibility":false,
+  "isDnD":false,
+  "name":"VisuGameplayService",
+  "parent":{
+    "name":"service",
+    "path":"folders/src/service.yy",
+  },
+  "resourceType":"GMScript",
+  "resourceVersion":"2.0",
+}

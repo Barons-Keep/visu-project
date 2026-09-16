@@ -307,6 +307,7 @@
     {"name":"VisuControllerTest","order":6,"path":"scripts/VisuControllerTest/VisuControllerTest.yy",},
     {"name":"VisuEditorController","order":2,"path":"scripts/VisuEditorController/VisuEditorController.yy",},
     {"name":"VisuEditorIO","order":4,"path":"scripts/VisuEditorIO/VisuEditorIO.yy",},
+    {"name":"VisuGameplayService","order":5,"path":"scripts/VisuGameplayService/VisuGameplayService.yy",},
     {"name":"VisuHUDRenderer","order":3,"path":"scripts/VisuHUDRenderer/VisuHUDRenderer.yy",},
     {"name":"VisuIO","order":9,"path":"scripts/VisuIO/VisuIO.yy",},
     {"name":"VisuLayouts","order":8,"path":"scripts/VisuLayouts/VisuLayouts.yy",},
