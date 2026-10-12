@@ -35,6 +35,7 @@
   "visu.files-service.dispatcher.limit": 1.0,
   "visu.player.force.tresholds": [ 0, 50, 125, 250 ],
   "visu.player.point.tresholds": [ 0, 50, 125, 250 ],
+  "visu.gameplay.snap-spawner-to-view": false,
   "visu.menu.demo.files": [ "track/demo-visual.json", "track/demo.json" ],
   "visu.version.check": true,
   "visu.version.url": "https://alkapivo.github.io/visu-project/version.json",
