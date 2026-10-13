@@ -21,7 +21,7 @@
       "remote": "https://gitea.barons-keep.fun/Alkapivo/mh-cz.gmtf-gml.git",
       "revision": "26.09.02"
     },
-    "bktGlitch": {
+    "bktglitch": {
       "remote": "https://gitea.barons-keep.fun/Alkapivo/fyi.odditica.bktGlitch-gml.git",
       "revision": "26.09.02"
     },
@@ -29,7 +29,7 @@
       "remote": "https://gitea.barons-keep.fun/Alkapivo/visu-track.git",
       "revision": "v1.0.0"
     },
-    "input-candy": {
+    "inputcandy": {
       "remote": "https://gitea.barons-keep.fun/Alkapivo/com.la-game-studio.input-candy-gml.git",
       "revision": "26.09.02"
     }
