@@ -1,6 +1,6 @@
 {
   "name": "visu-project",
-  "version": "v1.0.0",
+  "version": "v1.0.1",
   "description": "Visu is an experimental bullet hell game that combines classic mechanics inspired by Touhou with mind-blowing visual effects. It's an intense fusion of rhythm, chaos, and visual effects.",
   "author": "Alkapivo",
   "license": "ISC",
@@ -11,7 +11,7 @@
   "dependencies": {
     "core": {
       "remote": "https://gitea.barons-keep.fun/Alkapivo/core-gml.git",
-      "revision": "v1.0.0"
+      "revision": "v1.0.1"
     },
     "visu": {
       "remote": "https://gitea.barons-keep.fun/Alkapivo/visu-gml.git",
@@ -27,7 +27,7 @@
     },
     "track": {
       "remote": "https://gitea.barons-keep.fun/Alkapivo/visu-track.git",
-      "revision": "v1.0.0"
+      "revision": "v1.0.1"
     },
     "inputcandy": {
       "remote": "https://gitea.barons-keep.fun/Alkapivo/com.la-game-studio.input-candy-gml.git",
