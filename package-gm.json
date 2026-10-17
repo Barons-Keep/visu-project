@@ -15,7 +15,7 @@
     },
     "visu": {
       "remote": "https://gitea.barons-keep.fun/Alkapivo/visu-gml.git",
-      "revision": "v1.0.0"
+      "revision": "v1.0.1"
     },
     "gmtf": {
       "remote": "https://gitea.barons-keep.fun/Alkapivo/mh-cz.gmtf-gml.git",
